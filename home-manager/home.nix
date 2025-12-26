@@ -1,11 +1,11 @@
-{ config, pkgs, ... }:
+{ config, pkgs, username, ... }:
 {
   imports = [
     ./nix_modules
   ];
 
-  home.username = "liou";
-  home.homeDirectory = "/home/liou";
+  home.username = username;
+  home.homeDirectory = "/home/${username}";
   home.stateVersion = "25.11";
 
   # 简单的软件包安装方式
