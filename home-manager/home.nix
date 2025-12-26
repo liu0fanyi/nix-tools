@@ -13,6 +13,16 @@
     extra-substituters = https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store
   '';
 
+  # 启用非 NixOS Linux 发行版（如 Ubuntu）的桌面集成
+  # 原理：设置 XDG_DATA_DIRS 环境变量，使系统应用菜单能扫描到
+  # ~/.nix-profile/share/applications/ 下的 .desktop 文件
+  # 这样 Nix 安装的 GUI 应用（如 foot）就会出现在 Ubuntu 的快速启动中
+  targets.genericLinux.enable = true;
+
+  # 启用 XDG MIME 类型关联
+  # 原理：让 Nix 安装的应用能正确处理文件类型关联（如双击文件时用正确的程序打开）
+  xdg.mime.enable = true;
+
   # 简单的软件包安装方式
   home.packages = with pkgs; [
     zellij
