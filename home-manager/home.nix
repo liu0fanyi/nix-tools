@@ -9,6 +9,8 @@
   home.stateVersion = "25.11";
 
   # 配置 Nix 使用清华源加速（追加到现有 substituters，不覆盖默认配置）
+  # 需要把用户加入信任列表/etc/nix/nix.conf
+  # trusted-users = root industio
   home.file.".config/nix/nix.conf".text = ''
     extra-substituters = https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store
   '';
@@ -44,27 +46,38 @@
     lazydocker
     ## fonts
     nerd-fonts.bigblue-terminal
+    ## X11 终端（VMware 兼容）
+    sakura
   ];
 
+  # sakura 终端配置（X11 兼容，适用于 VMware 等无 GPU 环境）
+  # 配置文件位于 ~/.config/sakura/sakura.conf
+  home.file.".config/sakura/sakura.conf".text = ''
+    [sakura]
+    font=BigBlueTermPlus Nerd Font Mono 12
+    shell=zellij
+    colorset1_back=rgb(40,40,40)
+    colorset1_fore=rgb(235,219,178)
+    scroll_lines=10000
+    audible_bell=No
+    visible_bell=No
+    blinking_cursor=No
+    tabs_on_bottom=No
+    less_questions=Yes
+    scrollbar=false
+  '';
+
+  # foot 终端配置（Wayland 原生，适用于支持 Wayland 的系统）
   programs.foot = {
     enable = true;
-    # 启用服务器模式（可选，能让启动稍微再快一点）
     server.enable = true;
-
     settings = {
       main = {
-        # 1. 设置字体
-        # 格式为 "字体名:size=字号"，确保名字和 fc-list 查到的一致
         font = "BigBlueTermPlus Nerd Font Mono:size=12";
-
-        # 2. 核心：启动时自动运行 Zellij
-        # Foot 的 shell 参数可以直接指定启动命令
         shell = "zellij";
       };
-
       colors = {
-        # 如果你喜欢复古感，可以在这里调色，或者保持默认
-        alpha = 0.9; # 稍微有点透明度
+        alpha = 0.9;
       };
     };
   };
