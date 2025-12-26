@@ -8,6 +8,11 @@
   home.homeDirectory = "/home/${username}";
   home.stateVersion = "25.11";
 
+  # 配置 Nix 使用清华源加速（追加到现有 substituters，不覆盖默认配置）
+  home.file.".config/nix/nix.conf".text = ''
+    extra-substituters = https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store
+  '';
+
   # 简单的软件包安装方式
   home.packages = with pkgs; [
     zellij
