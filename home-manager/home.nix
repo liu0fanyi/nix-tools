@@ -99,4 +99,7 @@
   };
 
   programs.home-manager.enable = true;
+
+  # Ensure systemd user services are started/restarted on switch
+  systemd.user.startServices = "sd-switch";
 }

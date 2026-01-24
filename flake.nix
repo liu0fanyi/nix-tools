@@ -16,21 +16,25 @@
       pkgs = nixpkgs.legacyPackages.${system};
 
       # 动态生成 home-manager 配置的函数
-      mkHomeConfig = username: home-manager.lib.homeManagerConfiguration {
+      mkHomeConfig = username: isFull: home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
         extraSpecialArgs = {
           inherit username;
         };
-        modules = [ ./home-manager/home.nix ];
+        modules = [
+          ./home-manager/home.nix
+          { features.full.enable = isFull; }
+        ];
       };
     in
     {
       homeConfigurations = {
         # 使用 mkHomeConfig 生成配置，用户名作为参数
-        "liou" = mkHomeConfig "liou";
+        "liou" = mkHomeConfig "liou" true;
+        "liou-lite" = mkHomeConfig "liou" false;
 
         # 添加其他用户时只需一行：
-        # "otheruser" = mkHomeConfig "otheruser";
+        # "otheruser" = mkHomeConfig "otheruser" true;
       };
     };
 }
