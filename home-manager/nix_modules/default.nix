@@ -7,5 +7,6 @@
     ./fcitx5.nix
     ./full.nix
     ./podman.nix
+    # ./niri.nix
   ];
 }

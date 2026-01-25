@@ -3,5 +3,7 @@
 # 示例: nu rerun.nu liou --full=false
 def main [username: string = "liou", --full = true] {
     let target = if $full { $username } else { $"($username)-lite" }
+    ## if enable niri
+    # nix run nixpkgs#home-manager -- switch --flake $".#($target)" -b backup --impure
     nix run nixpkgs#home-manager -- switch --flake $".#($target)" -b backup
 }
