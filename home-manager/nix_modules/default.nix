@@ -4,7 +4,7 @@
     ./helix.nix
     ./alacritty.nix
     ./sakura.nix
-    ./rime.nix
+    ./fcitx5.nix
     ./full.nix
     ./podman.nix
   ];
