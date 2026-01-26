@@ -1,0 +1,6 @@
+# Secrets
+git-crypt-key
+
+# Nix result symlinks
+result
+result-*

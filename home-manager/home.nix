@@ -43,6 +43,7 @@
 
     ## git tools
     gitui
+    git-crypt
     ## docker tools
     lazydocker
     ## fonts

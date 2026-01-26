@@ -12,6 +12,22 @@ curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix 
 
 ## Usage
 
+### Secret Management (Git-Crypt)
+
+This repository uses `git-crypt` to secure sensitive credentials (in `secrets.json`).
+
+**Initialization**:
+1. Initialize: `git-crypt init`
+2. Export key (keep this safe!): `git-crypt export-key ./git-crypt-key`
+
+**Usage**:
+- `secrets.json` is encrypted in the repo but visible as plain text to you.
+- **On a new machine**:
+    1. Clone the repo.
+    2. Copy your safe-guarded `git-crypt-key` to the repo root.
+    3. Run: `git-crypt unlock ./git-crypt-key`
+    4. `secrets.json` is now readable.
+
 ### Initial HomeManager
 
 To run the `rerun.nu` script for the first time, use (replace `liou` with your current username):
@@ -58,10 +74,30 @@ sudo systemctl restart nix-daemon
 
 If `ddns-go` or `rustfs` are not starting automatically:
 
+
 **Enable Linger**: On generic Linux, user services only run when you are logged in. To let them run from boot (and ensure they start correctly), enable linger:
     ```bash
     loginctl enable-linger $USER
     ```
+
+### DDNS-GO not working after hibernation
+
+If `ddns-go` stops working after system hibernation/sleep, restarting the service usually fixes it:
+
+```bash
+systemctl --user restart podman-ddns-go
+```
+
+**Note on Network Configuration**:
+`ddns-go` typically requires your optical modem (ONU) to be in **Bridge Mode** and your router to perform the PPPoE dial-up. You will need to know your broadband username and password for this configuration. If your modem is in Router mode, `ddns-go` might detect a private IP (e.g., 192.168.x.x) instead of a public one.
+
+If you need to reset the password manually:
+
+```bash
+# Replace 'YourNewPassword' with your desired password
+podman run --rm -v $HOME/.config/ddns-go:/root docker.io/jeessy/ddns-go -resetPassword YourNewPassword
+systemctl --user restart podman-ddns-go
+```
 
 ### Error: "newuidmap" not found
 

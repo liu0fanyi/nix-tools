@@ -1,6 +1,8 @@
 { pkgs, lib, config, ... }:
 let
   cfg = config.features.podman;
+  # Read secrets from repo root (requires git-crypt)
+  secrets = builtins.fromJSON (builtins.readFile ../../secrets.json);
 in
 {
   options.features.podman = {
@@ -41,6 +43,12 @@ in
           volumes = [
             "%h/.config/ddns-go:/root"
           ];
+          # SECURITY: Use extraConfig to bind to localhost only (avoiding args duplication with ENTRYPOINT)
+          extraConfig = {
+            Container = {
+              Exec = "-l 127.0.0.1:9876 -f 300";
+            };
+          };
         };
         # rustfs = {
         #   image = "docker.io/rustfs/rustfs:latest";
@@ -59,14 +67,16 @@ in
           image = "docker.io/sigoden/dufs";
           autoStart = true;
           autoUpdate = "registry";
-          ports = [ "5000:5000" ];
+          # SECURITY: Bind to 127.0.0.1:5005 to be reverse-proxied by Caddy (securely hidden)
+          ports = [ "127.0.0.1:5005:5000" ];
           # Mounts the host directory %h/dufs (where %h is home directory) to /data inside the container.
           # To change the host directory, modify the part before the colon: "/path/to/your/files:/data"
           volumes = [ "%h/dufs:/data" ];
           # command = [ "/data" "-A" ];
+          # SECURITY: Enable authentication (-a) with admin user
           extraConfig = {
             Container = {
-              Exec = "/data -A";
+              Exec = "/data -A -a ${secrets.dufs_auth}";
             };
           };
         };
@@ -105,6 +115,10 @@ in
     home.file.".config/systemd/user/podman-ddns-go.service.d/override.conf".text = ''
       [Service]
       Environment="PATH=/usr/bin:/bin:${lib.makeBinPath [ pkgs.podman ]}"
+      # CONFIG: Ensure config file exists to prevent first-run failure
+      ExecStartPre=${pkgs.bash}/bin/bash -c '[ -f %h/.config/ddns-go/.ddns_go_config.yaml ] || ${pkgs.coreutils}/bin/touch %h/.config/ddns-go/.ddns_go_config.yaml'
+      # CONFIG: Reset password on every start (ensures consistent state)
+      ExecStartPre=${pkgs.podman}/bin/podman run --rm -v %h/.config/ddns-go:/root docker.io/jeessy/ddns-go -resetPassword ${secrets.ddns_password}
     '';
 
     # home.file.".config/systemd/user/podman-rustfs.service.d/override.conf".text = ''
