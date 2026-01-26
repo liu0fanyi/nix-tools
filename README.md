@@ -33,12 +33,13 @@ This repository uses `git-crypt` to secure sensitive credentials (in `secrets.js
 To run the `rerun.nu` script for the first time, use (replace `liou` with your current username):
 
 ```bash
+# Apply standard configuration (full + ddns-go)
 nix shell nixpkgs#nushell -c nu ./rerun.nu liou
-```
 
-By default it enables all features. To use a "lite" version (without Fcitx5 & Podman), run:
+# Apply full configuration WITHOUT ddns-go
+nix shell nixpkgs#nushell -c nu ./rerun.nu liou --ddns=false
 
-```bash
+# Apply lightweight configuration (no GUI apps, no ddns-go)
 nix shell nixpkgs#nushell -c nu ./rerun.nu liou --full=false
 ```
 

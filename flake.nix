@@ -24,25 +24,29 @@
       pkgs = nixpkgs.legacyPackages.${system};
 
       # 动态生成 home-manager 配置的函数
-      mkHomeConfig = username: isFull: home-manager.lib.homeManagerConfiguration {
+      mkHomeConfig = username: isFull: enableDDNS: home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
         extraSpecialArgs = {
           inherit username inputs;
         };
         modules = [
           ./home-manager/home.nix
-          { features.full.enable = isFull; }
+          { 
+            features.full.enable = isFull; 
+            features.podman.ddns-go.enable = enableDDNS;
+          }
         ];
       };
     in
     {
       homeConfigurations = {
         # 使用 mkHomeConfig 生成配置，用户名作为参数
-        "liou" = mkHomeConfig "liou" true;
-        "liou-lite" = mkHomeConfig "liou" false;
+        "liou" = mkHomeConfig "liou" true true;
+        "liou-no-ddns" = mkHomeConfig "liou" true false;
+        "liou-lite" = mkHomeConfig "liou" false false;
 
         # 添加其他用户时只需一行：
-        # "otheruser" = mkHomeConfig "otheruser" true;
+        # "otheruser" = mkHomeConfig "otheruser" true true;
       };
     };
 }

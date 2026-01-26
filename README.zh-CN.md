@@ -33,12 +33,13 @@ curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix 
 首次运行 `rerun.nu` 脚本，请使用（请将 `liou` 替换为你当前的用户名）：
 
 ```bash
+# 应用标准配置 (完整版 + ddns-go)
 nix shell nixpkgs#nushell -c nu ./rerun.nu liou
-```
 
-默认情况下启用所有功能。要使用“精简”版本（不含 Fcitx5 和 Podman），请运行：
+# 应用完整版配置但不启用 ddns-go
+nix shell nixpkgs#nushell -c nu ./rerun.nu liou --ddns=false
 
-```bash
+# 应用轻量级配置 (无 GUI 应用，无 ddns-go)
 nix shell nixpkgs#nushell -c nu ./rerun.nu liou --full=false
 ```
 

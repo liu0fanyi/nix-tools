@@ -16,7 +16,7 @@ in
     home.packages = [ pkgs.caddy ];
 
     xdg.configFile."caddy/Caddyfile".text = ''
-      http://wttliou.top:5000 {
+      :5000 {
         reverse_proxy 127.0.0.1:5005
         log {
           output file %h/.local/share/caddy/access.log
