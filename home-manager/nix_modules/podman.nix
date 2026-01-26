@@ -24,8 +24,9 @@ in
     home.activation.createPodmanVolumes = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       $DRY_RUN_CMD mkdir -p $VERBOSE_ARG \
         "$HOME/.config/ddns-go" \
-        "$HOME/rustfs/data" \
-        "$HOME/rustfs/logs"
+        "$HOME/dufs"
+        # "$HOME/rustfs/data" \
+        # "$HOME/rustfs/logs"
     '';
 
 
@@ -41,18 +42,33 @@ in
             "%h/.config/ddns-go:/root"
           ];
         };
-        rustfs = {
-          image = "docker.io/rustfs/rustfs:latest";
+        # rustfs = {
+        #   image = "docker.io/rustfs/rustfs:latest";
+        #   autoStart = true;
+        #   autoUpdate = "registry";
+        #   ports = [
+        #     "9000:9000"
+        #     "9001:9001"
+        #   ];
+        #   volumes = [
+        #     "%h/rustfs/data:/data:U"
+        #     "%h/rustfs/logs:/logs:U"
+        #   ];
+        # };
+        dufs = {
+          image = "docker.io/sigoden/dufs";
           autoStart = true;
           autoUpdate = "registry";
-          ports = [
-            "9000:9000"
-            "9001:9001"
-          ];
-          volumes = [
-            "%h/rustfs/data:/data:U"
-            "%h/rustfs/logs:/logs:U"
-          ];
+          ports = [ "5000:5000" ];
+          # Mounts the host directory %h/dufs (where %h is home directory) to /data inside the container.
+          # To change the host directory, modify the part before the colon: "/path/to/your/files:/data"
+          volumes = [ "%h/dufs:/data" ];
+          # command = [ "/data" "-A" ];
+          extraConfig = {
+            Container = {
+              Exec = "/data -A";
+            };
+          };
         };
       };
     };
@@ -91,7 +107,12 @@ in
       Environment="PATH=/usr/bin:/bin:${lib.makeBinPath [ pkgs.podman ]}"
     '';
 
-    home.file.".config/systemd/user/podman-rustfs.service.d/override.conf".text = ''
+    # home.file.".config/systemd/user/podman-rustfs.service.d/override.conf".text = ''
+    #   [Service]
+    #   Environment="PATH=/usr/bin:/bin:${lib.makeBinPath [ pkgs.podman ]}"
+    # '';
+    
+    home.file.".config/systemd/user/podman-dufs.service.d/override.conf".text = ''
       [Service]
       Environment="PATH=/usr/bin:/bin:${lib.makeBinPath [ pkgs.podman ]}"
     '';
