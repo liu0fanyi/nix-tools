@@ -31,7 +31,8 @@ in
     home.activation.createPodmanVolumes = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       $DRY_RUN_CMD mkdir -p $VERBOSE_ARG \
         "$HOME/.config/ddns-go" \
-        "$HOME/dufs"
+        "$HOME/dufs" \
+        "$HOME/dufs-lan"
         # "$HOME/rustfs/data" \
         # "$HOME/rustfs/logs"
     '';
@@ -81,7 +82,24 @@ in
           # SECURITY: Enable authentication (-a) with admin user
           extraConfig = {
             Container = {
-              Exec = "/data -A -a ${secrets.dufs_auth}";
+              Exec = "/data -a ${secrets.dufs_auth}";
+            };
+          };
+        };
+        dufs-lan = {
+          image = "docker.io/sigoden/dufs";
+          autoStart = true;
+          autoUpdate = "registry";
+          # SECURITY: Bind to 127.0.0.1:5007. Caddy handles external access control.
+          # This ensures that even if Podman/pasta misbehaves with IPv6, it's not exposed directly.
+          ports = [ "127.0.0.1:5007:5000" ];
+          volumes = [
+            "%h/dufs-lan:/data"
+            "/media/liou:/data/media"
+          ];
+          extraConfig = {
+            Container = {
+              Exec = "/data -A ${secrets.dufs_lan_auth}";
             };
           };
         };
@@ -134,6 +152,11 @@ in
     # '';
     
     home.file.".config/systemd/user/podman-dufs.service.d/override.conf".text = ''
+      [Service]
+      Environment="PATH=/usr/bin:/bin:${lib.makeBinPath [ pkgs.podman ]}"
+    '';
+
+    home.file.".config/systemd/user/podman-dufs-lan.service.d/override.conf".text = ''
       [Service]
       Environment="PATH=/usr/bin:/bin:${lib.makeBinPath [ pkgs.podman ]}"
     '';
