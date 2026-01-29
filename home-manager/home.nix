@@ -23,8 +23,10 @@
   targets.genericLinux.enable = true;
 
   # 启用 XDG MIME 类型关联
-  # 原理：让 Nix 安装的应用能正确处理文件类型关联（如双击文件时用正确的程序打开）
+  # 原理：让 Nix 安的应用能正确处理文件类型关联（如双击文件时用正确的程序打开）
   xdg.mime.enable = true;
+
+  nixpkgs.config.allowUnfree = true;
 
   # 简单的软件包安装方式
   home.packages = with pkgs; [

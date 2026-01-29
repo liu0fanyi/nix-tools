@@ -8,6 +8,7 @@
     ./full.nix
     ./podman.nix
     ./caddy.nix
+    # ./rustdesk.nix
     # ./niri.nix
   ];
 }
