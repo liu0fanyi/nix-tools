@@ -19,7 +19,7 @@ in
       :5000 {
         reverse_proxy 127.0.0.1:5005
         log {
-          output file %h/.local/share/caddy/access.log
+          output file ${config.home.homeDirectory}/.local/share/caddy/access.log
         }
       }
 
