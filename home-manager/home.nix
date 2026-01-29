@@ -101,6 +101,11 @@
     enableNushellIntegration = true;
   };
 
+  programs.git = {
+    enable = true;
+    lfs.enable = true;
+  };
+
   programs.home-manager.enable = true;
 
   # Ensure systemd user services are started/restarted on switch
