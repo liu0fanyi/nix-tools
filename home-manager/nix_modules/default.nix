@@ -8,6 +8,7 @@
     ./full.nix
     ./podman.nix
     ./caddy.nix
+    # wayland need newer linux try later
     # ./rustdesk.nix
     # ./niri.nix
   ];

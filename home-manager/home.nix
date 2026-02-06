@@ -1,4 +1,9 @@
-{ config, pkgs, username, ... }:
+{
+  config,
+  pkgs,
+  username,
+  ...
+}:
 {
   imports = [
     ./nix_modules
@@ -52,7 +57,17 @@
     nerd-fonts.bigblue-terminal
     ## X11 终端（VMware 兼容）
     # 使用sakura
+
+    ffmpeg
   ];
+
+  programs.direnv = {
+    enable = true;
+    enableBashIntegration = true; # see note on other shells below
+    nix-direnv.enable = true;
+  };
+
+  programs.bash.enable = true; # see note on other shells below
 
   # foot 终端配置（Wayland 原生，适用于支持 Wayland 的系统）
   programs.foot = {
@@ -79,7 +94,27 @@
   };
 
   # 如果你想让 Nix 管理这些程序的配置，可以使用 programs 选项
-  programs.nushell.enable = true;
+  programs.nushell = {
+    enable = true;
+    extraConfig = ''
+      # 这里放你刚才看到的 direnv hook 代码
+      $env.config = (
+        $env.config | upsert hooks {
+          pre_prompt: [{ ||
+            if (which direnv | is-empty) {
+              return
+            }
+            direnv export json | from json | default {} | load-env
+          }]
+        }
+      )
+    '';
+    extraEnv = ''
+        $env.config.buffer_editor = "hx"
+        $env.EDITOR = "hx"
+      # $env.NAVI_PATH = "/home/liu/nix_config/nix_modules/navi";
+    '';
+  };
   programs.helix.enable = true;
   # zellij 目前在 home-manager 中也有配置项，也可以开启
   programs.zellij = {
