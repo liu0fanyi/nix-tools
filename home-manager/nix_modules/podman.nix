@@ -16,6 +16,11 @@ in
       default = true;
       description = "Enable DDNS-GO service";
     };
+    tag-server.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Enable Tag-Server service";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -103,6 +108,16 @@ in
             };
           };
         };
+        tag-server = lib.mkIf config.features.podman.tag-server.enable {
+          image = "tag-server:latest"; # Local image built from tag-all
+          autoStart = true;
+          ports = [ "127.0.0.1:8081:8081" ];
+          volumes = [
+            "%h/dufs-lan:/data"
+            "%h/dufs-lan:/workspace"
+            "/media/liou:/workspace/media"
+          ];
+        };
       };
     };
 
@@ -160,5 +175,12 @@ in
       [Service]
       Environment="PATH=/usr/bin:/bin:${lib.makeBinPath [ pkgs.podman ]}"
     '';
+
+    home.file.".config/systemd/user/podman-tag-server.service.d/override.conf" = lib.mkIf config.features.podman.tag-server.enable {
+      text = ''
+      [Service]
+      Environment="PATH=/usr/bin:/bin:${lib.makeBinPath [ pkgs.podman ]}"
+      '';
+    };
   };
 }

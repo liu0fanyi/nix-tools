@@ -324,6 +324,10 @@
           auto-format = true;
           language-servers = [ "nil" ];
         }
+        {
+          name = "log";
+          file-types = [ "log" "dump" ];
+        }
       ];
     };
   };

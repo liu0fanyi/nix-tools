@@ -1,4 +1,9 @@
-{ pkgs, config, lib, ... }:
+{
+  pkgs,
+  config,
+  lib,
+  ...
+}:
 
 let
   cfg = config.features.caddy;
@@ -32,6 +37,18 @@ in
           reverse_proxy 127.0.0.1:5007
         }
         # Reject everyone else (Public Internet / IPv6 Global)
+        handle {
+          abort
+        }
+      }
+
+      :8082 {
+        @lan {
+          remote_ip 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8 127.0.0.1/8 ::1
+        }
+        handle @lan {
+          reverse_proxy 127.0.0.1:8081
+        }
         handle {
           abort
         }
