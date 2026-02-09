@@ -21,7 +21,18 @@ in
     home.packages = [ pkgs.caddy ];
 
     xdg.configFile."caddy/Caddyfile".text = ''
-      :5000 {
+      {
+        # 关键修改 1: 禁用 HTTP 到 HTTPS 的自动重定向
+        # 这样 Caddy 就不会去尝试绑定 80 端口了，避免 permission denied
+        auto_https disable_redirects
+
+        # 关键修改 2: 禁止自动安装信任证书
+        # 避免日志里出现 sudo 报错
+        skip_install_trust
+      }
+
+      wttliou.top:8443 {
+        tls internal
         reverse_proxy 127.0.0.1:5005
         log {
           output file ${config.home.homeDirectory}/.local/share/caddy/access.log
