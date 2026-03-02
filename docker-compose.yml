@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   caddy:
     image: caddy:latest
@@ -20,7 +18,7 @@ services:
       - tag-server
 
   dufs:
-    image: sigoden/dufs:latest
+    image: sigoden/dufs
     container_name: dufs
     restart: always
     command: /data --allow-symlink
@@ -30,7 +28,7 @@ services:
       - app_network
 
   tag-server:
-    image: tag-server:latest
+    image: tag-server
     container_name: tag-server
     restart: always
     command: --database /data/tag_all.db --workspace /workspace --addr 0.0.0.0:8081

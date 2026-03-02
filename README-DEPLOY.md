@@ -21,7 +21,7 @@ cd tag-all
 nu redeploy.nu
 
 # 2. 流式传输镜像到服务器
-podman save tag-server:latest | ssh root@remote-server "docker load"
+podman save tag-server | ssh root@remote-server "docker load"
 ```
 
 ## 2. 一键部署 (服务器端)
