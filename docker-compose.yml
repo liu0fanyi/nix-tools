@@ -18,7 +18,7 @@ services:
       - tag-server
 
   dufs:
-    image: sigoden/dufs
+    image: sigoden/dufs:latest
     container_name: dufs
     restart: always
     command: /data --allow-symlink
@@ -28,7 +28,7 @@ services:
       - app_network
 
   tag-server:
-    image: tag-server
+    image: localhost/tag-server:latest
     container_name: tag-server
     restart: always
     command: --database /data/tag_all.db --workspace /workspace --addr 0.0.0.0:8081
