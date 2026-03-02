@@ -59,7 +59,31 @@
     # 使用sakura
 
     ffmpeg
+    devenv
+    # yazi
   ];
+  programs.yazi = {
+    enable = true;
+
+    settings = {
+      plugin = {
+        # 直接让视频预览和预加载统统去执行一个不存在的命令 "noop"
+        # 彻底阻断 ffmpeg 的唤醒，一劳永逸解决卡顿
+        prepend_previewers = [
+          {
+            mime = "video/*";
+            run = "noop";
+          }
+        ];
+        prepend_preloaders = [
+          {
+            mime = "video/*";
+            run = "noop";
+          }
+        ];
+      };
+    };
+  };
 
   programs.direnv = {
     enable = true;

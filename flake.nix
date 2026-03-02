@@ -24,29 +24,49 @@
       pkgs = nixpkgs.legacyPackages.${system};
 
       # 动态生成 home-manager 配置的函数
-      mkHomeConfig = username: isFull: enableDDNS: home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
-        extraSpecialArgs = {
-          inherit username inputs;
+      mkHomeConfig =
+        username: extraModules:
+        home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          extraSpecialArgs = {
+            inherit username inputs;
+          };
+          modules = [
+            ./home-manager/home.nix
+          ]
+          ++ extraModules;
         };
-        modules = [
-          ./home-manager/home.nix
-          { 
-            features.full.enable = isFull; 
-            features.podman.ddns-go.enable = enableDDNS;
-          }
-        ];
-      };
     in
     {
       homeConfigurations = {
         # 使用 mkHomeConfig 生成配置，用户名作为参数
-        "liou" = mkHomeConfig "liou" true true;
-        "liou-no-ddns" = mkHomeConfig "liou" true false;
-        "liou-lite" = mkHomeConfig "liou" false false;
+        # 现在通过传递模块列表来灵活开启功能，比 Boolean 切关更优雅
+        "liou" = mkHomeConfig "liou" [ ./home-manager/nix_modules/ddns-go.nix ];
+        "liou-no-ddns" = mkHomeConfig "liou" [ ];
 
-        # 添加其他用户时只需一行：
-        # "otheruser" = mkHomeConfig "otheruser" true true;
+        # 添加环境时只需一行：
+        # "otheruser" = mkHomeConfig "otheruser" [ ];
+
+        # 生产服务器配置 (剥离所有桌面/GUI 工具，仅保留 Dufs/Tag/Caddy 服务)
+        "production" = home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          extraSpecialArgs = {
+            username = "root"; # 生产环境默认用户
+            inherit inputs;
+          };
+          modules = [
+            # 仅加载服务核心模块，忽略主 home.nix 重型配置
+            ./home-manager/nix_modules/podman-prod.nix
+            ./home-manager/nix_modules/caddy-prod.nix
+            {
+              home.username = "root";
+              home.homeDirectory = "/root";
+              home.stateVersion = "24.05";
+              targets.genericLinux.enable = true;
+              nixpkgs.config.allowUnfree = true;
+            }
+          ];
+        };
       };
     };
 }

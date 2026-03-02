@@ -1,18 +1,18 @@
 # 在 ~/nix-config 目录下执行
-# 用法: nu rerun.nu [用户名] [--full]
-# 示例: nu rerun.nu liou --full=false
-def main [username: string = "liou", --full = true, --ddns = true] {
-    let suffix_lite = if $full { "" } else { "-lite" }
-    let suffix_ddns = if $ddns { "" } else { "-no-ddns" }
-    # Construct target: liou, liou-lite, or liou-no-ddns
-    # Note: liou-lite currently implies no-ddns in flake.nix, but logic accommodates expansion
-    let target = if ($full == false) {
-        $"($username)-lite" 
+# 用法: nu rerun.nu [用户名] [--ddns=true/false] [--prod]
+# 示例: 
+#   nu rerun.nu liou --ddns=false  (局域网开发环境)
+#   nu rerun.nu --prod             (生产环境)
+def main [username: string = "liou", --ddns = true, --prod = false] {
+    # Construct target
+    let target = if ($prod == true) {
+        "production"
     } else if ($ddns == false) {
         $"($username)-no-ddns"
     } else {
         $username
     }
     
+    print $"Deploying target: ($target)"
     nix run nixpkgs#home-manager -- switch --flake $".#($target)" -b backup
 }
