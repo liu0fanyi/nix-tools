@@ -1,8 +1,10 @@
-{
-    email liu_fanyi@hotmail.com
-}
+http://wttliou.top http://www.wttliou.top {
+    # Force HTTPS redirect when behind CDN/Proxy (EdgeOne)
+    @is_http {
+        header X-Forwarded-Proto http
+    }
+    redir @is_http https://{host}{uri}
 
-wttliou.top {
     root * /srv/dist
 
     # 1. API Priority: Requests with ?json MUST go to Dufs

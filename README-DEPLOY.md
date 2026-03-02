@@ -14,13 +14,20 @@ trunk build --release
 rsync -avz dist/ root@remote-server:~/nix-tools/dist/
 ```
 
-### B. 后端镜像 (Tag-server)
-```bash
-cd tag-all
-# 1. 构建本地镜像
-nu redeploy.nu
+### B. 后端镜像 (全部打包传输)
+由于生产服务器（如阿里云）拉取 Docker Hub 极慢或失败，建议在本地拉取后整体传输：
 
-# 2. 流式传输镜像到服务器
+```bash
+# 1. 本地确保镜像存在
+podman pull sigoden/dufs
+podman pull caddy:latest
+
+# 2. 构建 Tag-server
+cd tag-all && nu redeploy.nu
+
+# 3. 流式传输所有镜像到服务器
+podman save sigoden/dufs | ssh root@remote-server "docker load"
+podman save caddy | ssh root@remote-server "docker load"
 podman save tag-server | ssh root@remote-server "docker load"
 ```
 

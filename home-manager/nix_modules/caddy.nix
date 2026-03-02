@@ -65,7 +65,7 @@ in
             not expression {query}.contains('json')
           }
           handle @ui_root {
-            rewrite /index.html
+            rewrite * /index.html
             file_server
           }
 
