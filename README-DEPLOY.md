@@ -30,7 +30,7 @@ podman save tag-server:latest | ssh root@remote-server "podman load"
 
 ```bash
 # 一键激活生产环境配置 (Podman + Caddy)
-nu rerun.nu --prod
+nu rerun.nu production
 ```
 
 ---

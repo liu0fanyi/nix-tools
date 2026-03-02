@@ -1,0 +1,73 @@
+diff --git a/README-DEPLOY.md b/README-DEPLOY.md
+index 009a271..16e7258 100644
+--- a/README-DEPLOY.md
++++ b/README-DEPLOY.md
+@@ -30,7 +30,7 @@ podman save tag-server:latest | ssh root@remote-server "podman load"
+ 
+ ```bash
+ # 一键激活生产环境配置 (Podman + Caddy)
+-nu rerun.nu --prod
++nu rerun.nu production
+ ```
+ 
+ ---
+diff --git a/README.zh-CN.md b/README.zh-CN.md
+index 07c4463..9c1b289 100644
+--- a/README.zh-CN.md
++++ b/README.zh-CN.md
+@@ -33,14 +33,14 @@ curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix
+ 首次运行 `rerun.nu` 脚本，请使用（请将 `liou` 替换为你当前的用户名）：
+ 
+ ```bash
+-# 应用标准配置 (完整版 + ddns-go)
+-nix shell nixpkgs#nushell -c nu ./rerun.nu liou
++# 应用标准配置
++nix shell nixpkgs#nushell -c nu ./rerun.nu
+ 
+-# 应用完整版配置但不启用 ddns-go
+-nix shell nixpkgs#nushell -c nu ./rerun.nu liou --ddns=false
++# 生产环境用
++nix shell nixpkgs#nushell -c nu ./rerun.nu --prod
+ 
+-# 应用轻量级配置 (无 GUI 应用，无 ddns-go)
+-nix shell nixpkgs#nushell -c nu ./rerun.nu liou --full=false
++# 无ddns
++nix shell nixpkgs#nushell -c nu ./rerun.nu liou --ddns=false
+ ```
+ 
+ ## GPU 设置（非 NixOS）
+diff --git a/rerun.nu b/rerun.nu
+index e9153c1..543c3b8 100755
+--- a/rerun.nu
++++ b/rerun.nu
+@@ -1,18 +1,19 @@
+-# 在 ~/nix-config 目录下执行
+-# 用法: nu rerun.nu [用户名] [--ddns=true/false] [--prod]
++# 在 nix-tools 目录下执行
++# 用法: nu rerun.nu [目标/用户名] [--ddns=true/false]
+ # 示例: 
+-#   nu rerun.nu liou --ddns=false  (局域网开发环境)
+-#   nu rerun.nu --prod             (生产环境)
+-def main [username: string = "liou", --ddns = true, --prod = false] {
+-    # Construct target
+-    let target = if ($prod == true) {
++#   nu rerun.nu liou               (部署已开启 DDNS 的 liou 配置)
++#   nu rerun.nu liou --ddns=false  (部署关闭 DDNS 的 liou 配置)
++#   nu rerun.nu production         (直接部署生产环境生产配置)
++def main [target: string = "liou", --ddns = true] {
++    # Determine the actual flake target
++    let flake_target = if ($target == "production") {
+         "production"
+     } else if ($ddns == false) {
+-        $"($username)-no-ddns"
++        $"($target)-no-ddns"
+     } else {
+-        $username
++        $target
+     }
+     
+-    print $"Deploying target: ($target)"
+-    nix run nixpkgs#home-manager -- switch --flake $".#($target)" -b backup
++    print $"Deploying target: ($flake_target)"
++    nix run nixpkgs#home-manager -- switch --flake $".#($flake_target)" -b backup
+ }
