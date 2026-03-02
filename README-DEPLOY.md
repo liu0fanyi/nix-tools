@@ -1,6 +1,6 @@
-# 生产环境部署指南 (精简版)
+# 生产环境部署指南 (Docker Compose 极简版)
 
-采用 **“Caddy 托管静态 UI + Dufs 纯净数据服务”** 的解耦架构，无需在服务器上维护源码。
+不再依赖服务器上的 Nix 环境，仅需安装 `docker` 和 `docker-compose` 即可运行。
 
 ## 1. 本地准备与传输
 
@@ -10,8 +10,8 @@
 cd dufs-plus
 trunk build --release
 
-# 2. 将 dist 目录同步到服务器 (路径必须与 caddy-prod.nix 一致)
-rsync -avz dist/ root@remote-server:~/dufs/dist/
+# 2. 将 dist 目录同步到服务器的 nix-tools/dist
+rsync -avz dist/ root@remote-server:~/nix-tools/dist/
 ```
 
 ### B. 后端镜像 (Tag-server)
@@ -21,21 +21,29 @@ cd tag-all
 nu redeploy.nu
 
 # 2. 流式传输镜像到服务器
-podman save tag-server:latest | ssh root@remote-server "podman load"
+podman save tag-server:latest | ssh root@remote-server "docker load"
 ```
 
-## 2. 应用配置 (服务器端)
+## 2. 一键部署 (服务器端)
 
 在服务器的 `nix-tools` 目录下运行：
 
 ```bash
-# 一键激活生产环境配置 (Podman + Caddy)
-nu rerun.nu production
+# 启动所有服务 (Caddy + Dufs + Tag-server)
+docker compose up -d
 ```
 
 ---
 
-### 💡 备注
-- **Dufs**: 使用官方 `sigoden/dufs` 镜像，由 Nix 自动从 Registry 拉取。
-- **存储路径**: 默认所有数据存放在 `~/dufs/`，静态 UI 存放在 `~/dufs/dist/`。
-- **域名修改**: 若更换域名，请编辑 `home-manager/nix_modules/caddy-prod.nix`。
+### 📂 目录结构说明
+部署完成后，服务器上的 `nix-tools` 目录结构应如下：
+- `docker-compose.yml` (容器编排)
+- `Caddyfile.prod` (Caddy 配置)
+- `dist/` (前端静态文件)
+- `dufs_data/` (Dufs 存储路径)
+- `tag-db/` (标签数据库存放路径)
+
+### 💡 优势
+- **极致轻量**：服务器不再下载数百 MB 的 Nix 运行时（如 glibc、Podman 依赖）。
+- **环境隔离**：所有依赖（Caddy, Dufs, Tag-server）均在镜像内部，互不干扰。
+- **配置一致**：Caddyfile 已针对容器网络调优，支持 API 优先转发。

@@ -1,0 +1,43 @@
+{
+    email liu_fanyi@hotmail.com
+}
+
+wttliou.top {
+    root * /srv/dist
+
+    # 1. API Priority: Requests with ?json MUST go to Dufs
+    @api {
+        expression {query}.contains('json')
+    }
+    handle @api {
+        reverse_proxy dufs:5000
+    }
+
+    # 2. Tag API: Proxy to Tag-Server
+    handle_path /tag-api/* {
+        reverse_proxy tag-server:8081
+    }
+
+    # 3. UI Entry: Exact root path without ?json
+    @ui_root {
+        path /
+        not expression {query}.contains('json')
+    }
+    handle @ui_root {
+        rewrite /index.html
+        file_server
+    }
+
+    # 4. Static Assets: Files that exist in /srv/dist
+    @static {
+        file
+    }
+    handle @static {
+        file_server
+    }
+
+    # 5. Fallback: Everything else (nested API, file downloads) to Dufs
+    handle {
+        reverse_proxy dufs:5000
+    }
+}
