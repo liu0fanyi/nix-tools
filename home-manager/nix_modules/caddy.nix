@@ -45,7 +45,10 @@ in
           remote_ip 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8 127.0.0.1/8 ::1
         }
         handle @lan {
-          basicauth {
+          @not_options {
+            not method OPTIONS
+          }
+          basicauth @not_options {
             admin $2a$14$jQ8iy6ybRwnQVDxCFAxEO.VoyPMR7GZVbYgyjcimvUMU1lePXP7NK
           }
           
@@ -61,6 +64,7 @@ in
 
           # 2. UI Entry: Exact root path without ?json
           @ui_root {
+            method GET HEAD
             path /
             not expression {query}.contains('json')
           }
@@ -71,6 +75,7 @@ in
 
           # 3. Static Assets: Files that exist in dist/
           @static {
+            method GET HEAD
             file
           }
           handle @static {

@@ -46,27 +46,6 @@
 
         # 添加环境时只需一行：
         # "otheruser" = mkHomeConfig "otheruser" [ ];
-
-        # 生产服务器配置 (剥离所有桌面/GUI 工具，仅保留 Dufs/Tag/Caddy 服务)
-        "production" = home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
-          extraSpecialArgs = {
-            username = "root"; # 生产环境默认用户
-            inherit inputs;
-          };
-          modules = [
-            # 仅加载服务核心模块，忽略主 home.nix 重型配置
-            ./home-manager/nix_modules/podman-prod.nix
-            ./home-manager/nix_modules/caddy-prod.nix
-            {
-              home.username = "root";
-              home.homeDirectory = "/root";
-              home.stateVersion = "24.05";
-              targets.genericLinux.enable = true;
-              nixpkgs.config.allowUnfree = true;
-            }
-          ];
-        };
       };
     };
 }

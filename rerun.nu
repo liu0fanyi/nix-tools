@@ -3,12 +3,9 @@
 # 示例: 
 #   nu rerun.nu liou               (部署已开启 DDNS 的 liou 配置)
 #   nu rerun.nu liou --ddns=false  (部署关闭 DDNS 的 liou 配置)
-#   nu rerun.nu production         (直接部署生产环境生产配置)
 def main [target: string = "liou", --ddns = true] {
     # Determine the actual flake target
-    let flake_target = if ($target == "production") {
-        "production"
-    } else if ($ddns == false) {
+    let flake_target = if ($ddns == false) {
         $"($target)-no-ddns"
     } else {
         $target
