@@ -22,6 +22,11 @@ in
 
     xdg.configFile."caddy/Caddyfile".text = ''
       {
+        # Global trusted proxies for LAN, loopback, and EdgeOne CDN
+        servers {
+          trusted_proxies static private_ranges 2408:873d::/32 2408:874c::/32
+        }
+
         # 关键修改 1: 禁用 HTTP 到 HTTPS 的自动重定向
         # 这样 Caddy 就不会去尝试绑定 80 端口了，避免 permission denied
         auto_https disable_redirects
@@ -100,12 +105,34 @@ in
 
       https://nas.wttliou.top:5009, https://home.wttliou.top:5009, https://localhost:5009, https://127.0.0.1:5009 {
         tls internal
-        
+
+        # Redirect origin domain to CDN domain
+        @origin_host host home.wttliou.top
+        redir @origin_host https://nas.wttliou.top{uri} permanent
+
+        # Authelia portal and verify endpoint
+        handle /authelia/* {
+          reverse_proxy 127.0.0.1:9091 {
+            header_up X-Real-IP {client_ip}
+            header_up X-Forwarded-Proto {scheme}
+            header_up X-Forwarded-Host {host}
+            header_up X-Forwarded-For {client_ip}
+          }
+        }
+
+        # All other routes: require Authelia authentication
         @not_options {
           not method OPTIONS
+          not path /authelia/*
         }
-        basic_auth @not_options {
-          admin $2a$14$jQ8iy6ybRwnQVDxCFAxEO.VoyPMR7GZVbYgyjcimvUMU1lePXP7NK
+        forward_auth @not_options 127.0.0.1:9091 {
+          uri /authelia/api/authz/forward-auth?authelia_url=https://nas.wttliou.top/authelia/
+          header_up X-Forwarded-Method {method}
+          header_up X-Forwarded-Proto {scheme}
+          header_up X-Forwarded-Host {host}
+          header_up X-Forwarded-Uri {uri}
+          header_up X-Forwarded-For {client_ip}
+          copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
         }
         
         root * /home/liou/dufs-lan/dist
@@ -118,7 +145,7 @@ in
           reverse_proxy 127.0.0.1:5007
         }
 
-        # [NEW] Route tag-api to tag-server
+        # Route tag-api to tag-server
         handle_path /tag-api/* {
           reverse_proxy 127.0.0.1:8081
         }
