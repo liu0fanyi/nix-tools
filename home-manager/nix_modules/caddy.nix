@@ -36,9 +36,22 @@ in
         skip_install_trust
       }
 
-      http://:5008 {
-        # tls internal
+      https://work.wttliou.top:5008, https://workcdn.wttliou.top:5008 {
+        tls internal
+
+        # Map base URL based on host to handle accelerated vs direct access
+        map {host} {base_url} {
+            workcdn.wttliou.top  workcdn.wttliou.top
+            default              {host}
+        }
+
+        # Redirect origin domain to CDN domain (stripping port for acceleration)
+        @origin_host host work.wttliou.top
+        redir @origin_host https://workcdn.wttliou.top{uri} permanent
+
+        # Proxy to the read-only dufs container (no authentication)
         reverse_proxy 127.0.0.1:5005
+
         log {
           output file ${config.home.homeDirectory}/.local/share/caddy/access.log
         }

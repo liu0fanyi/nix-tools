@@ -45,20 +45,6 @@ in
     services.podman = {
       enable = true;
       containers = {
-
-        # rustfs = {
-        #   image = "docker.io/rustfs/rustfs:latest";
-        #   autoStart = true;
-        #   autoUpdate = "registry";
-        #   ports = [
-        #     "9000:9000"
-        #     "9001:9001"
-        #   ];
-        #   volumes = [
-        #     "%h/rustfs/data:/data:U"
-        #     "%h/rustfs/logs:/logs:U"
-        #   ];
-        # };
         dufs = {
           image = "docker.io/sigoden/dufs";
           autoStart = true;
@@ -68,7 +54,6 @@ in
           # Mounts the host directory %h/dufs (where %h is home directory) to /data inside the container.
           # To change the host directory, modify the part before the colon: "/path/to/your/files:/data"
           volumes = [ "%h/dufs:/data" ];
-          # command = [ "/data" "-A" ];
           # SECURITY: Enable authentication (-a) with admin user
           extraConfig = {
             Container = {
