@@ -61,6 +61,7 @@
     ffmpeg
     devenv
     # yazi
+    bottom
   ];
   programs.yazi = {
     enable = true;

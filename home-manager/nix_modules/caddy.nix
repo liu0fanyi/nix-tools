@@ -106,7 +106,13 @@ in
       https://nas.wttliou.top:5009, https://home.wttliou.top:5009, https://localhost:5009, https://127.0.0.1:5009 {
         tls internal
 
-        # Redirect origin domain to CDN domain
+        # Map base URL based on host to handle accelerated vs direct access
+        map {host} {base_url} {
+            nas.wttliou.top  nas.wttliou.top
+            default          {host}
+        }
+
+        # Redirect origin domain to CDN domain (stripping port for acceleration)
         @origin_host host home.wttliou.top
         redir @origin_host https://nas.wttliou.top{uri} permanent
 
@@ -126,13 +132,23 @@ in
           not path /authelia/*
         }
         forward_auth @not_options 127.0.0.1:9091 {
-          uri /authelia/api/authz/forward-auth?authelia_url=https://nas.wttliou.top/authelia/
+          uri /authelia/api/authz/forward-auth?authelia_url=https://{base_url}/authelia/
           header_up X-Forwarded-Method {method}
           header_up X-Forwarded-Proto {scheme}
           header_up X-Forwarded-Host {host}
           header_up X-Forwarded-Uri {uri}
           header_up X-Forwarded-For {client_ip}
           copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
+        }
+
+        # Catch 401 and redirect to Authelia portal with return URL
+        handle_errors {
+          @401 {
+            expression {err.status_code} == 401
+          }
+          handle @401 {
+            redir https://{base_url}/authelia/?rd={scheme}://{host}{uri}
+          }
         }
         
         root * /home/liou/dufs-lan/dist

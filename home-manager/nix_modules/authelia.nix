@@ -79,6 +79,7 @@ session:
   cookies:
     - domain: wttliou.top
       authelia_url: https://nas.wttliou.top/authelia/
+      default_redirection_url: https://nas.wttliou.top/
 
 # Persistent storage (SQLite)
 storage:
