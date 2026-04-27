@@ -106,6 +106,17 @@ in
           }
 
           # 5. Web Terminal
+          @terminal_ws {
+            path /terminal/ws /terminal/ws/*
+          }
+          handle @terminal_ws {
+            uri strip_prefix /terminal
+            reverse_proxy 127.0.0.1:7681 {
+              header_up Connection "Upgrade"
+              header_up Upgrade "websocket"
+            }
+          }
+
           @terminal {
             path /terminal /terminal/ /terminal/*
           }
@@ -189,6 +200,17 @@ in
         }
 
         # Route terminal to ttyd
+        @terminal_ws {
+          path /terminal/ws /terminal/ws/*
+        }
+        handle @terminal_ws {
+          uri strip_prefix /terminal
+          reverse_proxy 127.0.0.1:7681 {
+            header_up Connection "Upgrade"
+            header_up Upgrade "websocket"
+          }
+        }
+
         @terminal {
           path /terminal /terminal/ /terminal/*
         }

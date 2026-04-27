@@ -148,6 +148,13 @@
       )
     '';
     extraEnv = ''
+      $env.NVM_DIR = ($env.HOME | path join ".nvm")
+      $env.BUN_INSTALL = ($env.HOME | path join ".bun")
+      $env.PATH = (
+        $env.PATH
+        | prepend ($env.BUN_INSTALL | path join "bin")
+        | prepend ($env.NVM_DIR | path join "versions" "node" "v24.15.0" "bin")
+      )
         $env.config.buffer_editor = "hx"
         $env.EDITOR = "hx"
       # $env.NAVI_PATH = "/home/liu/nix_config/nix_modules/navi";
