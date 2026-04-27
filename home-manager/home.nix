@@ -62,6 +62,7 @@
     devenv
     # yazi
     bottom
+    # codex
   ];
   programs.yazi = {
     enable = true;
@@ -92,7 +93,19 @@
     nix-direnv.enable = true;
   };
 
-  programs.bash.enable = true; # see note on other shells below
+  programs.bash = {
+    enable = true;
+    initExtra = ''
+      # nvm
+      export NVM_DIR="$HOME/.nvm"
+      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+      [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+      # bun
+      export BUN_INSTALL="$HOME/.bun"
+      export PATH="$BUN_INSTALL/bin:$PATH"
+    '';
+  };
 
   # foot 终端配置（Wayland 原生，适用于支持 Wayland 的系统）
   programs.foot = {

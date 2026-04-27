@@ -31,6 +31,7 @@ in
       buildah
       slirp4netns
       fuse-overlayfs
+      ttyd
     ];
 
     home.activation.createPodmanVolumes = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
@@ -70,7 +71,7 @@ in
           ports = [ "127.0.0.1:5007:5000" ];
           volumes = [
             "%h/dufs-lan:/data"
-            "/media/liou:/data/media"
+            "/media/liou:/data/media:z,rslave"
           ];
           extraConfig = {
             Container = {
@@ -85,8 +86,13 @@ in
           volumes = [
             "%h/dufs-lan:/data"
             "%h/dufs-lan:/workspace"
-            "/media/liou:/workspace/media"
+            "/media/liou:/workspace/media:z,rslave"
           ];
+          extraConfig = {
+            Container = {
+              EnvironmentFile = "/home/liou/tag_secrets.env";
+            };
+          };
         };
       };
     };
@@ -117,6 +123,27 @@ in
       };
     };
 
+    systemd.user.services.ttyd = {
+      Unit = {
+        Description = "ttyd web terminal";
+        After = [ "network.target" ];
+      };
+      Service = {
+        WorkingDirectory = "%h/dufs-lan/project";
+        Environment = [
+          "HOME=%h"
+          "SHELL=${pkgs.bashInteractive}/bin/bash"
+          "PATH=%h/.nix-profile/bin:/etc/profiles/per-user/liou/bin:/run/current-system/sw/bin:/usr/bin:/bin"
+        ];
+        ExecStart = "${pkgs.ttyd}/bin/ttyd -p 7681 -i 127.0.0.1 -W -w %h/dufs-lan/project ${pkgs.zellij}/bin/zellij attach -c web-dev";
+        Restart = "on-failure";
+        RestartSec = "2s";
+      };
+      Install = {
+        WantedBy = [ "default.target" ];
+      };
+    };
+
     # home.file.".config/systemd/user/podman-rustfs.service.d/override.conf".text = ''
     #   [Service]
     #   Environment="PATH=/usr/bin:/bin:${lib.makeBinPath [ pkgs.podman ]}"
@@ -140,5 +167,6 @@ in
             Environment="PATH=/usr/bin:/bin:${lib.makeBinPath [ pkgs.podman ]}"
           '';
         };
+
   };
 }

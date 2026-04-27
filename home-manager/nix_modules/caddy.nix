@@ -105,7 +105,16 @@ in
             reverse_proxy 127.0.0.1:8081
           }
 
-          # 5. Fallback: Everything else (nested API, file downloads) to Dufs
+          # 5. Web Terminal
+          @terminal {
+            path /terminal /terminal/ /terminal/*
+          }
+          handle @terminal {
+            uri strip_prefix /terminal
+            reverse_proxy 127.0.0.1:7681
+          }
+
+          # 6. Fallback: Everything else (nested API, file downloads) to Dufs
           handle {
             reverse_proxy 127.0.0.1:5007
           }
@@ -177,6 +186,15 @@ in
         # Route tag-api to tag-server
         handle_path /tag-api/* {
           reverse_proxy 127.0.0.1:8081
+        }
+
+        # Route terminal to ttyd
+        @terminal {
+          path /terminal /terminal/ /terminal/*
+        }
+        handle @terminal {
+          uri strip_prefix /terminal
+          reverse_proxy 127.0.0.1:7681
         }
 
         # 2. UI Entry: Exact root path without ?json
