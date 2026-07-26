@@ -10,9 +10,6 @@
         };
         size = 14;
       };
-      terminal.shell = {
-        program = "zellij";
-      };
       window = {
         decorations = "None";
       };

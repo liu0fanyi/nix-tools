@@ -146,7 +146,7 @@ in
           "SHELL=${pkgs.bashInteractive}/bin/bash"
           "PATH=%h/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/etc/profiles/per-user/liou/bin:/run/current-system/sw/bin:/usr/bin:/bin"
         ];
-        ExecStart = "${pkgs.ttyd}/bin/ttyd -p 7681 -i 127.0.0.1 -W -w %h/dufs-lan/project ${pkgs.zellij}/bin/zellij attach -c web-dev";
+        ExecStart = "${pkgs.ttyd}/bin/ttyd -p 7681 -i 127.0.0.1 -W -w %h/dufs-lan/project ${pkgs.zellij}/bin/zellij attach -c web-dev options --mouse-mode false";
         Restart = "on-failure";
         RestartSec = "2s";
       };
