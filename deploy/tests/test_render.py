@@ -32,7 +32,7 @@ class RenderTests(unittest.TestCase):
             (secrets / name).write_text(value, encoding="utf-8")
             (secrets / name).chmod(0o600)
 
-        text = (DEPLOY_DIR / "instance.toml").read_text(encoding="utf-8")
+        text = (DEPLOY_DIR / "instances/home.toml").read_text(encoding="utf-8")
         text = text.replace(
             'secrets = "/home/liou/dufs-lan/project/nix-tools/deploy/secrets"',
             f'secrets = "{secrets}"',
@@ -58,6 +58,7 @@ class RenderTests(unittest.TestCase):
         self.assertIn("work.wttliou.top:5008", caddy)
         self.assertIn("compose.ddns.yaml", files)
         self.assertIn("compose.readonly.yaml", files)
+        self.assertIn("compose.authelia.yaml", files)
         self.assertIn("unix//run/host-ttyd/ttyd.sock", caddy)
         instance = (output / "compose.instance.yaml").read_text(encoding="utf-8")
         self.assertIn("/run/host-ttyd:ro", instance)
@@ -75,6 +76,34 @@ class RenderTests(unittest.TestCase):
         self.assertIn("compose.vps-direct.yaml", files)
         self.assertNotIn("unix//run/host-ttyd/ttyd.sock", caddy)
         self.assertFalse((output / "ttyd-compose.service").exists())
+
+    def test_aliyun_edgeone_profile(self) -> None:
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        root = Path(temp.name)
+        config = root / "aliyun.toml"
+        config.write_text(
+            (DEPLOY_DIR / "instances" / "aliyun.toml").read_text(
+                encoding="utf-8"
+            ),
+            encoding="utf-8",
+        )
+        output = root / "generated"
+        render.render(config, output)
+
+        caddy = (output / "Caddyfile").read_text(encoding="utf-8")
+        files = (output / "compose-files.txt").read_text(encoding="utf-8")
+        instance = (output / "compose.instance.yaml").read_text(encoding="utf-8")
+        manifest = (output / "manifest.json").read_text(encoding="utf-8")
+        self.assertIn("http://wttliou.top, http://www.wttliou.top", caddy)
+        self.assertIn("X-Forwarded-Proto http", caddy)
+        self.assertNotIn("authelia", caddy)
+        self.assertIn("compose.aliyun-edgeone-http.yaml", files)
+        self.assertNotIn("compose.authelia.yaml", files)
+        self.assertNotIn("compose.ddns.yaml", files)
+        self.assertIn('"/root/nix-tools/dufs_data:/data"', instance)
+        self.assertIn('"/root/nix-tools/tag-db:/data"', instance)
+        self.assertIn('"engine": "docker"', manifest)
 
 
 if __name__ == "__main__":

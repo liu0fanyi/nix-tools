@@ -13,6 +13,7 @@ import time
 from pathlib import Path
 
 import render as renderer
+from isolated_test_helpers import replace_key
 
 
 DEPLOY_DIR = Path(__file__).resolve().parents[1]
@@ -26,23 +27,6 @@ def sqlite_backup(source: Path, destination: Path) -> None:
     finally:
         dst.close()
         src.close()
-
-
-def replace_key(text: str, section: str, key: str, value: str) -> str:
-    lines = text.splitlines()
-    current = ""
-    replaced = False
-    for index, line in enumerate(lines):
-        stripped = line.strip()
-        if stripped.startswith("[") and stripped.endswith("]"):
-            current = stripped[1:-1]
-        elif current == section and stripped.startswith(f"{key} ="):
-            lines[index] = f"{key} = {value}"
-            replaced = True
-            break
-    if not replaced:
-        raise RuntimeError(f"unable to replace [{section}].{key} in instance config")
-    return "\n".join(lines) + "\n"
 
 
 def compose_argv(output: Path, action: list[str]) -> list[str]:
@@ -87,7 +71,7 @@ def curl_status(url: str, resolve: str | None = None) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--config", type=Path, default=DEPLOY_DIR / "instance.toml"
+        "--config", type=Path, default=DEPLOY_DIR / "instances/home.toml"
     )
     parser.add_argument("--keep", action="store_true")
     args = parser.parse_args()
@@ -124,6 +108,7 @@ def main() -> int:
         text = replace_key(text, "features", "ddns", "false")
         text = replace_key(text, "features", "terminal", "false")
         text = replace_key(text, "paths", "workspace", f'"{workspace}"')
+        text = replace_key(text, "paths", "tag_data", f'"{workspace}"')
         text = replace_key(text, "paths", "readonly", f'"{readonly}"')
         text = replace_key(text, "paths", "media", '""')
         text = replace_key(text, "paths", "authelia_data", f'"{authelia_data}"')

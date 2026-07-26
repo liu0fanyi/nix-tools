@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Operational commands for the generated Podman deployment."""
+"""Operational commands for the generated Docker or Podman deployment."""
 
 from __future__ import annotations
 
@@ -25,8 +25,8 @@ import render as renderer
 
 
 DEPLOY_DIR = Path(__file__).resolve().parents[1]
-DEFAULT_CONFIG = DEPLOY_DIR / "instance.toml"
-DEFAULT_OUTPUT = DEPLOY_DIR / ".generated"
+DEFAULT_CONFIG = DEPLOY_DIR / "instances/home.toml"
+DEFAULT_OUTPUT = DEPLOY_DIR / ".generated/home"
 
 
 def load_config(path: Path) -> dict[str, Any]:
@@ -47,8 +47,12 @@ def compose_argv(output: Path, action: list[str]) -> list[str]:
         for line in files_path.read_text(encoding="utf-8").splitlines()
         if line.strip()
     ]
+    manifest = json.loads(
+        (output / "manifest.json").read_text(encoding="utf-8")
+    )
+    engine = manifest["engine"]
     argv = [
-        "podman",
+        engine,
         "compose",
         "--env-file",
         str(output / "compose.env"),
@@ -67,6 +71,7 @@ def preflight(config_path: Path, output: Path, cutover: bool) -> int:
     config = ensure_rendered(config_path, output)
     paths = renderer.table(config, "paths")
     features = renderer.table(config, "features")
+    engine = renderer.table(config, "runtime")["engine"]
     profile = renderer.table(config, "deployment")["profile"]
     errors: list[str] = []
     warnings: list[str] = []
@@ -76,11 +81,13 @@ def preflight(config_path: Path, output: Path, cutover: bool) -> int:
 
     required_dirs = [
         "workspace",
+        "tag_data",
         "dist",
-        "authelia_data",
         "caddy_data",
-        "secrets",
+        "caddy_config",
     ]
+    if features["authelia"]:
+        required_dirs.extend(["authelia_data", "secrets"])
     if features["readonly"]:
         required_dirs.append("readonly")
     if profile == "home-ipv6-cdn":
@@ -96,10 +103,11 @@ def preflight(config_path: Path, output: Path, cutover: bool) -> int:
             errors.append(f"[paths].{key} is not a directory: {path}")
 
     expected_files = [
-        Path(paths["workspace"]) / "tag_all.db",
+        Path(paths["tag_data"]) / "tag_all.db",
         Path(paths["dist"]) / "index.html",
-        Path(paths["authelia_data"]) / "db.sqlite3",
     ]
+    if features["authelia"]:
+        expected_files.append(Path(paths["authelia_data"]) / "db.sqlite3")
     if profile == "home-ipv6-cdn":
         expected_files.append(
             Path(paths["ddns_config"]) / ".ddns_go_config.yaml"
@@ -117,9 +125,21 @@ def preflight(config_path: Path, output: Path, cutover: bool) -> int:
                 if not mode_is_private(path):
                     errors.append(f"secret file mode must be 0600 or stricter: {path}")
 
-    for command in ("podman", "podman-compose", "curl"):
+    commands = ["curl", engine]
+    if engine == "podman":
+        commands.append("podman-compose")
+    for command in commands:
         if shutil.which(command) is None:
             errors.append(f"required command not found: {command}")
+    if engine == "docker" and shutil.which("docker") is not None:
+        result = subprocess.run(
+            ["docker", "compose", "version"],
+            check=False,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        if result.returncode != 0:
+            errors.append("Docker Compose plugin is not available")
 
     if features["terminal"]:
         expected_socket_dir = Path(f"/run/user/{os.getuid()}/ttyd")
@@ -140,7 +160,7 @@ def preflight(config_path: Path, output: Path, cutover: bool) -> int:
         if image.endswith(":latest"):
             warnings.append(f"[images].{name} is not version pinned: {image}")
 
-    db_path = Path(paths["workspace"]) / "tag_all.db"
+    db_path = Path(paths["tag_data"]) / "tag_all.db"
     if db_path.is_file():
         try:
             connection = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
@@ -152,7 +172,7 @@ def preflight(config_path: Path, output: Path, cutover: bool) -> int:
             errors.append(f"unable to check Tag SQLite: {error}")
 
     authelia_db = Path(paths["authelia_data"]) / "db.sqlite3"
-    if authelia_db.is_file():
+    if features["authelia"] and authelia_db.is_file():
         try:
             connection = sqlite3.connect(f"file:{authelia_db}?mode=ro", uri=True)
             result = connection.execute("PRAGMA quick_check").fetchone()
@@ -162,7 +182,7 @@ def preflight(config_path: Path, output: Path, cutover: bool) -> int:
         except sqlite3.Error as error:
             errors.append(f"unable to check Authelia SQLite: {error}")
 
-    if cutover:
+    if cutover and engine == "podman":
         units = [
             "caddy.service",
             "podman-dufs.service",
@@ -223,10 +243,12 @@ def backup(config_path: Path, output: Path, destination_root: Path) -> int:
     destination.mkdir(parents=True, mode=0o700)
     destination.chmod(0o700)
 
-    tag_db = Path(paths["workspace"]) / "tag_all.db"
-    authelia_db = Path(paths["authelia_data"]) / "db.sqlite3"
+    features = renderer.table(config, "features")
+    tag_db = Path(paths["tag_data"]) / "tag_all.db"
     sqlite_backup(tag_db, destination / "tag_all.db")
-    sqlite_backup(authelia_db, destination / "authelia.db.sqlite3")
+    if features["authelia"]:
+        authelia_db = Path(paths["authelia_data"]) / "db.sqlite3"
+        sqlite_backup(authelia_db, destination / "authelia.db.sqlite3")
 
     sidecar_archive = destination / "sidecars.tar.gz"
     with tarfile.open(sidecar_archive, "w:gz") as archive:
@@ -238,15 +260,17 @@ def backup(config_path: Path, output: Path, destination_root: Path) -> int:
 
     shutil.copy2(config_path, destination / "instance.toml")
     (destination / "instance.toml").chmod(0o600)
-    shutil.copytree(
-        Path(paths["secrets"]),
-        destination / "secrets",
-        ignore=shutil.ignore_patterns("README.md", ".gitignore"),
-    )
-    for path in (destination / "secrets").rglob("*"):
-        if path.is_file():
-            path.chmod(0o600)
-    (destination / "secrets").chmod(0o700)
+    secret_source = Path(paths["secrets"])
+    if secret_source.is_dir():
+        shutil.copytree(
+            secret_source,
+            destination / "secrets",
+            ignore=shutil.ignore_patterns("README.md", ".gitignore"),
+        )
+        for path in (destination / "secrets").rglob("*"):
+            if path.is_file():
+                path.chmod(0o600)
+        (destination / "secrets").chmod(0o700)
 
     ddns_file = Path(paths["ddns_config"]) / ".ddns_go_config.yaml"
     if ddns_file.is_file():
@@ -329,16 +353,24 @@ def request_status(
 
 
 def smoke(
+    config: dict[str, Any],
     base_url: str,
     host_header: str | None = None,
     resolve_address: str | None = None,
     wait_seconds: int = 0,
 ) -> int:
     base = base_url.rstrip("/")
-    checks = [
-        ("/", {200, 302, 401}),
-        ("/authelia/", {200, 302}),
-    ]
+    features = renderer.table(config, "features")
+    checks = [("/", {200, 302, 401})]
+    if features["authelia"]:
+        checks.append(("/authelia/", {200, 302}))
+    else:
+        checks.extend(
+            [
+                ("/?json", {200}),
+                ("/tag-api/tags", {200}),
+            ]
+        )
     deadline = time.monotonic() + wait_seconds
     last_error: Exception | None = None
     last_results: list[tuple[str, int, str, set[int]]] = []
@@ -394,6 +426,18 @@ def main() -> int:
     logs_parser.add_argument("--follow", action="store_true")
     up_parser = subparsers.add_parser("up")
     up_parser.add_argument("--confirm-cutover", action="store_true")
+    recreate_parser = subparsers.add_parser("recreate")
+    recreate_parser.add_argument(
+        "service",
+        choices=(
+            "caddy",
+            "dufs",
+            "tag-server",
+            "authelia",
+            "dufs-readonly",
+            "ddns-go",
+        ),
+    )
     subparsers.add_parser("down")
     backup_parser = subparsers.add_parser("backup")
     backup_parser.add_argument(
@@ -415,14 +459,16 @@ def main() -> int:
         if args.command == "backup":
             return backup(args.config, args.output, args.destination)
         if args.command == "smoke":
+            config = load_config(args.config)
             return smoke(
+                config,
                 args.base_url,
                 args.host_header,
                 args.resolve_address,
                 args.wait_seconds,
             )
 
-        ensure_rendered(args.config, args.output)
+        config = ensure_rendered(args.config, args.output)
         if args.command == "config":
             action = ["config"]
         elif args.command == "ps":
@@ -441,6 +487,19 @@ def main() -> int:
             if preflight(args.config, args.output, cutover=True) != 0:
                 return 1
             action = ["up", "-d"]
+            # podman-compose 1.6 may remove dependency containers before
+            # recreating their dependants and then wait forever. Docker
+            # Compose has reliable orphan cleanup.
+            if renderer.table(config, "runtime")["engine"] == "docker":
+                action.append("--remove-orphans")
+        elif args.command == "recreate":
+            action = [
+                "up",
+                "-d",
+                "--no-deps",
+                "--force-recreate",
+                args.service,
+            ]
         else:
             raise RuntimeError(f"unsupported command: {args.command}")
         return subprocess.run(compose_argv(args.output, action), check=False).returncode

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render the Podman deployment from one instance.toml file."""
+"""Render the shared Docker/Podman deployment from one instance TOML file."""
 
 from __future__ import annotations
 
@@ -16,11 +16,19 @@ from typing import Any
 
 
 HOST_RE = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?$")
-PROFILES = {"home-ipv6-cdn", "vps-direct"}
+PROFILES = {"home-ipv6-cdn", "vps-direct", "aliyun-edgeone-http"}
+ENGINES = {"podman", "docker"}
 
 
 class ConfigError(Exception):
     pass
+
+
+def is_file(path: Path) -> bool:
+    try:
+        return path.is_file()
+    except OSError:
+        return False
 
 
 def table(config: dict[str, Any], name: str) -> dict[str, Any]:
@@ -53,21 +61,39 @@ def validate(config: dict[str, Any]) -> None:
     if profile not in PROFILES:
         raise ConfigError(f"unsupported profile: {profile}")
 
+    runtime = table(config, "runtime")
+    engine = required_string(runtime, "engine", "runtime")
+    if engine not in ENGINES:
+        raise ConfigError(f"unsupported container engine: {engine}")
+
     domains = table(config, "domains")
     for key in ("public", "origin", "readonly_public", "readonly_origin"):
         value = required_string(domains, key, "domains")
         if not HOST_RE.fullmatch(value):
             raise ConfigError(f"[domains].{key} is not a valid hostname")
+    aliases = domains.get("aliases", [])
+    if not isinstance(aliases, list) or not all(
+        isinstance(alias, str) and HOST_RE.fullmatch(alias) for alias in aliases
+    ):
+        raise ConfigError("[domains].aliases must be an array of hostnames")
 
     features = table(config, "features")
-    for key in ("readonly", "terminal", "ddns"):
+    for key in ("authelia", "readonly", "terminal", "ddns"):
         if not isinstance(features.get(key), bool):
             raise ConfigError(f"[features].{key} must be true or false")
-    if profile == "vps-direct" and features["ddns"]:
-        raise ConfigError("vps-direct requires [features].ddns = false")
+    if profile in {"vps-direct", "aliyun-edgeone-http"} and features["ddns"]:
+        raise ConfigError(f"{profile} requires [features].ddns = false")
+    if profile == "aliyun-edgeone-http" and any(
+        features[key] for key in ("authelia", "readonly", "terminal", "ddns")
+    ):
+        raise ConfigError(
+            "aliyun-edgeone-http is a minimal Caddy/DUFS/Tag Server profile"
+        )
     paths = table(config, "paths")
     for key in (
+        "host_home",
         "workspace",
+        "tag_data",
         "readonly",
         "dist",
         "authelia_data",
@@ -148,7 +174,7 @@ root * /srv/dist
     expression {{query}}.contains('json')
 }}
 handle @dufs_api {{
-    reverse_proxy dufs-lan:5000
+    reverse_proxy dufs:5000
 }}
 
 handle_path /tag-api/* {{
@@ -175,7 +201,7 @@ handle @static {{
 }}
 
 handle {{
-    reverse_proxy dufs-lan:5000
+    reverse_proxy dufs:5000
 }}
 """.strip()
 
@@ -237,14 +263,14 @@ def render_caddy(config: dict[str, Any], lan_auth: tuple[str, str]) -> str:
     )
 
     routes = app_routes(features["terminal"])
-    auth = auth_routes(domains["public"])
+    auth = auth_routes(domains["public"]) if features["authelia"] else ""
 
     if profile == "vps-direct":
+        auth_block = f"{textwrap.indent(auth, '    ')}\n\n" if auth else ""
         sites = [
             f"""
 {domains["public"]} {{
-{textwrap.indent(auth, "    ")}
-
+{auth_block}
 {textwrap.indent(routes, "    ")}
 }}
 """
@@ -259,6 +285,24 @@ def render_caddy(config: dict[str, Any], lan_auth: tuple[str, str]) -> str:
             )
         return global_options + "\n".join(sites)
 
+    if profile == "aliyun-edgeone-http":
+        hosts = [domains["public"], *domains.get("aliases", [])]
+        addresses = ", ".join(f"http://{host}" for host in hosts)
+        return (
+            global_options
+            + f"""
+{addresses} {{
+    # EdgeOne terminates client TLS and currently connects to this origin over HTTP.
+    # Only redirect when the CDN explicitly reports an HTTP client request; this
+    # avoids a redirect loop for HTTPS clients using an HTTP origin connection.
+    @edgeone_client_http header X-Forwarded-Proto http
+    redir @edgeone_client_http https://{{host}}{{uri}}
+
+{textwrap.indent(routes, "    ")}
+}}
+"""
+        )
+
     username, password_hash = lan_auth
     lan_cidrs = " ".join(security["lan_cidrs"])
     readonly_site = ""
@@ -272,6 +316,7 @@ https://{domains["readonly_origin"]}:{ports["readonly_origin"]}, https://{domain
 }}
 """
 
+    auth_block = f"{textwrap.indent(auth, '    ')}\n\n" if auth else ""
     return (
         global_options
         + readonly_site
@@ -296,8 +341,7 @@ https://{domains["public"]}:{ports["main_origin"]}, https://{domains["origin"]}:
     @origin_host host {domains["origin"]}
     redir @origin_host https://{domains["public"]}{{uri}} permanent
 
-{textwrap.indent(auth, "    ")}
-
+{auth_block}
 {textwrap.indent(routes, "    ")}
 }}
 """
@@ -392,6 +436,7 @@ def render_instance_compose(
     paths = table(config, "paths")
 
     workspace = paths["workspace"]
+    tag_data = paths["tag_data"]
     caddy_volumes = [
         f"{generated_dir / 'Caddyfile'}:/etc/caddy/Caddyfile:ro",
         f"{paths['dist']}:/srv/dist:ro",
@@ -403,13 +448,13 @@ def render_instance_compose(
             f"{paths['terminal_socket_dir']}:/run/host-ttyd:ro"
         )
     dufs_volumes = [f"{workspace}:/data"]
-    tag_volumes = [f"{workspace}:/workspace"]
+    tag_volumes = [f"{workspace}:/workspace", f"{tag_data}:/data"]
     if paths.get("media"):
         dufs_volumes.append(f"{paths['media']}:/data/media")
         tag_volumes.append(f"{paths['media']}:/workspace/media")
 
     tag_secret = secret_dir / "tag-server.env"
-    if tag_secret.is_file():
+    if is_file(tag_secret):
         tag_volumes.append(f"{tag_secret}:/run/secrets/tag-server.env:ro")
 
     lines = [
@@ -417,7 +462,7 @@ def render_instance_compose(
         "  caddy:",
         "    volumes:",
         yaml_list(caddy_volumes, 6),
-        "  dufs-lan:",
+        "  dufs:",
         "    volumes:",
         yaml_list(dufs_volumes, 6),
         "  tag-server:",
@@ -429,23 +474,29 @@ def render_instance_compose(
         "          . /run/secrets/tag-server.env",
         "          set +a",
         "        fi",
-        "        exec /app/tag-server --database /workspace/tag_all.db --workspace /workspace --addr 0.0.0.0:8081",
+        "        exec /app/tag-server --database /data/tag_all.db --workspace /workspace --addr 0.0.0.0:8081",
         "    volumes:",
         yaml_list(tag_volumes, 6),
-        "  authelia:",
-        "    volumes:",
-        yaml_list(
-            [
-                f"{generated_dir / 'authelia' / 'configuration.yml'}:/config/configuration.yml:ro",
-                f"{secret_dir / 'authelia_users_database.yml'}:/config/users_database.yml:ro",
-                f"{paths['authelia_data']}:/data",
-                f"{secret_dir / 'authelia_jwt_secret'}:/run/secrets/authelia_jwt_secret:ro",
-                f"{secret_dir / 'authelia_session_secret'}:/run/secrets/authelia_session_secret:ro",
-                f"{secret_dir / 'authelia_storage_key'}:/run/secrets/authelia_storage_key:ro",
-            ],
-            6,
-        ),
     ]
+
+    if features["authelia"]:
+        lines.extend(
+            [
+                "  authelia:",
+                "    volumes:",
+                yaml_list(
+                    [
+                        f"{generated_dir / 'authelia' / 'configuration.yml'}:/config/configuration.yml:ro",
+                        f"{secret_dir / 'authelia_users_database.yml'}:/config/users_database.yml:ro",
+                        f"{paths['authelia_data']}:/data",
+                        f"{secret_dir / 'authelia_jwt_secret'}:/run/secrets/authelia_jwt_secret:ro",
+                        f"{secret_dir / 'authelia_session_secret'}:/run/secrets/authelia_session_secret:ro",
+                        f"{secret_dir / 'authelia_storage_key'}:/run/secrets/authelia_storage_key:ro",
+                    ],
+                    6,
+                ),
+            ]
+        )
 
     if features["readonly"]:
         lines.extend(
@@ -490,6 +541,8 @@ def compose_files(
         deploy_dir / f"compose.{profile}.yaml",
         generated_dir / "compose.instance.yaml",
     ]
+    if features["authelia"]:
+        files.insert(2, deploy_dir / "compose.authelia.yaml")
     if features["readonly"]:
         files.insert(2, deploy_dir / "compose.readonly.yaml")
     if features["ddns"]:
@@ -505,17 +558,26 @@ def render(config_path: Path, output: Path) -> None:
     paths = table(config, "paths")
     secret_dir = Path(paths["secrets"])
     profile = table(config, "deployment")["profile"]
-    required_secrets = [
-        "authelia_jwt_secret",
-        "authelia_session_secret",
-        "authelia_storage_key",
-        "authelia_users_database.yml",
-    ]
+    features = table(config, "features")
+    required_secrets: list[str] = []
+    if features["authelia"]:
+        required_secrets.extend(
+            [
+                "authelia_jwt_secret",
+                "authelia_session_secret",
+                "authelia_storage_key",
+                "authelia_users_database.yml",
+            ]
+        )
     if profile == "home-ipv6-cdn":
         required_secrets.append("caddy_lan_basic_auth")
-    if table(config, "features")["readonly"]:
+    if features["readonly"]:
         required_secrets.append("dufs-readonly.yaml")
-    missing = [str(secret_dir / name) for name in required_secrets if not (secret_dir / name).is_file()]
+    missing = [
+        str(secret_dir / name)
+        for name in required_secrets
+        if not is_file(secret_dir / name)
+    ]
     if missing:
         raise ConfigError(
             "missing runtime secrets; run scripts/import-current-secrets.py first:\n  "
@@ -525,8 +587,9 @@ def render(config_path: Path, output: Path) -> None:
     output.mkdir(parents=True, exist_ok=True)
     output.chmod(0o700)
     authelia_dir = output / "authelia"
-    authelia_dir.mkdir(exist_ok=True)
-    authelia_dir.chmod(0o700)
+    if features["authelia"]:
+        authelia_dir.mkdir(exist_ok=True)
+        authelia_dir.chmod(0o700)
 
     lan_auth = (
         read_lan_auth(secret_dir)
@@ -537,9 +600,10 @@ def render(config_path: Path, output: Path) -> None:
     caddyfile.write_text(render_caddy(config, lan_auth), encoding="utf-8")
     caddyfile.chmod(0o600)
 
-    authelia_config = authelia_dir / "configuration.yml"
-    authelia_config.write_text(render_authelia(config), encoding="utf-8")
-    authelia_config.chmod(0o600)
+    if features["authelia"]:
+        authelia_config = authelia_dir / "configuration.yml"
+        authelia_config.write_text(render_authelia(config), encoding="utf-8")
+        authelia_config.chmod(0o600)
 
     instance_compose = output / "compose.instance.yaml"
     instance_compose.write_text(
@@ -548,6 +612,7 @@ def render(config_path: Path, output: Path) -> None:
     instance_compose.chmod(0o600)
 
     deployment = table(config, "deployment")
+    engine = table(config, "runtime")["engine"]
     images = table(config, "images")
     ports = table(config, "ports")
     security = table(config, "security")
@@ -579,6 +644,7 @@ def render(config_path: Path, output: Path) -> None:
             {
                 "schema_version": config["schema_version"],
                 "profile": deployment["profile"],
+                "engine": engine,
                 "features": table(config, "features"),
                 "compose_files": [str(path) for path in files],
             },
@@ -592,7 +658,7 @@ def render(config_path: Path, output: Path) -> None:
     terminal_dependency = ""
     if table(config, "features")["terminal"]:
         terminal_dependency = "Wants=ttyd-compose.service\nAfter=ttyd-compose.service\n"
-    host_home = str(Path(paths["workspace"]).parent)
+    host_home = paths["host_home"]
     host_username = Path(host_home).name
     host_path = (
         f"{host_home}/.nix-profile/bin:"
@@ -602,7 +668,7 @@ def render(config_path: Path, output: Path) -> None:
     )
 
     unit = f"""[Unit]
-Description=dufs-plus Podman Compose stack
+Description=dufs-plus {engine.capitalize()} Compose stack
 Wants=network-online.target
 After=network-online.target
 {terminal_dependency}
@@ -658,10 +724,10 @@ def main() -> int:
     deploy_dir = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--config", type=Path, default=deploy_dir / "instance.toml"
+        "--config", type=Path, default=deploy_dir / "instances/home.toml"
     )
     parser.add_argument(
-        "--output", type=Path, default=deploy_dir / ".generated"
+        "--output", type=Path, default=deploy_dir / ".generated/home"
     )
     args = parser.parse_args()
     try:

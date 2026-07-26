@@ -5,13 +5,12 @@ services:
     image: ${CADDY_IMAGE}
     restart: unless-stopped
     depends_on:
-      - dufs-lan
+      - dufs
       - tag-server
-      - authelia
     networks:
       - app
 
-  dufs-lan:
+  dufs:
     image: ${DUFS_IMAGE}
     restart: unless-stopped
     command:
@@ -24,16 +23,6 @@ services:
   tag-server:
     image: ${TAG_SERVER_IMAGE}
     restart: unless-stopped
-    networks:
-      - app
-
-  authelia:
-    image: ${AUTHELIA_IMAGE}
-    restart: unless-stopped
-    environment:
-      AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET_FILE: /run/secrets/authelia_jwt_secret
-      AUTHELIA_SESSION_SECRET_FILE: /run/secrets/authelia_session_secret
-      AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE: /run/secrets/authelia_storage_key
     networks:
       - app
 

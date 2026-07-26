@@ -1,0 +1,4 @@
+services:
+  caddy:
+    ports:
+      - "${HTTP_BIND_IP:-0.0.0.0}:${HTTP_PUBLISH_PORT:-80}:80"

@@ -33,8 +33,9 @@ def unit_active(unit: str) -> bool:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--config", type=Path, default=DEPLOY_DIR / "instance.toml"
+        "--config", type=Path, default=DEPLOY_DIR / "instances/home.toml"
     )
+    parser.add_argument("--output", type=Path, default=DEPLOY_DIR / ".generated/home")
     parser.add_argument("--confirm", action="store_true")
     parser.add_argument("--smoke-url")
     args = parser.parse_args()
@@ -46,7 +47,7 @@ def main() -> int:
     config = tomllib.loads(args.config.read_text(encoding="utf-8"))
     profile = config["deployment"]["profile"]
     features = config["features"]
-    workspace = Path(config["paths"]["workspace"])
+    tag_data = Path(config["paths"]["tag_data"])
     smoke_port = (
         config["ports"]["main_origin"]
         if profile == "home-ipv6-cdn"
@@ -73,6 +74,8 @@ def main() -> int:
         str(MANAGE),
         "--config",
         str(args.config),
+        "--output",
+        str(args.output),
     ]
     run(manage_base + ["preflight"])
     run(manage_base + ["backup"])
@@ -88,7 +91,7 @@ def main() -> int:
             terminal_unit_target = unit_dir / "ttyd-compose.service"
             if not terminal_unit_target.exists():
                 shutil.copy2(
-                    DEPLOY_DIR / ".generated/ttyd-compose.service",
+                    args.output / "ttyd-compose.service",
                     terminal_unit_target,
                 )
                 terminal_unit_target.chmod(0o600)
@@ -116,7 +119,7 @@ def main() -> int:
             run(["systemctl", "--user", "stop", unit])
             stopped.append(unit)
 
-        tag_db = workspace / "tag_all.db"
+        tag_db = tag_data / "tag_all.db"
         connection = sqlite3.connect(tag_db)
         try:
             connection.execute("PRAGMA wal_checkpoint(TRUNCATE)")
@@ -138,7 +141,7 @@ def main() -> int:
         run(smoke_args)
 
         shutil.copy2(
-            DEPLOY_DIR / ".generated/dufs-plus-compose.service",
+            args.output / "dufs-plus-compose.service",
             unit_dir / "dufs-plus-compose.service",
         )
         (unit_dir / "dufs-plus-compose.service").chmod(0o600)

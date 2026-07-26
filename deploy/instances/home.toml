@@ -5,19 +5,26 @@ name = "dufs-plus"
 profile = "home-ipv6-cdn"
 timezone = "Asia/Shanghai"
 
+[runtime]
+engine = "podman"
+
 [domains]
 public = "nas.wttliou.top"
 origin = "home.wttliou.top"
 readonly_public = "workcdn.wttliou.top"
 readonly_origin = "work.wttliou.top"
+aliases = []
 
 [features]
+authelia = true
 readonly = true
 terminal = true
 ddns = true
 
 [paths]
+host_home = "/home/liou"
 workspace = "/home/liou/dufs-lan"
+tag_data = "/home/liou/dufs-lan"
 readonly = "/home/liou/dufs"
 media = "/media/liou"
 dist = "/home/liou/dufs-lan/dist"
@@ -39,7 +46,7 @@ https = 443
 [images]
 caddy = "docker.io/library/caddy:2.11.4-alpine"
 dufs = "docker.io/sigoden/dufs:0.46.0"
-tag_server = "localhost/tag-server:local-20260726"
+tag_server = "localhost/tag-server:dufs-plus"
 authelia = "docker.io/authelia/authelia:4.39.20"
 ddns_go = "docker.io/jeessy/ddns-go:v6.17.2"
 
