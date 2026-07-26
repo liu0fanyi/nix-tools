@@ -1,0 +1,45 @@
+name: ${COMPOSE_PROJECT_NAME:-dufs-plus}
+
+services:
+  caddy:
+    image: ${CADDY_IMAGE}
+    restart: unless-stopped
+    depends_on:
+      - dufs-lan
+      - tag-server
+      - authelia
+    networks:
+      - app
+
+  dufs-lan:
+    image: ${DUFS_IMAGE}
+    restart: unless-stopped
+    command:
+      - /data
+      - --allow-all
+      - --allow-symlink
+    networks:
+      - app
+
+  tag-server:
+    image: ${TAG_SERVER_IMAGE}
+    restart: unless-stopped
+    networks:
+      - app
+
+  authelia:
+    image: ${AUTHELIA_IMAGE}
+    restart: unless-stopped
+    environment:
+      AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET_FILE: /run/secrets/authelia_jwt_secret
+      AUTHELIA_SESSION_SECRET_FILE: /run/secrets/authelia_session_secret
+      AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE: /run/secrets/authelia_storage_key
+    networks:
+      - app
+
+networks:
+  app:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${CONTAINER_SUBNET}

@@ -1,0 +1,10 @@
+services:
+  ddns-go:
+    image: ${DDNS_GO_IMAGE}
+    restart: unless-stopped
+    network_mode: host
+    command:
+      - -l
+      - 127.0.0.1:9876
+      - -f
+      - "300"

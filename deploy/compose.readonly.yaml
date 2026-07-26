@@ -1,0 +1,13 @@
+services:
+  caddy:
+    depends_on:
+      - dufs-readonly
+
+  dufs-readonly:
+    image: ${DUFS_IMAGE}
+    restart: unless-stopped
+    command:
+      - --config
+      - /run/secrets/dufs-readonly.yaml
+    networks:
+      - app

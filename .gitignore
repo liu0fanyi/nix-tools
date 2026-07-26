@@ -4,3 +4,9 @@ git-crypt-key
 # Nix result symlinks
 result
 result-*
+
+# Generated Podman deployment artifacts and runtime secrets
+deploy/.generated/
+deploy/backups/
+__pycache__/
+*.py[cod]

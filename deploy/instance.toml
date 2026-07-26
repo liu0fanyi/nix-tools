@@ -1,0 +1,64 @@
+schema_version = 1
+
+[deployment]
+name = "dufs-plus"
+profile = "home-ipv6-cdn"
+timezone = "Asia/Shanghai"
+
+[domains]
+public = "nas.wttliou.top"
+origin = "home.wttliou.top"
+readonly_public = "workcdn.wttliou.top"
+readonly_origin = "work.wttliou.top"
+
+[features]
+readonly = true
+terminal = true
+ddns = true
+
+[paths]
+workspace = "/home/liou/dufs-lan"
+readonly = "/home/liou/dufs"
+media = "/media/liou"
+dist = "/home/liou/dufs-lan/dist"
+authelia_data = "/home/liou/.local/share/authelia"
+ddns_config = "/home/liou/.config/ddns-go"
+caddy_data = "/home/liou/.local/share/caddy"
+caddy_config = "/home/liou/.local/share/caddy-container-config"
+terminal_workspace = "/home/liou/dufs-lan/project"
+terminal_socket_dir = "/run/user/1000/ttyd"
+secrets = "/home/liou/dufs-lan/project/nix-tools/deploy/secrets"
+
+[ports]
+lan = 5006
+readonly_origin = 5008
+main_origin = 5009
+http = 80
+https = 443
+
+[images]
+caddy = "docker.io/library/caddy:2.11.4-alpine"
+dufs = "docker.io/sigoden/dufs:0.46.0"
+tag_server = "localhost/tag-server:local-20260726"
+authelia = "docker.io/authelia/authelia:4.39.20"
+ddns_go = "docker.io/jeessy/ddns-go:v6.17.2"
+
+[security]
+lan_cidrs = [
+  "192.168.0.0/16",
+  "172.16.0.0/12",
+  "10.0.0.0/8",
+  "127.0.0.0/8",
+  "::1",
+]
+edgeone_trusted_proxies = [
+  "2408:873d::/32",
+  "2408:874c::/32",
+]
+container_subnet = "10.89.50.0/24"
+
+[authelia]
+issuer = "wttliou.top"
+display_name = "NAS"
+session_domain = "wttliou.top"
+default_policy = "two_factor"

@@ -8,7 +8,6 @@
     ./full.nix
     ./podman.nix
     ./caddy.nix
-    ./rclone.nix
     ./authelia.nix
     # wayland need newer linux try later
     # ./rustdesk.nix

@@ -1,0 +1,81 @@
+from __future__ import annotations
+
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+
+DEPLOY_DIR = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(DEPLOY_DIR / "scripts"))
+
+import render
+
+
+class RenderTests(unittest.TestCase):
+    def prepare(self, profile: str) -> tuple[Path, Path, tempfile.TemporaryDirectory]:
+        temp = tempfile.TemporaryDirectory()
+        root = Path(temp.name)
+        secrets = root / "secrets"
+        secrets.mkdir()
+        for name, value in {
+            "authelia_jwt_secret": "jwt-secret-long-enough-for-test",
+            "authelia_session_secret": "session-secret-long-enough-for-test",
+            "authelia_storage_key": "storage-secret-long-enough-for-test",
+            "authelia_users_database.yml": "---\nusers: {}\n",
+            "dufs-readonly.yaml": "serve-path: /data\n",
+            "caddy_lan_basic_auth": (
+                "admin $2a$14$jQ8iy6ybRwnQVDxCFAxEO."
+                "VoyPMR7GZVbYgyjcimvUMU1lePXP7NK\n"
+            ),
+        }.items():
+            (secrets / name).write_text(value, encoding="utf-8")
+            (secrets / name).chmod(0o600)
+
+        text = (DEPLOY_DIR / "instance.toml").read_text(encoding="utf-8")
+        text = text.replace(
+            'secrets = "/home/liou/dufs-lan/project/nix-tools/deploy/secrets"',
+            f'secrets = "{secrets}"',
+        )
+        if profile == "vps-direct":
+            text = text.replace(
+                'profile = "home-ipv6-cdn"', 'profile = "vps-direct"'
+            ).replace("ddns = true", "ddns = false").replace(
+                "terminal = true", "terminal = false"
+            )
+        config = root / "instance.toml"
+        config.write_text(text, encoding="utf-8")
+        output = root / "generated"
+        return config, output, temp
+
+    def test_home_profile(self) -> None:
+        config, output, temp = self.prepare("home-ipv6-cdn")
+        self.addCleanup(temp.cleanup)
+        render.render(config, output)
+        caddy = (output / "Caddyfile").read_text(encoding="utf-8")
+        files = (output / "compose-files.txt").read_text(encoding="utf-8")
+        self.assertIn("home.wttliou.top:5009", caddy)
+        self.assertIn("work.wttliou.top:5008", caddy)
+        self.assertIn("compose.ddns.yaml", files)
+        self.assertIn("compose.readonly.yaml", files)
+        self.assertIn("unix//run/host-ttyd/ttyd.sock", caddy)
+        instance = (output / "compose.instance.yaml").read_text(encoding="utf-8")
+        self.assertIn("/run/host-ttyd:ro", instance)
+        self.assertTrue((output / "ttyd-compose.service").is_file())
+
+    def test_vps_profile(self) -> None:
+        config, output, temp = self.prepare("vps-direct")
+        self.addCleanup(temp.cleanup)
+        render.render(config, output)
+        caddy = (output / "Caddyfile").read_text(encoding="utf-8")
+        files = (output / "compose-files.txt").read_text(encoding="utf-8")
+        self.assertIn("nas.wttliou.top {", caddy)
+        self.assertNotIn("tls internal", caddy)
+        self.assertNotIn("compose.ddns.yaml", files)
+        self.assertIn("compose.vps-direct.yaml", files)
+        self.assertNotIn("unix//run/host-ttyd/ttyd.sock", caddy)
+        self.assertFalse((output / "ttyd-compose.service").exists())
+
+
+if __name__ == "__main__":
+    unittest.main()

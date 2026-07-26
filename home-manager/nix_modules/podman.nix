@@ -21,11 +21,22 @@ in
       default = true;
       description = "Enable Tag-Server service";
     };
+    legacyServices.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Enable the legacy Home Manager-managed application services";
+    };
+    hostTerminal.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Expose the host Nix/zellij terminal to the Compose Caddy over a Unix socket";
+    };
   };
 
   config = lib.mkIf cfg.enable {
     home.packages = with pkgs; [
       podman
+      podman-compose
       podman-tui
       skopeo
       buildah
@@ -43,7 +54,7 @@ in
         # "$HOME/rustfs/logs"
     '';
 
-    services.podman = {
+    services.podman = lib.mkIf cfg.legacyServices.enable {
       enable = true;
       containers = {
         dufs = {
@@ -123,7 +134,7 @@ in
       };
     };
 
-    systemd.user.services.ttyd = {
+    systemd.user.services.ttyd = lib.mkIf cfg.legacyServices.enable {
       Unit = {
         Description = "ttyd web terminal";
         After = [ "network.target" ];
@@ -144,29 +155,52 @@ in
       };
     };
 
+    systemd.user.services.ttyd-compose = lib.mkIf cfg.hostTerminal.enable {
+      Unit = {
+        Description = "Host development terminal for the dufs-plus Compose stack";
+        Before = [ "dufs-plus-compose.service" ];
+      };
+      Service = {
+        WorkingDirectory = "%h/dufs-lan/project";
+        RuntimeDirectory = "ttyd";
+        RuntimeDirectoryMode = "0700";
+        Environment = [
+          "HOME=%h"
+          "SHELL=${pkgs.bashInteractive}/bin/bash"
+          "PATH=%h/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/etc/profiles/per-user/liou/bin:/run/current-system/sw/bin:/usr/bin:/bin"
+        ];
+        ExecStart = "${pkgs.ttyd}/bin/ttyd -i %t/ttyd/ttyd.sock -W -w %h/dufs-lan/project ${pkgs.zellij}/bin/zellij attach -c web-dev options --mouse-mode false";
+        Restart = "on-failure";
+        RestartSec = "2s";
+      };
+      Install.WantedBy = [ "default.target" ];
+    };
+
     # home.file.".config/systemd/user/podman-rustfs.service.d/override.conf".text = ''
     #   [Service]
     #   Environment="PATH=/usr/bin:/bin:${lib.makeBinPath [ pkgs.podman ]}"
     # '';
 
-    home.file.".config/systemd/user/podman-dufs.service.d/override.conf".text = ''
-      [Service]
-      Environment="PATH=/usr/bin:/bin:${lib.makeBinPath [ pkgs.podman ]}"
-    '';
+    home.file = lib.mkIf cfg.legacyServices.enable {
+      ".config/systemd/user/podman-dufs.service.d/override.conf".text = ''
+        [Service]
+        Environment="PATH=/usr/bin:/bin:${lib.makeBinPath [ pkgs.podman ]}"
+      '';
 
-    home.file.".config/systemd/user/podman-dufs-lan.service.d/override.conf".text = ''
-      [Service]
-      Environment="PATH=/usr/bin:/bin:${lib.makeBinPath [ pkgs.podman ]}"
-    '';
+      ".config/systemd/user/podman-dufs-lan.service.d/override.conf".text = ''
+        [Service]
+        Environment="PATH=/usr/bin:/bin:${lib.makeBinPath [ pkgs.podman ]}"
+      '';
 
-    home.file.".config/systemd/user/podman-tag-server.service.d/override.conf" =
-      lib.mkIf config.features.podman.tag-server.enable
-        {
-          text = ''
-            [Service]
-            Environment="PATH=/usr/bin:/bin:${lib.makeBinPath [ pkgs.podman ]}"
-          '';
-        };
+      ".config/systemd/user/podman-tag-server.service.d/override.conf" =
+        lib.mkIf config.features.podman.tag-server.enable
+          {
+            text = ''
+              [Service]
+              Environment="PATH=/usr/bin:/bin:${lib.makeBinPath [ pkgs.podman ]}"
+            '';
+          };
+    };
 
   };
 }

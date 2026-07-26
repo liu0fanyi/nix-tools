@@ -1,0 +1,6 @@
+services:
+  caddy:
+    ports:
+      - "${LAN_BIND_IP:-0.0.0.0}:${LAN_PUBLISH_PORT:-5006}:5006"
+      - "${ORIGIN_BIND_IP:-0.0.0.0}:${READONLY_ORIGIN_PUBLISH_PORT:-5008}:5008"
+      - "${ORIGIN_BIND_IP:-0.0.0.0}:${MAIN_ORIGIN_PUBLISH_PORT:-5009}:5009"
