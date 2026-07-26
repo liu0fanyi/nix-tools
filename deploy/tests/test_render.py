@@ -101,6 +101,7 @@ class RenderTests(unittest.TestCase):
         self.assertIn("compose.aliyun-edgeone-http.yaml", files)
         self.assertNotIn("compose.authelia.yaml", files)
         self.assertNotIn("compose.ddns.yaml", files)
+        self.assertNotIn("--allow-all", instance)
         self.assertIn('"/root/nix-tools/dufs_data:/data"', instance)
         self.assertIn('"/root/nix-tools/tag-db:/data"', instance)
         self.assertIn('"engine": "docker"', manifest)

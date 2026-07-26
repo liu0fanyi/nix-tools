@@ -78,7 +78,7 @@ def validate(config: dict[str, Any]) -> None:
         raise ConfigError("[domains].aliases must be an array of hostnames")
 
     features = table(config, "features")
-    for key in ("authelia", "readonly", "terminal", "ddns"):
+    for key in ("authelia", "dufs_write", "readonly", "terminal", "ddns"):
         if not isinstance(features.get(key), bool):
             raise ConfigError(f"[features].{key} must be true or false")
     if profile in {"vps-direct", "aliyun-edgeone-http"} and features["ddns"]:
@@ -457,12 +457,22 @@ def render_instance_compose(
     if is_file(tag_secret):
         tag_volumes.append(f"{tag_secret}:/run/secrets/tag-server.env:ro")
 
+    dufs_command = []
+    if features["dufs_write"]:
+        dufs_command = [
+            "    command:",
+            "      - /data",
+            "      - --allow-all",
+            "      - --allow-symlink",
+        ]
+
     lines = [
         "services:",
         "  caddy:",
         "    volumes:",
         yaml_list(caddy_volumes, 6),
         "  dufs:",
+        *dufs_command,
         "    volumes:",
         yaml_list(dufs_volumes, 6),
         "  tag-server:",

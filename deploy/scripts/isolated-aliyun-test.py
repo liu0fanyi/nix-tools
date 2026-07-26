@@ -39,7 +39,9 @@ def compose_argv(output: Path, action: list[str]) -> list[str]:
     return argv + action
 
 
-def status(path: str, forwarded_http: bool = False) -> int:
+def status(
+    path: str, forwarded_http: bool = False, method: str = "GET"
+) -> int:
     argv = [
         "curl",
         "--silent",
@@ -53,6 +55,8 @@ def status(path: str, forwarded_http: bool = False) -> int:
         "--resolve",
         "wttliou.top:15080:127.0.0.1",
     ]
+    if method != "GET":
+        argv.extend(["--request", method, "--data-binary", "write must be denied"])
     if forwarded_http:
         argv.extend(["--header", "X-Forwarded-Proto: http"])
     argv.append(f"http://wttliou.top:15080{path}")
@@ -95,7 +99,7 @@ def main() -> int:
             subprocess.run(up, check=True)
             started = True
             deadline = time.monotonic() + 45
-            results: tuple[int, int, int, int] | None = None
+            results: tuple[int, int, int, int, int] | None = None
             while time.monotonic() < deadline:
                 try:
                     results = (
@@ -103,8 +107,12 @@ def main() -> int:
                         status("/?json"),
                         status("/tag-api/tags"),
                         status("/", forwarded_http=True),
+                        status("/.dufs-readonly-probe.txt", method="PUT"),
                     )
-                    if results == (200, 200, 200, 302):
+                    probe_absent = not (
+                        workspace / ".dufs-readonly-probe.txt"
+                    ).exists()
+                    if results == (200, 200, 200, 302, 403) and probe_absent:
                         break
                 except (subprocess.CalledProcessError, ValueError):
                     pass
@@ -118,7 +126,7 @@ def main() -> int:
             print(
                 "Aliyun profile passed: "
                 f"UI={results[0]}, DUFS={results[1]}, tags={results[2]}, "
-                f"EdgeOne redirect={results[3]}"
+                f"EdgeOne redirect={results[3]}, write={results[4]}"
             )
         finally:
             if started:

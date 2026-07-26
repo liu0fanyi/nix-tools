@@ -7,6 +7,10 @@ The deployment has one shared Compose stack and one TOML file per machine:
 | `instances/home.toml` | rootless Podman | `5006`, `5008`, `5009` | Authelia, read-only DUFS, DDNS-Go, host ttyd |
 | `instances/aliyun.toml` | Docker | `80` | none |
 
+`features.dufs_write` controls the primary DUFS permissions. It is enabled for
+the authenticated home instance and disabled for the public Aliyun instance.
+Read-only is the safe default in the shared Compose file.
+
 The Aliyun instance deliberately serves plain HTTP to EdgeOne. Caddy redirects
 only requests carrying `X-Forwarded-Proto: http`; this preserves public HTTPS
 without creating an EdgeOne-to-origin redirect loop. It does not publish 443.
