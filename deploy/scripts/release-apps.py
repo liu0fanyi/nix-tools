@@ -4,10 +4,12 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import shlex
 import subprocess
 import sys
 import tomllib
+import urllib.request
 from pathlib import Path
 
 
@@ -23,9 +25,59 @@ def run(argv: list[str], cwd: Path | None = None) -> None:
     subprocess.run(argv, cwd=cwd, check=True)
 
 
+def capture(argv: list[str], cwd: Path | None = None) -> str:
+    print("+", shlex.join(argv), flush=True)
+    return subprocess.run(
+        argv,
+        cwd=cwd,
+        check=True,
+        text=True,
+        capture_output=True,
+    ).stdout.strip()
+
+
 def remote_run(remote: str, remote_root: str, argv: list[str]) -> None:
     command = f"cd {shlex.quote(remote_root)} && {shlex.join(argv)}"
     run(["ssh", remote, command])
+
+
+def sha256_bytes(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def verify_frontend(
+    frontend: Path, remote: str, remote_root: str
+) -> None:
+    local_index = (frontend / "dist/index.html").read_bytes()
+    local_hash = sha256_bytes(local_index)
+    remote_output = capture(
+        [
+            "ssh",
+            remote,
+            f"sha256sum {shlex.quote(remote_root + '/dist/index.html')}",
+        ]
+    )
+    remote_hash = remote_output.split(maxsplit=1)[0]
+
+    config = tomllib.loads(
+        (NIX_TOOLS / "deploy/instances/aliyun.toml").read_text(encoding="utf-8")
+    )
+    domains = config["domains"]
+    public_host = domains.get("aliases", [domains["public"]])[0]
+    public_url = f"https://{public_host}/index.html?release={local_hash[:16]}"
+    request = urllib.request.Request(
+        public_url,
+        headers={"Cache-Control": "no-cache"},
+    )
+    with urllib.request.urlopen(request, timeout=30) as response:
+        public_hash = sha256_bytes(response.read())
+
+    print(
+        "Frontend SHA-256: "
+        f"local={local_hash} remote={remote_hash} public={public_hash}"
+    )
+    if len({local_hash, remote_hash, public_hash}) != 1:
+        raise RuntimeError("frontend artifacts differ between local, VPS, and public CDN")
 
 
 def deploy_frontend(
@@ -49,6 +101,7 @@ def deploy_frontend(
         ]
     )
     run(["rsync", "-az", str(frontend / "dist/index.html"), destination])
+    verify_frontend(frontend, remote, remote_root)
 
 
 def transfer_image(image: str, remote: str) -> None:
@@ -227,9 +280,14 @@ def main() -> int:
             deploy_runtime_images(args.remote)
         if not args.skip_smoke:
             smoke(args.remote, args.remote_root)
-    except subprocess.CalledProcessError as error:
-        print(f"release failed with exit code {error.returncode}", file=sys.stderr)
-        return error.returncode or 1
+    except (OSError, RuntimeError, subprocess.CalledProcessError) as error:
+        if isinstance(error, subprocess.CalledProcessError):
+            return_code = error.returncode or 1
+        else:
+            return_code = 1
+        print(f"release failed with exit code {return_code}", file=sys.stderr)
+        print(f"reason: {error}", file=sys.stderr)
+        return return_code
     print("Release completed on home and Aliyun.")
     return 0
 

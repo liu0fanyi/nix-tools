@@ -145,7 +145,7 @@ def read_lan_auth(secret_dir: Path) -> tuple[str, str]:
     return parts[0], parts[1]
 
 
-def app_routes(terminal: bool) -> str:
+def app_routes(terminal: bool, capabilities_json: str) -> str:
     terminal_routes = ""
     if terminal:
         terminal_routes = """
@@ -168,6 +168,15 @@ handle @terminal {
 }
 """
     return f"""
+@dufs_plus_capabilities {{
+    path /.dufs-plus/capabilities.json
+}}
+handle @dufs_plus_capabilities {{
+    header Content-Type application/json
+    header Cache-Control "no-store"
+    respond `{capabilities_json}` 200
+}}
+
 root * /srv/dist
 
 @dufs_api {{
@@ -262,7 +271,16 @@ def render_caddy(config: dict[str, Any], lan_auth: tuple[str, str]) -> str:
         "    auto_https disable_redirects" if profile == "home-ipv6-cdn" else "",
     )
 
-    routes = app_routes(features["terminal"])
+    capabilities_json = json.dumps(
+        {
+            "dufs_write": features["dufs_write"],
+            "tag_write": features["dufs_write"],
+            "bevy_sketch": features["dufs_write"],
+            "terminal": features["terminal"],
+        },
+        separators=(",", ":"),
+    )
+    routes = app_routes(features["terminal"], capabilities_json)
     auth = auth_routes(domains["public"]) if features["authelia"] else ""
 
     if profile == "vps-direct":
