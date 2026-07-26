@@ -10,3 +10,11 @@ deploy/.generated/
 deploy/backups/
 __pycache__/
 *.py[cod]
+
+# VPS bind-mounted runtime data
+/caddy-config/
+/caddy-data/
+/dist/
+/dufs_data/
+/migration-backups/
+/tag-db/
