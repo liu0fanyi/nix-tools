@@ -27,6 +27,10 @@ import render as renderer
 DEPLOY_DIR = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = DEPLOY_DIR / "instances/home.toml"
 DEFAULT_OUTPUT = DEPLOY_DIR / ".generated/home"
+DEFAULT_STATE_DIR = Path(
+    os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state")
+) / "dufs-plus"
+DEFAULT_BACKUP_KEEP = 5
 
 
 def load_config(path: Path) -> dict[str, Any]:
@@ -67,7 +71,7 @@ def mode_is_private(path: Path) -> bool:
     return path.stat().st_mode & 0o077 == 0
 
 
-def preflight(config_path: Path, output: Path, cutover: bool) -> int:
+def preflight(config_path: Path, output: Path) -> int:
     config = ensure_rendered(config_path, output)
     paths = renderer.table(config, "paths")
     features = renderer.table(config, "features")
@@ -182,28 +186,6 @@ def preflight(config_path: Path, output: Path, cutover: bool) -> int:
         except sqlite3.Error as error:
             errors.append(f"unable to check Authelia SQLite: {error}")
 
-    if cutover and engine == "podman":
-        units = [
-            "caddy.service",
-            "podman-dufs.service",
-            "podman-dufs-lan.service",
-            "podman-tag-server.service",
-            "podman-authelia.service",
-            "podman-ddns-go.service",
-            "ttyd.service",
-        ]
-        for unit in units:
-            result = subprocess.run(
-                ["systemctl", "--user", "is-active", "--quiet", unit],
-                check=False,
-            )
-            if result.returncode == 0:
-                errors.append(f"old service is still active: {unit}")
-    else:
-        warnings.append(
-            "old services may still own production ports; use --cutover only after stopping them"
-        )
-
     print(f"Profile: {profile}")
     for warning in warnings:
         print(f"WARNING: {warning}")
@@ -235,9 +217,31 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def backup(config_path: Path, output: Path, destination_root: Path) -> int:
+def prune_backups(destination_root: Path, keep_last: int) -> list[Path]:
+    if keep_last <= 0 or not destination_root.is_dir():
+        return []
+    backups = sorted(
+        path
+        for path in destination_root.iterdir()
+        if path.is_dir() and path.name[:8].isdigit()
+    )
+    removed = backups[:-keep_last]
+    for path in removed:
+        shutil.rmtree(path)
+    return removed
+
+
+def backup(
+    config_path: Path,
+    output: Path,
+    destination_root: Path | None,
+    keep_last: int,
+) -> int:
     config = ensure_rendered(config_path, output)
     paths = renderer.table(config, "paths")
+    if destination_root is None:
+        deployment_name = renderer.table(config, "deployment")["name"]
+        destination_root = DEFAULT_STATE_DIR / "backups" / deployment_name
     stamp = time.strftime("%Y%m%d-%H%M%S") + f"-{time.time_ns() % 1_000_000_000:09d}"
     destination = destination_root / stamp
     destination.mkdir(parents=True, mode=0o700)
@@ -299,7 +303,13 @@ def backup(config_path: Path, output: Path, destination_root: Path) -> int:
         encoding="utf-8",
     )
     manifest_path.chmod(0o600)
-    print(f"Created consistent migration backup: {destination}")
+    print(f"Created consistent runtime backup: {destination}")
+    removed = prune_backups(destination_root, keep_last)
+    if removed:
+        print(
+            f"Pruned {len(removed)} old backup(s); "
+            f"keeping the latest {keep_last} in {destination_root}"
+        )
     return 0
 
 
@@ -418,14 +428,19 @@ def main() -> int:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     subparsers.add_parser("render")
-    preflight_parser = subparsers.add_parser("preflight")
-    preflight_parser.add_argument("--cutover", action="store_true")
+    subparsers.add_parser("preflight")
     subparsers.add_parser("config")
     subparsers.add_parser("ps")
     logs_parser = subparsers.add_parser("logs")
     logs_parser.add_argument("--follow", action="store_true")
     up_parser = subparsers.add_parser("up")
-    up_parser.add_argument("--confirm-cutover", action="store_true")
+    up_parser.add_argument(
+        "--confirm",
+        "--confirm-cutover",
+        dest="confirm",
+        action="store_true",
+        help="confirm starting services on production ports",
+    )
     recreate_parser = subparsers.add_parser("recreate")
     recreate_parser.add_argument(
         "service",
@@ -441,7 +456,15 @@ def main() -> int:
     subparsers.add_parser("down")
     backup_parser = subparsers.add_parser("backup")
     backup_parser.add_argument(
-        "--destination", type=Path, default=DEPLOY_DIR / "backups"
+        "--destination",
+        type=Path,
+        help="backup root (default: $XDG_STATE_HOME/dufs-plus/backups/<instance>)",
+    )
+    backup_parser.add_argument(
+        "--keep-last",
+        type=int,
+        default=DEFAULT_BACKUP_KEEP,
+        help="retain this many completed backups; 0 keeps all",
     )
     smoke_parser = subparsers.add_parser("smoke")
     smoke_parser.add_argument("--base-url", required=True)
@@ -455,9 +478,14 @@ def main() -> int:
             ensure_rendered(args.config, args.output)
             return 0
         if args.command == "preflight":
-            return preflight(args.config, args.output, args.cutover)
+            return preflight(args.config, args.output)
         if args.command == "backup":
-            return backup(args.config, args.output, args.destination)
+            return backup(
+                args.config,
+                args.output,
+                args.destination,
+                args.keep_last,
+            )
         if args.command == "smoke":
             config = load_config(args.config)
             return smoke(
@@ -478,13 +506,13 @@ def main() -> int:
         elif args.command == "down":
             action = ["down"]
         elif args.command == "up":
-            if not args.confirm_cutover:
+            if not args.confirm:
                 print(
-                    "refusing to start production ports without --confirm-cutover",
+                    "refusing to start production ports without --confirm",
                     file=sys.stderr,
                 )
                 return 2
-            if preflight(args.config, args.output, cutover=True) != 0:
+            if preflight(args.config, args.output) != 0:
                 return 1
             action = ["up", "-d"]
             # podman-compose 1.6 may remove dependency containers before

@@ -1,11 +1,11 @@
-# Secrets
+# Local legacy key backup; never commit.
 git-crypt-key
 
 # Nix result symlinks
 result
 result-*
 
-# Generated Podman deployment artifacts and runtime secrets
+# Generated deployment artifacts, legacy in-repository backups, and runtime secrets
 deploy/.generated/
 deploy/backups/
 __pycache__/

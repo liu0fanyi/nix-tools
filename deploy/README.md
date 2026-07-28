@@ -42,16 +42,34 @@ python3 deploy/scripts/manage.py \
   --output deploy/.generated/aliyun config
 ```
 
-`up` requires `--confirm-cutover`. `recreate tag-server` only replaces that
+`up` requires `--confirm`. `recreate tag-server` only replaces that
 container and is intended for normal application releases.
+
+Backups default to
+`$XDG_STATE_HOME/dufs-plus/backups/<instance>` (normally
+`~/.local/state/dufs-plus/backups/<instance>`) and retain the latest five
+completed snapshots. Use `backup --keep-last 0` to disable pruning or
+`backup --destination PATH` to choose another root.
+
+## First installation
+
+Render and install the generated user units on a new home host:
+
+```bash
+bash deploy/bootstrap/install-user-service.sh
+systemctl --user enable --now ttyd-compose.service dufs-plus-compose.service
+```
+
+The VPS uses Docker and does not need the host terminal unit.
 
 ## Validation
 
 The home and Aliyun profiles can be exercised without touching production:
 
 ```bash
-python3 deploy/scripts/isolated-test.py
-python3 deploy/scripts/isolated-aliyun-test.py
+python3 deploy/tests/integration/isolated-home.py
+python3 deploy/tests/integration/isolated-aliyun.py
+python3 -m unittest discover -s deploy/tests -p 'test_*.py'
 ```
 
 The Aliyun test runs its HTTP origin temporarily on local port 15080.
@@ -82,3 +100,12 @@ them from Docker Hub. To seed or refresh all runtime images:
 ```bash
 python3 deploy/scripts/release-apps.py runtime-images --skip-smoke
 ```
+
+## Directory ownership
+
+- `scripts/manage.py` and `scripts/render.py` are the production control plane.
+- `scripts/release-apps.py` coordinates normal releases to home and Aliyun.
+- `bootstrap/` contains one-time host installation helpers.
+- `tests/integration/` contains temporary-stack validation only.
+- `.generated/`, `__pycache__/`, runtime secrets, and backups are generated or
+  private state and are ignored by Git.

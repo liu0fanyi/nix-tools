@@ -608,7 +608,7 @@ def render(config_path: Path, output: Path) -> None:
     ]
     if missing:
         raise ConfigError(
-            "missing runtime secrets; run scripts/import-current-secrets.py first:\n  "
+            "missing runtime secrets; provision deploy/secrets through a secure channel:\n  "
             + "\n  ".join(missing)
         )
 
@@ -707,7 +707,7 @@ RemainAfterExit=yes
 WorkingDirectory={deploy_dir}
 Environment=HOME={host_home}
 Environment=PATH={host_path}
-ExecStart=/usr/bin/env python3 {deploy_dir / "scripts" / "manage.py"} --config {config_path} --output {output} up --confirm-cutover
+ExecStart=/usr/bin/env python3 {deploy_dir / "scripts" / "manage.py"} --config {config_path} --output {output} up --confirm
 ExecStop=/usr/bin/env python3 {deploy_dir / "scripts" / "manage.py"} --config {config_path} --output {output} down
 TimeoutStartSec=180
 TimeoutStopSec=120

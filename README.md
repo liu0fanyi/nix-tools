@@ -1,116 +1,41 @@
 # Nix Tools
 
-This repository contains Nix configuration and tools.
+Host development configuration and the container deployment control plane for
+DUFS Plus.
 
-## Installation
+## Home Manager
 
-To install Nix on any Linux distribution, the recommended way is using the [Determinate Systems Nix Installer](https://github.com/DeterminateSystems/nix-installer):
-
-```bash
-curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
-```
-
-## Usage
-
-### Secret Management (Git-Crypt)
-
-This repository uses `git-crypt` to secure sensitive credentials (in `secrets.json`).
-
-**Initialization**:
-1. Initialize: `git-crypt init`
-2. Export key (keep this safe!): `git-crypt export-key ./git-crypt-key`
-
-**Usage**:
-- `secrets.json` is encrypted in the repo but visible as plain text to you.
-- **On a new machine**:
-    1. Clone the repo.
-    2. Copy your safe-guarded `git-crypt-key` to the repo root.
-    3. Run: `git-crypt unlock ./git-crypt-key`
-    4. `secrets.json` is now readable.
-
-### Initial HomeManager
-
-To run the `rerun.nu` script for the first time, use (replace `liou` with your current username):
+Install Nix with the
+[Determinate Systems installer](https://github.com/DeterminateSystems/nix-installer),
+then apply the host configuration:
 
 ```bash
-# Apply standard configuration (full + ddns-go)
 nix shell nixpkgs#nushell -c nu ./rerun.nu liou
-
-# Apply full configuration WITHOUT ddns-go
-nix shell nixpkgs#nushell -c nu ./rerun.nu liou --ddns=false
-
-# Apply lightweight configuration (no GUI apps, no ddns-go)
-nix shell nixpkgs#nushell -c nu ./rerun.nu liou --full=false
 ```
 
-## GPU Setup (Non-NixOS)
+Home Manager installs development applications, Podman tooling, ttyd, and the
+Podman API socket. It does not own Caddy, DUFS, Tag Server, Authelia, DDNS-Go,
+or their systemd services.
 
-If you are on a non-NixOS system and need GPU support (e.g., for Alacritty), you may need to run the following command with `sudo`:
+On non-NixOS hosts, rootless Podman also requires the distribution package that
+provides `newuidmap` and `newgidmap` (for example `uidmap` on Debian/Ubuntu).
+
+## DUFS Plus deployment
+
+Application services are exclusively managed by the shared Compose deployment:
 
 ```bash
-sudo /nix/store/9mn5fg9rdw4p8kw0nqz0h5ymwjxhb6is-non-nixos-gpu/bin/non-nixos-gpu-setup
+python3 deploy/scripts/manage.py config
+python3 deploy/scripts/manage.py ps
+python3 deploy/scripts/release-apps.py all
 ```
 
-## Troubleshooting
+See [deploy/README.md](deploy/README.md) for instance configuration, bootstrap,
+backup, validation, and release commands. Runtime secrets are supplied outside
+Git under `deploy/secrets/`.
 
-### Applications not showing in menu
-
-If you cannot see applications like Alacritty, Zellij, or Sakura in your system's application menu:
-
-**Logout and Re-login**: On non-NixOS systems, the desktop environment often needs a fresh session to pick up the new paths in `XDG_DATA_DIRS`.
-
-### Untrusted substituter warning
-
-If you see a warning like `warning: ignoring untrusted substituter...`:
-
-This happens because your user is not in the `trusted-users` list of your system's Nix configuration. Run the following command to fix it:
+For user services to start without an interactive login:
 
 ```bash
-echo "trusted-users = root $USER" | sudo tee -a /etc/nix/nix.custom.conf
-# Then restart the nix-daemon
-sudo systemctl restart nix-daemon
+loginctl enable-linger "$USER"
 ```
-
-### Podman services not starting
-
-If `ddns-go` or `rustfs` are not starting automatically:
-
-
-**Enable Linger**: On generic Linux, user services only run when you are logged in. To let them run from boot (and ensure they start correctly), enable linger:
-    ```bash
-    loginctl enable-linger $USER
-    ```
-
-### DDNS-GO not working after hibernation
-
-If `ddns-go` stops working after system hibernation/sleep, restarting the service usually fixes it:
-
-```bash
-systemctl --user restart podman-ddns-go
-```
-
-**Note on Network Configuration**:
-`ddns-go` typically requires your optical modem (ONU) to be in **Bridge Mode** and your router to perform the PPPoE dial-up. You will need to know your broadband username and password for this configuration. If your modem is in Router mode, `ddns-go` might detect a private IP (e.g., 192.168.x.x) instead of a public one.
-
-If you need to reset the password manually:
-
-```bash
-# Replace 'YourNewPassword' with your desired password
-podman run --rm -v $HOME/.config/ddns-go:/root docker.io/jeessy/ddns-go -resetPassword YourNewPassword
-systemctl --user restart podman-ddns-go
-```
-
-### Error: "newuidmap" not found
-
-If you see an error like `exec: "newuidmap": executable file not found in $PATH` in the logs:
-
-Rootless Podman requires the `newuidmap` and `newgidmap` tools to be installed on the host system (not just via Nix) because they require setuid permissions. On Debian-based systems (like Pop!_OS, Ubuntu):
-
-```bash
-sudo apt update
-sudo apt install uidmap
-```
-
-### Podman congifuration options
-
-For more Podman configuration options in Home Manager, check: [Home Manager Options - Podman](https://home-manager-options.extranix.com/?query=podman&release=release-25.11)

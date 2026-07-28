@@ -14,10 +14,5 @@
 
 目录权限应为 `0700`，文件权限应为 `0600`。
 
-本机首次切换可以运行：
-
-```bash
-python3 scripts/import-current-secrets.py
-```
-
-脚本从现有 git-crypt 工作区、Authelia 用户文件、Tag Server env 和当前 Caddyfile 导入，不会打印 secret 内容。
+新机器需要通过安全渠道单独提供这些文件。Home Manager 不再生成或保存
+DUFS Plus 服务凭据。

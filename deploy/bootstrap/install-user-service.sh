@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Bootstrap generated user units on a new host.
 set -euo pipefail
 
 deploy_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -21,6 +22,9 @@ systemctl --user daemon-reload
 echo "Installed $unit_target"
 if [[ -f "$terminal_unit_source" ]]; then
   echo "Installed $terminal_unit_target"
+  units="ttyd-compose.service dufs-plus-compose.service"
+else
+  units="dufs-plus-compose.service"
 fi
-echo "For a new installation, enable it after the production cutover succeeds:"
-echo "  systemctl --user enable dufs-plus-compose.service ttyd-compose.service"
+echo "After validating the generated configuration, enable the installed units:"
+echo "  systemctl --user enable --now $units"

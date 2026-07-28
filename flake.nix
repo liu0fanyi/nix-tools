@@ -39,11 +39,7 @@
     in
     {
       homeConfigurations = {
-        # 使用 mkHomeConfig 生成配置，用户名作为参数
-        # 现在通过传递模块列表来灵活开启功能，比 Boolean 切关更优雅
-        "liou" = mkHomeConfig "liou" [ ./home-manager/nix_modules/ddns-go.nix ];
-        "liou-no-ddns" = mkHomeConfig "liou" [ ];
-        "liou-compose" = mkHomeConfig "liou" [ ./home-manager/nix_modules/compose-host.nix ];
+        "liou" = mkHomeConfig "liou" [ ];
 
         # 添加环境时只需一行：
         # "otheruser" = mkHomeConfig "otheruser" [ ];

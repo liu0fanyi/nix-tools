@@ -6,8 +6,6 @@
 }:
 let
   cfg = config.features.podman;
-  # Read secrets from repo root (requires git-crypt)
-  secrets = builtins.fromJSON (builtins.readFile ../../secrets.json);
 in
 {
   options.features.podman = {
@@ -15,21 +13,6 @@ in
       type = lib.types.bool;
       default = config.features.full.enable;
       description = "Enable Podman container tools";
-    };
-    tag-server.enable = lib.mkOption {
-      type = lib.types.bool;
-      default = true;
-      description = "Enable Tag-Server service";
-    };
-    legacyServices.enable = lib.mkOption {
-      type = lib.types.bool;
-      default = true;
-      description = "Enable the legacy Home Manager-managed application services";
-    };
-    hostTerminal.enable = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "Expose the host Nix/zellij terminal to the Compose Caddy over a Unix socket";
     };
   };
 
@@ -44,69 +27,6 @@ in
       fuse-overlayfs
       ttyd
     ];
-
-    home.activation.createPodmanVolumes = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      $DRY_RUN_CMD mkdir -p $VERBOSE_ARG \
-        "$HOME/.config/ddns-go" \
-        "$HOME/dufs" \
-        "$HOME/dufs-lan"
-        # "$HOME/rustfs/data" \
-        # "$HOME/rustfs/logs"
-    '';
-
-    services.podman = lib.mkIf cfg.legacyServices.enable {
-      enable = true;
-      containers = {
-        dufs = {
-          image = "docker.io/sigoden/dufs";
-          autoStart = true;
-          autoUpdate = "registry";
-          # SECURITY: Bind to 127.0.0.1:5005 to be reverse-proxied by Caddy (securely hidden)
-          ports = [ "127.0.0.1:5005:5000" ];
-          # Mounts the host directory %h/dufs (where %h is home directory) to /data inside the container.
-          # To change the host directory, modify the part before the colon: "/path/to/your/files:/data"
-          volumes = [ "%h/dufs:/data" ];
-          # SECURITY: Enable authentication (-a) with admin user
-          extraConfig = {
-            Container = {
-              Exec = "/data -a ${secrets.dufs_auth} --allow-symlink";
-            };
-          };
-        };
-        dufs-lan = {
-          image = "docker.io/sigoden/dufs";
-          autoStart = true;
-          autoUpdate = "registry";
-          # SECURITY: Bind to 127.0.0.1:5007. Caddy handles external access control.
-          # This ensures that even if Podman/pasta misbehaves with IPv6, it's not exposed directly.
-          ports = [ "127.0.0.1:5007:5000" ];
-          volumes = [
-            "%h/dufs-lan:/data"
-            "/media/liou:/data/media:z,rslave"
-          ];
-          extraConfig = {
-            Container = {
-              Exec = "/data -A --allow-symlink";
-            };
-          };
-        };
-        tag-server = lib.mkIf config.features.podman.tag-server.enable {
-          image = "tag-server:latest"; # Local image built from tag-all
-          autoStart = true;
-          ports = [ "127.0.0.1:8081:8081" ];
-          volumes = [
-            "%h/dufs-lan:/data"
-            "%h/dufs-lan:/workspace"
-            "/media/liou:/workspace/media:z,rslave"
-          ];
-          extraConfig = {
-            Container = {
-              EnvironmentFile = "/home/liou/tag_secrets.env";
-            };
-          };
-        };
-      };
-    };
 
     # Enable the Podman socket for TUI/GUI tools
     systemd.user.sockets.podman = {
@@ -132,74 +52,6 @@ in
         KillMode = "process";
         ExecStart = "${pkgs.podman}/bin/podman system service";
       };
-    };
-
-    systemd.user.services.ttyd = lib.mkIf cfg.legacyServices.enable {
-      Unit = {
-        Description = "ttyd web terminal";
-        After = [ "network.target" ];
-      };
-      Service = {
-        WorkingDirectory = "%h/dufs-lan/project";
-        Environment = [
-          "HOME=%h"
-          "SHELL=${pkgs.bashInteractive}/bin/bash"
-          "PATH=%h/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/etc/profiles/per-user/liou/bin:/run/current-system/sw/bin:/usr/bin:/bin"
-        ];
-        ExecStart = "${pkgs.ttyd}/bin/ttyd -p 7681 -i 127.0.0.1 -W -w %h/dufs-lan/project ${pkgs.zellij}/bin/zellij attach -c web-dev options --mouse-mode false";
-        Restart = "on-failure";
-        RestartSec = "2s";
-      };
-      Install = {
-        WantedBy = [ "default.target" ];
-      };
-    };
-
-    systemd.user.services.ttyd-compose = lib.mkIf cfg.hostTerminal.enable {
-      Unit = {
-        Description = "Host development terminal for the dufs-plus Compose stack";
-        Before = [ "dufs-plus-compose.service" ];
-      };
-      Service = {
-        WorkingDirectory = "%h/dufs-lan/project";
-        RuntimeDirectory = "ttyd";
-        RuntimeDirectoryMode = "0700";
-        Environment = [
-          "HOME=%h"
-          "SHELL=${pkgs.bashInteractive}/bin/bash"
-          "PATH=%h/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/etc/profiles/per-user/liou/bin:/run/current-system/sw/bin:/usr/bin:/bin"
-        ];
-        ExecStart = "${pkgs.ttyd}/bin/ttyd -i %t/ttyd/ttyd.sock -W -w %h/dufs-lan/project ${pkgs.zellij}/bin/zellij attach -c web-dev options --mouse-mode false";
-        Restart = "on-failure";
-        RestartSec = "2s";
-      };
-      Install.WantedBy = [ "default.target" ];
-    };
-
-    # home.file.".config/systemd/user/podman-rustfs.service.d/override.conf".text = ''
-    #   [Service]
-    #   Environment="PATH=/usr/bin:/bin:${lib.makeBinPath [ pkgs.podman ]}"
-    # '';
-
-    home.file = lib.mkIf cfg.legacyServices.enable {
-      ".config/systemd/user/podman-dufs.service.d/override.conf".text = ''
-        [Service]
-        Environment="PATH=/usr/bin:/bin:${lib.makeBinPath [ pkgs.podman ]}"
-      '';
-
-      ".config/systemd/user/podman-dufs-lan.service.d/override.conf".text = ''
-        [Service]
-        Environment="PATH=/usr/bin:/bin:${lib.makeBinPath [ pkgs.podman ]}"
-      '';
-
-      ".config/systemd/user/podman-tag-server.service.d/override.conf" =
-        lib.mkIf config.features.podman.tag-server.enable
-          {
-            text = ''
-              [Service]
-              Environment="PATH=/usr/bin:/bin:${lib.makeBinPath [ pkgs.podman ]}"
-            '';
-          };
     };
 
   };

@@ -10,11 +10,11 @@ import tempfile
 import time
 from pathlib import Path
 
+DEPLOY_DIR = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(DEPLOY_DIR / "scripts"))
+
 import render as renderer
 from isolated_test_helpers import replace_key
-
-
-DEPLOY_DIR = Path(__file__).resolve().parents[1]
 
 
 def sqlite_backup(source: Path, destination: Path) -> None:
