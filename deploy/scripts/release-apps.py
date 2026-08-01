@@ -247,9 +247,14 @@ def deploy_tag_server(
 
     transfer_image(image, remote)
     if recreate:
-        manage_local(["recreate", "tag-server"])
-        manage_local(["recreate", "tag-server-readonly"])
-        manage_remote(remote, remote_root, ["recreate", "tag-server"])
+        recreate_tag_servers(remote, remote_root)
+
+
+def recreate_tag_servers(remote: str, remote_root: str) -> None:
+    """Replace containers even when the mutable image tag itself is unchanged."""
+    manage_local(["recreate", "tag-server"])
+    manage_local(["recreate", "tag-server-readonly"])
+    manage_remote(remote, remote_root, ["recreate", "tag-server"])
 
 
 def smoke(remote: str, remote_root: str) -> None:
@@ -329,6 +334,10 @@ def main() -> int:
                 args.remote_root,
                 backup=args.component == "config",
             )
+            if args.component == "all":
+                # `compose up` does not replace a running container merely
+                # because its mutable image tag now points at a new image.
+                recreate_tag_servers(args.remote, args.remote_root)
         if args.component == "runtime-images":
             deploy_runtime_images(args.remote)
         if not args.skip_smoke:
