@@ -41,6 +41,37 @@ def remote_run(remote: str, remote_root: str, argv: list[str]) -> None:
     run(["ssh", remote, command])
 
 
+def manage_local(argv: list[str]) -> None:
+    run(
+        [
+            "python3",
+            str(MANAGE),
+            "--config",
+            str(HOME_CONFIG),
+            "--output",
+            str(HOME_OUTPUT),
+            *argv,
+        ],
+        cwd=NIX_TOOLS,
+    )
+
+
+def manage_remote(remote: str, remote_root: str, argv: list[str]) -> None:
+    remote_run(
+        remote,
+        remote_root,
+        [
+            "python3",
+            "deploy/scripts/manage.py",
+            "--config",
+            "deploy/instances/aliyun.toml",
+            "--output",
+            "deploy/.generated/aliyun",
+            *argv,
+        ],
+    )
+
+
 def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
@@ -144,8 +175,44 @@ def deploy_runtime_images(remote: str) -> None:
         transfer_image(image, remote)
 
 
+def deploy_configuration(
+    remote: str,
+    remote_root: str,
+    *,
+    backup: bool,
+) -> None:
+    run(
+        [
+            "rsync",
+            "-az",
+            "--exclude",
+            "secrets",
+            "--exclude",
+            ".generated",
+            "--exclude",
+            "__pycache__",
+            f"{NIX_TOOLS / 'deploy'}/",
+            f"{remote}:{remote_root}/deploy/",
+        ]
+    )
+    if backup:
+        manage_local(["backup"])
+        manage_remote(remote, remote_root, ["backup"])
+    manage_local(["up", "--confirm"])
+    manage_remote(remote, remote_root, ["up", "--confirm"])
+    # Compose does not necessarily recreate Caddy when only the contents of its
+    # bind-mounted generated Caddyfile change.
+    manage_local(["recreate", "caddy"])
+    manage_remote(remote, remote_root, ["recreate", "caddy"])
+
+
 def deploy_tag_server(
-    tag_source: Path, remote: str, remote_root: str, image: str
+    tag_source: Path,
+    remote: str,
+    remote_root: str,
+    image: str,
+    *,
+    recreate: bool = True,
 ) -> None:
     run(["podman", "build", "-t", image, "-f", "Containerfile", "."], cwd=tag_source)
 
@@ -179,33 +246,10 @@ def deploy_tag_server(
     )
 
     transfer_image(image, remote)
-    run(
-        [
-            "python3",
-            str(MANAGE),
-            "--config",
-            str(HOME_CONFIG),
-            "--output",
-            str(HOME_OUTPUT),
-            "recreate",
-            "tag-server",
-        ],
-        cwd=NIX_TOOLS,
-    )
-    remote_run(
-        remote,
-        remote_root,
-        [
-            "python3",
-            remote_manage,
-            "--config",
-            remote_config,
-            "--output",
-            remote_output,
-            "recreate",
-            "tag-server",
-        ],
-    )
+    if recreate:
+        manage_local(["recreate", "tag-server"])
+        manage_local(["recreate", "tag-server-readonly"])
+        manage_remote(remote, remote_root, ["recreate", "tag-server"])
 
 
 def smoke(remote: str, remote_root: str) -> None:
@@ -248,7 +292,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "component",
-        choices=("all", "frontend", "tag-server", "runtime-images"),
+        choices=("all", "config", "frontend", "tag-server", "runtime-images"),
         nargs="?",
         default="all",
     )
@@ -275,6 +319,15 @@ def main() -> int:
                 args.remote,
                 args.remote_root,
                 image,
+                recreate=args.component != "all",
+            )
+        if args.component in {"all", "config"}:
+            # The tag-server release already made a consistent backup for
+            # `all`; a config-only rollout needs its own backup.
+            deploy_configuration(
+                args.remote,
+                args.remote_root,
+                backup=args.component == "config",
             )
         if args.component == "runtime-images":
             deploy_runtime_images(args.remote)

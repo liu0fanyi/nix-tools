@@ -107,6 +107,12 @@ def validate(config: dict[str, Any]) -> None:
         path = Path(required_string(paths, key, "paths"))
         if not path.is_absolute():
             raise ConfigError(f"[paths].{key} must be absolute")
+    if features["readonly"]:
+        readonly_tag_data = Path(
+            required_string(paths, "readonly_tag_data", "paths")
+        )
+        if not readonly_tag_data.is_absolute():
+            raise ConfigError("[paths].readonly_tag_data must be absolute")
     media = paths.get("media", "")
     if not isinstance(media, str) or (media and not Path(media).is_absolute()):
         raise ConfigError("[paths].media must be empty or absolute")
@@ -145,7 +151,13 @@ def read_lan_auth(secret_dir: Path) -> tuple[str, str]:
     return parts[0], parts[1]
 
 
-def app_routes(terminal: bool, capabilities_json: str) -> str:
+def app_routes(
+    terminal: bool,
+    capabilities_json: str,
+    dufs_service: str = "dufs",
+    tag_service: str = "tag-server",
+    tag_write: bool = True,
+) -> str:
     terminal_routes = ""
     if terminal:
         terminal_routes = """
@@ -167,6 +179,17 @@ handle @terminal {
     reverse_proxy unix//run/host-ttyd/ttyd.sock
 }
 """
+    tag_write_guard = ""
+    if not tag_write:
+        tag_write_guard = """
+@tag_api_mutation {
+    path /tag-api/*
+    not method GET HEAD OPTIONS
+}
+handle @tag_api_mutation {
+    respond "Read-only tag service" 405
+}
+"""
     return f"""
 @dufs_plus_capabilities {{
     path /.dufs-plus/capabilities.json
@@ -183,11 +206,12 @@ root * /srv/dist
     expression {{query}}.contains('json')
 }}
 handle @dufs_api {{
-    reverse_proxy dufs:5000
+    reverse_proxy {dufs_service}:5000
 }}
 
+{tag_write_guard}
 handle_path /tag-api/* {{
-    reverse_proxy tag-server:8081
+    reverse_proxy {tag_service}:8081
 }}
 
 {terminal_routes}
@@ -210,7 +234,7 @@ handle @static {{
 }}
 
 handle {{
-    reverse_proxy dufs:5000
+    reverse_proxy {dufs_service}:5000
 }}
 """.strip()
 
@@ -280,7 +304,27 @@ def render_caddy(config: dict[str, Any], lan_auth: tuple[str, str]) -> str:
         },
         separators=(",", ":"),
     )
-    routes = app_routes(features["terminal"], capabilities_json)
+    routes = app_routes(
+        features["terminal"],
+        capabilities_json,
+        tag_write=features["dufs_write"],
+    )
+    readonly_capabilities_json = json.dumps(
+        {
+            "dufs_write": False,
+            "tag_write": False,
+            "bevy_sketch": False,
+            "terminal": False,
+        },
+        separators=(",", ":"),
+    )
+    readonly_routes = app_routes(
+        False,
+        readonly_capabilities_json,
+        dufs_service="dufs-readonly",
+        tag_service="tag-server-readonly",
+        tag_write=False,
+    )
     auth = auth_routes(domains["public"]) if features["authelia"] else ""
 
     if profile == "vps-direct":
@@ -297,7 +341,12 @@ def render_caddy(config: dict[str, Any], lan_auth: tuple[str, str]) -> str:
             sites.append(
                 f"""
 {domains["readonly_public"]} {{
-    reverse_proxy dufs-readonly:5000
+    @not_options not method OPTIONS
+    basic_auth @not_options {{
+        {lan_auth[0]} {lan_auth[1]}
+    }}
+
+{textwrap.indent(readonly_routes, "    ")}
 }}
 """
             )
@@ -325,12 +374,20 @@ def render_caddy(config: dict[str, Any], lan_auth: tuple[str, str]) -> str:
     lan_cidrs = " ".join(security["lan_cidrs"])
     readonly_site = ""
     if features["readonly"]:
+        readonly_auth_routes = f"""@not_options not method OPTIONS
+basic_auth @not_options {{
+    {username} {password_hash}
+}}
+
+{readonly_routes}"""
         readonly_site = f"""
-https://{domains["readonly_origin"]}:{ports["readonly_origin"]}, https://{domains["readonly_public"]}:{ports["readonly_origin"]} {{
+http://:{ports["readonly_origin"]} {{
+{textwrap.indent(readonly_auth_routes, "    ")}
+}}
+
+https://{domains["readonly_origin"]}:5443, https://{domains["readonly_public"]}:5443 {{
     tls internal
-    @origin_host host {domains["readonly_origin"]}
-    redir @origin_host https://{domains["readonly_public"]}{{uri}} permanent
-    reverse_proxy dufs-readonly:5000
+{textwrap.indent(readonly_auth_routes, "    ")}
 }}
 """
 
@@ -465,11 +522,15 @@ def render_instance_compose(
         caddy_volumes.append(
             f"{paths['terminal_socket_dir']}:/run/host-ttyd:ro"
         )
-    dufs_volumes = [f"{workspace}:/data"]
-    tag_volumes = [f"{workspace}:/workspace", f"{tag_data}:/data"]
+    source_mode = "" if features["dufs_write"] else ":ro"
+    dufs_volumes = [f"{workspace}:/data{source_mode}"]
+    tag_volumes = [
+        f"{workspace}:/workspace{source_mode}",
+        f"{tag_data}:/data",
+    ]
     if paths.get("media"):
-        dufs_volumes.append(f"{paths['media']}:/data/media")
-        tag_volumes.append(f"{paths['media']}:/workspace/media")
+        dufs_volumes.append(f"{paths['media']}:/data/media{source_mode}")
+        tag_volumes.append(f"{paths['media']}:/workspace/media{source_mode}")
 
     tag_secret = secret_dir / "tag-server.env"
     if is_file(tag_secret):
@@ -502,7 +563,7 @@ def render_instance_compose(
         "          . /run/secrets/tag-server.env",
         "          set +a",
         "        fi",
-        "        exec /app/tag-server --database /data/tag_all.db --workspace /workspace --addr 0.0.0.0:8081",
+        "        exec /app/tag-server --database /data/tag_all.db --workspace /workspace --metadata-dir /data/metadata --addr 0.0.0.0:8081",
         "    volumes:",
         yaml_list(tag_volumes, 6),
     ]
@@ -527,6 +588,15 @@ def render_instance_compose(
         )
 
     if features["readonly"]:
+        readonly_tag_data = paths["readonly_tag_data"]
+        readonly_tag_volumes = [
+            f"{paths['readonly']}:/workspace:ro",
+            f"{readonly_tag_data}:/data",
+        ]
+        if is_file(tag_secret):
+            readonly_tag_volumes.append(
+                f"{tag_secret}:/run/secrets/tag-server.env:ro"
+            )
         lines.extend(
             [
                 "  dufs-readonly:",
@@ -534,10 +604,21 @@ def render_instance_compose(
                 yaml_list(
                     [
                         f"{paths['readonly']}:/data:ro",
-                        f"{secret_dir / 'dufs-readonly.yaml'}:/run/secrets/dufs-readonly.yaml:ro",
                     ],
                     6,
                 ),
+                "  tag-server-readonly:",
+                '    entrypoint: ["/bin/sh", "-ec"]',
+                "    command:",
+                "      - |",
+                "        if [ -f /run/secrets/tag-server.env ]; then",
+                "          set -a",
+                "          . /run/secrets/tag-server.env",
+                "          set +a",
+                "        fi",
+                "        exec /app/tag-server --database /data/tag_all.db --workspace /workspace --metadata-dir /data/metadata --addr 0.0.0.0:8081",
+                "    volumes:",
+                yaml_list(readonly_tag_volumes, 6),
             ]
         )
 
@@ -597,10 +678,8 @@ def render(config_path: Path, output: Path) -> None:
                 "authelia_users_database.yml",
             ]
         )
-    if profile == "home-ipv6-cdn":
+    if profile == "home-ipv6-cdn" or features["readonly"]:
         required_secrets.append("caddy_lan_basic_auth")
-    if features["readonly"]:
-        required_secrets.append("dufs-readonly.yaml")
     missing = [
         str(secret_dir / name)
         for name in required_secrets
@@ -621,7 +700,7 @@ def render(config_path: Path, output: Path) -> None:
 
     lan_auth = (
         read_lan_auth(secret_dir)
-        if profile == "home-ipv6-cdn"
+        if profile == "home-ipv6-cdn" or features["readonly"]
         else ("unused", "$2a$04$unusedunusedunusedunusedunusedunusedunusedunusedunused")
     )
     caddyfile = output / "Caddyfile"
@@ -648,6 +727,7 @@ def render(config_path: Path, output: Path) -> None:
         env_line("COMPOSE_PROJECT_NAME", deployment["name"]),
         env_line("TZ", deployment["timezone"]),
         env_line("CADDY_IMAGE", images["caddy"]),
+        env_line("READONLY_GATEWAY_IMAGE", images["readonly_gateway"]),
         env_line("DUFS_IMAGE", images["dufs"]),
         env_line("TAG_SERVER_IMAGE", images["tag_server"]),
         env_line("AUTHELIA_IMAGE", images["authelia"]),

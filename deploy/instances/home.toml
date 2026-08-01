@@ -25,8 +25,9 @@ ddns = true
 [paths]
 host_home = "/home/liou"
 workspace = "/home/liou/dufs-lan"
-tag_data = "/home/liou/dufs-lan"
+tag_data = "/home/liou/dufs-lan/.dufs_plus_state"
 readonly = "/home/liou/dufs"
+readonly_tag_data = "/home/liou/dufs/.dufs_plus_state"
 media = "/media/liou"
 dist = "/home/liou/dufs-lan/dist"
 authelia_data = "/home/liou/.local/share/authelia"
@@ -46,6 +47,7 @@ https = 443
 
 [images]
 caddy = "docker.io/library/caddy:2.11.4-alpine"
+readonly_gateway = "docker.io/library/haproxy:3.2.21-alpine"
 dufs = "docker.io/sigoden/dufs:0.46.0"
 tag_server = "localhost/tag-server:dufs-plus"
 authelia = "docker.io/authelia/authelia:4.39.20"

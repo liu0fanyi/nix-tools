@@ -99,20 +99,21 @@ def main() -> int:
             subprocess.run(up, check=True)
             started = True
             deadline = time.monotonic() + 45
-            results: tuple[int, int, int, int, int] | None = None
+            results: tuple[int, int, int, int, int, int] | None = None
             while time.monotonic() < deadline:
                 try:
                     results = (
                         status("/"),
                         status("/?json"),
                         status("/tag-api/tags"),
+                        status("/tag-api/tags", method="POST"),
                         status("/", forwarded_http=True),
                         status("/.dufs-readonly-probe.txt", method="PUT"),
                     )
                     probe_absent = not (
                         workspace / ".dufs-readonly-probe.txt"
                     ).exists()
-                    if results == (200, 200, 200, 302, 403) and probe_absent:
+                    if results == (200, 200, 200, 405, 302, 403) and probe_absent:
                         break
                 except (subprocess.CalledProcessError, ValueError):
                     pass
@@ -126,7 +127,8 @@ def main() -> int:
             print(
                 "Aliyun profile passed: "
                 f"UI={results[0]}, DUFS={results[1]}, tags={results[2]}, "
-                f"EdgeOne redirect={results[3]}, write={results[4]}"
+                f"tag write={results[3]}, EdgeOne redirect={results[4]}, "
+                f"file write={results[5]}"
             )
         finally:
             if started:

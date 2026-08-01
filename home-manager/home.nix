@@ -65,6 +65,8 @@
   ];
   programs.yazi = {
     enable = true;
+    # Keep the existing wrapper command stable across Home Manager upgrades.
+    shellWrapperName = "yy";
 
     settings = {
       plugin = {
@@ -190,6 +192,13 @@
 
   programs.home-manager.enable = true;
 
+  # The local Home Manager options manual is not used here. Disabling it also
+  # avoids an upstream options.json derivation that loses Nix store context.
+  manual.manpages.enable = false;
+
   # Ensure systemd user services are started/restarted on switch
+  # Use the host client on non-NixOS; nixpkgs systemctl may be newer than the
+  # running host daemon and fail to connect to its user bus.
+  systemd.user.systemctlPath = "/usr/bin/systemctl";
   systemd.user.startServices = "sd-switch";
 }

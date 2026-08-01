@@ -93,7 +93,7 @@ def preflight(config_path: Path, output: Path) -> int:
     if features["authelia"]:
         required_dirs.extend(["authelia_data", "secrets"])
     if features["readonly"]:
-        required_dirs.append("readonly")
+        required_dirs.extend(["readonly", "readonly_tag_data"])
     if profile == "home-ipv6-cdn":
         required_dirs.append("ddns_config")
     if paths.get("media"):
@@ -105,11 +105,20 @@ def preflight(config_path: Path, output: Path) -> int:
         path = Path(paths[key])
         if not path.is_dir():
             errors.append(f"[paths].{key} is not a directory: {path}")
+    if features["readonly"]:
+        readonly_metadata = Path(paths["readonly_tag_data"]) / "metadata"
+        if not readonly_metadata.is_dir():
+            errors.append(
+                "read-only tag metadata directory is missing: "
+                f"{readonly_metadata}"
+            )
 
     expected_files = [
         Path(paths["tag_data"]) / "tag_all.db",
         Path(paths["dist"]) / "index.html",
     ]
+    if features["readonly"]:
+        expected_files.append(Path(paths["readonly_tag_data"]) / "tag_all.db")
     if features["authelia"]:
         expected_files.append(Path(paths["authelia_data"]) / "db.sqlite3")
     if profile == "home-ipv6-cdn":
@@ -174,6 +183,22 @@ def preflight(config_path: Path, output: Path) -> int:
                 errors.append(f"Tag SQLite quick_check failed: {result}")
         except sqlite3.Error as error:
             errors.append(f"unable to check Tag SQLite: {error}")
+
+    if features["readonly"]:
+        readonly_tag_db = Path(paths["readonly_tag_data"]) / "tag_all.db"
+        if readonly_tag_db.is_file():
+            try:
+                connection = sqlite3.connect(
+                    f"file:{readonly_tag_db}?mode=ro", uri=True
+                )
+                result = connection.execute("PRAGMA quick_check").fetchone()
+                connection.close()
+                if not result or result[0] != "ok":
+                    errors.append(
+                        f"Read-only Tag SQLite quick_check failed: {result}"
+                    )
+            except sqlite3.Error as error:
+                errors.append(f"unable to check read-only Tag SQLite: {error}")
 
     authelia_db = Path(paths["authelia_data"]) / "db.sqlite3"
     if features["authelia"] and authelia_db.is_file():
@@ -250,6 +275,12 @@ def backup(
     features = renderer.table(config, "features")
     tag_db = Path(paths["tag_data"]) / "tag_all.db"
     sqlite_backup(tag_db, destination / "tag_all.db")
+    if features["readonly"]:
+        readonly_tag_db = Path(paths["readonly_tag_data"]) / "tag_all.db"
+        if readonly_tag_db.is_file():
+            sqlite_backup(
+                readonly_tag_db, destination / "readonly_tag_all.db"
+            )
     if features["authelia"]:
         authelia_db = Path(paths["authelia_data"]) / "db.sqlite3"
         sqlite_backup(authelia_db, destination / "authelia.db.sqlite3")
@@ -448,6 +479,8 @@ def main() -> int:
             "caddy",
             "dufs",
             "tag-server",
+            "tag-server-readonly",
+            "readonly-gateway",
             "authelia",
             "dufs-readonly",
             "ddns-go",

@@ -11,9 +11,31 @@ The deployment has one shared Compose stack and one TOML file per machine:
 the authenticated home instance and disabled for the public Aliyun instance.
 Read-only is the safe default in the shared Compose file.
 
+When `features.readonly` is enabled, the additional home endpoint is a complete
+read-only dufs-plus instance rather than the stock DUFS UI. It reuses the same
+immutable frontend files and container image, but has its own
+`dufs-readonly`/`tag-server-readonly` services, workspace, SQLite database, and
+thumbnail metadata directory. Caddy advertises all write capabilities as
+disabled and rejects non-read tag API methods. Internal tag-server database and
+thumbnail-cache writes remain isolated under `paths.readonly_tag_data`; the
+served source tree stays mounted read-only. Both home instances keep their
+database and generated metadata in a per-root `.dufs_plus_state` directory.
+Caddy authenticates the complete read-only site with the same Basic Auth account
+as port 5006; the internal DUFS backend does not issue a second authentication
+challenge.
+
+Port 5008 accepts both protocols through the small `readonly-gateway` service:
+plain HTTP is forwarded to Caddy's LAN listener, while a TLS ClientHello is
+forwarded to its HTTPS listener. Consequently `http://nuc.local:5008/` behaves
+like port 5006, while EdgeOne can continue HTTPS origin connections to the same
+port without depending on a particular dynamic IPv6 address.
+
 The Aliyun instance deliberately serves plain HTTP to EdgeOne. Caddy redirects
 only requests carrying `X-Forwarded-Proto: http`; this preserves public HTTPS
 without creating an EdgeOne-to-origin redirect loop. It does not publish 443.
+Like the additional home read-only instance, it rejects Tag API mutations and
+mounts the served workspace read-only. Its separate SQLite database and
+thumbnail metadata directory remain writable for internal indexing and caches.
 
 Runtime secrets and databases remain outside Git. The home instance reuses the
 existing directories. The Aliyun instance reuses:
@@ -77,8 +99,9 @@ The Aliyun test runs its HTTP origin temporarily on local port 15080.
 ## Releasing applications to both machines
 
 After the initial VPS installation, this command builds both applications once,
-updates the local instance, sends the same artifacts/image to Aliyun, and smoke
-tests both:
+updates the local instance, synchronizes the non-secret deployment control
+plane, sends the same artifacts/image to Aliyun, applies both Compose stacks,
+and smoke tests both:
 
 ```bash
 python3 deploy/scripts/release-apps.py all
@@ -89,11 +112,13 @@ Individual releases are also supported:
 ```bash
 python3 deploy/scripts/release-apps.py frontend --skip-bevy
 python3 deploy/scripts/release-apps.py tag-server
+python3 deploy/scripts/release-apps.py config
 ```
 
 Frontend assets are uploaded with `index.html` last. Tag Server databases are
 backed up on both machines before the image is transferred and the single
-service is recreated. Container images are always transferred as individual
+VPS service is recreated; the home release recreates both writable and
+read-only tag-server instances. Container images are always transferred as individual
 `podman save | zstd | ssh | docker load` streams; the VPS never needs to pull
 them from Docker Hub. To seed or refresh all runtime images:
 

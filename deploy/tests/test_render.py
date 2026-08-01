@@ -55,15 +55,37 @@ class RenderTests(unittest.TestCase):
         caddy = (output / "Caddyfile").read_text(encoding="utf-8")
         files = (output / "compose-files.txt").read_text(encoding="utf-8")
         self.assertIn("home.wttliou.top:5009", caddy)
-        self.assertIn("work.wttliou.top:5008", caddy)
+        self.assertIn("http://:5008", caddy)
+        self.assertIn("https://work.wttliou.top:5443", caddy)
         self.assertIn("compose.ddns.yaml", files)
         self.assertIn("compose.readonly.yaml", files)
         self.assertIn("compose.authelia.yaml", files)
         self.assertIn('"dufs_write":true', caddy)
         self.assertIn('"terminal":true', caddy)
+        self.assertIn('"dufs_write":false', caddy)
+        self.assertIn('"tag_write":false', caddy)
         self.assertIn("unix//run/host-ttyd/ttyd.sock", caddy)
+        self.assertIn("reverse_proxy dufs-readonly:5000", caddy)
+        self.assertIn("reverse_proxy tag-server-readonly:8081", caddy)
+        self.assertIn('respond "Read-only tag service" 405', caddy)
+        self.assertGreaterEqual(caddy.count("root * /srv/dist"), 3)
         instance = (output / "compose.instance.yaml").read_text(encoding="utf-8")
+        env = (output / "compose.env").read_text(encoding="utf-8")
+        self.assertIn(
+            "READONLY_GATEWAY_IMAGE=docker.io/library/haproxy:3.2.21-alpine",
+            env,
+        )
         self.assertIn("/run/host-ttyd:ro", instance)
+        self.assertIn("tag-server-readonly:", instance)
+        self.assertIn(
+            '"/home/liou/dufs:/workspace:ro"',
+            instance,
+        )
+        self.assertIn(
+            '"/home/liou/dufs/.dufs_plus_state:/data"',
+            instance,
+        )
+        self.assertIn("--metadata-dir /data/metadata", instance)
         self.assertTrue((output / "ttyd-compose.service").is_file())
 
     def test_vps_profile(self) -> None:
@@ -105,9 +127,13 @@ class RenderTests(unittest.TestCase):
         self.assertNotIn("compose.ddns.yaml", files)
         self.assertNotIn("--allow-all", instance)
         self.assertIn('"dufs_write":false', caddy)
+        self.assertIn('"tag_write":false', caddy)
         self.assertIn('"terminal":false', caddy)
-        self.assertIn('"/root/nix-tools/dufs_data:/data"', instance)
+        self.assertIn('respond "Read-only tag service" 405', caddy)
+        self.assertIn('"/root/nix-tools/dufs_data:/data:ro"', instance)
+        self.assertIn('"/root/nix-tools/dufs_data:/workspace:ro"', instance)
         self.assertIn('"/root/nix-tools/tag-db:/data"', instance)
+        self.assertIn("--metadata-dir /data/metadata", instance)
         self.assertIn('"engine": "docker"', manifest)
 
 

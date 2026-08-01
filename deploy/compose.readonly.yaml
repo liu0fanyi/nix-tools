@@ -2,12 +2,19 @@ services:
   caddy:
     depends_on:
       - dufs-readonly
+      - tag-server-readonly
 
   dufs-readonly:
     image: ${DUFS_IMAGE}
     restart: unless-stopped
     command:
-      - --config
-      - /run/secrets/dufs-readonly.yaml
+      - /data
+      - --allow-symlink
+    networks:
+      - app
+
+  tag-server-readonly:
+    image: ${TAG_SERVER_IMAGE}
+    restart: unless-stopped
     networks:
       - app
