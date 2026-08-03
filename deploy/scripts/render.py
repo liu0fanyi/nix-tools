@@ -202,23 +202,29 @@ handle @dufs_plus_capabilities {{
 
 root * /srv/dist
 
-@dufs_api {{
-    expression {{query}}.contains('json')
+@html_entry {{
+    method GET HEAD
+    path / /index.html /dist/bevy-sketch /dist/bevy-sketch/ /dist/bevy-sketch/index.html
 }}
-handle @dufs_api {{
-    reverse_proxy {dufs_service}:5000
-}}
+header @html_entry Cache-Control "no-cache, must-revalidate"
 
 {tag_write_guard}
 handle_path /tag-api/* {{
     reverse_proxy {tag_service}:8081
 }}
 
+@dufs_api {{
+    expression {{query}}=='json'||{{query}}.startsWith('json&')
+}}
+handle @dufs_api {{
+    reverse_proxy {dufs_service}:5000
+}}
+
 {terminal_routes}
 @ui_root {{
     method GET HEAD
     path /
-    not expression {{query}}.contains('json')
+    not expression {{query}}=='json'||{{query}}.startsWith('json&')
 }}
 handle @ui_root {{
     rewrite * /index.html

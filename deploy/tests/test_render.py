@@ -68,6 +68,24 @@ class RenderTests(unittest.TestCase):
         self.assertIn("reverse_proxy dufs-readonly:5000", caddy)
         self.assertIn("reverse_proxy tag-server-readonly:8081", caddy)
         self.assertIn('respond "Read-only tag service" 405', caddy)
+        self.assertIn(
+            "path / /index.html /dist/bevy-sketch /dist/bevy-sketch/ "
+            "/dist/bevy-sketch/index.html",
+            caddy,
+        )
+        self.assertIn(
+            'header @html_entry Cache-Control "no-cache, must-revalidate"',
+            caddy,
+        )
+        self.assertNotIn("{query}.contains('json')", caddy)
+        self.assertIn(
+            "expression {query}=='json'||{query}.startsWith('json&')",
+            caddy,
+        )
+        self.assertLess(
+            caddy.index("handle_path /tag-api/*"),
+            caddy.index("handle @dufs_api"),
+        )
         self.assertGreaterEqual(caddy.count("root * /srv/dist"), 3)
         instance = (output / "compose.instance.yaml").read_text(encoding="utf-8")
         env = (output / "compose.env").read_text(encoding="utf-8")
