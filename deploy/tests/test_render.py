@@ -61,16 +61,29 @@ class RenderTests(unittest.TestCase):
         self.assertIn("compose.readonly.yaml", files)
         self.assertIn("compose.authelia.yaml", files)
         self.assertIn('"dufs_write":true', caddy)
+        self.assertIn('"game_tools":true', caddy)
         self.assertIn('"terminal":true', caddy)
         self.assertIn('"dufs_write":false', caddy)
         self.assertIn('"tag_write":false', caddy)
+        self.assertIn('"game_tools":false', caddy)
         self.assertIn("unix//run/host-ttyd/ttyd.sock", caddy)
         self.assertIn("reverse_proxy dufs-readonly:5000", caddy)
         self.assertIn("reverse_proxy tag-server-readonly:8081", caddy)
         self.assertIn('respond "Read-only tag service" 405', caddy)
+        self.assertIn('@game_tools {', caddy)
+        self.assertIn('path /dist/bevy-game /dist/bevy-game/*', caddy)
         self.assertIn(
-            "path / /index.html /dist/bevy-sketch /dist/bevy-sketch/ "
-            "/dist/bevy-sketch/index.html",
+            "/dist/bevy-game/animation-editor/index.html "
+            "/dist/bevy-game/galgame",
+            caddy,
+        )
+        self.assertIn(
+            "/dist/bevy-game/gallery-2d/index.html "
+            "/dist/bevy-game/gallery-3d",
+            caddy,
+        )
+        self.assertIn(
+            "handle_path /dist/*",
             caddy,
         )
         self.assertIn(
@@ -146,8 +159,10 @@ class RenderTests(unittest.TestCase):
         self.assertNotIn("--allow-all", instance)
         self.assertIn('"dufs_write":false', caddy)
         self.assertIn('"tag_write":false', caddy)
+        self.assertIn('"game_tools":false', caddy)
         self.assertIn('"terminal":false', caddy)
         self.assertIn('respond "Read-only tag service" 405', caddy)
+        self.assertIn('@game_tools {', caddy)
         self.assertIn('"/root/nix-tools/dufs_data:/data:ro"', instance)
         self.assertIn('"/root/nix-tools/dufs_data:/workspace:ro"', instance)
         self.assertIn('"/root/nix-tools/tag-db:/data"', instance)

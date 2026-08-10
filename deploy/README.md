@@ -23,6 +23,9 @@ database and generated metadata in a per-root `.dufs_plus_state` directory.
 Caddy authenticates the complete read-only site with the same Basic Auth account
 as port 5006; the internal DUFS backend does not issue a second authentication
 challenge.
+Read-only instances also report `game_tools: false` and reject
+`/dist/bevy-game/*` at Caddy, so the game tools are neither shown in the top bar
+nor reachable through a copied direct URL.
 
 Port 5008 accepts both protocols through the small `readonly-gateway` service:
 plain HTTP is forwarded to Caddy's LAN listener, while a TLS ClientHello is

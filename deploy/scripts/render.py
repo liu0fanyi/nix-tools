@@ -157,6 +157,7 @@ def app_routes(
     dufs_service: str = "dufs",
     tag_service: str = "tag-server",
     tag_write: bool = True,
+    game_tools: bool = True,
 ) -> str:
     terminal_routes = ""
     if terminal:
@@ -190,6 +191,16 @@ handle @tag_api_mutation {
     respond "Read-only tag service" 405
 }
 """
+    game_tools_guard = ""
+    if not game_tools:
+        game_tools_guard = """
+@game_tools {
+    path /dist/bevy-game /dist/bevy-game/*
+}
+handle @game_tools {
+    respond "Not found" 404
+}
+"""
     return f"""
 @dufs_plus_capabilities {{
     path /.dufs-plus/capabilities.json
@@ -204,11 +215,12 @@ root * /srv/dist
 
 @html_entry {{
     method GET HEAD
-    path / /index.html /dist/bevy-sketch /dist/bevy-sketch/ /dist/bevy-sketch/index.html
+    path / /index.html /dist/bevy-sketch /dist/bevy-sketch/ /dist/bevy-sketch/index.html /dist/bevy-game/animation-editor /dist/bevy-game/animation-editor/ /dist/bevy-game/animation-editor/index.html /dist/bevy-game/galgame /dist/bevy-game/galgame/ /dist/bevy-game/galgame/index.html /dist/bevy-game/gallery-2d /dist/bevy-game/gallery-2d/ /dist/bevy-game/gallery-2d/index.html /dist/bevy-game/gallery-3d /dist/bevy-game/gallery-3d/ /dist/bevy-game/gallery-3d/index.html
 }}
 header @html_entry Cache-Control "no-cache, must-revalidate"
 
 {tag_write_guard}
+{game_tools_guard}
 handle_path /tag-api/* {{
     reverse_proxy {tag_service}:8081
 }}
@@ -228,6 +240,10 @@ handle @dufs_api {{
 }}
 handle @ui_root {{
     rewrite * /index.html
+    file_server
+}}
+
+handle_path /dist/* {{
     file_server
 }}
 
@@ -306,6 +322,7 @@ def render_caddy(config: dict[str, Any], lan_auth: tuple[str, str]) -> str:
             "dufs_write": features["dufs_write"],
             "tag_write": features["dufs_write"],
             "bevy_sketch": features["dufs_write"],
+            "game_tools": features["dufs_write"],
             "terminal": features["terminal"],
         },
         separators=(",", ":"),
@@ -314,12 +331,14 @@ def render_caddy(config: dict[str, Any], lan_auth: tuple[str, str]) -> str:
         features["terminal"],
         capabilities_json,
         tag_write=features["dufs_write"],
+        game_tools=features["dufs_write"],
     )
     readonly_capabilities_json = json.dumps(
         {
             "dufs_write": False,
             "tag_write": False,
             "bevy_sketch": False,
+            "game_tools": False,
             "terminal": False,
         },
         separators=(",", ":"),
@@ -330,6 +349,7 @@ def render_caddy(config: dict[str, Any], lan_auth: tuple[str, str]) -> str:
         dufs_service="dufs-readonly",
         tag_service="tag-server-readonly",
         tag_write=False,
+        game_tools=False,
     )
     auth = auth_routes(domains["public"]) if features["authelia"] else ""
 
