@@ -222,7 +222,10 @@ header @html_entry Cache-Control "no-cache, must-revalidate"
 {tag_write_guard}
 {game_tools_guard}
 handle_path /tag-api/* {{
-    reverse_proxy {tag_service}:8081
+    reverse_proxy {tag_service}:8081 {{
+        header_up -X-Dufs-Device-Api
+        header_up -X-Dufs-Device-Provisioning
+    }}
 }}
 
 @dufs_api {{
@@ -423,11 +426,37 @@ https://{domains["readonly_origin"]}:5443, https://{domains["readonly_public"]}:
         + readonly_site
         + f"""
 http://:{ports["lan"]} {{
+    @device_api {{
+        remote_ip {lan_cidrs}
+        path /device-api/listing /device-api/device-session
+    }}
+    handle @device_api {{
+        uri strip_prefix /device-api
+        reverse_proxy tag-server:8081 {{
+            header_up X-Dufs-Device-Api 1
+            header_up -X-Dufs-Device-Provisioning
+        }}
+    }}
+    @unknown_device_api {{
+        remote_ip {lan_cidrs}
+        path /device-api/*
+    }}
+    handle @unknown_device_api {{
+        respond "Unknown device API" 404
+    }}
+
     @lan remote_ip {lan_cidrs}
     handle @lan {{
         @not_options not method OPTIONS
         basic_auth @not_options {{
             {username} {password_hash}
+        }}
+
+        handle_path /tag-api/device-sessions {{
+            reverse_proxy tag-server:8081 {{
+                header_up X-Dufs-Device-Provisioning 1
+                header_up -X-Dufs-Device-Api
+            }}
         }}
 
 {textwrap.indent(routes, "        ")}
