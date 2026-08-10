@@ -69,7 +69,10 @@ class RenderTests(unittest.TestCase):
         self.assertIn("unix//run/host-ttyd/ttyd.sock", caddy)
         self.assertIn("reverse_proxy dufs-readonly:5000", caddy)
         self.assertIn("reverse_proxy tag-server-readonly:8081", caddy)
-        self.assertIn("path /device-api/listing /device-api/device-session", caddy)
+        self.assertIn(
+            "path /device-api/listing /device-api/thumbnail /device-api/media/cover /device-api/device-session",
+            caddy,
+        )
         self.assertIn("handle /tag-api/device-sessions", caddy)
         self.assertIn("uri strip_prefix /tag-api", caddy)
         self.assertIn("header_up X-Dufs-Device-Api 1", caddy)
