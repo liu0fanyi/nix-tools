@@ -452,7 +452,8 @@ http://:{ports["lan"]} {{
             {username} {password_hash}
         }}
 
-        handle_path /tag-api/device-sessions {{
+        handle /tag-api/device-sessions {{
+            uri strip_prefix /tag-api
             reverse_proxy tag-server:8081 {{
                 header_up X-Dufs-Device-Provisioning 1
                 header_up -X-Dufs-Device-Api
