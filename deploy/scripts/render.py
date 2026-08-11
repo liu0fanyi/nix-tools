@@ -428,7 +428,7 @@ https://{domains["readonly_origin"]}:5443, https://{domains["readonly_public"]}:
 http://:{ports["lan"]} {{
     @device_api {{
         remote_ip {lan_cidrs}
-        path /device-api/listing /device-api/v1/files /device-api/v1/comics/manifest /device-api/v1/comics/page /device-api/thumbnail /device-api/media/cover /device-api/device-session
+        path /device-api/listing /device-api/v1/files /device-api/v1/comics/manifest /device-api/v1/comics/page /device-api/v1/pdf/info /device-api/pdf/render /device-api/thumbnail /device-api/media/cover /device-api/device-session
     }}
     handle @device_api {{
         uri strip_prefix /device-api
