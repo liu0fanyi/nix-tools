@@ -70,7 +70,7 @@ class RenderTests(unittest.TestCase):
         self.assertIn("reverse_proxy dufs-readonly:5000", caddy)
         self.assertIn("reverse_proxy tag-server-readonly:8081", caddy)
         self.assertIn(
-            "path /device-api/listing /device-api/v1/files /device-api/thumbnail /device-api/media/cover /device-api/device-session",
+            "path /device-api/listing /device-api/v1/files /device-api/v1/comics/manifest /device-api/v1/comics/page /device-api/thumbnail /device-api/media/cover /device-api/device-session",
             caddy,
         )
         self.assertIn("handle /tag-api/device-sessions", caddy)
