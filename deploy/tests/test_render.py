@@ -77,7 +77,13 @@ class RenderTests(unittest.TestCase):
         self.assertIn("uri strip_prefix /tag-api", caddy)
         self.assertIn("header_up X-Dufs-Device-Api 1", caddy)
         self.assertIn("header_up X-Dufs-Device-Provisioning 1", caddy)
+        self.assertGreaterEqual(caddy.count("header_up -X-Dufs-Device-Api"), 4)
+        self.assertGreaterEqual(caddy.count("header_up -X-Dufs-Device-Provisioning"), 4)
+        self.assertIn("path /device-api /device-api/*", caddy)
         self.assertIn('respond "Unknown device API" 404', caddy)
+        self.assertIn('@public_device_api path /device-api /device-api/*', caddy)
+        self.assertLess(caddy.index("@public_device_api"), caddy.index("forward_auth"))
+        self.assertIn("not path /authelia/* /device-api /device-api/*", caddy)
         self.assertIn('respond "Read-only tag service" 405', caddy)
         self.assertIn('@game_tools {', caddy)
         self.assertIn('path /dist/bevy-game /dist/bevy-game/*', caddy)
@@ -128,6 +134,29 @@ class RenderTests(unittest.TestCase):
         self.assertIn("--metadata-dir /data/metadata", instance)
         self.assertTrue((output / "ttyd-compose.service").is_file())
 
+    def test_cors_origins_are_explicit_and_shell_quoted(self) -> None:
+        config, output, temp = self.prepare("home-ipv6-cdn")
+        self.addCleanup(temp.cleanup)
+        text = config.read_text(encoding="utf-8").replace(
+            "cors_origins = []",
+            'cors_origins = ["http://device.local:8080"]',
+        )
+        config.write_text(text, encoding="utf-8")
+        render.render(config, output)
+        instance = (output / "compose.instance.yaml").read_text(encoding="utf-8")
+        self.assertEqual(instance.count("--cors-origin http://device.local:8080"), 2)
+
+    def test_invalid_cors_origin_is_rejected(self) -> None:
+        config, output, temp = self.prepare("home-ipv6-cdn")
+        self.addCleanup(temp.cleanup)
+        text = config.read_text(encoding="utf-8").replace(
+            "cors_origins = []",
+            'cors_origins = ["https://device.local/path"]',
+        )
+        config.write_text(text, encoding="utf-8")
+        with self.assertRaises(render.ConfigError):
+            render.render(config, output)
+
     def test_vps_profile(self) -> None:
         config, output, temp = self.prepare("vps-direct")
         self.addCleanup(temp.cleanup)
@@ -135,6 +164,7 @@ class RenderTests(unittest.TestCase):
         caddy = (output / "Caddyfile").read_text(encoding="utf-8")
         files = (output / "compose-files.txt").read_text(encoding="utf-8")
         self.assertIn("nas.wttliou.top {", caddy)
+        self.assertIn('@public_device_api path /device-api /device-api/*', caddy)
         self.assertNotIn("tls internal", caddy)
         self.assertNotIn("compose.ddns.yaml", files)
         self.assertIn("compose.vps-direct.yaml", files)
@@ -161,6 +191,7 @@ class RenderTests(unittest.TestCase):
         manifest = (output / "manifest.json").read_text(encoding="utf-8")
         self.assertIn("http://wttliou.top, http://www.wttliou.top", caddy)
         self.assertIn("X-Forwarded-Proto http", caddy)
+        self.assertIn('@public_device_api path /device-api /device-api/*', caddy)
         self.assertNotIn("authelia", caddy)
         self.assertIn("compose.aliyun-edgeone-http.yaml", files)
         self.assertNotIn("compose.authelia.yaml", files)

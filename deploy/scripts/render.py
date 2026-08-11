@@ -8,9 +8,11 @@ import ipaddress
 import json
 import os
 import re
+import shlex
 import sys
 import textwrap
 import tomllib
+import urllib.parse
 from pathlib import Path
 from typing import Any
 
@@ -138,6 +140,23 @@ def validate(config: dict[str, Any]) -> None:
                 ipaddress.ip_network(value)
             except ValueError as error:
                 raise ConfigError(f"invalid CIDR in {key}: {value}") from error
+    cors_origins = security.get("cors_origins", [])
+    if not isinstance(cors_origins, list) or not all(
+        isinstance(value, str) for value in cors_origins
+    ):
+        raise ConfigError("[security].cors_origins must be an array of origins")
+    for origin in cors_origins:
+        parsed = urllib.parse.urlsplit(origin)
+        if (
+            parsed.scheme not in {"http", "https"}
+            or not parsed.netloc
+            or parsed.username is not None
+            or parsed.password is not None
+            or parsed.path not in {"", "/"}
+            or parsed.query
+            or parsed.fragment
+        ):
+            raise ConfigError(f"invalid CORS origin: {origin}")
 
 
 def read_lan_auth(secret_dir: Path) -> tuple[str, str]:
@@ -277,7 +296,7 @@ handle /authelia/* {{
 
 @not_options {{
     not method OPTIONS
-    not path /authelia/*
+    not path /authelia/* /device-api /device-api/*
 }}
 forward_auth @not_options authelia:9091 {{
     uri /authelia/api/authz/forward-auth?authelia_url=https://{public_host}/authelia/
@@ -361,6 +380,9 @@ def render_caddy(config: dict[str, Any], lan_auth: tuple[str, str]) -> str:
         sites = [
             f"""
 {domains["public"]} {{
+    @public_device_api path /device-api /device-api/*
+    respond @public_device_api "Not found" 404
+
 {auth_block}
 {textwrap.indent(routes, "    ")}
 }}
@@ -393,6 +415,9 @@ def render_caddy(config: dict[str, Any], lan_auth: tuple[str, str]) -> str:
     # avoids a redirect loop for HTTPS clients using an HTTP origin connection.
     @edgeone_client_http header X-Forwarded-Proto http
     redir @edgeone_client_http https://{{host}}{{uri}}
+
+    @public_device_api path /device-api /device-api/*
+    respond @public_device_api "Not found" 404
 
 {textwrap.indent(routes, "    ")}
 }}
@@ -439,7 +464,7 @@ http://:{ports["lan"]} {{
     }}
     @unknown_device_api {{
         remote_ip {lan_cidrs}
-        path /device-api/*
+        path /device-api /device-api/*
     }}
     handle @unknown_device_api {{
         respond "Unknown device API" 404
@@ -471,6 +496,9 @@ https://{domains["public"]}:{ports["main_origin"]}, https://{domains["origin"]}:
     tls internal
     @origin_host host {domains["origin"]}
     redir @origin_host https://{domains["public"]}{{uri}} permanent
+
+    @public_device_api path /device-api /device-api/*
+    respond @public_device_api "Not found" 404
 
 {auth_block}
 {textwrap.indent(routes, "    ")}
@@ -591,6 +619,10 @@ def render_instance_compose(
     tag_secret = secret_dir / "tag-server.env"
     if is_file(tag_secret):
         tag_volumes.append(f"{tag_secret}:/run/secrets/tag-server.env:ro")
+    cors_args = "".join(
+        f" --cors-origin {shlex.quote(origin)}"
+        for origin in table(config, "security").get("cors_origins", [])
+    )
 
     dufs_command = []
     if features["dufs_write"]:
@@ -619,7 +651,7 @@ def render_instance_compose(
         "          . /run/secrets/tag-server.env",
         "          set +a",
         "        fi",
-        "        exec /app/tag-server --database /data/tag_all.db --workspace /workspace --metadata-dir /data/metadata --addr 0.0.0.0:8081",
+        f"        exec /app/tag-server --database /data/tag_all.db --workspace /workspace --metadata-dir /data/metadata --addr 0.0.0.0:8081{cors_args}",
         "    volumes:",
         yaml_list(tag_volumes, 6),
     ]
@@ -672,7 +704,7 @@ def render_instance_compose(
                 "          . /run/secrets/tag-server.env",
                 "          set +a",
                 "        fi",
-                "        exec /app/tag-server --database /data/tag_all.db --workspace /workspace --metadata-dir /data/metadata --addr 0.0.0.0:8081",
+                f"        exec /app/tag-server --database /data/tag_all.db --workspace /workspace --metadata-dir /data/metadata --addr 0.0.0.0:8081{cors_args}",
                 "    volumes:",
                 yaml_list(readonly_tag_volumes, 6),
             ]

@@ -53,6 +53,7 @@ authelia = "docker.io/authelia/authelia:4.39.20"
 ddns_go = "docker.io/jeessy/ddns-go:v6.17.2"
 
 [security]
+cors_origins = []
 lan_cidrs = ["127.0.0.0/8", "::1"]
 edgeone_trusted_proxies = []
 container_subnet = "172.30.50.0/24"

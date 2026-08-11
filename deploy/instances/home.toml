@@ -54,6 +54,9 @@ authelia = "docker.io/authelia/authelia:4.39.20"
 ddns_go = "docker.io/jeessy/ddns-go:v6.17.2"
 
 [security]
+# Browser frontends served from another origin must be explicitly listed here.
+# Native/embedded HTTP clients and the same-origin dufs-plus UI do not need CORS.
+cors_origins = []
 lan_cidrs = [
   "192.168.0.0/16",
   "172.16.0.0/12",
