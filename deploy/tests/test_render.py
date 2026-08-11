@@ -70,9 +70,13 @@ class RenderTests(unittest.TestCase):
         self.assertIn("reverse_proxy dufs-readonly:5000", caddy)
         self.assertIn("reverse_proxy tag-server-readonly:8081", caddy)
         self.assertIn(
-            "path /device-api/listing /device-api/v1/files /device-api/v1/comics/manifest /device-api/v1/comics/page /device-api/v1/pdf/info /device-api/pdf/render /device-api/v1/epub/info /device-api/v1/epub/page /device-api/thumbnail /device-api/media/cover /device-api/device-session",
+            "path /device-api/v1/session /device-api/v1/files /device-api/v1/tags /device-api/v1/items /device-api/v1/progress /device-api/v1/thumbnail /device-api/v1/cover /device-api/v1/pdf/info /device-api/v1/pdf/page /device-api/v1/epub/info /device-api/v1/epub/page /device-api/v1/comics/manifest /device-api/v1/comics/page /device-api/v1/openapi.json /device-api/v1/docs",
             caddy,
         )
+        self.assertIn("method GET HEAD OPTIONS", caddy)
+        self.assertIn("@device_session_revoke {", caddy)
+        self.assertIn("method DELETE", caddy)
+        self.assertIn("handle @device_session_revoke", caddy)
         self.assertIn("handle /tag-api/device-sessions", caddy)
         self.assertIn("uri strip_prefix /tag-api", caddy)
         self.assertIn("header_up X-Dufs-Device-Api 1", caddy)

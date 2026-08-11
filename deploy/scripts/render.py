@@ -453,9 +453,22 @@ https://{domains["readonly_origin"]}:5443, https://{domains["readonly_public"]}:
 http://:{ports["lan"]} {{
     @device_api {{
         remote_ip {lan_cidrs}
-        path /device-api/listing /device-api/v1/files /device-api/v1/comics/manifest /device-api/v1/comics/page /device-api/v1/pdf/info /device-api/pdf/render /device-api/v1/epub/info /device-api/v1/epub/page /device-api/thumbnail /device-api/media/cover /device-api/device-session
+        method GET HEAD OPTIONS
+        path /device-api/v1/session /device-api/v1/files /device-api/v1/tags /device-api/v1/items /device-api/v1/progress /device-api/v1/thumbnail /device-api/v1/cover /device-api/v1/pdf/info /device-api/v1/pdf/page /device-api/v1/epub/info /device-api/v1/epub/page /device-api/v1/comics/manifest /device-api/v1/comics/page /device-api/v1/openapi.json /device-api/v1/docs
+    }}
+    @device_session_revoke {{
+        remote_ip {lan_cidrs}
+        method DELETE
+        path /device-api/v1/session
     }}
     handle @device_api {{
+        uri strip_prefix /device-api
+        reverse_proxy tag-server:8081 {{
+            header_up X-Dufs-Device-Api 1
+            header_up -X-Dufs-Device-Provisioning
+        }}
+    }}
+    handle @device_session_revoke {{
         uri strip_prefix /device-api
         reverse_proxy tag-server:8081 {{
             header_up X-Dufs-Device-Api 1
