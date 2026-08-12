@@ -644,6 +644,7 @@ def render_instance_compose(
             "      - /data",
             "      - --allow-all",
             "      - --allow-symlink",
+            "      - --allow-archive",
         ]
 
     lines = [

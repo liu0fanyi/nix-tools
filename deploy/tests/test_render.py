@@ -13,6 +13,14 @@ import render
 
 
 class RenderTests(unittest.TestCase):
+    def test_dufs_templates_enable_server_side_archives(self) -> None:
+        writable = (DEPLOY_DIR / "compose.yaml").read_text(encoding="utf-8")
+        readonly = (DEPLOY_DIR / "compose.readonly.yaml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("--allow-archive", writable)
+        self.assertIn("--allow-archive", readonly)
+
     def prepare(self, profile: str) -> tuple[Path, Path, tempfile.TemporaryDirectory]:
         temp = tempfile.TemporaryDirectory()
         root = Path(temp.name)

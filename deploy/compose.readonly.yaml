@@ -10,6 +10,7 @@ services:
     command:
       - /data
       - --allow-symlink
+      - --allow-archive
     networks:
       - app
 
