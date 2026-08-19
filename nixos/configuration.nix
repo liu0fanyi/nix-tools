@@ -273,6 +273,8 @@
     swayidle
     # Node.js 运行时（dsh/dsh-tui 等 npm 全局工具）
     nodejs_24
+    # Zen Browser（Firefox 内核，独立于 firefox，无需另装 firefox）
+    inputs.zen-browser.packages.${pkgs.system}.zen-browser
   ];
   # waybar 电池模块需要 upower
   services.upower.enable = true;
