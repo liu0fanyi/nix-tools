@@ -461,6 +461,11 @@ http://:{ports["lan"]} {{
         method DELETE
         path /device-api/v1/session
     }}
+    @device_progress_write {{
+        remote_ip {lan_cidrs}
+        method PUT
+        path /device-api/v1/progress
+    }}
     handle @device_api {{
         uri strip_prefix /device-api
         reverse_proxy tag-server:8081 {{
@@ -469,6 +474,13 @@ http://:{ports["lan"]} {{
         }}
     }}
     handle @device_session_revoke {{
+        uri strip_prefix /device-api
+        reverse_proxy tag-server:8081 {{
+            header_up X-Dufs-Device-Api 1
+            header_up -X-Dufs-Device-Provisioning
+        }}
+    }}
+    handle @device_progress_write {{
         uri strip_prefix /device-api
         reverse_proxy tag-server:8081 {{
             header_up X-Dufs-Device-Api 1
