@@ -225,6 +225,9 @@
     '';
   };
 
+  # mihomo 内核服务已移至系统级（NixOS 配置 systemd.services.clashtui-mihomo，
+  # TUN 透明代理需要 root + CAP_NET_ADMIN）。
+
   # The local Home Manager options manual is not used here. Disabling it also
   # avoids an upstream options.json derivation that loses Nix store context.
   manual.manpages.enable = false;

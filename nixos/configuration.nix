@@ -232,6 +232,27 @@
   # rootless 容器需要非特权用户命名空间（NixOS 默认已开启，显式声明以防万一）
   boot.kernel.sysctl."kernel.unprivileged_userns_clone" = lib.mkDefault true;
 
+  # mihomo 系统服务（TUN 透明代理需要 root + CAP_NET_ADMIN；
+  # 配置目录在 liou 的 clashtui 目录，root 可读，clashtui 仍可管理订阅/节点）
+  systemd.services.clashtui-mihomo = {
+    description = "mihomo Daemon (TUN, managed via clashtui)";
+    after = [ "network-online.target" ];
+    wantedBy = [ "multi-user.target" ];
+    # mihomo 的 auto-route 需要 nft 命令（服务 PATH 默认不含系统目录）
+    path = [ pkgs.nftables ];
+    serviceConfig = {
+      Type = "simple";
+      Restart = "always";
+      ExecStart = "${pkgs.mihomo}/bin/mihomo -d /home/liou/.config/clashtui/mihomo";
+      ExecReload = "/bin/kill -HUP $MAINPID";
+      # root 运行：不收缩 CapabilityBoundingSet（否则丢失 CAP_DAC_OVERRIDE，
+      # 无法读取 700 权限的 /home/liou）；CAP_NET_ADMIN 由 root 天然持有
+    };
+  };
+
+  # allow-lan：放行代理端口，供 podman 容器与局域网设备访问
+  networking.firewall.allowedTCPPorts = [ 7897 ];
+
   # ==========================================================================
   # niri 桌面配套（参考 niri 官方 wiki Important-Software / Integrating-niri）
   # ==========================================================================
@@ -275,6 +296,12 @@
     nodejs_24
     # WiFi 选择器（Mod+N，fuzzel 界面；nmtui/nmcli 亦可直接使用）
     networkmanager_dmenu
+    # 代理：clashtui（TUI 管理）+ mihomo 内核 + fzf（clashtui 依赖）
+    clashtui
+    mihomo
+    fzf
+    # mihomo auto-route 需要 nft 命令（fwmark 打标 + DNS 劫持）
+    nftables
     # Zen Browser（Firefox 内核，独立于 firefox，无需另装 firefox）
     inputs.zen-browser.packages.${pkgs.system}.zen-browser
   ];
