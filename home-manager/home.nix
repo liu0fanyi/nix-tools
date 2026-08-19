@@ -236,6 +236,57 @@
     '';
   };
 
+  # Rime 默认简体输出（switches 定义在方案级 schema，
+  # 须 patch luna_pinyin.custom.yaml 而非 default.custom.yaml）
+  home.file.".local/share/fcitx5/rime/luna_pinyin.custom.yaml" = lib.mkIf isNixOS {
+    text = ''
+      patch:
+        "switches/@2/reset": 1
+    '';
+  };
+
+  # fcitx5 输入法列表（对齐本机：keyboard-us + pinyin + rime，默认 rime）
+  xdg.configFile."fcitx5/profile" = lib.mkIf isNixOS {
+    # fcitx5 运行时也会生成此文件，接管需强制
+    force = true;
+    text = ''
+      [Groups/0]
+      # Group Name
+      Name=默认
+      # Layout
+      Default Layout=us
+      # Default Input Method
+      DefaultIM=rime
+
+      [Groups/0/Items/0]
+      # Name
+      Name=keyboard-us
+      # Layout
+      Layout=
+
+      [Groups/0/Items/1]
+      # Name
+      Name=pinyin
+      # Layout
+      Layout=
+
+      [Groups/0/Items/2]
+      # Name
+      Name=rime
+      # Layout
+      Layout=
+
+      [GroupOrder]
+      0=默认
+    '';
+  };
+
+  # 光标主题环境变量（配合 niri cursor 块与 nordzy-cursor-theme）
+  home.sessionVariables = lib.mkIf isNixOS {
+    XCURSOR_THEME = "Nordzy-cursors";
+    XCURSOR_SIZE = "24";
+  };
+
   # mihomo 内核服务已移至系统级（NixOS 配置 systemd.services.clashtui-mihomo，
   # TUN 透明代理需要 root + CAP_NET_ADMIN）。
 

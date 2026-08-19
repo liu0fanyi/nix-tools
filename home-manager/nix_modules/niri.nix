@@ -14,9 +14,15 @@ let
   # 官方默认配置（完整键位/音量/媒体/亮度键/截图等基础）+ 本机追加段。
   # 注：官方默认已含 XF86 音量/媒体/亮度键绑定，无需重复。
   # binds 节点只能出现一次，自定义键位注入官方 binds 块开头。
+  # 用户只使用 1-6 工作区，移除官方默认的 Mod+7/8/9 绑定（避免切出动态工作区）。
+  # 移除官方默认的 numlock 启动项（NumLock 状态应完全由键盘控制）。
   niriConfig =
     builtins.replaceStrings
-      [ "binds {" ]
+      [
+        "binds {"
+        "    Mod+7 { focus-workspace 7; }\n    Mod+8 { focus-workspace 8; }\n    Mod+9 { focus-workspace 9; }\n"
+        "        // Enable numlock on startup, omitting this setting disables it.\n        numlock\n"
+      ]
       [
         ''
           binds {
@@ -24,10 +30,26 @@ let
               // WiFi 选择（fuzzel 界面）
               Mod+N { spawn "networkmanager_dmenu" "--dmenu" "fuzzel"; }
         ''
+        ""
+        ""
       ]
       (builtins.readFile ./default-config.kdl)
     + ''
       // ===== homebox 追加（参考官方 wiki 与社区配置）=====
+
+      // 命名工作区：仅 1-6（waybar 按数字显示，niri 0.1.6+ 声明式）
+      workspace "1"
+      workspace "2"
+      workspace "3"
+      workspace "4"
+      workspace "5"
+      workspace "6"
+
+      // 鼠标光标主题（Nordzy，避免 waybar/niri 的 cursor theme 警告）
+      cursor {
+          xcursor-theme "Nordzy-cursors"
+          xcursor-size 24
+      }
 
       // 通知、壁纸（纯色）
       spawn-at-startup "mako"
@@ -72,35 +94,59 @@ in
       '';
     };
 
-    # Waybar 状态栏配置（工作区 + 系统信息 + 音量 + 网络 + 电池 + 托盘）
+    # Waybar 状态栏配置（参考 0xNiri/社区：图标化 + 数字工作区）
     xdg.configFile."waybar/config.jsonc" = lib.mkIf isNixOS {
       text = ''
         {
           "layer": "top",
           "position": "top",
           "height": 30,
+          "spacing": 8,
           "modules-left": ["niri/workspaces"],
           "modules-center": ["clock"],
           "modules-right": ["pulseaudio", "network", "cpu", "memory", "battery", "tray"],
-          "niri/workspaces": { "format": "{name}" },
-          "clock": { "format": "{:%H:%M  %m-%d}" },
-          "cpu": { "format": "CPU {usage}%", "interval": 5 },
-          "memory": { "format": "RAM {percentage}%", "interval": 10 },
+
+          "niri/workspaces": {
+            "format": "{name}",
+            "tooltip": false
+          },
+          "clock": {
+            "format": "󰥔 {:%H:%M  %m-%d}",
+            "tooltip-format": "<tt><small>{calendar}</small></tt>",
+            "interval": 60
+          },
+          "cpu": {
+            "format": " {usage}%",
+            "tooltip": true,
+            "tooltip-format": "负载: {load}",
+            "interval": 5
+          },
+          "memory": {
+            "format": "󰍛 {percentage}%",
+            "tooltip": true,
+            "tooltip-format": "已用: {used}\n总量: {total}",
+            "interval": 10
+          },
           "network": {
-            "format-wifi": "WIFI {essid}",
-            "format-ethernet": "NET {ifname}",
-            "format-disconnected": "NET OFF",
+            "format-wifi": "󰤨",
+            "format-ethernet": "󰈀",
+            "format-disconnected": "󰤮",
+            "tooltip": true,
+            "tooltip-format": "{ifname}\n{essid} 信号 {signalStrength}%\nIP: {ipaddr}",
             "interval": 15
           },
           "battery": {
-            "format": "{capacity}%",
-            "format-charging": "⚡ {capacity}%",
-            "tooltip-format": "{time}"
+            "format": "{icon} {capacity}%",
+            "format-charging": "󰂄 {capacity}%",
+            "format-icons": ["", "", "", "", ""],
+            "interval": 30
           },
           "pulseaudio": {
-            "format": "VOL {volume}%",
-            "format-muted": "MUTE",
-            "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+            "format": "{icon} {volume}%",
+            "format-muted": "󰝟",
+            "format-icons": ["󰕿", "󰖀", "󰕾"],
+            "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+            "tooltip-format": "{desc}"
           },
           "tray": { "spacing": 8 }
         }
@@ -119,20 +165,29 @@ in
           background: rgba(30, 30, 46, 0.9);
           color: #ebdbb2;
         }
+        /* 工作区按钮：数字居中，激活高亮 */
         #workspaces button {
-          padding: 0 8px;
+          padding: 0 7px;
+          margin: 3px 1px;
           color: #928374;
+          background: #282828;
+          border-radius: 4px;
         }
         #workspaces button.active {
+          color: #1d2021;
+          background: #ebdbb2;
+        }
+        #workspaces button:hover {
           color: #ebdbb2;
           background: #3c3836;
         }
         #clock, #tray, #cpu, #memory, #network, #battery, #pulseaudio {
-          padding: 0 10px;
+          padding: 0 8px;
         }
         #battery.charging { color: #b8bb26; }
         #battery.warning { color: #fb4934; }
         #pulseaudio.muted { color: #fb4934; }
+        #network.disconnected { color: #928374; }
       '';
     };
     

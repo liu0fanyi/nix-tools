@@ -215,11 +215,14 @@
     };
   };
 
-  # 输入法（配合 home-manager 的 fcitx5 模块）
+  # 输入法（与本机 Ubuntu 的 fcitx5 模块对齐：Rime + 拼音）
   i18n.inputMethod = {
     enable = true;
     type = "fcitx5";
     fcitx5.addons = with pkgs; [
+      fcitx5-rime
+      rime-data
+      fcitx5-gtk
       qt6Packages.fcitx5-chinese-addons
     ];
   };
@@ -308,6 +311,8 @@
     fzf
     # mihomo auto-route 需要 nft 命令（fwmark 打标 + DNS 劫持）
     nftables
+    # 鼠标光标主题（waybar/niri 的 cursor theme 警告）
+    nordzy-cursor-theme
     # Zen Browser（Firefox 内核，独立于 firefox，无需另装 firefox）
     inputs.zen-browser.packages.${pkgs.system}.zen-browser
   ];
