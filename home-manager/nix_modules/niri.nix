@@ -13,17 +13,30 @@ let
 
   # 官方默认配置（完整键位/音量/媒体/亮度键/截图等基础）+ 本机追加段。
   # 注：官方默认已含 XF86 音量/媒体/亮度键绑定，无需重复。
-  niriConfig = builtins.readFile ./default-config.kdl + ''
-    // ===== homebox 追加（参考官方 wiki 与社区配置）=====
+  # binds 节点只能出现一次，自定义键位注入官方 binds 块开头。
+  niriConfig =
+    builtins.replaceStrings
+      [ "binds {" ]
+      [
+        ''
+          binds {
+              // ===== homebox 追加键位 =====
+              // WiFi 选择（fuzzel 界面）
+              Mod+N { spawn "networkmanager_dmenu" "--dmenu" "fuzzel"; }
+        ''
+      ]
+      (builtins.readFile ./default-config.kdl)
+    + ''
+      // ===== homebox 追加（参考官方 wiki 与社区配置）=====
 
-    // 通知、壁纸（纯色）
-    spawn-at-startup "mako"
-    spawn-at-startup "swaybg" "-c" "#1e1e2e"
-    // 剪贴板历史（cliphist，配合 fuzzel 可搜索历史）
-    spawn-sh-at-startup "wl-paste --watch cliphist store"
-    // 空闲自动锁屏（10 分钟无操作）
-    spawn-sh-at-startup "swayidle -w timeout 600 'swaylock -f'"
-  '';
+      // 通知、壁纸（纯色）
+      spawn-at-startup "mako"
+      spawn-at-startup "swaybg" "-c" "#1e1e2e"
+      // 剪贴板历史（cliphist，配合 fuzzel 可搜索历史）
+      spawn-sh-at-startup "wl-paste --watch cliphist store"
+      // 空闲自动锁屏（10 分钟无操作）
+      spawn-sh-at-startup "swayidle -w timeout 600 'swaylock -f'"
+    '';
 in
 {
   options.features.niri = {
@@ -44,6 +57,18 @@ in
 
     # 配置 = 官方默认（全部键位）+ 追加段
     xdg.configFile."niri/config.kdl".text = niriConfig;
+
+    # networkmanager-dmenu 配置（Mod+N WiFi 选择；fuzzel + alacritty）
+    xdg.configFile."networkmanager-dmenu/config.ini" = lib.mkIf isNixOS {
+      text = ''
+        [dmenu]
+        dmenu_command = fuzzel
+        prompt = Networks
+
+        [editor]
+        terminal = alacritty
+      '';
+    };
 
     # Waybar 状态栏配置（工作区 + 系统信息 + 音量 + 网络 + 电池 + 托盘）
     xdg.configFile."waybar/config.jsonc" = lib.mkIf isNixOS {

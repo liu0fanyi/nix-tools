@@ -273,6 +273,8 @@
     swayidle
     # Node.js 运行时（dsh/dsh-tui 等 npm 全局工具）
     nodejs_24
+    # WiFi 选择器（Mod+N，fuzzel 界面；nmtui/nmcli 亦可直接使用）
+    networkmanager_dmenu
     # Zen Browser（Firefox 内核，独立于 firefox，无需另装 firefox）
     inputs.zen-browser.packages.${pkgs.system}.zen-browser
   ];
