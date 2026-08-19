@@ -1,0 +1,2 @@
+# git-crypt 加密的敏感文件
+secrets/** filter=git-crypt diff=git-crypt

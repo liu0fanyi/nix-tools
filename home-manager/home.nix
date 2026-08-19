@@ -53,6 +53,8 @@
 
     ## git tools
     gitui
+    ## git-crypt（解密仓库 secrets：secrets/**，restore 脚本依赖）
+    git-crypt
     ## docker tools
     lazydocker
     ## fonts
