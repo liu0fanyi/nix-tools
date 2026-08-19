@@ -188,6 +188,12 @@
   programs.git = {
     enable = true;
     lfs.enable = true;
+    # Declare identity so reinstalling/switch does not lose ~/.gitconfig
+    userName = "liou";
+    userEmail = "liu_fanyi@hotmail.com";
+    extraConfig = {
+      core.sshCommand = "ssh -4";
+    };
   };
 
   programs.home-manager.enable = true;
