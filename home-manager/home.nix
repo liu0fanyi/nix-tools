@@ -227,8 +227,43 @@
     '';
   };
 
+  # npm 全局安装配置（NixOS 上 npm prefix 默认指向只读 nix store，
+  # 固定到用户目录 + 国内镜像；重装后 npm install 直接可用）
+  home.file.".npmrc" = lib.mkIf isNixOS {
+    text = ''
+      prefix=/home/${username}/.npm-global
+      registry=https://registry.npmmirror.com
+    '';
+  };
+
   # mihomo 内核服务已移至系统级（NixOS 配置 systemd.services.clashtui-mihomo，
   # TUN 透明代理需要 root + CAP_NET_ADMIN）。
+
+  # clashtui 配置（声明式；订阅 URL 在 mihomo/config.yaml，属 secrets 不在此）
+  xdg.configFile."clashtui/config.yaml" = lib.mkIf isNixOS {
+    text = ''
+      mihomo:
+        core:
+          config_dir: ${config.home.homeDirectory}/.config/clashtui/mihomo
+          bin_path: /run/current-system/sw/bin/mihomo
+          config_path: ${config.home.homeDirectory}/.config/clashtui/mihomo/config.yaml
+        core_service:
+          service_name: clashtui-mihomo
+          is_user: false
+      singbox:
+        core:
+          config_dir: ${config.home.homeDirectory}/.config/clashtui/sing-box/config
+          bin_path: /run/current-system/sw/bin/sing-box
+          config_path: ${config.home.homeDirectory}/.config/clashtui/sing-box/config/config.json
+        core_service:
+          service_name: clashtui_singbox
+          is_user: false
+      timeout: null
+      extra:
+        edit_cmd: xdg-open "%s"
+        open_dir_cmd: xdg-open "%s"
+    '';
+  };
 
   # The local Home Manager options manual is not used here. Disabling it also
   # avoids an upstream options.json derivation that loses Nix store context.

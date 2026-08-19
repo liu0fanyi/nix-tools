@@ -253,6 +253,12 @@
   # allow-lan：放行代理端口，供 podman 容器与局域网设备访问
   networking.firewall.allowedTCPPorts = [ 7897 ];
 
+  # 用户服务开机自启（podman 用户 socket 等）：
+  # loginctl enable-linger 的声明式等价（创建 linger 标记文件）
+  systemd.tmpfiles.rules = [
+    "f /var/lib/systemd/linger/${username} 0644 root root -"
+  ];
+
   # ==========================================================================
   # niri 桌面配套（参考 niri 官方 wiki Important-Software / Integrating-niri）
   # ==========================================================================

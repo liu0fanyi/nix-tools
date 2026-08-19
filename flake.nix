@@ -40,6 +40,8 @@
           inherit pkgs;
           extraSpecialArgs = {
             inherit username inputs;
+            # standalone（非 NixOS）：显式提供 isNixOS = false
+            isNixOS = false;
           };
           modules = [
             ./home-manager/home.nix

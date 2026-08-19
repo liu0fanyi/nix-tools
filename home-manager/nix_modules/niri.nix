@@ -42,7 +42,9 @@ in
   options.features.niri = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default = config.features.full.enable;
+      # 仅在 NixOS 默认启用（非 NixOS 分支需要 nixGL，其求值含 impure
+      # builtins.currentTime，会导致 standalone 的 home-manager switch 失败）
+      default = config.features.full.enable && isNixOS;
       description = "Enable Niri window manager with NixGL support";
     };
   };
