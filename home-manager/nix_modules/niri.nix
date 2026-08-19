@@ -1,4 +1,4 @@
-{ config, pkgs, lib, inputs, ... }:
+{ config, pkgs, lib, inputs, isNixOS ? false, ... }:
 
 let
   cfg = config.features.niri;
@@ -22,7 +22,9 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    home.packages = [
+    # NixOS 上由系统模块 programs.niri 提供 niri 包与登录会话，
+    # home 这里只负责配置文件；非 NixOS 才装包和 nixGL 包装。
+    home.packages = lib.optionals (!isNixOS) [
       niriPackage
       niri-session-wrapped
     ];
@@ -51,13 +53,16 @@ in
     '';
     
     # Create the custom .desktop file in the user's profile
-    home.file.".local/share/wayland-sessions/niri.desktop".text = ''
-      [Desktop Entry]
-      Name=Niri (NixGL)
-      Comment=Niri Window Manager with NixGL
-      Exec=${niri-session-wrapped}/bin/niri-session-wrapped
-      Type=Application
-      DesktopNames=niri
-    '';
+    # (NixOS 的 niri 系统模块已提供 session 文件，这里仅非 NixOS 需要)
+    home.file.".local/share/wayland-sessions/niri.desktop" = lib.mkIf (!isNixOS) {
+      text = ''
+        [Desktop Entry]
+        Name=Niri (NixGL)
+        Comment=Niri Window Manager with NixGL
+        Exec=${niri-session-wrapped}/bin/niri-session-wrapped
+        Type=Application
+        DesktopNames=niri
+      '';
+    };
   };
 }

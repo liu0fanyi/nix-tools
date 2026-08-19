@@ -1,7 +1,9 @@
 {
   config,
   pkgs,
+  lib,
   username,
+  isNixOS ? false,
   ...
 }:
 {
@@ -11,7 +13,7 @@
 
   home.username = username;
   home.homeDirectory = "/home/${username}";
-  home.stateVersion = "25.11";
+  home.stateVersion = "26.11";
 
   # 配置 Nix 使用清华源加速（追加到现有 substituters，不覆盖默认配置）
   # 如果多用户，需要把用户加入信任列表/etc/nix/nix.custom.conf
@@ -25,13 +27,14 @@
   # 原理：设置 XDG_DATA_DIRS 环境变量，使系统应用菜单能扫描到
   # ~/.nix-profile/share/applications/ 下的 .desktop 文件
   # 这样 Nix 安装的 GUI 应用（如 foot）就会出现在 Ubuntu 的快速启动中
-  targets.genericLinux.enable = true;
+  # NixOS 上由 nixos 目标接管，无需启用
+  targets.genericLinux.enable = lib.mkIf (!isNixOS) true;
 
   # 启用 XDG MIME 类型关联
   # 原理：让 Nix 安的应用能正确处理文件类型关联（如双击文件时用正确的程序打开）
   xdg.mime.enable = true;
 
-  nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.allowUnfree = lib.mkIf (!isNixOS) true;
 
   # 简单的软件包安装方式
   home.packages = with pkgs; [
@@ -189,9 +192,11 @@
     enable = true;
     lfs.enable = true;
     # Declare identity so reinstalling/switch does not lose ~/.gitconfig
-    userName = "liou";
-    userEmail = "liu_fanyi@hotmail.com";
-    extraConfig = {
+    settings = {
+      user = {
+        name = "liou";
+        email = "liu_fanyi@hotmail.com";
+      };
       core.sshCommand = "ssh -4";
     };
   };
@@ -205,6 +210,7 @@
   # Ensure systemd user services are started/restarted on switch
   # Use the host client on non-NixOS; nixpkgs systemctl may be newer than the
   # running host daemon and fail to connect to its user bus.
-  systemd.user.systemctlPath = "/usr/bin/systemctl";
+  # NixOS 上 systemctl 位于 /run/current-system/sw/bin，使用默认值即可。
+  systemd.user.systemctlPath = lib.mkIf (!isNixOS) "/usr/bin/systemctl";
   systemd.user.startServices = "sd-switch";
 }

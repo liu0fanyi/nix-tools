@@ -5,6 +5,9 @@ git-crypt-key
 result
 result-*
 
+# Local nix eval cache (used when sandbox blocks ~/.cache/nix)
+.nix-cache/
+
 # Generated deployment artifacts, legacy in-repository backups, and runtime secrets
 deploy/.generated/
 deploy/backups/
@@ -18,3 +21,6 @@ __pycache__/
 /dufs_data/
 /migration-backups/
 /tag-db/
+
+# Official reference clones for diffing (never committed)
+.official-reference/
