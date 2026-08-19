@@ -271,6 +271,8 @@
     playerctl
     cliphist
     swayidle
+    # Node.js 运行时（dsh/dsh-tui 等 npm 全局工具）
+    nodejs_24
   ];
   # waybar 电池模块需要 upower
   services.upower.enable = true;

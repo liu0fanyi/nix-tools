@@ -24,3 +24,6 @@ __pycache__/
 
 # Official reference clones for diffing (never committed)
 .official-reference/
+
+# Local npm cache
+.npm-cache/

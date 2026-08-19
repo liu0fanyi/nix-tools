@@ -100,7 +100,10 @@
   programs.bash = {
     enable = true;
     initExtra = ''
-      # local bin (e.g. agy CLI)
+      # npm global installs (e.g. dsh, dsh-tui)
+      export PATH="$HOME/.npm-global/bin:$PATH"
+
+      # local bin wrappers take priority (e.g. dsh with --expose-internals)
       export PATH="$HOME/.local/bin:$PATH"
 
       # nvm
@@ -159,8 +162,10 @@
       $env.BUN_INSTALL = ($env.HOME | path join ".bun")
       $env.PATH = (
         $env.PATH
-        | prepend ($env.BUN_INSTALL | path join "bin")
         | prepend ($env.NVM_DIR | path join "versions" "node" "v24.15.0" "bin")
+        | prepend ($env.BUN_INSTALL | path join "bin")
+        | prepend ($env.HOME | path join ".npm-global" "bin")
+        | prepend ($env.HOME | path join ".local" "bin")
       )
         $env.config.buffer_editor = "hx"
         $env.EDITOR = "hx"
@@ -202,6 +207,23 @@
   };
 
   programs.home-manager.enable = true;
+
+  # dsh/dsh-tui 需要 node --expose-internals（HMR 插件要求）；
+  # npm 的 bin 链接无法带参数，用包装脚本（仅 NixOS，npm 包在 ~/.npm-global）
+  home.file.".local/bin/dsh" = lib.mkIf isNixOS {
+    executable = true;
+    text = ''
+      #!/bin/sh
+      exec node --expose-internals ${config.home.homeDirectory}/.npm-global/lib/node_modules/@deepseek-ai/dsh/lib/bin.js "$@"
+    '';
+  };
+  home.file.".local/bin/dsh-tui" = lib.mkIf isNixOS {
+    executable = true;
+    text = ''
+      #!/bin/sh
+      exec node --expose-internals ${config.home.homeDirectory}/.npm-global/lib/node_modules/@deepseek-harness-tui/dsh-tui/bin/dsh-tui.js "$@"
+    '';
+  };
 
   # The local Home Manager options manual is not used here. Disabling it also
   # avoids an upstream options.json derivation that loses Nix store context.
