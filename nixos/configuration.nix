@@ -231,4 +231,47 @@
   };
   # rootless 容器需要非特权用户命名空间（NixOS 默认已开启，显式声明以防万一）
   boot.kernel.sysctl."kernel.unprivileged_userns_clone" = lib.mkDefault true;
+
+  # ==========================================================================
+  # niri 桌面配套（参考 niri 官方 wiki Important-Software / Integrating-niri）
+  # ==========================================================================
+
+  # 声音：PipeWire + WirePlumber
+  services.pipewire = {
+    enable = true;
+    wireplumber.enable = true;
+    pulse.enable = true;
+  };
+
+  # Portals（官方推荐 gtk + gnome，gnome 提供屏幕录制；文件选择器用 nautilus）
+  xdg.portal = {
+    enable = true;
+    extraPortals = with pkgs; [
+      xdg-desktop-portal-gtk
+      xdg-desktop-portal-gnome
+    ];
+    config.common.default = [ "gnome" "gtk" ];
+  };
+  services.gnome.gnome-keyring.enable = true;
+
+  # 桌面组件包（waybar 状态栏、fuzzel 启动器、mako 通知、swaybg 壁纸、
+  # swaylock 锁屏、grim+slurp 截图、wl-clipboard 剪贴板、nautilus 文件选择器、
+  # brightnessctl 亮度、playerctl 媒体控制、cliphist 剪贴板历史、swayidle 自动锁屏）
+  environment.systemPackages = with pkgs; [
+    waybar
+    fuzzel
+    mako
+    swaybg
+    swaylock
+    grim
+    slurp
+    wl-clipboard
+    nautilus
+    brightnessctl
+    playerctl
+    cliphist
+    swayidle
+  ];
+  # waybar 电池模块需要 upower
+  services.upower.enable = true;
 }
