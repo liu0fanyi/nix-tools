@@ -156,6 +156,12 @@
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHbQy+HyFFvmiI4lFuugbrRLrEa2/TUMvh9RUYK4o73j liu_fanyi@hotmail.com"
   ];
 
+  # 用户管理（官方 users-groups 模块语义）
+  # mutableUsers 保持默认 true：密码由用户用 passwd 自行管理，
+  # rebuild 不会覆盖已存在用户的密码（密码哈希不进 git）。
+  # 如需完全声明式管理密码，可设 users.mutableUsers = false +
+  # hashedPassword（此时改密码 = 改配置 + rebuild）。
+
   # 日常用户（官方模板示例用户是 alice，这里按本机用户名启用）
   users.users.${username} = {
     isNormalUser = true;
@@ -165,6 +171,9 @@
       "video"
       "input"
     ];
+    # 首次安装时的初始密码（仅全新创建用户时生效，用于图形登录；SSH 仍只走密钥）。
+    # 已存在的用户不受影响——在这台机器上登录后请用 passwd 修改密码。
+    initialPassword = "1234";
     openssh.authorizedKeys.keys = [
       # change this to your ssh key
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHbQy+HyFFvmiI4lFuugbrRLrEa2/TUMvh9RUYK4o73j liu_fanyi@hotmail.com"
@@ -190,8 +199,20 @@
   hardware.graphics.enable = true;
   programs.niri = {
     enable = true;
-    # 锁定与 flake input 一致的 niri 版本（可选，去掉则用 nixpkgs 自带版本）
-    package = inputs.niri.packages.${pkgs.system}.niri;
+    # 使用 nixpkgs 自带的 niri（有官方二进制缓存，避免本地编译整个 Rust 项目）。
+    # 如需锁定上游最新版本，可改为：
+    #   package = inputs.niri.packages.${pkgs.system}.niri;
+  };
+
+  # 登录管理器：greetd + tuigreet（轻量 TUI 登录界面，niri 生态标准搭配）
+  services.greetd = {
+    enable = true;
+    settings = {
+      default_session = {
+        # 登录后直接启动 niri 会话
+        command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd niri-session";
+      };
+    };
   };
 
   # 输入法（配合 home-manager 的 fcitx5 模块）
@@ -199,7 +220,7 @@
     enable = true;
     type = "fcitx5";
     fcitx5.addons = with pkgs; [
-      fcitx5-chinese-addons
+      qt6Packages.fcitx5-chinese-addons
     ];
   };
 
