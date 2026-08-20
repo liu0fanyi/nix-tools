@@ -103,6 +103,8 @@ bash scripts/export-git-crypt-key.sh
 大模型 API key 等其他凭据直接作为 KeePassXC 条目保存，例如 `ai/openai-api-key`，不需要
 放入 `~/.config/secrets/`，只有明确要求文件或环境变量的程序才导出一份到那里。目录和数据库
 位置可以分别通过 `NIX_TOOLS_SECRETS_DIR`、`NIX_TOOLS_SYNC_DIR`、`NIX_TOOLS_VAULT_FILE` 覆盖。
+具体的 CLI 添加、查看、导入附件和导出附件命令见
+[KeePassXC 密钥库 CLI 手册](docs/secret-vault-cli.md)。
 
 这一步不能省略：mihomo 的订阅配置属于 secrets，不在 NixOS 闭包中。重装后若未恢复，
 mihomo 会自动生成只监听 `127.0.0.1:7890` 且没有 controller 的初始配置，clashtui 就会显示

@@ -125,6 +125,9 @@ Other credentials, such as model API keys, should remain KeePassXC entries
 variable. Override the paths with `NIX_TOOLS_SECRETS_DIR`, `NIX_TOOLS_SYNC_DIR`,
 or `NIX_TOOLS_VAULT_FILE`.
 
+See [the KeePassXC CLI vault guide](docs/secret-vault-cli.md) for commands to
+add and retrieve API keys, and to import or export encrypted file attachments.
+
 This post-install step is required because the mihomo configuration contains
 subscription secrets and is intentionally not in the NixOS closure. Without it,
 mihomo creates a tiny default configuration on first boot (`127.0.0.1:7890` and
