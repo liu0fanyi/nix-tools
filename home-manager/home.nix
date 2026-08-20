@@ -336,6 +336,7 @@
     };
     Service = {
       ExecStart = "${pkgs.syncthing}/bin/syncthing serve --no-browser --no-restart --log-format-timestamp=\"\"";
+      UMask = "0077";
       # The vault is shared only with explicitly paired trusted peers.  Other
       # LAN devices can still be paired later; public discovery, relays and
       # UPnP are disabled. Syncthing v2 stores these options in its runtime
