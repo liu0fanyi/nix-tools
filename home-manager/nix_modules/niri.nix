@@ -56,8 +56,8 @@ let
       spawn-at-startup "swaybg" "-c" "#1e1e2e"
       // 剪贴板历史（cliphist，配合 fuzzel 可搜索历史）
       spawn-sh-at-startup "wl-paste --watch cliphist store"
-      // 空闲自动锁屏（10 分钟无操作）
-      spawn-sh-at-startup "swayidle -w timeout 600 'swaylock -f'"
+      // 空闲自动锁屏（10 分钟无操作）+ 挂起前锁屏（盖上盖子恢复需密码）
+      spawn-sh-at-startup "swayidle -w before-sleep 'swaylock -f' timeout 600 'swaylock -f'"
     '';
 in
 {
