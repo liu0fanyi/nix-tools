@@ -5,6 +5,19 @@ let
   nixGL = inputs.nix-gl.packages.${pkgs.system}.nixGLDefault;
   niriPackage = inputs.niri.packages.${pkgs.system}.niri;
 
+  # Waybar 没有通用风扇模块；只在存在 hwmon fan*_input 时输出转速，
+  # 没有风扇（或硬件不暴露转速）时保持空模块，不污染状态栏。
+  fanScript = pkgs.writeShellScriptBin "waybar-fan" ''
+    set -eu
+    fan_input="$(find /sys/class/hwmon -type f -name 'fan*_input' -readable 2>/dev/null | sort | head -n 1)"
+    if [ -z "$fan_input" ]; then
+      printf '{"text":"","class":"unavailable"}\n'
+      exit 0
+    fi
+    rpm="$(cat "$fan_input")"
+    printf '{"text":"󰈐 %s RPM","tooltip":"风扇转速: %s RPM"}\n' "$rpm" "$rpm"
+  '';
+
   # Wrapper script to run niri-session with necessary environment variables
   niri-session-wrapped = pkgs.writeShellScriptBin "niri-session-wrapped" ''
     export GBM_BACKENDS_PATH="${pkgs.mesa}/lib/gbm"
@@ -56,8 +69,9 @@ let
       spawn-at-startup "swaybg" "-c" "#1e1e2e"
       // 剪贴板历史（cliphist，配合 fuzzel 可搜索历史）
       spawn-sh-at-startup "wl-paste --watch cliphist store"
-      // 空闲自动锁屏（10 分钟无操作）+ 挂起前锁屏（盖上盖子恢复需密码）
-      spawn-sh-at-startup "swayidle -w before-sleep 'swaylock -f' timeout 600 'swaylock -f'"
+      // 空闲自动锁屏（10 分钟无操作）+ 挂起前锁屏并关闭 DPMS
+      // （wlopm 作用于 Wayland 输出，恢复后重新打开显示器）
+      spawn-sh-at-startup "swayidle -w before-sleep 'swaylock -f; wlopm --off \"*\"' after-resume 'wlopm --on \"*\"' timeout 600 'swaylock -f'"
     '';
 in
 {
@@ -74,7 +88,7 @@ in
   config = lib.mkIf cfg.enable {
     # NixOS 上由系统模块 programs.niri 提供 niri 包与登录会话，
     # home 这里只负责配置文件；非 NixOS 才装包和 nixGL 包装。
-    home.packages = lib.optionals (!isNixOS) [
+    home.packages = lib.optional isNixOS fanScript ++ lib.optionals (!isNixOS) [
       niriPackage
       niri-session-wrapped
     ];
@@ -104,7 +118,7 @@ in
           "spacing": 8,
           "modules-left": ["niri/workspaces"],
           "modules-center": ["clock"],
-          "modules-right": ["pulseaudio", "network", "cpu", "memory", "battery", "tray"],
+          "modules-right": ["temperature", "custom/fan", "mpris", "pulseaudio", "network", "cpu", "memory", "battery", "tray"],
 
           "niri/workspaces": {
             "format": "{name}",
@@ -126,6 +140,37 @@ in
             "tooltip": true,
             "tooltip-format": "已用: {used}\n总量: {total}",
             "interval": 10
+          },
+          "temperature": {
+            "thermal-zone": 0,
+            "format": " {temperatureC}°C",
+            "format-critical": " {temperatureC}°C",
+            "critical-threshold": 80,
+            "tooltip-format": "温度: {temperatureC}°C",
+            "interval": 5
+          },
+          "custom/fan": {
+            "exec": "${fanScript}/bin/waybar-fan",
+            "return-type": "json",
+            "interval": 5,
+            "format": "{}"
+          },
+          "mpris": {
+            "format": "{player_icon} {dynamic}",
+            "format-paused": "⏸ {dynamic}",
+            "format-stopped": "",
+            "player-icons": {
+              "default": "▶",
+              "firefox": "",
+              "zen": ""
+            },
+            "status-icons": {
+              "playing": "▶",
+              "paused": "⏸"
+            },
+            "tooltip-format": "{player}: {title} — {artist}",
+            "max-length": 48,
+            "interval": 2
           },
           "network": {
             "format-wifi": "󰤨",
@@ -181,9 +226,10 @@ in
           color: #ebdbb2;
           background: #3c3836;
         }
-        #clock, #tray, #cpu, #memory, #network, #battery, #pulseaudio {
+        #clock, #tray, #cpu, #memory, #temperature, #custom-fan, #mpris, #network, #battery, #pulseaudio {
           padding: 0 8px;
         }
+        #custom-fan.unavailable { padding: 0; }
         #battery.charging { color: #b8bb26; }
         #battery.warning { color: #fb4934; }
         #pulseaudio.muted { color: #fb4934; }

@@ -64,6 +64,7 @@
 
     ffmpeg
     devenv
+    localsend
     # yazi
     bottom
     # codex
@@ -244,6 +245,29 @@
         "switches/@2/reset": 1
     '';
   };
+
+  # Rime 的 userdb 是运行时 LevelDB，不能用只读 Nix store 直接托管。
+  # 这里声明稳定的同步目录；scripts/sync-rime-userdb.sh 负责把快照安全地
+  # 部署到远程 homebox，避免每次重装再手工 scp 一整个目录。
+  home.activation.rimeSyncDir = lib.mkIf isNixOS (
+    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      rime_dir="$HOME/.local/share/fcitx5/rime"
+      sync_dir="$rime_dir/sync"
+      user_yaml="$rime_dir/user.yaml"
+      install -d -m 700 "$rime_dir" "$sync_dir"
+
+      if [ ! -e "$user_yaml" ]; then
+        printf 'sync_dir: %s\n' "$sync_dir" > "$user_yaml"
+        chmod 600 "$user_yaml"
+      elif ! grep -q '^[[:space:]]*sync_dir:' "$user_yaml"; then
+        tmp="$(mktemp)"
+        printf 'sync_dir: %s\n' "$sync_dir" > "$tmp"
+        cat "$user_yaml" >> "$tmp"
+        install -m 600 "$tmp" "$user_yaml"
+        rm -f "$tmp"
+      fi
+    ''
+  );
 
   # fcitx5 输入法列表（对齐本机：keyboard-us + pinyin + rime，默认 rime）
   xdg.configFile."fcitx5/profile" = lib.mkIf isNixOS {

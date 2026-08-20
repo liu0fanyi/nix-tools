@@ -138,8 +138,6 @@
         nil = {
           command = "${nil}/bin/nil";
           config.nil = {
-            # TODO: 没生效
-            formatting.command = [ "${nixfmt}/bin/nixfmt" "-q" ];
             nix.flake.autoEvalInputs = true;
           };
         };
@@ -323,6 +321,12 @@
           name = "nix";
           auto-format = true;
           language-servers = [ "nil" ];
+          # 直接使用 Helix formatter，避免 nil 的 formatting 配置在新版
+          # language-server 协议中被忽略。
+          formatter = {
+            command = "${nixfmt}/bin/nixfmt";
+            args = [ "--quiet" ];
+          };
         }
         {
           name = "log";

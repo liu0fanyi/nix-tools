@@ -33,6 +33,40 @@
       pkgs = nixpkgs.legacyPackages.${system};
       username = "liou";
 
+      homeManagerNixosModule = {
+        home-manager = {
+          useGlobalPkgs = true;
+          useUserPackages = true;
+          extraSpecialArgs = {
+            inherit username inputs;
+            # 标记 NixOS 集成，home.nix/niri.nix 据此分流。
+            isNixOS = true;
+          };
+          users.liou = import ./home-manager/home.nix;
+        };
+      };
+
+      mkNixosConfiguration =
+        { installSwapSizeGiB ? null }:
+        nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs =
+            {
+              inherit username inputs;
+            }
+            // nixpkgs.lib.optionalAttrs (installSwapSizeGiB != null) {
+              inherit installSwapSizeGiB;
+            };
+          modules =
+            [
+              inputs.disko.nixosModules.disko
+              ./nixos/configuration.nix
+              home-manager.nixosModules.home-manager
+              homeManagerNixosModule
+            ]
+            ++ nixpkgs.lib.optional (installSwapSizeGiB != null) ./nixos/install-swap-lv.nix;
+        };
+
       # 动态生成 home-manager 配置的函数
       mkHomeConfig =
         username: extraModules:
@@ -57,34 +91,26 @@
         # "otheruser" = mkHomeConfig "otheruser" [ ];
       };
 
-      # 192.168.1.15 的 NixOS 配置（nixos-anywhere 远程安装用）
-      nixosConfigurations.homebox = nixpkgs.lib.nixosSystem {
-        inherit system;
-        specialArgs = {
-          inherit username inputs;
-        };
-        modules = [
-          inputs.disko.nixosModules.disko
-          ./nixos/configuration.nix
-          # 官方流程：安装时用
-          #   --generate-hardware-config nixos-generate-config ./nixos/hardware-configuration.nix
-          # 在目标机上生成并覆盖此文件（当前为官方 throw 占位）
-          ./nixos/hardware-configuration.nix
-          home-manager.nixosModules.home-manager
-          {
-            home-manager = {
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              extraSpecialArgs = {
-                inherit username inputs;
-                # 标记 NixOS 集成，home.nix/niri.nix 据此分流
-                # （非 NixOS 的 standalone 配置不传，默认为 false）
-                isNixOS = true;
-              };
-              users.liou = import ./home-manager/home.nix;
-            };
-          }
-        ];
+      # 192.168.1.6 的 NixOS 配置（nixos-anywhere 远程安装用）。
+      # hardware-configuration.nix 只保留通用占位；nixos-anywhere 安装时临时生成
+      # 目标机版本，脚本退出后恢复占位文件。
+      nixosConfigurations.homebox = mkNixosConfiguration { };
+
+      # Fresh nixos-anywhere installs. The script chooses a tier from target RAM.
+      nixosConfigurations.homebox-install = mkNixosConfiguration {
+        installSwapSizeGiB = 16;
+      };
+      nixosConfigurations.homebox-install-16g = mkNixosConfiguration {
+        installSwapSizeGiB = 16;
+      };
+      nixosConfigurations.homebox-install-32g = mkNixosConfiguration {
+        installSwapSizeGiB = 32;
+      };
+      nixosConfigurations.homebox-install-24g = mkNixosConfiguration {
+        installSwapSizeGiB = 24;
+      };
+      nixosConfigurations.homebox-install-64g = mkNixosConfiguration {
+        installSwapSizeGiB = 64;
       };
     };
 }

@@ -16,26 +16,53 @@
   inputs,
   ...
 }:
+let
+  # 合盖策略集中在这里切换：lock、suspend、hibernate 或
+  # suspend-then-hibernate。当前远程 homebox 采用后者。
+  lidSwitchAction = "suspend-then-hibernate";
+  mihomoConfigDir = "/home/${username}/.config/clashtui/mihomo";
+  # clashtui 以 liou 运行、mihomo 以 root 运行；让两者通过 users 组共享
+  # 运行时文件。这个修复在每次 mihomo 启动前执行，因此首次打开 clashtui
+  # 不需要再手动点击 “Fix now”。
+  mihomoPermissionRepair = pkgs.writeShellScript "clashtui-mihomo-permissions" ''
+    set -eu
 
+    config_dir="${mihomoConfigDir}"
+    providers_dir="$config_dir/providers"
+
+    ${pkgs.coreutils}/bin/install -d -o ${username} -g users -m 2770 "$config_dir"
+    ${pkgs.coreutils}/bin/chown "${username}:users" "$config_dir"
+    ${pkgs.coreutils}/bin/chmod 2770 "$config_dir"
+
+    if [ -d "$providers_dir" ]; then
+      ${pkgs.coreutils}/bin/chown :users "$providers_dir"
+      ${pkgs.coreutils}/bin/chmod 2770 "$providers_dir"
+    fi
+
+    while IFS= read -r -d "" file; do
+      ${pkgs.coreutils}/bin/chown :users "$file"
+      ${pkgs.coreutils}/bin/chmod g+rw "$file"
+    done < <(${pkgs.findutils}/bin/find "$config_dir" -maxdepth 2 -type f -print0)
+  '';
+in
 {
   imports =
     [
-      # Include the results of the hardware scan.
-      ./hardware-configuration.nix
       # 追加：nixos-anywhere 磁盘布局（官方 nixos-anywhere-examples）
       ./disk-config.nix
-    ];
+    ]
+    # hardware-configuration.nix 由 nixos-anywhere 在目标机上临时生成；仓库中
+    # 只保留通用占位文件，安装脚本退出时会恢复它。本地存在时用于当前 rebuild。
+    ++ lib.optional (builtins.pathExists ./hardware-configuration.nix) ./hardware-configuration.nix;
 
-  # 官方模板此处按检测结果注入引导配置（UEFI → systemd-boot，BIOS → GRUB）。
-  # 目标机引导方式未知，采用 nixos-anywhere 官方示例的 GRUB 双兼容方案
-  # （EFI/BIOS 通吃，disko 自动把所有带 EF02 分区的设备加入设备列表）：
+  # 目标机已确认使用 UEFI，且 efivars 可写；让 GRUB 注册正常的 NVRAM
+  # 启动项，避免固件找不到磁盘项时退到 PXE 网络启动。
+  boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.grub = {
     efiSupport = true;
-    efiInstallAsRemovable = true;
+    device = "nodev";
+    efiInstallAsRemovable = false;
   };
-  # 若确认目标机是纯 UEFI，可改回官方 systemd-boot 写法：
-  # boot.loader.systemd-boot.enable = true;
-  # boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "homebox"; # Define your hostname.
 
@@ -44,6 +71,28 @@
 
   # Set your time zone.
   time.timeZone = "Asia/Shanghai";
+
+  # 电源与合盖策略（目标机是远程笔记本 NixOS，不影响当前开发主机）。
+  # 外接显示器时保持当前会话，避免合盖后远程桌面被意外挂起。
+  services.logind.settings.Login = {
+    HandleLidSwitch = lidSwitchAction;
+    HandleLidSwitchExternalPower = lidSwitchAction;
+    HandleLidSwitchDocked = "ignore";
+  };
+  systemd.sleep.settings.Sleep.HibernateDelaySec = "1h";
+
+  # hibernate 必须使用磁盘 swap；zram 不能作为恢复设备。
+  # homebox 现有根 LV 已占满 VG，因此使用根 ext4 上的 16 GiB swapfile。
+  # resume_offset 是当前 homebox 上 swapfile 的首个物理块偏移；若重装/移动
+  # swapfile，需要重新执行 filefrag 并更新这里。
+  swapDevices = [
+    {
+      device = "/var/lib/swapfile";
+      size = 16384;
+    }
+  ];
+  boot.resumeDevice = "/dev/mapper/pool-root";
+  boot.kernelParams = [ "resume_offset=60665856" ];
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -199,9 +248,9 @@
   hardware.graphics.enable = true;
   programs.niri = {
     enable = true;
-    # 使用 nixpkgs 自带的 niri（有官方二进制缓存，避免本地编译整个 Rust 项目）。
-    # 如需锁定上游最新版本，可改为：
-    #   package = inputs.niri.packages.${pkgs.system}.niri;
+    # 与 Home Manager/Niri 配置模板使用同一个 flake 上游版本，避免
+    # nixpkgs 的 Niri 与仓库中的配置模板发生版本错配。
+    package = inputs.niri.packages.${pkgs.system}.niri;
   };
 
   # 登录管理器：greetd + tuigreet（轻量 TUI 登录界面，niri 生态标准搭配）
@@ -240,13 +289,23 @@
   systemd.services.clashtui-mihomo = {
     description = "mihomo Daemon (TUN, managed via clashtui)";
     after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
     wantedBy = [ "multi-user.target" ];
+    # mihomo 的完整配置属于 git-crypt secrets，由重装后的 post-install
+    # 步骤恢复；没有它时不要让 mihomo 自动生成只监听 7890 的初始配置，
+    # 否则 clashtui 会误报 controller connection refused。
+    unitConfig.ConditionPathExists = "/home/liou/.config/clashtui/mihomo/config.yaml";
     # mihomo 的 auto-route 需要 nft 命令（服务 PATH 默认不含系统目录）
     path = [ pkgs.nftables ];
     serviceConfig = {
       Type = "simple";
       Restart = "always";
-      ExecStart = "${pkgs.mihomo}/bin/mihomo -d /home/liou/.config/clashtui/mihomo";
+      UMask = "0007";
+      ExecStartPre = [
+        "${mihomoPermissionRepair}"
+        "${pkgs.coreutils}/bin/test -s ${mihomoConfigDir}/config.yaml"
+      ];
+      ExecStart = "${pkgs.mihomo}/bin/mihomo -d ${mihomoConfigDir}";
       ExecReload = "/bin/kill -HUP $MAINPID";
       # root 运行：不收缩 CapabilityBoundingSet（否则丢失 CAP_DAC_OVERRIDE，
       # 无法读取 700 权限的 /home/liou）；CAP_NET_ADMIN 由 root 天然持有
@@ -260,6 +319,9 @@
   # loginctl enable-linger 的声明式等价（创建 linger 标记文件）
   systemd.tmpfiles.rules = [
     "f /var/lib/systemd/linger/${username} 0644 root root -"
+    "d /home/${username}/.config/clashtui 0750 ${username} users -"
+    "d /home/${username}/.config/clashtui/mihomo 2770 ${username} users -"
+    "d /home/${username}/.config/clashtui/mihomo/providers 2770 ${username} users -"
   ];
 
   # ==========================================================================
@@ -301,6 +363,7 @@
     playerctl
     cliphist
     swayidle
+    wlopm
     # Node.js 运行时（dsh/dsh-tui 等 npm 全局工具）
     nodejs_24
     # WiFi 选择器（Mod+N，fuzzel 界面；nmtui/nmcli 亦可直接使用）
