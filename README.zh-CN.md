@@ -95,8 +95,11 @@ NIXOS_ANYWHERE_REMOTE_PROXY_URL=http://192.168.1.3:8890 \
 明文导出文件位于 `~/.config/secrets/`，默认 git-crypt key 是
 `~/.config/secrets/nix-tools-git-crypt.key`。可以用下面的脚本初始化加密库和导出 key：
 
-```bash
+```nu
 bash scripts/init-secret-vault.sh
+```
+
+```nu
 bash scripts/export-git-crypt-key.sh
 ```
 

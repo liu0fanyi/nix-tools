@@ -50,6 +50,7 @@
     bat
     dust
     ripgrep
+    glow
 
     ## git tools
     gitui

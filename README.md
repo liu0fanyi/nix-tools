@@ -114,8 +114,11 @@ encrypted database. Plaintext exports needed by local programs live under
 `~/.config/secrets/`, with the git-crypt key at
 `~/.config/secrets/nix-tools-git-crypt.key`. Initialize and export it with:
 
-```bash
+```nu
 bash scripts/init-secret-vault.sh
+```
+
+```nu
 bash scripts/export-git-crypt-key.sh
 ```
 

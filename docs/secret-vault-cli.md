@@ -1,11 +1,12 @@
 # KeePassXC 密钥库 CLI 操作
 
-这份手册只记录操作方法，不包含任何真实密码、API Key 或 key 文件内容。
+这份手册只记录操作方法，不包含任何真实密码、API Key 或 key 文件内容。下面的命令都按
+Nushell 语法写成单行；每次执行一条即可直接粘贴。
 
 ## 基本变量
 
-```bash
-DB="$HOME/Sync/secrets/secrets.kdbx"
+```nu
+let db = ($env.HOME | path join "Sync" "secrets" "secrets.kdbx")
 ```
 
 每次 `keepassxc-cli` 操作都会要求输入 KeePassXC 数据库主密码。不要把主密码或真实
@@ -15,18 +16,14 @@ DB="$HOME/Sync/secrets/secrets.kdbx"
 
 首次使用时创建 `ai` 分组；如果已经存在，提示群组已存在可以忽略：
 
-```bash
-keepassxc-cli mkdir "$DB" ai
+```nu
+keepassxc-cli mkdir $db ai
 ```
 
 以 OpenAI 为例，API Key 放在条目的密码字段中：
 
-```bash
-keepassxc-cli add \
-  --password-prompt \
-  --url https://platform.openai.com \
-  --notes "OpenAI API key" \
-  "$DB" ai/openai-api-key
+```nu
+keepassxc-cli add --password-prompt --url https://platform.openai.com --notes "OpenAI API key" $db ai/openai-api-key
 ```
 
 命令会先要求数据库主密码，再隐藏输入要保存的 API Key。其他服务可以使用类似条目：
@@ -44,17 +41,14 @@ ai/github-token
 
 查看条目密码字段（会把 API Key 显示在当前终端）：
 
-```bash
-keepassxc-cli show \
-  --show-protected \
-  --attributes Password \
-  "$DB" ai/openai-api-key
+```nu
+keepassxc-cli show --show-protected --attributes Password $db ai/openai-api-key
 ```
 
 更新已经存在的条目：
 
-```bash
-keepassxc-cli edit --password-prompt "$DB" ai/openai-api-key
+```nu
+keepassxc-cli edit --password-prompt $db ai/openai-api-key
 ```
 
 如果 API Key 已被服务商撤销或过期，KeePassXC 不能重新生成它；应先在服务商控制台生成
@@ -65,7 +59,7 @@ keepassxc-cli edit --password-prompt "$DB" ai/openai-api-key
 API Key 适合放在条目的密码字段；证书、SSH 私钥、git-crypt key 等文件应作为附件保存。
 以 `nix-tools` 的 git-crypt key 为例，初始化流程已经封装好：
 
-```bash
+```nu
 bash scripts/init-secret-vault.sh
 ```
 
@@ -80,16 +74,12 @@ bash scripts/init-secret-vault.sh
 保存其他文件时，可以手动创建条目并导入附件。下面示例保存一个 SSH 私钥；路径只指向
 本机文件，文件内容不会出现在命令行：
 
-```bash
-keepassxc-cli add \
-  --notes "SSH private key; stored as an encrypted attachment" \
-  "$DB" infrastructure/example-ssh-key
+```nu
+keepassxc-cli add --notes "SSH private key; stored as an encrypted attachment" $db infrastructure/example-ssh-key
+```
 
-keepassxc-cli attachment-import \
-  --force \
-  "$DB" infrastructure/example-ssh-key \
-  id_ed25519 \
-  "$HOME/.ssh/id_ed25519"
+```nu
+keepassxc-cli attachment-import --force $db infrastructure/example-ssh-key id_ed25519 ($env.HOME | path join ".ssh" "id_ed25519")
 ```
 
 如果条目已经存在，只执行 `attachment-import` 即可。`--force` 会覆盖同名附件，确认路径
@@ -99,18 +89,21 @@ keepassxc-cli attachment-import \
 
 导出到明文目录时先收紧目录权限：
 
-```bash
-install -d -m 700 "$HOME/.config/secrets"
-keepassxc-cli attachment-export \
-  "$DB" infrastructure/example-ssh-key \
-  id_ed25519 \
-  "$HOME/.config/secrets/id_ed25519"
-chmod 600 "$HOME/.config/secrets/id_ed25519"
+```nu
+chmod 700 ($env.HOME | path join ".config" "secrets")
+```
+
+```nu
+keepassxc-cli attachment-export $db infrastructure/example-ssh-key id_ed25519 ($env.HOME | path join ".config" "secrets" "id_ed25519")
+```
+
+```nu
+chmod 600 ($env.HOME | path join ".config" "secrets" "id_ed25519")
 ```
 
 导出 `nix-tools` 的 git-crypt key 应使用专用脚本，它会使用临时文件并自动设置权限：
 
-```bash
+```nu
 bash scripts/export-git-crypt-key.sh
 ```
 
@@ -122,7 +115,7 @@ bash scripts/export-git-crypt-key.sh
 等待 `secrets.kdbx` 同步完成后，使用同一个数据库主密码打开或执行 CLI 命令。需要
 `nix-tools` key 文件时运行：
 
-```bash
+```nu
 bash scripts/export-git-crypt-key.sh
 ```
 
