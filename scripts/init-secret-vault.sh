@@ -82,7 +82,11 @@ if (( show_status == 0 )); then
   entry_exists=1
 else
   echo "创建 KeePassXC 条目：$entry_path"
-  keepassxc-cli add --no-password \
+  # --no-password is a database access flag (it disables the master
+  # password), not a request to leave the new entry password empty.
+  # Omitting it keeps the database protected while add creates an entry
+  # without an entry-password prompt.
+  keepassxc-cli add \
     --notes "Encrypted git-crypt key for the nix-tools repository. Export only when needed." \
     "$vault_file" "$entry_path"
 fi
