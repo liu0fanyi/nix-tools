@@ -19,6 +19,8 @@ usage() {
 --check         只检查本地 git-crypt key/配置，不连接或修改目标机。
 
 环境变量：
+  NIX_TOOLS_SECRETS_DIR=~/.config/secrets
+  NIX_TOOLS_GIT_CRYPT_KEY=~/.config/secrets/nix-tools-git-crypt.key
   NIXOS_ANYWHERE_TARGET=root@192.168.1.6
   NIXOS_ANYWHERE_PROXY_MODE=auto
   NIXOS_ANYWHERE_PROXY_URL=http://127.0.0.1:7897
@@ -59,9 +61,18 @@ while (($# > 0)); do
 done
 
 TARGET="${1:-${NIXOS_ANYWHERE_TARGET:-${NIXOS_ANYWHERE_SSH_USER:-root}@${NIXOS_ANYWHERE_SSH_HOST:-192.168.1.6}}}"
-KEY_FILE="git-crypt-key"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(dirname "$SCRIPT_DIR")"
+SECRETS_DIR="${NIX_TOOLS_SECRETS_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/secrets}"
+KEY_FILE="${NIX_TOOLS_GIT_CRYPT_KEY:-$SECRETS_DIR/nix-tools-git-crypt.key}"
+if [[ ! -s "$KEY_FILE" ]]; then
+  for legacy_key in "$REPO_DIR/nix-tools-git-crypt.key" "$REPO_DIR/git-crypt-key"; do
+    if [[ -s "$legacy_key" ]]; then
+      KEY_FILE="$legacy_key"
+      break
+    fi
+  done
+fi
 CONFIG_FILE="$REPO_DIR/secrets/mihomo-config.yaml"
 REMOTE_PROXY_URL="${NIXOS_ANYWHERE_REMOTE_PROXY_URL:-}"
 remote_proxy_arg="${REMOTE_PROXY_URL:-__NIXOS_ANYWHERE_NO_PROXY__}"
@@ -96,7 +107,8 @@ if (( ! config_ready )) && command -v git-crypt >/dev/null 2>&1; then
 fi
 if (( ! config_ready )) && grep -q "encrypted: secrets/" <<<"$git_crypt_status"; then
   [[ -s "$KEY_FILE" ]] || {
-    echo "错误: secrets 仍处于加密状态，但找不到 $KEY_FILE。" >&2
+    echo "错误: secrets 仍处于加密状态，但找不到 Nix Tools 密钥：$KEY_FILE。" >&2
+    echo "请先从 KeePassXC 导出 nix-tools-git-crypt.key，或设置 NIX_TOOLS_GIT_CRYPT_KEY。" >&2
     exit 1
   }
   echo "解锁 git-crypt（$KEY_FILE）..."

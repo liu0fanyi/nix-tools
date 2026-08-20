@@ -32,6 +32,9 @@ ssh_options=(
 )
 cd "$repo_dir"
 
+secrets_dir="${NIX_TOOLS_SECRETS_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/secrets}"
+git_crypt_key="${NIX_TOOLS_GIT_CRYPT_KEY:-$secrets_dir/nix-tools-git-crypt.key}"
+
 while (($# > 0)); do
   case "$1" in
     --check)
@@ -118,6 +121,8 @@ while (($# > 0)); do
   NIXOS_ANYWHERE_EXTRA_SUBSTITUTERS=https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store
   NIXOS_ANYWHERE_USE_DESTINATION_SUBSTITUTERS=1  # 可选，恢复目标端下载
   NIXOS_ANYWHERE_RESTORE_SECRETS=required       # required/auto/off，默认重装后自动恢复
+  NIX_TOOLS_SECRETS_DIR=~/.config/secrets
+  NIX_TOOLS_GIT_CRYPT_KEY=~/.config/secrets/nix-tools-git-crypt.key
 
 默认使用本机代理和清华 substituter，并由本机直接推送闭包；目标机的局域网代理
 地址会从本机代理 URL 自动推导，也可用 NIXOS_ANYWHERE_REMOTE_PROXY_URL 单独指定。
@@ -184,7 +189,10 @@ esac
 # 一个不含运行时 secrets 的基础系统。
 secrets_ready="0"
 if [[ "$restore_mode" != off ]] &&
-   { [[ -s "$repo_dir/secrets/mihomo-config.yaml" ]] || [[ -s "$repo_dir/git-crypt-key" ]]; }; then
+   { [[ -s "$repo_dir/secrets/mihomo-config.yaml" ]] ||
+     [[ -s "$git_crypt_key" ]] ||
+     [[ -s "$repo_dir/nix-tools-git-crypt.key" ]] ||
+     [[ -s "$repo_dir/git-crypt-key" ]]; }; then
   if "$repo_dir/scripts/restore-secrets.sh" --check; then
     secrets_ready="1"
   fi
@@ -192,7 +200,8 @@ fi
 if [[ "$restore_mode" == required && "$secrets_ready" != 1 ]]; then
   cat >&2 <<'EOF'
 重装前检查失败：没有可用的已解锁 mihomo secrets。
-请先准备 git-crypt-key 并安装 git-crypt，或解锁 secrets/mihomo-config.yaml。
+请先从 KeePassXC 导出 nix-tools-git-crypt.key 到 ~/.config/secrets/，并安装 git-crypt，
+或先解锁 secrets/mihomo-config.yaml。
 如确实只想安装基础系统，可显式设置 NIXOS_ANYWHERE_RESTORE_SECRETS=off。
 EOF
   exit 7

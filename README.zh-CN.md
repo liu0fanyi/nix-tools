@@ -83,12 +83,26 @@ NIXOS_ANYWHERE_REMOTE_PROXY_URL=http://192.168.1.3:8890 \
 `nix.settings.extra-substituters` 也会持久化该源；可用 `NIXOS_ANYWHERE_EXTRA_SUBSTITUTERS`
 覆盖本次安装。目标电脑的代理端口变化不会改变 NixOS 配置，只需更新上面的两个 URL。
 
-如果本机有 `git-crypt-key` 和已解锁的 secrets，安装完成后脚本会自动恢复
+如果本机有 `nix-tools-git-crypt.key` 和已解锁的 secrets，安装完成后脚本会自动恢复
 `mihomo/clashtui`、Rime userdb 和 npm 工具；恢复脚本会通过本机代理预取并缓存
 `geosite.dat`、`geoip.dat` 后上传，目标机可达的局域网代理只临时用于首次下载订阅，启动成功后不会把
 这个代理写入 NixOS 配置。重启后脚本会先等待目标 SSH 恢复，再执行恢复。默认
 `NIXOS_ANYWHERE_RESTORE_SECRETS=required`，在 secrets 不完整时会在清盘前停止；只有明确
 想安装不含运行时 secrets 的基础系统时才设置 `NIXOS_ANYWHERE_RESTORE_SECRETS=off`。
+
+统一的个人密钥不放在仓库目录下：KeePassXC 加密库默认位于
+`~/Sync/secrets/secrets.kdbx`，由 Syncthing 只同步加密后的数据库；当前机器需要使用的
+明文导出文件位于 `~/.config/secrets/`，默认 git-crypt key 是
+`~/.config/secrets/nix-tools-git-crypt.key`。可以用下面的脚本初始化加密库和导出 key：
+
+```bash
+bash scripts/init-secret-vault.sh
+bash scripts/export-git-crypt-key.sh
+```
+
+大模型 API key 等其他凭据直接作为 KeePassXC 条目保存，例如 `ai/openai-api-key`，不需要
+放入 `~/.config/secrets/`，只有明确要求文件或环境变量的程序才导出一份到那里。目录和数据库
+位置可以分别通过 `NIX_TOOLS_SECRETS_DIR`、`NIX_TOOLS_SYNC_DIR`、`NIX_TOOLS_VAULT_FILE` 覆盖。
 
 这一步不能省略：mihomo 的订阅配置属于 secrets，不在 NixOS 闭包中。重装后若未恢复，
 mihomo 会自动生成只监听 `127.0.0.1:7890` 且没有 controller 的初始配置，clashtui 就会显示

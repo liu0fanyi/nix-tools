@@ -1,5 +1,7 @@
-# Local legacy key backup; never commit.
+# Local secret exports and KeePassXC databases; never commit.
 git-crypt-key
+nix-tools-git-crypt.key
+*.kdbx
 
 # Nix result symlinks
 result

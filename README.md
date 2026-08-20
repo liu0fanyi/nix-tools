@@ -97,7 +97,7 @@ the resulting NixOS configuration. Override the one-time installer value with
 `NIXOS_ANYWHERE_EXTRA_SUBSTITUTERS`; use `NIXOS_ANYWHERE_SWAP_GIB` to select a
 different predefined swap tier.
 
-When `git-crypt-key` and the unlocked runtime secrets are available, the
+When `nix-tools-git-crypt.key` and the unlocked runtime secrets are available, the
 installer also restores mihomo/clashtui, Rime user data, and npm tools after the
 NixOS switch. The restore helper downloads and caches mihomo's `geosite.dat` and
 `geoip.dat` through the local proxy, uploads them with the config, and temporarily
@@ -107,6 +107,23 @@ target, the installer waits for SSH to return before running this restore. The
 default `NIXOS_ANYWHERE_RESTORE_SECRETS=required` refuses to
 erase the target if those secrets are unavailable; use `=off` only for a base
 system without runtime secrets.
+
+Personal credentials are kept outside the repository. The default KeePassXC
+database is `~/Sync/secrets/secrets.kdbx`; Syncthing replicates only this
+encrypted database. Plaintext exports needed by local programs live under
+`~/.config/secrets/`, with the git-crypt key at
+`~/.config/secrets/nix-tools-git-crypt.key`. Initialize and export it with:
+
+```bash
+bash scripts/init-secret-vault.sh
+bash scripts/export-git-crypt-key.sh
+```
+
+Other credentials, such as model API keys, should remain KeePassXC entries
+(for example `ai/openai-api-key`) and only be exported to
+`~/.config/secrets/` when a program explicitly needs a file or environment
+variable. Override the paths with `NIX_TOOLS_SECRETS_DIR`, `NIX_TOOLS_SYNC_DIR`,
+or `NIX_TOOLS_VAULT_FILE`.
 
 This post-install step is required because the mihomo configuration contains
 subscription secrets and is intentionally not in the NixOS closure. Without it,

@@ -65,6 +65,9 @@
     ffmpeg
     devenv
     localsend
+    # Cross-device encrypted credential vault and its sync daemon.
+    keepassxc
+    syncthing
     # yazi
     bottom
     # codex
@@ -313,6 +316,51 @@
 
   # mihomo 内核服务已移至系统级（NixOS 配置 systemd.services.clashtui-mihomo，
   # TUN 透明代理需要 root + CAP_NET_ADMIN）。
+
+  # KeePassXC stores all shared credentials in an encrypted .kdbx file.
+  # Syncthing only replicates that ciphertext between the user's devices;
+  # plaintext exports live in ~/.config/secrets and are never managed by Nix
+  # or committed here.
+  home.activation.secretVaultDirs = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    install -d -m 700 "$HOME/Sync/secrets" "$HOME/.config/secrets"
+  '';
+
+  # Use the same user service on Pop!_OS and NixOS.  The NixOS Syncthing
+  # module would create a separate system service, while this vault belongs
+  # to liou and is intentionally managed by the shared Home Manager config.
+  systemd.user.services.syncthing = {
+    Unit = {
+      Description = "Syncthing - Open Source Continuous File Synchronization";
+      After = [ "network-online.target" ];
+      Wants = [ "network-online.target" ];
+    };
+    Service = {
+      ExecStart = "${pkgs.syncthing}/bin/syncthing serve --no-browser --no-restart --log-format-timestamp=\"\"";
+      # The vault is shared only with explicitly paired trusted peers.  Other
+      # LAN devices can still be paired later; public discovery, relays and
+      # UPnP are disabled. Syncthing v2 stores these options in its runtime
+      # config, so enforce them after every start instead of relying on an
+      # unmanaged first-run GUI click.
+      ExecStartPost = "${pkgs.writeShellScript "syncthing-lan-settings" ''
+        set -eu
+        attempts=0
+        while ! ${pkgs.syncthing}/bin/syncthing cli config options natenabled set false >/dev/null 2>&1; do
+          attempts=$((attempts + 1))
+          if [ "$attempts" -ge 30 ]; then
+            echo "Syncthing API did not become ready for LAN-only settings." >&2
+            exit 1
+          fi
+          ${pkgs.coreutils}/bin/sleep 1
+        done
+        ${pkgs.syncthing}/bin/syncthing cli config options global-ann-enabled set false
+        ${pkgs.syncthing}/bin/syncthing cli config options relays-enabled set false
+        ${pkgs.syncthing}/bin/syncthing cli config options local-ann-enabled set true
+      ''}";
+      Restart = "on-failure";
+      RestartSec = 5;
+    };
+    Install.WantedBy = [ "default.target" ];
+  };
 
   # clashtui 配置（声明式；订阅 URL 在 mihomo/config.yaml，属 secrets 不在此）
   xdg.configFile."clashtui/config.yaml" = lib.mkIf isNixOS {

@@ -56,9 +56,12 @@
   `NIXOS_ANYWHERE_SSH_USER` 与 `NIXOS_ANYWHERE_SSH_HOST`；当前安装配置需要 root 权限。
 - [ ] Wi-Fi 密码和 NetworkManager connection 不在仓库中；重装期间仍必须使用网线，首次进入桌面后再用 `Mod+N`/`nmtui` 配置 Wi-Fi。
 
-- [ ] `git-crypt-key` 和已解锁的 `secrets/mihomo-config.yaml` 已准备好。默认
-  `NIXOS_ANYWHERE_RESTORE_SECRETS=required` 会在清盘前检查它们；如果确实只要基础系统，
-  才显式设置 `NIXOS_ANYWHERE_RESTORE_SECRETS=off`。
+- [ ] `~/.config/secrets/nix-tools-git-crypt.key` 和已解锁的
+  `secrets/mihomo-config.yaml` 已准备好。首次设置可运行
+  `bash scripts/init-secret-vault.sh`，在其他机器上运行
+  `bash scripts/export-git-crypt-key.sh`。默认 `NIXOS_ANYWHERE_RESTORE_SECRETS=required`
+  会在清盘前检查它们；如果确实只要基础系统，才显式设置
+  `NIXOS_ANYWHERE_RESTORE_SECRETS=off`。
 
 - [ ] 确认磁盘会被清空；安装配置为：EFI 500M、按内存选择的独立 16/24/32/64G swap LV、其余空间为 root LV。
 - [ ] 自动档位当前仅适用于 x86_64、唯一内部磁盘 `/dev/sda` 和可写 UEFI；NVMe、ARM、BIOS 或多磁盘电脑必须先准备单独的 flake/disko 配置，脚本会拒绝自动清盘。
