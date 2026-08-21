@@ -56,14 +56,15 @@ keepassxc-cli edit --password-prompt $db ai/openai-api-key
 
 ## 把 key 文件作为加密附件保存
 
-API Key 适合放在条目的密码字段；证书、SSH 私钥、git-crypt key 等文件应作为附件保存。
-以 `nix-tools` 的 git-crypt key 为例，初始化流程已经封装好：
+API Key 适合放在条目的密码字段；证书、SSH 私钥、git-crypt key、DUFS secrets 等文件应作为附件保存。
+所有密钥文件统一用 `scripts/vault.sh` 管理：加密附件存在 `~/Sync/secrets/secrets.kdbx`，
+明文按 profile 导出到 `~/.config/secrets/<profile>/`。首次使用先初始化加密库：
 
 ```nu
-bash scripts/init-secret-vault.sh
+bash scripts/vault.sh init
 ```
 
-它实际保存的位置是：
+`nix-tools` 的 git-crypt key 对应的 profile 是 `nix-tools`（条目 `nix-tools/git-crypt-key`）：
 
 ```text
 数据库：~/Sync/secrets/secrets.kdbx
@@ -101,10 +102,10 @@ keepassxc-cli attachment-export $db infrastructure/example-ssh-key id_ed25519 ($
 chmod 600 ($env.HOME | path join ".config" "secrets" "id_ed25519")
 ```
 
-导出 `nix-tools` 的 git-crypt key 应使用专用脚本，它会使用临时文件并自动设置权限：
+导出 `nix-tools` 的 git-crypt key 应使用 `vault.sh`，它会使用临时文件并自动设置权限：
 
 ```nu
-bash scripts/export-git-crypt-key.sh
+bash scripts/vault.sh nix-tools export
 ```
 
 `~/Sync/secrets/` 中只放加密的 `.kdbx` 数据库；导出的明文文件放在
@@ -116,7 +117,7 @@ bash scripts/export-git-crypt-key.sh
 `nix-tools` key 文件时运行：
 
 ```nu
-bash scripts/export-git-crypt-key.sh
+bash scripts/vault.sh nix-tools export
 ```
 
 不要同时在两台电脑编辑 `secrets.kdbx`，否则 Syncthing 可能生成冲突副本。
@@ -124,26 +125,26 @@ bash scripts/export-git-crypt-key.sh
 ## DUFS Plus 运行时 secrets
 
 DUFS Plus 部署的运行时 secrets（Authelia/Caddy/DUFS）同样以加密附件形式保存在
-`secrets.kdbx` 的 `dufs-plus/secrets` 条目中，与 git-crypt key 同一套保管方式。
-这些文件原本只存在于部署机的 `deploy/secrets/`（不入 Git），托管到 KeePassXC 后，
-任何一台 Syncthing 同步过的机器都能按需导出。
+`secrets.kdbx` 的 `dufs-plus/secrets` 条目中（profile 名 `dufs-plus`），与 git-crypt
+key 同一套保管方式。这些文件原本只存在于部署机的明文目录（不入 Git），托管到
+KeePassXC 后，任何一台 Syncthing 同步过的机器都能按需导出。
 
-导入（本机 `deploy/secrets/` → KeePassXC 附件）：
+导入（本机 `~/.config/secrets/dufs-plus/` → KeePassXC 附件）：
 
 ```nu
-bash scripts/manage-dufs-secrets.sh import
+bash scripts/vault.sh dufs-plus import
 ```
 
-导出（KeePassXC 附件 → 本机 `deploy/secrets/`，自动设置 0700/0600）：
+导出（KeePassXC 附件 → 本机 `~/.config/secrets/dufs-plus/`，自动设置 0700/0600）：
 
 ```nu
-bash scripts/manage-dufs-secrets.sh export
+bash scripts/vault.sh dufs-plus export
 ```
 
 查看已保管的附件清单：
 
 ```nu
-bash scripts/manage-dufs-secrets.sh list
+bash scripts/vault.sh dufs-plus list
 ```
 
 条目固定为 `dufs-plus/secrets`，附件名与 `deploy/secrets/README.md` 列出的必需文件一致

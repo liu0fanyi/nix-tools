@@ -33,7 +33,11 @@ ssh_options=(
 cd "$repo_dir"
 
 secrets_dir="${NIX_TOOLS_SECRETS_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/secrets}"
-git_crypt_key="${NIX_TOOLS_GIT_CRYPT_KEY:-$secrets_dir/nix-tools-git-crypt.key}"
+git_crypt_key="${NIX_TOOLS_GIT_CRYPT_KEY:-$secrets_dir/nix-tools/nix-tools-git-crypt.key}"
+# 兼容旧布局：~/.config/secrets/nix-tools-git-crypt.key（vault.sh 统一前）
+if [[ ! -s "$git_crypt_key" ]]; then
+  [[ -s "$secrets_dir/nix-tools-git-crypt.key" ]] && git_crypt_key="$secrets_dir/nix-tools-git-crypt.key"
+fi
 
 while (($# > 0)); do
   case "$1" in
@@ -122,7 +126,7 @@ while (($# > 0)); do
   NIXOS_ANYWHERE_USE_DESTINATION_SUBSTITUTERS=1  # 可选，恢复目标端下载
   NIXOS_ANYWHERE_RESTORE_SECRETS=required       # required/auto/off，默认重装后自动恢复
   NIX_TOOLS_SECRETS_DIR=~/.config/secrets
-  NIX_TOOLS_GIT_CRYPT_KEY=~/.config/secrets/nix-tools-git-crypt.key
+  NIX_TOOLS_GIT_CRYPT_KEY=~/.config/secrets/nix-tools/nix-tools-git-crypt.key
 
 默认使用本机代理和清华 substituter，并由本机直接推送闭包；目标机的局域网代理
 地址会从本机代理 URL 自动推导，也可用 NIXOS_ANYWHERE_REMOTE_PROXY_URL 单独指定。

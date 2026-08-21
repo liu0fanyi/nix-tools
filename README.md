@@ -111,15 +111,14 @@ system without runtime secrets.
 Personal credentials are kept outside the repository. The default KeePassXC
 database is `~/Sync/secrets/secrets.kdbx`; Syncthing replicates only this
 encrypted database. Plaintext exports needed by local programs live under
-`~/.config/secrets/`, with the git-crypt key at
-`~/.config/secrets/nix-tools-git-crypt.key`. Initialize and export it with:
+`~/.config/secrets/<profile>/`, with the git-crypt key at
+`~/.config/secrets/nix-tools/nix-tools-git-crypt.key`. Initialize the vault and
+export/import keys with the unified script:
 
 ```nu
-bash scripts/init-secret-vault.sh
-```
-
-```nu
-bash scripts/export-git-crypt-key.sh
+bash scripts/vault.sh init                # 首次创建加密库
+bash scripts/vault.sh nix-tools export    # 导出 git-crypt key 到 ~/.config/secrets/nix-tools/
+bash scripts/vault.sh dufs-plus export    # 导出 DUFS secrets 到 ~/.config/secrets/dufs-plus/
 ```
 
 Other credentials, such as model API keys, should remain KeePassXC entries

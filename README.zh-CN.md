@@ -92,15 +92,14 @@ NIXOS_ANYWHERE_REMOTE_PROXY_URL=http://192.168.1.3:8890 \
 
 统一的个人密钥不放在仓库目录下：KeePassXC 加密库默认位于
 `~/Sync/secrets/secrets.kdbx`，由 Syncthing 只同步加密后的数据库；当前机器需要使用的
-明文导出文件位于 `~/.config/secrets/`，默认 git-crypt key 是
-`~/.config/secrets/nix-tools-git-crypt.key`。可以用下面的脚本初始化加密库和导出 key：
+明文导出文件位于 `~/.config/secrets/<profile>/`，默认 git-crypt key 是
+`~/.config/secrets/nix-tools/nix-tools-git-crypt.key`。所有密钥统一用 `scripts/vault.sh`
+管理（加密库初始化 + 各 profile 的导入/导出）：
 
 ```nu
-bash scripts/init-secret-vault.sh
-```
-
-```nu
-bash scripts/export-git-crypt-key.sh
+bash scripts/vault.sh init                # 首次创建加密库
+bash scripts/vault.sh nix-tools export    # 导出 git-crypt key
+bash scripts/vault.sh dufs-plus export    # 导出 DUFS secrets
 ```
 
 大模型 API key 等其他凭据直接作为 KeePassXC 条目保存，例如 `ai/openai-api-key`，不需要

@@ -20,7 +20,7 @@ usage() {
 
 环境变量：
   NIX_TOOLS_SECRETS_DIR=~/.config/secrets
-  NIX_TOOLS_GIT_CRYPT_KEY=~/.config/secrets/nix-tools-git-crypt.key
+  NIX_TOOLS_GIT_CRYPT_KEY=~/.config/secrets/nix-tools/nix-tools-git-crypt.key
   NIXOS_ANYWHERE_TARGET=root@192.168.1.6
   NIXOS_ANYWHERE_PROXY_MODE=auto
   NIXOS_ANYWHERE_PROXY_URL=http://127.0.0.1:7897
@@ -64,7 +64,11 @@ TARGET="${1:-${NIXOS_ANYWHERE_TARGET:-${NIXOS_ANYWHERE_SSH_USER:-root}@${NIXOS_A
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(dirname "$SCRIPT_DIR")"
 SECRETS_DIR="${NIX_TOOLS_SECRETS_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/secrets}"
-KEY_FILE="${NIX_TOOLS_GIT_CRYPT_KEY:-$SECRETS_DIR/nix-tools-git-crypt.key}"
+KEY_FILE="${NIX_TOOLS_GIT_CRYPT_KEY:-$SECRETS_DIR/nix-tools/nix-tools-git-crypt.key}"
+if [[ ! -s "$KEY_FILE" ]]; then
+  # 兼容旧布局：~/.config/secrets/nix-tools-git-crypt.key（vault.sh 统一前）
+  [[ -s "$SECRETS_DIR/nix-tools-git-crypt.key" ]] && KEY_FILE="$SECRETS_DIR/nix-tools-git-crypt.key"
+fi
 if [[ ! -s "$KEY_FILE" ]]; then
   for legacy_key in "$REPO_DIR/nix-tools-git-crypt.key" "$REPO_DIR/git-crypt-key"; do
     if [[ -s "$legacy_key" ]]; then
