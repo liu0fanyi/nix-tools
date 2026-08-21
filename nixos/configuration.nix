@@ -192,6 +192,19 @@ in
   # 以下为在官方模板基础上追加的功能
   # ==========================================================================
 
+  # mDNS：解析局域网 .local 主机名（如 nuc.local、homebox.local）。
+  # avahi 提供 mDNS 广播/发现，nssmdns 让 getent/ping/浏览器解析 .local 名。
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true; # 通过 NSS 让系统解析 IPv4 的 .local 域名
+    nssmdns6 = true; # IPv6 的 .local 域名（可选；部分网络只有 v4）
+    publish = {
+      enable = true; # 广播本机主机名，方便其他机器发现 homebox
+      addresses = true;
+      workstation = true;
+    };
+  };
+
   # SSH 加固（官方模板仅 enable=true）
   services.openssh.settings = {
     PasswordAuthentication = false;
