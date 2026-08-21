@@ -1,3 +1,7 @@
 # git-crypt 加密的敏感文件
 secrets/** filter=git-crypt diff=git-crypt
 secrets/rime/** filter=git-crypt diff=git-crypt
+# DUFS Plus 运行时凭据（重装后 git-crypt unlock 一键恢复明文）
+deploy/secrets/** filter=git-crypt diff=git-crypt
+deploy/secrets/.gitignore !filter !diff
+deploy/secrets/README.md !filter !diff
