@@ -249,5 +249,19 @@ in
         DesktopNames=niri
       '';
     };
+
+    # DeepSeek Harness Web GUI 快捷启动。
+    # 生成 home-path/share/applications/dsh-web.desktop（NixOS 集成下为
+    # ~/.local/state/home-manager 的 profile 内），fuzzel（Mod+D）自动索引
+    # 该目录，输入 "dsh" 即可启动。
+    # Exec 使用绝对路径：.desktop 的 Exec 不经过 shell，不读取 bash initExtra 的 PATH。
+    xdg.desktopEntries.dsh-web = {
+      name = "DSH Web";
+      comment = "DeepSeek Harness Web GUI";
+      exec = "/home/liou/.local/bin/dsh web";
+      icon = "applications-internet";
+      terminal = false;
+      categories = [ "Development" "WebDevelopment" ];
+    };
   };
 }

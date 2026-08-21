@@ -9,6 +9,12 @@ result-*
 
 # Local nix eval cache (used when sandbox blocks ~/.cache/nix)
 .nix-cache/
+.nix-data/
+.nix-runtime/
+
+# devenv (local shell state and sandbox-verification direnv config)
+.devenv/
+.direnv-config/
 
 # Generated deployment artifacts, legacy in-repository backups, and runtime secrets
 deploy/.generated/
