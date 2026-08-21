@@ -1,18 +1,24 @@
 #!/usr/bin/env bash
-# 统一的 KeePassXC 密钥库管理脚本。
-# 所有密钥（git-crypt key、DUFS Plus secrets、未来任何密钥文件）都以
-# 加密附件形式存放在同一个 Syncthing 同步的 secrets.kdbx 里，按需导出到
-# 本机 ~/.config/secrets/ 下的对应子目录使用。
+# 统一的 KeePassXC 密钥库管理脚本（数据库驱动，目录与库结构对齐）。
+#
+# 对齐规则：
+#   KeePassXC 组 <name>  ↔  明文目录 ~/.config/secrets/<name>/
+#   组内条目的附件       ↔  目录内的文件（附件名 = 文件名）
+#
+# 新增密钥集：在 KeePassXC 建一个组（或在 ~/.config/secrets/ 建同名目录），
+# 无需修改本脚本。
 #
 # 用法:
-#   bash scripts/vault.sh <profile> import   # 本机明文目录 → KeePassXC 附件
-#   bash scripts/vault.sh <profile> export   # KeePassXC 附件 → 本机明文目录
-#   bash scripts/vault.sh <profile> list     # 查看该 profile 已保管的附件
-#   bash scripts/vault.sh list               # 列出所有可用 profile
+#   bash scripts/vault.sh list              # 列出库中所有组（需要主密码）
+#   bash scripts/vault.sh <组名> export     # 组内所有条目附件 → ~/.config/secrets/<组>/
+#   bash scripts/vault.sh <组名> import     # ~/.config/secrets/<组>/ 下文件 → 组内条目附件
+#   bash scripts/vault.sh <组名> list       # 查看该组条目及附件
+#   bash scripts/vault.sh init              # 创建加密库（首次使用）
 #
-# Profile 定义在下面的 profiles 关联数组中；新增密钥只需加一行：
-#   [条目路径]="本机明文目录"
-# 文件清单放在 scripts/vault/<目录名>.files（进 git，每行一个文件名）。
+# import 规则：目录中每个文件作为一个附件，导入到组内同名条目
+#   （条目 <组>/<文件名>，附件名 <文件名>）；若条目不存在则自动创建。
+#   - ~/.config/secrets/dufs-plus/*.yml  →  条目 dufs-plus/<文件名>，附件 <文件名>
+#   - 目录下每个文件独立成条目，方便在 KeePassXC 里按条目管理。
 #
 # 安全说明:
 #   - 必须在本机交互式终端运行（防 SSH 管道/CI 泄露主密码）
@@ -25,22 +31,6 @@ config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
 base_dir="${NIX_TOOLS_VAULT_BASE:-$config_home/secrets}"       # 明文根目录
 sync_dir="${NIX_TOOLS_SYNC_DIR:-$HOME/Sync/secrets}"
 vault_file="${NIX_TOOLS_VAULT_FILE:-$sync_dir/secrets.kdbx}"
-
-# 声明式 profile：KeePassXC 条目路径 => 本机明文子目录（相对 base_dir）
-# 文件清单放在 scripts/vault/<dir>.files（进 git，每行一个文件名）。
-declare -A profiles=(
-  ["nix-tools/git-crypt-key"]="nix-tools"
-  ["dufs-plus/secrets"]="dufs-plus"
-)
-
-# 仅列出 profile 不需要解锁库，放 TTY 检查之前
-if [[ "${1:-}" == "list" && $# -eq 1 ]]; then
-  echo "可用 profile："
-  for entry in "${!profiles[@]}"; do
-    printf "  %-30s → %s\n" "$entry" "${profiles[$entry]}"
-  done
-  exit 0
-fi
 
 if [[ ! -t 0 || ! -t 1 ]]; then
   echo "错误：此脚本必须在本机交互式终端中运行，不能通过 SSH 管道或 CI 输入主密码。" >&2
@@ -58,27 +48,6 @@ command -v keepassxc-cli >/dev/null 2>&1 || {
   exit 1
 }
 
-# 解析 profile：传入条目路径或别名（目录名）均可
-resolve_profile() {
-  local want="$1"
-  for entry in "${!profiles[@]}"; do
-    local dir="${profiles[$entry]}"
-    if [[ "$entry" == "$want" || "$dir" == "$want" ]]; then
-      echo "$entry|$dir"
-      return 0
-    fi
-  done
-  return 1
-}
-
-if [[ "${1:-}" == "list" && $# -eq 1 ]]; then
-  echo "可用 profile："
-  for entry in "${!profiles[@]}"; do
-    printf "  %-30s → %s\n" "$entry" "${profiles[$entry]}"
-  done
-  exit 0
-fi
-
 if [[ "${1:-}" == "init" ]]; then
   umask 077
   install -d -m 700 "$sync_dir"
@@ -91,102 +60,122 @@ if [[ "${1:-}" == "init" ]]; then
   fi
   chmod 600 "$vault_file"
   echo "完成：KeePassXC 加密库已就绪：$vault_file"
-  echo "接下来运行 bash scripts/vault.sh <profile> import 导入密钥。"
+  exit 0
+fi
+
+if [[ "${1:-}" == "list" && $# -eq 1 ]]; then
+  echo "KeePassXC 库顶层组（↔ ~/.config/secrets/<组>/）："
+  keepassxc-cli ls "$vault_file" / 2>/dev/null | sed 's#/$##' | sed 's/^/  /'
   exit 0
 fi
 
 [[ $# -eq 2 ]] || {
-  echo "用法: bash scripts/vault.sh <profile> {import|export|list}" >&2
+  echo "用法: bash scripts/vault.sh <组名> {import|export|list}" >&2
   echo "      bash scripts/vault.sh init   # 创建加密库（首次使用）" >&2
-  echo "      bash scripts/vault.sh list   # 列出所有 profile" >&2
+  echo "      bash scripts/vault.sh list   # 列出库中所有组" >&2
   exit 1
 }
 
-resolved="$(resolve_profile "$1")" || {
-  echo "错误：未知 profile：$1" >&2
-  echo "可用：$(printf '%s ' "${!profiles[@]}")" >&2
-  exit 1
-}
-entry_path="${resolved%%|*}"
-dir_name="${resolved##*|}"
-secrets_dir="$base_dir/$dir_name"
-files_list="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/vault/$dir_name.files"
-
+group_name="$1"
 action="$2"
+secrets_dir="$base_dir/$group_name"
+
+# 组是否存在（列出组下内容验证；不存在则报错并显示顶层组）
+group_exists() {
+  keepassxc-cli ls "$vault_file" "$group_name" >/dev/null 2>&1
+}
+
 case "$action" in
+  list)
+    if ! group_exists; then
+      echo "错误：库中不存在组 $group_name。" >&2
+      echo "顶层组：" >&2
+      keepassxc-cli ls "$vault_file" / 2>/dev/null | sed 's#/$##' | sed 's/^/  /' >&2
+      exit 1
+    fi
+    echo "组 $group_name 的条目及附件："
+    # 条目 = ls 输出中不带斜杠的行；子组 = 带斜杠行
+    while IFS= read -r item; do
+      [[ -z "$item" ]] && continue
+      if [[ "$item" == */ ]]; then
+        echo "  [子组] ${item%/}"
+      else
+        # 显示该条目的附件
+        atts="$(keepassxc-cli show --all "$vault_file" "$group_name/$item" 2>/dev/null \
+          | sed -n 's/^Attachments: //p')"
+        echo "  $item"
+        [[ -n "$atts" ]] && IFS=', ' read -r -a a <<< "$atts" && for x in "${a[@]}"; do
+          [[ -n "$x" ]] && echo "      ↳ $x"
+        done
+      fi
+    done < <(keepassxc-cli ls "$vault_file" "$group_name" 2>/dev/null)
+    ;;
   import)
     umask 077
     install -d -m 700 "$secrets_dir"
-    [[ -s "$files_list" ]] || {
-      echo "错误：缺少文件清单 $files_list（每行一个要保管的文件名）。" >&2
+    shopt -s nullglob
+    files=("$secrets_dir"/*)
+    shopt -u nullglob
+    [[ ${#files[@]} -gt 0 ]] || {
+      echo "错误：$secrets_dir 下没有文件可导入。" >&2
       exit 1
     }
-    mapfile -t secret_files < "$files_list"
-    # 确保 KeePassXC 条目存在
-    if ! keepassxc-cli show "$vault_file" "$entry_path" >/dev/null 2>&1; then
-      echo "创建 KeePassXC 条目：$entry_path"
-      group_path="${entry_path%%/*}"
-      if [[ "$entry_path" == */* ]]; then
-        keepassxc-cli ls "$vault_file" / 2>/dev/null | grep -q "^${group_path}/?$" || \
-          keepassxc-cli mkdir "$vault_file" "$group_path"
+    # 确保组存在
+    group_exists || keepassxc-cli mkdir "$vault_file" "$group_name" 2>/dev/null || true
+    imported=0
+    for f in "${files[@]}"; do
+      [[ -f "$f" ]] || continue
+      name="$(basename "$f")"
+      entry_path="$group_name/$name"
+      # 条目不存在则创建（--no-password 是数据库访问标志，不是让条目密码为空）
+      if ! keepassxc-cli show "$vault_file" "$entry_path" >/dev/null 2>&1; then
+        keepassxc-cli add \
+          --notes "Imported by vault.sh from $secrets_dir" \
+          "$vault_file" "$entry_path"
       fi
-      keepassxc-cli add \
-        --notes "Encrypted secrets for $entry_path. Export to $secrets_dir when needed." \
-        "$vault_file" "$entry_path"
-    fi
-    for f in "${secret_files[@]}"; do
-      [[ -n "$f" ]] || continue
-      if [[ ! -s "$secrets_dir/$f" ]]; then
-        echo "警告：$secrets_dir/$f 不存在或为空，跳过" >&2
-        continue
-      fi
-      echo "导入 $f ..."
+      echo "导入 $name → $entry_path ..."
       keepassxc-cli attachment-import --force \
-        "$vault_file" "$entry_path" "$f" "$secrets_dir/$f"
+        "$vault_file" "$entry_path" "$name" "$f"
+      imported=$((imported + 1))
     done
-    echo "完成：$entry_path 的密钥已导入 KeePassXC。"
+    echo "完成：${#files[@]} 个文件已导入组 $group_name（$imported 个条目）。"
     ;;
   export)
     umask 077
     install -d -m 700 "$secrets_dir"
-    # 先确认条目存在，避免静默全部跳过
-    if ! keepassxc-cli show "$vault_file" "$entry_path" >/dev/null 2>&1; then
-      echo "错误：KeePassXC 中不存在条目 $entry_path。" >&2
-      echo "可能原因：1) 另一台机器 import 时用了不同条目；2) secrets.kdbx 未同步。" >&2
-      echo "先运行 bash scripts/vault.sh $1 list 查看实际条目。" >&2
+    if ! group_exists; then
+      echo "错误：库中不存在组 $group_name。" >&2
       exit 1
     fi
-    # 导出所有附件（枚举条目的附件名，不依赖 .vault-files）
-    attachments="$(keepassxc-cli show --all "$vault_file" "$entry_path" 2>/dev/null \
-      | sed -n 's/^Attachments: //p')"
-    if [[ -z "$attachments" ]]; then
-      echo "错误：条目 $entry_path 没有任何附件（import 可能未成功）。" >&2
+    exported=0
+    # 遍历组下条目（不带斜杠的行 = 条目）
+    while IFS= read -r item; do
+      [[ -z "$item" || "$item" == */ ]] && continue
+      atts="$(keepassxc-cli show --all "$vault_file" "$group_name/$item" 2>/dev/null \
+        | sed -n 's/^Attachments: //p')"
+      [[ -z "$atts" ]] && continue
+      IFS=', ' read -r -a attach_names <<< "$atts"
+      for f in "${attach_names[@]}"; do
+        [[ -n "$f" ]] || continue
+        echo "导出 $f ..."
+        keepassxc-cli attachment-export \
+          "$vault_file" "$group_name/$item" "$f" "$secrets_dir/.$f.tmp" 2>/dev/null \
+          && mv -f "$secrets_dir/.$f.tmp" "$secrets_dir/$f"
+        chmod 600 "$secrets_dir/$f"
+        rm -f "$secrets_dir/.$f.tmp"
+        exported=$((exported + 1))
+      done
+    done < <(keepassxc-cli ls "$vault_file" "$group_name" 2>/dev/null)
+    if (( exported == 0 )); then
+      echo "错误：组 $group_name 下没有找到任何附件（import 可能未成功）。" >&2
       exit 1
     fi
-    IFS=', ' read -r -a attach_names <<< "$attachments"
-    for f in "${attach_names[@]}"; do
-      [[ -n "$f" ]] || continue
-      echo "导出 $f ..."
-      keepassxc-cli attachment-export \
-        "$vault_file" "$entry_path" "$f" "$secrets_dir/.$f.tmp" 2>/dev/null \
-        && mv -f "$secrets_dir/.$f.tmp" "$secrets_dir/$f"
-      chmod 600 "$secrets_dir/$f"
-      rm -f "$secrets_dir/.$f.tmp"
-    done
     chmod 700 "$secrets_dir"
-    echo "完成：密钥已导出到 $secrets_dir"
+    echo "完成：$exported 个附件已导出到 $secrets_dir"
     echo "（目录 0700，文件 0600；这些文件不应加入 Git）"
     ;;
-  list)
-    if keepassxc-cli show --all "$vault_file" "$entry_path" 2>/dev/null; then
-      :
-    else
-      echo "条目 $entry_path 不存在。当前库中的顶层条目：" >&2
-      keepassxc-cli ls "$vault_file" / 2>/dev/null || true
-    fi
-    ;;
   *)
-    echo "用法: bash scripts/vault.sh <profile> {import|export|list}" >&2
+    echo "用法: bash scripts/vault.sh <组名> {import|export|list}" >&2
     exit 1
     ;;
 esac

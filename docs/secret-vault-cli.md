@@ -58,18 +58,20 @@ keepassxc-cli edit --password-prompt $db ai/openai-api-key
 
 API Key 适合放在条目的密码字段；证书、SSH 私钥、git-crypt key、DUFS secrets 等文件应作为附件保存。
 所有密钥文件统一用 `scripts/vault.sh` 管理：加密附件存在 `~/Sync/secrets/secrets.kdbx`，
-明文按 profile 导出到 `~/.config/secrets/<profile>/`。首次使用先初始化加密库：
+明文目录 `~/.config/secrets/<组名>/` 与 KeePassXC 组结构直接对齐。首次使用先初始化加密库：
 
 ```nu
 bash scripts/vault.sh init
 ```
 
-`nix-tools` 的 git-crypt key 对应的 profile 是 `nix-tools`（条目 `nix-tools/git-crypt-key`）：
+`nix-tools` 的 git-crypt key 在 `nix-tools` 组（条目 `git-crypt-key`，附件 `nix-tools-git-crypt.key`）：
 
 ```text
 数据库：~/Sync/secrets/secrets.kdbx
+组：    nix-tools
 条目：  nix-tools/git-crypt-key
 附件：  nix-tools-git-crypt.key
+导出：  ~/.config/secrets/nix-tools/nix-tools-git-crypt.key
 ```
 
 保存其他文件时，可以手动创建条目并导入附件。下面示例保存一个 SSH 私钥；路径只指向
@@ -124,10 +126,12 @@ bash scripts/vault.sh nix-tools export
 
 ## DUFS Plus 运行时 secrets
 
-DUFS Plus 部署的运行时 secrets（Authelia/Caddy/DUFS）同样以加密附件形式保存在
-`secrets.kdbx` 的 `dufs-plus/secrets` 条目中（profile 名 `dufs-plus`），与 git-crypt
-key 同一套保管方式。这些文件原本只存在于部署机的明文目录（不入 Git），托管到
-KeePassXC 后，任何一台 Syncthing 同步过的机器都能按需导出。
+DUFS Plus 部署的运行时 secrets（Authelia/Caddy/DUFS）以加密附件形式保存在
+`secrets.kdbx` 的 `dufs-plus` 组中，与 git-crypt key 同一套保管方式。目录与
+KeePassXC 结构直接对齐：`~/.config/secrets/dufs-plus/` 下的每个文件对应
+`dufs-plus` 组内一个同名条目（文件内容 = 条目附件）。这些文件原本只存在于
+部署机的明文目录（不入 Git），托管到 KeePassXC 后，任何一台 Syncthing 同步过的
+机器都能按需导出。
 
 导入（本机 `~/.config/secrets/dufs-plus/` → KeePassXC 附件）：
 
@@ -141,14 +145,13 @@ bash scripts/vault.sh dufs-plus import
 bash scripts/vault.sh dufs-plus export
 ```
 
-查看已保管的附件清单：
+查看该组已保管的条目/附件：
 
 ```nu
 bash scripts/vault.sh dufs-plus list
 ```
 
-条目固定为 `dufs-plus/secrets`，附件名与 `deploy/secrets/README.md` 列出的必需文件一致
-（`authelia_jwt_secret`、`authelia_session_secret`、`authelia_storage_key`、
-`authelia_users_database.yml`、`dufs-readonly.yaml`、`caddy_lan_basic_auth`、可选
-`tag-server.env`）。所有命令都要求在本机交互式终端运行，主密码只由
-`keepassxc-cli` 交互提示。
+对应文件与 `deploy/secrets/README.md` 列出的必需文件一致（`authelia_jwt_secret`、
+`authelia_session_secret`、`authelia_storage_key`、`authelia_users_database.yml`、
+`dufs-readonly.yaml`、`caddy_lan_basic_auth`、可选 `tag-server.env`）。所有命令都要求
+在本机交互式终端运行，主密码只由 `keepassxc-cli` 交互提示。
