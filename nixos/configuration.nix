@@ -194,6 +194,8 @@ in
 
   # mDNS：解析局域网 .local 主机名（如 nuc.local、homebox.local）。
   # avahi 提供 mDNS 广播/发现，nssmdns 让 getent/ping/浏览器解析 .local 名。
+  # 注意：不要用 networking.hosts 静态映射 .local 名——那会失去 mDNS
+  # 动态解析的意义（对方 IP 变化后静态映射会失效）。
   services.avahi = {
     enable = true;
     nssmdns4 = true; # 通过 NSS 让系统解析 IPv4 的 .local 域名
@@ -203,13 +205,6 @@ in
       addresses = true;
       workstation = true;
     };
-  };
-
-  # hosts 兜底：nuc（DUFS Plus 部署机）只广播了 IPv4，浏览器若优先
-  # 尝试 IPv6 会导致 nuc.local 解析失败。显式映射 IPv4，确保 nuc.local
-  # 始终可用（绕过 mDNS 的 v6 查询）。
-  networking.hosts = {
-    "192.168.1.3" = [ "nuc" "nuc.local" ];
   };
 
   # SSH 加固（官方模板仅 enable=true）
