@@ -34,7 +34,13 @@
   # 原理：让 Nix 安的应用能正确处理文件类型关联（如双击文件时用正确的程序打开）
   xdg.mime.enable = true;
 
-  nixpkgs.config.allowUnfree = lib.mkIf (!isNixOS) true;
+  # 非 NixOS（standalone）时允许 unfree 包。
+  # NixOS 集成（useGlobalPkgs = true）下完全不定义 nixpkgs.config：
+  # 它由 nixos/configuration.nix 的全局 nixpkgs.config 提供，
+  # 这里再设会触发 "nixpkgs.config while useGlobalPkgs" 警告。
+  nixpkgs.config = lib.mkIf (!isNixOS) {
+    allowUnfree = true;
+  };
 
   # 简单的软件包安装方式
   home.packages = with pkgs; [

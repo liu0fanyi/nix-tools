@@ -205,6 +205,13 @@ in
     };
   };
 
+  # hosts 兜底：nuc（DUFS Plus 部署机）只广播了 IPv4，浏览器若优先
+  # 尝试 IPv6 会导致 nuc.local 解析失败。显式映射 IPv4，确保 nuc.local
+  # 始终可用（绕过 mDNS 的 v6 查询）。
+  networking.hosts = {
+    "192.168.1.3" = [ "nuc" "nuc.local" ];
+  };
+
   # SSH 加固（官方模板仅 enable=true）
   services.openssh.settings = {
     PasswordAuthentication = false;
