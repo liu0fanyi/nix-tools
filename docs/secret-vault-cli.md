@@ -126,32 +126,13 @@ bash scripts/vault.sh nix-tools export
 
 ## DUFS Plus 运行时 secrets
 
-DUFS Plus 部署的运行时 secrets（Authelia/Caddy/DUFS）以加密附件形式保存在
-`secrets.kdbx` 的 `dufs-plus` 组中，与 git-crypt key 同一套保管方式。目录与
-KeePassXC 结构直接对齐：`~/.config/secrets/dufs-plus/` 下的每个文件对应
-`dufs-plus` 组内一个同名条目（文件内容 = 条目附件）。这些文件原本只存在于
-部署机的明文目录（不入 Git），托管到 KeePassXC 后，任何一台 Syncthing 同步过的
-机器都能按需导出。
+DUFS Plus 的运行时凭据（`deploy/secrets/` 下的 Authelia/Caddy/DUFS 文件）**已纳入
+git-crypt**（见仓库根 `.gitattributes`），以密文提交在 Git 中，与 `secrets/`
+（mihomo/Rime）同一套恢复链路。重装/迁移后只需：
 
-导入（本机 `~/.config/secrets/dufs-plus/` → KeePassXC 附件）：
-
-```nu
-bash scripts/vault.sh dufs-plus import
+```bash
+git-crypt unlock ~/.config/secrets/nix-tools/nix-tools-git-crypt.key
 ```
 
-导出（KeePassXC 附件 → 本机 `~/.config/secrets/dufs-plus/`，自动设置 0700/0600）：
-
-```nu
-bash scripts/vault.sh dufs-plus export
-```
-
-查看该组已保管的条目/附件：
-
-```nu
-bash scripts/vault.sh dufs-plus list
-```
-
-对应文件与 `deploy/secrets/README.md` 列出的必需文件一致（`authelia_jwt_secret`、
-`authelia_session_secret`、`authelia_storage_key`、`authelia_users_database.yml`、
-`dufs-readonly.yaml`、`caddy_lan_basic_auth`、可选 `tag-server.env`）。所有命令都要求
-在本机交互式终端运行，主密码只由 `keepassxc-cli` 交互提示。
+即可一键恢复 `deploy/secrets/` 下的全部明文凭据，无需逐文件从 KeePassXC 导出。
+详细工作流程见 `deploy/secrets/README.md`。
