@@ -64,6 +64,8 @@
 
     ffmpeg
     devenv
+    ## deploy/ 脚本（manage.py / release-apps.py）运行依赖
+    python3
     localsend
     # yazi
     bottom
@@ -98,6 +100,12 @@
     enable = true;
     enableBashIntegration = true; # see note on other shells below
     nix-direnv.enable = true;
+    # 加载 devenv 的 direnv 集成（提供 `use devenv`，即 use_devenv 函数），
+    # 否则 .envrc 里的 `use devenv` 会报 "use_devenv: 未找到命令"。
+    # stdlib 由 direnv 以 bash source 执行，进程替换 <(...) 可用。
+    stdlib = ''
+      source <(devenv direnvrc)
+    '';
   };
 
   programs.bash = {
