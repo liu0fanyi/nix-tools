@@ -44,6 +44,9 @@
 
   # 简单的软件包安装方式
   home.packages = with pkgs; [
+    ## libnotify：提供 notify-send（配合 mako 发桌面通知）
+    libnotify
+
     zellij
     helix
     starship
@@ -257,6 +260,35 @@
     text = ''
       #!/bin/sh
       exec node --expose-internals ${config.home.homeDirectory}/.npm-global/lib/node_modules/@deepseek-harness-tui/dsh-tui/bin/dsh-tui.js "$@"
+    '';
+  };
+
+  # dsh web 启动切换脚本（供 dsh-web.desktop 的 Mod+D 调用）：
+  # - 未运行 → systemctl --user start（启动后 notify-send 弹 toast）
+  # - 已运行 → systemctl --user restart（重启后弹 toast）
+  # notify-send 用 pkgs.libnotify 的绝对路径（Nix 插值），不依赖 PATH——
+  # .desktop 的 Exec 环境 PATH 不可靠，且 useUserPackages 下 per-user profile
+  # 可能滞后。
+  home.file.".local/bin/dsh-web-toggle" = lib.mkIf isNixOS {
+    executable = true;
+    text = ''
+      #!/bin/sh
+      notify="${pkgs.libnotify}/bin/notify-send"
+      if systemctl --user is-active --quiet dsh-web; then
+        echo "dsh-web: 已运行，重启中..."
+        systemctl --user restart dsh-web
+        action="重启"
+      else
+        echo "dsh-web: 启动中..."
+        systemctl --user start dsh-web
+        action="启动"
+      fi
+      # 等 service 进入 running 再发通知
+      for i in 1 2 3 4 5 6 7 8 9 10; do
+        systemctl --user is-active --quiet dsh-web && break
+        sleep 1
+      done
+      "''$notify" "DSH Web 已''${action}" "http://127.0.0.1:3080" 2>/dev/null || true
     '';
   };
 

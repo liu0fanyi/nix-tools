@@ -254,12 +254,13 @@ in
     # 生成 home-path/share/applications/dsh-web.desktop（NixOS 集成下为
     # ~/.local/state/home-manager 的 profile 内），fuzzel（Mod+D）自动索引
     # 该目录，输入 "dsh" 即可启动。
-    # Exec 通过 systemd user service 管理：已运行则 no-op，未运行则启动；
-    # 停止用 `systemctl --user stop dsh-web`（见 home.nix 的 systemd.user.services.dsh-web）。
+    # Exec 调用 dsh-web-toggle：未运行则 start，已运行则 restart，
+    # 完成后 notify-send 弹 toast（见 home.nix 的 systemd.user.services.dsh-web
+    # 与 home.file.".local/bin/dsh-web-toggle"）。
     xdg.desktopEntries.dsh-web = {
       name = "DSH Web";
       comment = "DeepSeek Harness Web GUI";
-      exec = "systemctl --user start dsh-web";
+      exec = "/home/liou/.local/bin/dsh-web-toggle";
       icon = "applications-internet";
       terminal = false;
       categories = [ "Development" "WebDevelopment" ];
