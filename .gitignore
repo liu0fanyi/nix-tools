@@ -11,6 +11,7 @@ result-*
 .nix-cache/
 .nix-data/
 .nix-runtime/
+.nix-state/
 
 # devenv (local shell state and sandbox-verification direnv config)
 .devenv/
