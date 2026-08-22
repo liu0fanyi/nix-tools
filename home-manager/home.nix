@@ -307,57 +307,45 @@
   # 更新 dsh 不影响已装插件。
   home.activation.ensureDshLatest = lib.mkIf isNixOS (
     lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      command -v npm >/dev/null 2>&1 || { echo "ensureDshLatest: npm 不可用，跳过"; exit 0; }
-      # .npmrc 已配置 prefix 与 npmmirror 镜像
-      for pkg in "@deepseek-ai/dsh" "@deepseek-harness-tui/dsh-tui"; do
-        # 当前版本：直接读已安装包的 package.json
-        pkg_json="''$HOME/.npm-global/lib/node_modules/''$pkg/package.json"
-        current=""
-        if [ -f "''$pkg_json" ]; then
-          current="''$(sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "''$pkg_json" | head -n1)"
-        fi
-        latest="''$(npm view "''$pkg" version 2>/dev/null || echo "")"
-        if [ -z "''$latest" ]; then
-          echo "ensureDshLatest: 无法获取 ''$pkg 最新版（网络/镜像问题），跳过"
-          continue
-        fi
-        if [ "''$current" != "''$latest" ]; then
-          echo "ensureDshLatest: 更新 ''$pkg ''$current → ''$latest"
-          # --legacy-peer-deps：npm 11 arborist 对 dsh-tui 依赖树有 bug
-          # （Cannot read properties of null），该标志绕过严格 peer 解析
-          npm install -g --legacy-peer-deps "''$pkg@''$latest" >/dev/null 2>&1 && echo "  ✓ 已更新" || echo "  ✗ 更新失败（保留当前版本）"
-        else
-          echo "ensureDshLatest: ''$pkg 已是最新（''$current）"
-        fi
-      done
+      # 不能在任何分支用 exit（activation 是顶层 shell 脚本，exit 会终止整个
+      # activation，导致后续 linkGeneration 等步骤不执行），用 if 包裹。
+      # activation 的 PATH 是固定 nix store 路径，不含系统 bin / npm-global，
+      # 这里显式补充（npm 在 /run/current-system/sw/bin 或 ~/.npm-global/bin）。
+      export PATH="/run/current-system/sw/bin:''$HOME/.npm-global/bin:''$PATH"
+      if command -v npm >/dev/null 2>&1; then
+        # .npmrc 已配置 prefix 与 npmmirror 镜像
+        for pkg in "@deepseek-ai/dsh" "@deepseek-harness-tui/dsh-tui"; do
+          # 当前版本：直接读已安装包的 package.json
+          pkg_json="''$HOME/.npm-global/lib/node_modules/''$pkg/package.json"
+          current=""
+          if [ -f "''$pkg_json" ]; then
+            current="''$(sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "''$pkg_json" | head -n1)"
+          fi
+          latest="''$(npm view "''$pkg" version 2>/dev/null || echo "")"
+          if [ -z "''$latest" ]; then
+            echo "ensureDshLatest: 无法获取 ''$pkg 最新版（网络/镜像问题），跳过"
+            continue
+          fi
+          if [ "''$current" != "''$latest" ]; then
+            echo "ensureDshLatest: 更新 ''$pkg ''$current → ''$latest"
+            # --legacy-peer-deps：npm 11 arborist 对 dsh-tui 依赖树有 bug
+            # （Cannot read properties of null），该标志绕过严格 peer 解析
+            npm install -g --legacy-peer-deps "''$pkg@''$latest" >/dev/null 2>&1 && echo "  ✓ 已更新" || echo "  ✗ 更新失败（保留当前版本）"
+          else
+            echo "ensureDshLatest: ''$pkg 已是最新（''$current）"
+          fi
+        done
+      else
+        echo "ensureDshLatest: npm 不可用，跳过"
+      fi
     ''
   );
 
-  # dsh profile 插件（如 SSH 插件）装在 ~/.dsh/profiles/<name>/，由 dsh plugin
-  # （内部转发 pnpm）管理，独立于 npm 全局包。这里在 switch 时检查并安装缺失的
-  # 插件，保证重装/新机器后自动恢复；已存在则跳过（幂等）。
-  # 插件列表做成数组，新增插件只需加一行；用 @latest 保持最新。
-  home.activation.ensureDshPlugins = lib.mkIf isNixOS (
-    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      # 插件数组：dsh profile 名 与 插件包名 配对
-      profile_name="web"
-      plugins=(
-        "@zhangfengshun/dsh-remote-ssh"
-      )
-      pkg_json="''$HOME/.dsh/profiles/''$profile_name/package.json"
-      command -v dsh >/dev/null 2>&1 || { echo "ensureDshPlugins: dsh 不可用，跳过"; exit 0; }
-      [ -f "''$pkg_json" ] || { echo "ensureDshPlugins: 找不到 profile ''$profile_name（$pkg_json），跳过"; exit 0; }
-      for plugin in "''${plugins[@]}"; do
-        if grep -q "''$plugin" "''$pkg_json"; then
-          echo "ensureDshPlugins: ''$plugin 已安装，跳过"
-        else
-          echo "ensureDshPlugins: 安装 ''$plugin@latest ..."
-          dsh plugin --profile "''$profile_name" add "''$plugin@latest" >/dev/null 2>&1 \
-            && echo "  ✓ 已安装" || echo "  ✗ 安装失败（请手动 dsh plugin --profile ''$profile_name add ''$plugin）"
-        fi
-      done
-    ''
-  );
+  # dsh profile 插件（如 SSH 插件）由 dsh 自己管理（dsh plugin add/rm/update，
+  # 转发 pnpm），home-manager 不接管——插件是动态的、有依赖顺序，声明式管理
+  # 会与手动操作冲突。需要时手动执行：
+  #   dsh plugin --profile web add dsh-better-sidebar
+  #   dsh plugin --profile web add @zhangfengshun/dsh-remote-ssh
 
   # fcitx5 输入法列表（对齐本机：keyboard-us + pinyin + rime，默认 rime）
   xdg.configFile."fcitx5/profile" = lib.mkIf isNixOS {
