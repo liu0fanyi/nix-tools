@@ -287,6 +287,38 @@
     ''
   );
 
+  # dsh / dsh-tui 通过 npm 全局安装（~/.npm-global），home-manager 无法像
+  # nix 包那样固定版本，这里在每次 switch 时检查 npm 最新版，仅在需要时更新，
+  # 保证版本跟随上游（近似滚动更新）。插件装在 ~/.dsh/profiles/，独立于 npm 包，
+  # 更新 dsh 不影响已装插件。
+  home.activation.ensureDshLatest = lib.mkIf isNixOS (
+    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      command -v npm >/dev/null 2>&1 || { echo "ensureDshLatest: npm 不可用，跳过"; exit 0; }
+      # .npmrc 已配置 prefix 与 npmmirror 镜像
+      for pkg in "@deepseek-ai/dsh" "@deepseek-harness-tui/dsh-tui"; do
+        # 当前版本：直接读已安装包的 package.json
+        pkg_json="''$HOME/.npm-global/lib/node_modules/''$pkg/package.json"
+        current=""
+        if [ -f "''$pkg_json" ]; then
+          current="''$(sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "''$pkg_json" | head -n1)"
+        fi
+        latest="''$(npm view "''$pkg" version 2>/dev/null || echo "")"
+        if [ -z "''$latest" ]; then
+          echo "ensureDshLatest: 无法获取 ''$pkg 最新版（网络/镜像问题），跳过"
+          continue
+        fi
+        if [ "''$current" != "''$latest" ]; then
+          echo "ensureDshLatest: 更新 ''$pkg ''$current → ''$latest"
+          # --legacy-peer-deps：npm 11 arborist 对 dsh-tui 依赖树有 bug
+          # （Cannot read properties of null），该标志绕过严格 peer 解析
+          npm install -g --legacy-peer-deps "''$pkg@''$latest" >/dev/null 2>&1 && echo "  ✓ 已更新" || echo "  ✗ 更新失败（保留当前版本）"
+        else
+          echo "ensureDshLatest: ''$pkg 已是最新（''$current）"
+        fi
+      done
+    ''
+  );
+
   # fcitx5 输入法列表（对齐本机：keyboard-us + pinyin + rime，默认 rime）
   xdg.configFile."fcitx5/profile" = lib.mkIf isNixOS {
     # fcitx5 运行时也会生成此文件，接管需强制
