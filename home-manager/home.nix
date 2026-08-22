@@ -480,6 +480,27 @@
   # avoids an upstream options.json derivation that loses Nix store context.
   manual.manpages.enable = false;
 
+  # DSH Web GUI 作为 systemd user service 管理（代替裸进程 + pkill）。
+  # Mod+D（fuzzel → dsh-web.desktop）调用 `systemctl --user start dsh-web`：
+  # 已运行则 no-op，未运行则启动；停止用 `systemctl --user stop dsh-web`。
+  # 不 enable：保持手动启动语义，不开机自启。
+  systemd.user.services.dsh-web = {
+    Unit = {
+      Description = "DeepSeek Harness Web GUI";
+      After = [ "network-online.target" ];
+      Wants = [ "network-online.target" ];
+    };
+    Service = {
+      # 用 home-manager 生成的 wrapper（带 --expose-internals，HMR 需要）
+      ExecStart = "${config.home.homeDirectory}/.local/bin/dsh web";
+      Restart = "on-failure";
+      RestartSec = "3";
+      # 限制文件权限，避免 dsh 生成的 profile 文件权限过宽
+      UMask = "0077";
+    };
+    Install = { };
+  };
+
   # Ensure systemd user services are started/restarted on switch
   # Use the host client on non-NixOS; nixpkgs systemctl may be newer than the
   # running host daemon and fail to connect to its user bus.
