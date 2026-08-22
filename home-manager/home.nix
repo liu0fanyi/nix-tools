@@ -301,6 +301,22 @@
     '';
   };
 
+  # SSH 主机配置（~/.ssh/config）：供 dsh SSH 插件（dsh-remote-ssh /
+  # dsh-ssh）识别导入。nuc 是 DUFS Plus 部署机，用 liou 免密登录。
+  programs.ssh = {
+    enable = true;
+    matchBlocks = {
+      "nuc" = {
+        hostname = "192.168.1.3";
+        user = "liou";
+      };
+      "nuc.local" = {
+        hostname = "192.168.1.3";
+        user = "liou";
+      };
+    };
+  };
+
   # Rime 默认简体输出（switches 定义在方案级 schema，
   # 须 patch luna_pinyin.custom.yaml 而非 default.custom.yaml）
   home.file.".local/share/fcitx5/rime/luna_pinyin.custom.yaml" = lib.mkIf isNixOS {
