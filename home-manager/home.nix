@@ -305,16 +305,33 @@
   # dsh-ssh）识别导入。nuc 是 DUFS Plus 部署机，用 liou 免密登录。
   # 关键：HostName 用 mDNS 名 nuc.local（avahi 动态解析），而不是写死 IP——
   # 对方 IP 变化时无需改配置。nuc 是 mDNS 别名（同时注册 .local 解析）。
+  # 用 programs.ssh.settings（matchBlocks 已弃用）。
   programs.ssh = {
     enable = true;
-    matchBlocks = {
+    # 不生成 home-manager 的默认配置段（defaults 由 settings."*" 自己控制）
+    enableDefaultConfig = false;
+    settings = {
+      # 默认值：保持 home-manager 之前的默认行为
+      "*" = {
+        AddKeysToAgent = "no";
+        Compression = "no";
+        ControlMaster = "no";
+        ControlPath = "~/.ssh/master-%r@%n:%p";
+        ControlPersist = "no";
+        ForwardAgent = "no";
+        HashKnownHosts = "no";
+        ServerAliveCountMax = 3;
+        ServerAliveInterval = 0;
+        UserKnownHostsFile = "~/.ssh/known_hosts";
+      };
+      # nuc（mDNS 名，防 IP 变化）
       "nuc" = {
-        hostname = "nuc.local";
-        user = "liou";
+        HostName = "nuc.local";
+        User = "liou";
       };
       "nuc.local" = {
-        hostname = "nuc.local";
-        user = "liou";
+        HostName = "nuc.local";
+        User = "liou";
       };
     };
   };
