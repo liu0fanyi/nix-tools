@@ -303,15 +303,17 @@
 
   # SSH 主机配置（~/.ssh/config）：供 dsh SSH 插件（dsh-remote-ssh /
   # dsh-ssh）识别导入。nuc 是 DUFS Plus 部署机，用 liou 免密登录。
+  # 关键：HostName 用 mDNS 名 nuc.local（avahi 动态解析），而不是写死 IP——
+  # 对方 IP 变化时无需改配置。nuc 是 mDNS 别名（同时注册 .local 解析）。
   programs.ssh = {
     enable = true;
     matchBlocks = {
       "nuc" = {
-        hostname = "192.168.1.3";
+        hostname = "nuc.local";
         user = "liou";
       };
       "nuc.local" = {
-        hostname = "192.168.1.3";
+        hostname = "nuc.local";
         user = "liou";
       };
     };
