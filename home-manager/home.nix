@@ -229,8 +229,22 @@
 
   programs.home-manager.enable = true;
 
-  # dsh/dsh-tui 需要 node --expose-internals（HMR 插件要求）；
-  # npm 的 bin 链接无法带参数，用包装脚本（仅 NixOS，npm 包在 ~/.npm-global）
+  # dsh/dsh-tui 需要 node --expose-internals。
+  #
+  # 为什么需要：
+  #   dsh web 的 HMR（前端热更新）服务由 cordis-plugin-hmr 提供，它在启动时强制检查
+  #     if (!this.ctx.loader.internal) throw new Error("--expose-internals is required for HMR service");
+  #   loader.internal 是 Node 的内部模块加载器（node:internal/modules/esm/loader），
+  #   只有加 --expose-internals 启动标志才会暴露给用户代码，HMR 用它做模块热替换。
+  #   注意：dsh --version 等普通命令不需要此标志，只有启动 web GUI（带 HMR）时才需要。
+  #
+  # 为什么必须包装：
+  #   npm 生成的 bin 链接（~/.npm-global/bin/dsh → lib/bin.js）是 shebang 软链，
+  #   无法附加启动参数。用 .local/bin/dsh wrapper 包一层 exec node --expose-internals；
+  #   .local/bin 在 PATH 中排在 .npm-global/bin 之前（见 programs.bash.initExtra），
+  #   所以 `dsh` 命中 wrapper 而非 npm 裸链接。
+  #
+  # 仅 NixOS：npm 包装在 ~/.npm-global（用户目录可写），wrapper 覆盖到该路径。
   home.file.".local/bin/dsh" = lib.mkIf isNixOS {
     executable = true;
     text = ''
@@ -314,6 +328,32 @@
           npm install -g --legacy-peer-deps "''$pkg@''$latest" >/dev/null 2>&1 && echo "  ✓ 已更新" || echo "  ✗ 更新失败（保留当前版本）"
         else
           echo "ensureDshLatest: ''$pkg 已是最新（''$current）"
+        fi
+      done
+    ''
+  );
+
+  # dsh profile 插件（如 SSH 插件）装在 ~/.dsh/profiles/<name>/，由 dsh plugin
+  # （内部转发 pnpm）管理，独立于 npm 全局包。这里在 switch 时检查并安装缺失的
+  # 插件，保证重装/新机器后自动恢复；已存在则跳过（幂等）。
+  # 插件列表做成数组，新增插件只需加一行；用 @latest 保持最新。
+  home.activation.ensureDshPlugins = lib.mkIf isNixOS (
+    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      # 插件数组：dsh profile 名 与 插件包名 配对
+      profile_name="web"
+      plugins=(
+        "@zhangfengshun/dsh-remote-ssh"
+      )
+      pkg_json="''$HOME/.dsh/profiles/''$profile_name/package.json"
+      command -v dsh >/dev/null 2>&1 || { echo "ensureDshPlugins: dsh 不可用，跳过"; exit 0; }
+      [ -f "''$pkg_json" ] || { echo "ensureDshPlugins: 找不到 profile ''$profile_name（$pkg_json），跳过"; exit 0; }
+      for plugin in "''${plugins[@]}"; do
+        if grep -q "''$plugin" "''$pkg_json"; then
+          echo "ensureDshPlugins: ''$plugin 已安装，跳过"
+        else
+          echo "ensureDshPlugins: 安装 ''$plugin@latest ..."
+          dsh plugin --profile "''$profile_name" add "''$plugin@latest" >/dev/null 2>&1 \
+            && echo "  ✓ 已安装" || echo "  ✗ 安装失败（请手动 dsh plugin --profile ''$profile_name add ''$plugin）"
         fi
       done
     ''
