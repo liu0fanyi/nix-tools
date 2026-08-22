@@ -57,4 +57,53 @@ def main [
         print $"(ansi green)Deploying Home Manager target: ($target)(ansi reset)"
         nix run nixpkgs#home-manager -- switch --flake $".#($target)" -b backup
     }
+
+    # ── 部署后自检：home-manager 是否真正更新到当前 git 状态 ──
+    # NixOS 集成的 home-manager 有时不会被 switch 正确重新激活（历史上 activation
+    # 被 exit 0 中断过），这里对比 current-home 与当前 git 构建结果，并检查关键文件。
+    print $"(ansi cyan)--- 部署后自检 ---(ansi reset)"
+    let current_home = ($env.HOME | path join ".local/state/home-manager/gcroots/current-home" | path expand)
+    let current_gen = (readlink -f $current_home | str trim)
+    # nix build 输出多行（构建日志 + 路径），取最后一行非空 = store 路径
+    let expected_gen = (nix build --no-link --print-out-paths $".#nixosConfigurations.($host).config.home-manager.users.($target).home.activationPackage" | lines | where { |l| ($l | str trim) != "" } | last | str trim)
+    let ok = ($current_gen == $expected_gen)
+
+    if $ok {
+        print $"(ansi green)✓ home-manager generation 已更新: ($current_gen)(ansi reset)"
+    } else {
+        print $"(ansi yellow)⚠ home-manager generation 未对齐:(ansi reset)"
+        print $"  当前: ($current_gen)"
+        print $"  期望: ($expected_gen)"
+        print "  → 系统 switch 未重新激活 home-manager，需要手动激活："
+        print $"    ($expected_gen)/activate"
+    }
+
+    # 关键文件检查
+    let checks = [
+        { name: "SSH config (nuc.local)", path: ($env.HOME | path join ".ssh/config"), pattern: "HostName nuc.local" }
+        { name: "dsh-web.service", path: ($env.HOME | path join ".config/systemd/user/dsh-web.service"), pattern: "ExecStart=.*dsh web" }
+        { name: "dsh-web-toggle", path: ($env.HOME | path join ".local/bin/dsh-web-toggle"), pattern: "notify=" }
+    ]
+    for c in $checks {
+        if ($c.path | path exists) {
+            let content = (open $c.path | if ($c.pattern | str contains "nuc.local") { to text } else { to text })
+            if (($c.pattern | str contains "HostName")) {
+                if ($content | str contains $c.pattern) {
+                    print $"(ansi green)✓ ($c.name) 已部署(ansi reset)"
+                } else {
+                    print $"(ansi red)✗ ($c.name) 内容不符（缺 '($c.pattern)'）(ansi reset)"
+                }
+            } else if ($content | str contains $c.pattern) {
+                print $"(ansi green)✓ ($c.name) 已部署(ansi reset)"
+            } else {
+                print $"(ansi red)✗ ($c.name) 内容不符（缺 '($c.pattern)'）(ansi reset)"
+            }
+        } else {
+            print $"(ansi red)✗ ($c.name) 缺失(ansi reset)"
+        }
+    }
+
+    if not $ok {
+        print $"(ansi yellow)提示: 运行上面的 activate 命令完成 home-manager 激活，或再跑一次 nu rerun.nu(ansi reset)"
+    }
 }
