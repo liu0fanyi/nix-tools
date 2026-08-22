@@ -16,6 +16,9 @@
 #   - --nixos / --no-nixos 可显式覆盖自动检测；若覆盖结果与本机系统类型矛盾，
 #     脚本拒绝执行并提示（防止在 NixOS 上跑 standalone、或反之）。
 #   - 目标默认 liou；NixOS 主机名默认 homebox（可用 --host 覆盖）。
+#   - 非 NixOS 机器（如 nuc）：固定部署 homeConfigurations.liou-nuc
+#     （带 autossh 反向隧道模块，让外网能 SSH 进来），直接 nu rerun.nu 即可。
+#     target 参数仅 NixOS 分支有效。
 def main [
     target: string = "liou"
     --nixos # 强制 NixOS 系统 switch（覆盖自动检测）
@@ -54,8 +57,10 @@ def main [
         # 用绝对 flake 路径（sudo 可能改变 cwd/环境），--refresh 确保拉到最新 inputs
         sudo nixos-rebuild switch --flake $"($env.PWD)#($host)" --refresh
     } else {
-        print $"(ansi green)Deploying Home Manager target: ($target)(ansi reset)"
-        nix run nixpkgs#home-manager -- switch --flake $".#($target)" -b backup
+        # 非 NixOS（如 nuc）：固定部署 liou-nuc（带 autossh 反向隧道模块）。
+        # target 参数在此分支被忽略，统一用 liou-nuc。
+        print $"(ansi green)Deploying Home Manager target: liou-nuc (standalone)(ansi reset)"
+        nix run nixpkgs#home-manager -- switch --flake $".#liou-nuc" -b backup
     }
 
     # ── 部署后自检：home-manager 是否真正更新到当前 git 状态 ──
@@ -66,8 +71,14 @@ def main [
     print $"(ansi cyan)--- 部署后自检 ---(ansi reset)"
     let current_home = ($env.HOME | path join ".local/state/home-manager/gcroots/current-home" | path expand)
     let current_gen = (readlink -f $current_home | str trim)
+    # 按系统类型取构建路径：NixOS 用 nixosConfigurations.<host>，非 NixOS 用 homeConfigurations.liou-nuc
+    let flake_attr = if $use_nixos {
+        $".#nixosConfigurations.($host).config.home-manager.users.($target).home.activationPackage"
+    } else {
+        ".#homeConfigurations.liou-nuc.activationPackage"
+    }
     # nix build 输出多行（构建日志 + 路径），取最后一行非空 = store 路径
-    let expected_gen = (nix build --no-link --print-out-paths $".#nixosConfigurations.($host).config.home-manager.users.($target).home.activationPackage" | lines | where { |l| ($l | str trim) != "" } | last | str trim)
+    let expected_gen = (nix build --no-link --print-out-paths $flake_attr | lines | where { |l| ($l | str trim) != "" } | last | str trim)
 
     if ($current_gen == $expected_gen) {
         print $"(ansi green)✓ home-manager generation 已更新: ($current_gen)(ansi reset)"
@@ -75,7 +86,7 @@ def main [
         print $"(ansi yellow)⚠ home-manager generation 未对齐:(ansi reset)"
         print $"  当前: ($current_gen)"
         print $"  期望: ($expected_gen)"
-        print "  → 系统 switch 未重新激活 home-manager，需要手动激活："
+        print "  → 部署未激活 home-manager，需要手动激活："
         print $"    ($expected_gen)/activate"
         print "  激活后再跑一次 nu rerun.nu 确认。"
     }

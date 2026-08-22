@@ -88,7 +88,8 @@
         "liou" = mkHomeConfig "liou" [ ];
 
         # nuc（家庭 NAT，无公网 IPv4）：额外加载 autossh 反向隧道模块，
-        # 让外网能 SSH 进来（经 aliyun VPS 跳板）。部署：home-manager switch --flake .#liou-nuc
+        # 让外网能 SSH 进来（经 aliyun VPS 跳板）。
+        # nuc 上直接跑 `nu rerun.nu`（rerun.nu 的非 NixOS 分支固定用此配置）。
         "liou-nuc" = mkHomeConfig "liou" [ ./home-manager/nix_modules/nuc-tunnel.nix ];
 
         # 添加环境时只需一行：
