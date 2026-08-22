@@ -23,11 +23,9 @@
       Wants = [ "network-online.target" ];
     };
     Service = {
-      # 覆盖项（在 nuc 上 export 或改这里）：
-      #   TUNNEL_ALIYUN_HOST=47.93.153.102
-      #   TUNNEL_ALIYUN_USER=root
-      #   TUNNEL_REMOTE_PORT=2222
-      ExecStart = "${pkgs.autossh}/bin/autossh -M 0 -N -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -o ExitOnForwardFailure=yes -R \${TUNNEL_REMOTE_PORT:-2222}:localhost:22 \${TUNNEL_ALIYUN_USER:-root}@\${TUNNEL_ALIYUN_HOST:-47.93.153.102}";
+      # 写死 aliyun 地址与端口（systemd 的 ExecStart 不支持 ${VAR:-default} 语法，
+      # 那是 shell 的；这里配置固定，无需环境变量覆盖）
+      ExecStart = "${pkgs.autossh}/bin/autossh -M 0 -N -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -o ExitOnForwardFailure=yes -R 2222:localhost:22 root@47.93.153.102";
       Restart = "on-failure";
       RestartSec = "5";
       Environment = [ "HOME=%h" ];

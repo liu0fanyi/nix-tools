@@ -333,6 +333,15 @@
         HostName = "nuc.local";
         User = "liou";
       };
+      # homebox（本机，mDNS 名；IP 是 DHCP 会变，用 mDNS 稳定）
+      "homebox" = {
+        HostName = "homebox.local";
+        User = "liou";
+      };
+      "homebox.local" = {
+        HostName = "homebox.local";
+        User = "liou";
+      };
       # 外网 SSH 到 nuc：经 aliyun VPS 跳板 + autossh 反向隧道（nuc 上跑，
       # 见 nix_modules/nuc-tunnel.nix）。aliyun 开 2222 → 隧道 → nuc:22。
       "nuc-remote" = {
