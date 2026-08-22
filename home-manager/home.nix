@@ -333,6 +333,17 @@
         HostName = "nuc.local";
         User = "liou";
       };
+      # 外网 SSH 到 nuc：经 aliyun VPS 跳板 + autossh 反向隧道（nuc 上跑，
+      # 见 nix_modules/nuc-tunnel.nix）。aliyun 开 2222 → 隧道 → nuc:22。
+      "nuc-remote" = {
+        HostName = "localhost";
+        User = "liou";
+        Port = 2222;
+        ProxyJump = "root@47.93.153.102";
+        # 隧道断线/aliyun 重启后 autossh 会自动重连，无需人工
+        ServerAliveInterval = 30;
+        ServerAliveCountMax = 3;
+      };
     };
   };
 
