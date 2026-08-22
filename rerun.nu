@@ -78,22 +78,16 @@ def main [
         print $"    ($expected_gen)/activate"
     }
 
-    # 关键文件检查
+    # 关键文件检查（pattern 用字面字符串，str contains 匹配）
     let checks = [
         { name: "SSH config (nuc.local)", path: ($env.HOME | path join ".ssh/config"), pattern: "HostName nuc.local" }
-        { name: "dsh-web.service", path: ($env.HOME | path join ".config/systemd/user/dsh-web.service"), pattern: "ExecStart=.*dsh web" }
+        { name: "dsh-web.service", path: ($env.HOME | path join ".config/systemd/user/dsh-web.service"), pattern: "dsh web" }
         { name: "dsh-web-toggle", path: ($env.HOME | path join ".local/bin/dsh-web-toggle"), pattern: "notify=" }
     ]
     for c in $checks {
         if ($c.path | path exists) {
-            let content = (open $c.path | if ($c.pattern | str contains "nuc.local") { to text } else { to text })
-            if (($c.pattern | str contains "HostName")) {
-                if ($content | str contains $c.pattern) {
-                    print $"(ansi green)✓ ($c.name) 已部署(ansi reset)"
-                } else {
-                    print $"(ansi red)✗ ($c.name) 内容不符（缺 '($c.pattern)'）(ansi reset)"
-                }
-            } else if ($content | str contains $c.pattern) {
+            let content = (open $c.path | to text)
+            if ($content | str contains $c.pattern) {
                 print $"(ansi green)✓ ($c.name) 已部署(ansi reset)"
             } else {
                 print $"(ansi red)✗ ($c.name) 内容不符（缺 '($c.pattern)'）(ansi reset)"
