@@ -59,7 +59,7 @@ def main [
     } else {
         # 非 NixOS（如 nuc）：固定部署 liou-nuc（带 autossh 反向隧道模块）。
         # target 参数在此分支被忽略，统一用 liou-nuc。
-        print $"(ansi green)Deploying Home Manager target: liou-nuc (standalone)(ansi reset)"
+        print $"(ansi green)Deploying Home Manager target: liou-nuc - standalone(ansi reset)"
         nix run nixpkgs#home-manager -- switch --flake $".#liou-nuc" -b backup
     }
 
