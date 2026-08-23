@@ -64,8 +64,9 @@
         export DBUS_SESSION_BUS_ADDRESS="''${DBUS_SESSION_BUS_ADDRESS:-unix:path=''${XDG_RUNTIME_DIR}/bus}"
         # zenity（接收/拒绝对话框）不在 systemd 默认 PATH：
         # standalone hm 的 profile 在 ~/.local/state/nix/profiles/home-manager/home-path/bin，
-        # NixOS 集成时在 /run/current-system/sw/bin
-        export PATH="$HOME/.local/state/nix/profiles/home-manager/home-path/bin:/run/current-system/sw/bin:$PATH"
+        # NixOS 集成 hm 的 profile 在 /etc/profiles/per-user/<user>/bin，
+        # NixOS 系统包在 /run/current-system/sw/bin
+        export PATH="$HOME/.local/state/nix/profiles/home-manager/home-path/bin:/etc/profiles/per-user/$(id -un)/bin:/run/current-system/sw/bin:$PATH"
         exec "$BIN"
       ''}";
       Restart = "on-failure";
