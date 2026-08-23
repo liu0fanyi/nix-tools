@@ -1,0 +1,3 @@
+[submodule "clipboard-sync"]
+	path = clipboard-sync
+	url = git@github.com:liu0fanyi/clipboard-sync.git

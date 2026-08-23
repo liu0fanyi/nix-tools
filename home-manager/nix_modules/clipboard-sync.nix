@@ -39,8 +39,8 @@
         BIN=""
         for p in \
           "$HOME_DIR/.local/bin/clipboard-sync" \
-          "$HOME_DIR/project/clipboard-sync/target/debug/clipboard-sync" \
-          "$HOME_DIR/dufs-lan/project/clipboard-sync/target/debug/clipboard-sync"
+          "$HOME_DIR/project/nix-tools/clipboard-sync/target/debug/clipboard-sync" \
+          "$HOME_DIR/dufs-lan/project/nix-tools/clipboard-sync/target/debug/clipboard-sync"
         do
           if [ -x "$p" ]; then
             BIN="$p"
