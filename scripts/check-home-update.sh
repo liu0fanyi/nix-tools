@@ -21,7 +21,13 @@ say "=== home-manager 更新检测（$REPO_DIR）==="
 say ""
 say "[1] home-manager 生效指针是否等于当前 git 状态构建出的 generation"
 current="$(readlink -f "$HOME/.local/state/nix/profiles/home-manager" 2>/dev/null || true)"
-expected="$(nix build --no-link --print-out-paths "$REPO_DIR#nixosConfigurations.homebox.config.home-manager.users.liou.home.activationPackage" 2>/dev/null | tail -1 || true)"
+# 按系统类型取 flake attr：NixOS → nixosConfigurations.<host>；非 NixOS → homeConfigurations.<user>
+if [[ "$(grep -oP '^ID=\K.*' /etc/os-release 2>/dev/null || echo)" == "nixos" ]]; then
+  flake_attr="$REPO_DIR#nixosConfigurations.homebox.config.home-manager.users.liou.home.activationPackage"
+else
+  flake_attr="$REPO_DIR#homeConfigurations.liou-nuc.activationPackage"
+fi
+expected="$(nix build --no-link --print-out-paths "$flake_attr" 2>/dev/null | tail -1 || true)"
 if [[ -n "$current" && "$current" == "$expected" ]]; then
   ok "生效指针 == 构建结果: $current"
 else
@@ -46,39 +52,60 @@ check_file() {
     bad "$desc 缺失: $path"
   fi
 }
-check_file "SSH config（nuc.local）" "$HOME/.ssh/config" "HostName nuc.local"
-check_file "dsh-web systemd service" "$HOME/.config/systemd/user/dsh-web.service" "ExecStart=.*dsh web"
-check_file "dsh-web toggle 脚本" "$HOME/.local/bin/dsh-web-toggle" "notify="
-check_file "dsh wrapper（--expose-internals）" "$HOME/.local/bin/dsh" "expose-internals"
+if [[ "$(grep -oP '^ID=\K.*' /etc/os-release 2>/dev/null || echo)" == "nixos" ]]; then
+  # NixOS 主机（homebox）：dsh-web 全家桶
+  check_file "SSH config（nuc.local）" "$HOME/.ssh/config" "HostName nuc.local"
+  check_file "dsh-web systemd service" "$HOME/.config/systemd/user/dsh-web.service" "ExecStart=.*dsh web"
+  check_file "dsh-web toggle 脚本" "$HOME/.local/bin/dsh-web-toggle" "notify="
+  check_file "dsh wrapper（--expose-internals）" "$HOME/.local/bin/dsh" "expose-internals"
+else
+  # 非 NixOS 主机（nuc）：dsh-web 不在 liou-nuc 配置里，改查 clipboard-sync
+  check_file "clipboard-sync service" "$HOME/.config/systemd/user/clipboard-sync.service" "ExecStart=.*clipboard-sync"
+fi
 
 # ── 3. systemd user service 是否被 systemd 识别 ──
 say ""
-say "[3] dsh-web.service 状态"
-if systemctl --user list-unit-files 2>/dev/null | grep -q "^dsh-web.service"; then
-  ok "systemd 已识别 dsh-web.service"
-  st="$(systemctl --user is-active dsh-web 2>/dev/null || true)"
+say "[3] 关键 systemd user service 状态"
+if [[ "$(grep -oP '^ID=\K.*' /etc/os-release 2>/dev/null || echo)" == "nixos" ]]; then
+  unit="dsh-web.service"
+else
+  unit="clipboard-sync.service"
+fi
+if systemctl --user list-unit-files 2>/dev/null | grep -q "^$unit"; then
+  ok "systemd 已识别 $unit"
+  st="$(systemctl --user is-active "${unit%.service}" 2>/dev/null || true)"
   if [[ "$st" == "active" ]]; then
-    ok "dsh-web 正在运行"
+    ok "$unit 正在运行"
   else
-    bad "dsh-web 状态: $st（期望 active，可 systemctl --user start dsh-web）"
+    bad "$unit 状态: $st（期望 active，可 systemctl --user start ${unit%.service}）"
   fi
 else
-  bad "systemd 未识别 dsh-web.service（home-manager 可能未正确激活）"
+  bad "systemd 未识别 $unit（home-manager 可能未正确激活）"
 fi
 
 # ── 4. activation 是否在 switch 中实际执行（看日志或时间戳）──
 say ""
-say "[4] home-manager activation 时间 vs NixOS switch 时间"
+say "[4] home-manager activation 时间"
 hm_gen_target="$(readlink -f "$current" 2>/dev/null || true)"
 hm_gen_time="$(stat -c '%y' "$hm_gen_target" 2>/dev/null | cut -d. -f1 || true)"
-nixos_gen="$(nixos-rebuild list-generations 2>/dev/null | grep -oP '^Current\s+\S+' | head -1)"
-sys_time="$(nixos-rebuild list-generations 2>/dev/null | awk 'NR==1 || /Current/' | head -2 | tail -1 | awk '{print $2, $3}')"
-if [[ -n "$hm_gen_time" ]]; then
-  ok "home-manager generation 时间: $hm_gen_time"
-  say "   NixOS current generation 时间: $sys_time"
-  say "   （若 home-manager 时间明显早于 NixOS，说明 switch 可能没重新激活 home-manager）"
+if [[ "$(grep -oP '^ID=\K.*' /etc/os-release 2>/dev/null || echo)" == "nixos" ]]; then
+  # NixOS：对比 home-manager generation 时间 vs NixOS system generation 时间
+  sys_time="$(nixos-rebuild list-generations 2>/dev/null | awk '/Current/ {print $2, $3}')"
+  if [[ -n "$hm_gen_time" ]]; then
+    ok "home-manager generation 时间: $hm_gen_time"
+    say "   NixOS current generation 时间: $sys_time"
+    say "   （若 home-manager 时间明显早于 NixOS，说明 switch 可能没重新激活 home-manager）"
+  else
+    bad "无法获取 home-manager generation 时间"
+  fi
 else
-  bad "无法获取 home-manager generation 时间"
+  # 非 NixOS（standalone home-manager）：无 NixOS system generation 可比，仅报时间
+  if [[ -n "$hm_gen_time" ]]; then
+    ok "home-manager generation 时间: $hm_gen_time"
+    say "   （非 NixOS 主机，无 NixOS system generation 对比）"
+  else
+    bad "无法获取 home-manager generation 时间"
+  fi
 fi
 
 # ── 5. 本地 git 是否干净（有未提交改动则结果可能不完整）──
