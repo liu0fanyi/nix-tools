@@ -77,8 +77,6 @@
     ## deploy/ 脚本（manage.py / release-apps.py）运行依赖
     python3
     localsend
-    # KDE Connect：跨设备剪贴板/文件传输（配合 Windows 端使用）
-    kdePackages.kdeconnect-kde
     # Cross-device encrypted credential vault and its sync daemon.
     keepassxc
     syncthing
@@ -574,22 +572,6 @@
       RestartSec = "3";
       # 限制文件权限，避免 dsh 生成的 profile 文件权限过宽
       UMask = "0077";
-    };
-    Install = { };
-  };
-
-  # KDE Connect daemon（跨设备剪贴板/文件传输，配合 Windows 端）
-  # 需要在系统里跑 kdeconnectd 才能被发现/连接。
-  systemd.user.services.kdeconnect = {
-    Unit = {
-      Description = "KDE Connect daemon";
-      After = [ "graphical-session.target" ];
-      PartOf = [ "graphical-session.target" ];
-    };
-    Service = {
-      ExecStart = "${pkgs.kdePackages.kdeconnect-kde}/bin/kdeconnectd";
-      Restart = "on-failure";
-      RestartSec = "3";
     };
     Install = { };
   };
