@@ -62,6 +62,10 @@
         export XDG_RUNTIME_DIR="''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
         # DBus（通知走 notify-rust / mako）
         export DBUS_SESSION_BUS_ADDRESS="''${DBUS_SESSION_BUS_ADDRESS:-unix:path=''${XDG_RUNTIME_DIR}/bus}"
+        # zenity（接收/拒绝对话框）不在 systemd 默认 PATH：
+        # standalone hm 的 profile 在 ~/.local/state/nix/profiles/home-manager/home-path/bin，
+        # NixOS 集成时在 /run/current-system/sw/bin
+        export PATH="$HOME/.local/state/nix/profiles/home-manager/home-path/bin:/run/current-system/sw/bin:$PATH"
         exec "$BIN"
       ''}";
       Restart = "on-failure";
