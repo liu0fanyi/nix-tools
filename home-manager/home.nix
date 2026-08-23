@@ -46,6 +46,8 @@
   home.packages = with pkgs; [
     ## libnotify：提供 notify-send（配合 mako 发桌面通知）
     libnotify
+    ## zenity：clipboard-sync 接收/拒绝确认对话框（Linux 端统一交互）
+    zenity
 
     zellij
     helix
