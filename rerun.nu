@@ -65,12 +65,23 @@ def main [
 
     # ── 部署后自检：home-manager 是否真正更新到当前 git 状态 ──
     # NixOS 集成的 home-manager 有时不会被 switch 正确重新激活（历史上 activation
-    # 被 exit 0 中断过）。这里对比 current-home 与当前 git 构建结果即可：
+    # 被 exit 0 中断过）。这里对比生效指针与当前 git 构建结果即可：
     # generation 对齐 = 该 generation 下的所有文件（systemd units、ssh config、
     # wrapper 脚本等）必然都已部署，无需逐个检查。
+    #
+    # 生效指针说明：home-manager >= 24.11 用 $XDG_STATE_HOME/nix/profiles/home-manager
+    # 作为真实生效 generation（switch 会更新它）。旧的
+    # $XDG_STATE_HOME/home-manager/gcroots/current-home 已废弃不再维护（会停在旧值，
+    # 导致误报“未对齐”），故这里读 profile 链接。
     print $"(ansi cyan)--- 部署后自检 ---(ansi reset)"
-    let current_home = ($env.HOME | path join ".local/state/home-manager/gcroots/current-home" | path expand)
-    let current_gen = (readlink -f $current_home | str trim)
+    let hm_profile = ($env.HOME | path join ".local/state/nix/profiles/home-manager" | path expand)
+    let current_gen = if ($hm_profile | path exists) {
+        (readlink -f $hm_profile | str trim)
+    } else {
+        # 极老版本 fallback：读 legacy current-home
+        let legacy = ($env.HOME | path join ".local/state/home-manager/gcroots/current-home" | path expand)
+        (readlink -f $legacy | str trim)
+    }
     # 按系统类型取构建路径：NixOS 用 nixosConfigurations.<host>，非 NixOS 用 homeConfigurations.liou-nuc
     let flake_attr = if $use_nixos {
         $".#nixosConfigurations.($host).config.home-manager.users.($target).home.activationPackage"
@@ -86,8 +97,11 @@ def main [
         print $"(ansi yellow)⚠ home-manager generation 未对齐:(ansi reset)"
         print $"  当前: ($current_gen)"
         print $"  期望: ($expected_gen)"
-        print "  → 部署未激活 home-manager，需要手动激活："
-        print $"    ($expected_gen)/activate"
-        print "  激活后再跑一次 nu rerun.nu 确认。"
+        print "  → switch 已构建但生效指针未指向新 generation（部署可能未激活）。"
+        print "    先手动激活，再重跑确认："
+        print $"      ($expected_gen)/activate"
+        print "    若激活后仍不一致（nix profile 已指向新 gen 而显示旧值），"
+        print "    说明是 home-manager 旧 current-home 指针残留，可忽略："
+        print "    实际生效以 nix profile 链接 ~/.local/state/nix/profiles/home-manager 为准。"
     }
 }
