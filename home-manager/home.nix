@@ -77,6 +77,8 @@
     ## deploy/ 脚本（manage.py / release-apps.py）运行依赖
     python3
     localsend
+    # GitHub CLI（创建/推送仓库、管理 issues 等）
+    gh
     # Cross-device encrypted credential vault and its sync daemon.
     keepassxc
     syncthing
