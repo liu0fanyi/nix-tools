@@ -79,6 +79,10 @@
     localsend
     # GitHub CLI（创建/推送仓库、管理 issues 等）
     gh
+    ## 解压工具（zip/7z/rar 等通用格式；tar/gzip/xz 系统已有）
+    unzip
+    zip
+    p7zip
     # Cross-device encrypted credential vault and its sync daemon.
     keepassxc
     syncthing
