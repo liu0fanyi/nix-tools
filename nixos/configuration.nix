@@ -328,7 +328,16 @@ in
   };
 
   # allow-lan：放行代理端口，供 podman 容器与局域网设备访问
-  networking.firewall.allowedTCPPorts = [ 7897 ];
+  networking.firewall.allowedTCPPorts = [
+    7897
+    53317 # LocalSend（发现 + 传输）
+    53319 # clipboard-sync 内容传输（TCP）
+  ];
+  # UDP：LocalSend 发现 + clipboard-sync 设备发现
+  networking.firewall.allowedUDPPorts = [
+    53317 # LocalSend
+    53318 # clipboard-sync 设备发现（UDP 广播）
+  ];
 
   # 用户服务开机自启（podman 用户 socket 等）：
   # loginctl enable-linger 的声明式等价（创建 linger 标记文件）
