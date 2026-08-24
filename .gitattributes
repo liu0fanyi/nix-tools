@@ -5,3 +5,6 @@ secrets/rime/** filter=git-crypt diff=git-crypt
 deploy/secrets/** filter=git-crypt diff=git-crypt
 deploy/secrets/.gitignore !filter !diff
 deploy/secrets/README.md !filter !diff
+
+# Windows command wrappers should be checked out with native CRLF line endings.
+*.cmd text eol=crlf

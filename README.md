@@ -20,6 +20,17 @@ or their systemd services.
 On non-NixOS hosts, rootless Podman also requires the distribution package that
 provides `newuidmap` and `newgidmap` (for example `uidmap` on Debian/Ubuntu).
 
+## Windows clipboard-sync
+
+Run this from the repository root, or double-click it in Explorer:
+
+```powershell
+.\win-setup.cmd
+```
+
+The wrapper installs the prebuilt `bin/clipboard-sync.exe` through
+`clipboard-sync/setup-windows.nu` and configures login startup.
+
 ## DUFS Plus deployment
 
 Application services are exclusively managed by the shared Compose deployment:
