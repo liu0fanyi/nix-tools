@@ -30,10 +30,10 @@
       RestartSec = "5";
       Environment = [ "HOME=%h" ];
     };
-    Install = { };
+    Install.WantedBy = [ "default.target" ];
   };
 
-  # 说明：开机自启（常驻隧道）：
-  #   systemctl --user enable autossh-tunnel
+  # standalone Home Manager 会声明式 enable；若需要用户未登录时也常驻，
+  # 宿主机还需一次性执行：loginctl enable-linger liou。
   # 2222 > 1024，aliyun 侧普通用户即可绑定，无需 root。
 }

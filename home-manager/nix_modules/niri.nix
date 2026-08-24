@@ -2,8 +2,8 @@
 
 let
   cfg = config.features.niri;
-  nixGL = inputs.nix-gl.packages.${pkgs.system}.nixGLDefault;
-  niriPackage = inputs.niri.packages.${pkgs.system}.niri;
+  nixGL = inputs.nix-gl.packages.${pkgs.stdenv.hostPlatform.system}.nixGLDefault;
+  niriPackage = inputs.niri.packages.${pkgs.stdenv.hostPlatform.system}.niri;
 
   # Waybar 没有通用风扇模块；只在存在 hwmon fan*_input 时输出转速，
   # 没有风扇（或硬件不暴露转速）时保持空模块，不污染状态栏。

@@ -2,6 +2,7 @@
 #
 # 用法:
 #   nu rerun.nu [用户名]                # 自动检测系统类型并执行对应部署
+#   nu rerun.nu --home-target liou      # 非 NixOS 部署指定的 homeConfigurations
 #   nu rerun.nu --nixos [用户名]        # 强制 NixOS 系统 switch（与系统类型不一致会报错）
 #   nu rerun.nu --no-nixos [用户名]     # 强制 standalone home-manager switch（同上）
 #
@@ -11,19 +12,19 @@
 #     重建整个系统，包含 NixOS 集成的 home-manager（用户配置随系统一起更新），
 #     因此不应再单独跑 standalone home-manager switch。
 #   - 非 NixOS 主机（如 Ubuntu）：走 standalone home-manager：
-#     `nix run nixpkgs#home-manager -- switch --flake .#<user>`，
+#     `nix run .#home-manager -- switch --flake .#<home-target>`，
 #     此时 nixos-rebuild / nixosConfigurations 不可用。
 #   - --nixos / --no-nixos 可显式覆盖自动检测；若覆盖结果与本机系统类型矛盾，
 #     脚本拒绝执行并提示（防止在 NixOS 上跑 standalone、或反之）。
 #   - 目标默认 liou；NixOS 主机名默认 homebox（可用 --host 覆盖）。
-#   - 非 NixOS 机器（如 nuc）：固定部署 homeConfigurations.liou-nuc
-#     （带 autossh 反向隧道模块，让外网能 SSH 进来），直接 nu rerun.nu 即可。
-#     target 参数仅 NixOS 分支有效。
+#   - 非 NixOS 机器默认部署 homeConfigurations.liou-nuc；可用
+#     --home-target 选择其他 standalone 配置。target 参数仅 NixOS 分支有效。
 def main [
     target: string = "liou"
     --nixos # 强制 NixOS 系统 switch（覆盖自动检测）
     --no-nixos # 强制 standalone home-manager switch（覆盖自动检测）
     --host: string = "homebox" # NixOS 配置名（flake 里的 nixosConfigurations.<host>）
+    --home-target: string = "liou-nuc" # standalone 配置名
 ] {
     # 自动检测：/etc/os-release 中 ID=nixos 即为 NixOS 系统
     let os_id = (open /etc/os-release | lines | where ($it | str starts-with "ID=") | first | str replace "ID=" "" | str trim)
@@ -54,13 +55,13 @@ def main [
     if $use_nixos {
         print $"(ansi green)NixOS system switch: flake#($host)(ansi reset)"
         # 需要 root：nixos-rebuild 最后要把新系统链接到 /nix/var/nix/profiles/system
-        # 用绝对 flake 路径（sudo 可能改变 cwd/环境），--refresh 确保拉到最新 inputs
-        sudo nixos-rebuild switch --flake $"($env.PWD)#($host)" --refresh
+        # 用绝对 flake 路径（sudo 可能改变 cwd/环境）；inputs 更新应单独执行
+        # `nix flake update`，普通 switch 保持 flake.lock 的可复现性。
+        sudo nixos-rebuild switch --flake $"($env.PWD)#($host)"
     } else {
-        # 非 NixOS（如 nuc）：固定部署 liou-nuc（带 autossh 反向隧道模块）。
-        # target 参数在此分支被忽略，统一用 liou-nuc。
-        print $"(ansi green)Deploying Home Manager target: liou-nuc - standalone(ansi reset)"
-        nix run nixpkgs#home-manager -- switch --flake $".#liou-nuc" -b backup
+        # CLI 与模块都来自当前 flake.lock 中的同一个 Home Manager input。
+        print $"(ansi green)Deploying Home Manager target: ($home_target) - standalone(ansi reset)"
+        nix run .#home-manager -- switch --flake $".#($home_target)" -b backup
     }
 
     # ── 部署后自检：home-manager 是否真正更新到当前 git 状态 ──
@@ -80,20 +81,32 @@ def main [
     # nixos-rebuild 更新（那是 standalone 模式的路径），会永久误报"未对齐"。
     let current_gen = if $use_nixos {
         # systemctl cat 输出含 ExecStart=...hm-setup-env <gen>，取最后一个 store 路径
-        let svc = (systemctl cat $"home-manager-($target).service" | lines | where { |l| ($l | str starts-with "ExecStart=") } | get 0 | str replace "ExecStart=" "")
+        let unit_name = $"home-manager-($target).service"
+        let unit = (systemctl cat $unit_name | complete)
+        if $unit.exit_code != 0 {
+            error make { msg: $"无法读取 ($unit_name)：($unit.stderr | str trim)" }
+        }
+        let exec_lines = ($unit.stdout | lines | where { |l| ($l | str starts-with "ExecStart=") })
+        if ($exec_lines | is-empty) {
+            error make { msg: $"($unit_name) 中没有 ExecStart，无法确认 Home Manager generation" }
+        }
+        let svc = ($exec_lines | first | str replace "ExecStart=" "")
         ($svc | split row " " | last | str trim)
     } else if ($env.HOME | path join ".local/state/nix/profiles/home-manager" | path exists) {
         (readlink -f ($env.HOME | path join ".local/state/nix/profiles/home-manager") | str trim)
     } else {
         # 极老版本 fallback：读 legacy current-home
         let legacy = ($env.HOME | path join ".local/state/home-manager/gcroots/current-home" | path expand)
+        if not ($legacy | path exists) {
+            error make { msg: "找不到 standalone Home Manager profile；switch 可能没有成功创建 generation" }
+        }
         (readlink -f $legacy | str trim)
     }
-    # 按系统类型取构建路径：NixOS 用 nixosConfigurations.<host>，非 NixOS 用 homeConfigurations.liou-nuc
+    # 按系统类型取构建路径；standalone 必须与上面实际 switch 的目标一致。
     let flake_attr = if $use_nixos {
         $".#nixosConfigurations.($host).config.home-manager.users.($target).home.activationPackage"
     } else {
-        ".#homeConfigurations.liou-nuc.activationPackage"
+        $".#homeConfigurations.($home_target).activationPackage"
     }
     # nix build 输出多行（构建日志 + 路径），取最后一行非空 = store 路径
     let expected_gen = (nix build --no-link --print-out-paths $flake_attr | lines | where { |l| ($l | str trim) != "" } | last | str trim)
