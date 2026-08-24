@@ -46,14 +46,13 @@ let
   '';
 in
 {
-  imports =
-    [
-      # 追加：nixos-anywhere 磁盘布局（官方 nixos-anywhere-examples）
-      ./disk-config.nix
-    ]
-    # hardware-configuration.nix 由 nixos-anywhere 在目标机上临时生成；仓库中
-    # 只保留通用占位文件，安装脚本退出时会恢复它。本地存在时用于当前 rebuild。
-    ++ lib.optional (builtins.pathExists ./hardware-configuration.nix) ./hardware-configuration.nix;
+  imports = [
+    # 追加：nixos-anywhere 磁盘布局（官方 nixos-anywhere-examples）
+    ./disk-config.nix
+  ]
+  # hardware-configuration.nix 由 nixos-anywhere 在目标机上临时生成；仓库中
+  # 只保留通用占位文件，安装脚本退出时会恢复它。本地存在时用于当前 rebuild。
+  ++ lib.optional (builtins.pathExists ./hardware-configuration.nix) ./hardware-configuration.nix;
 
   # 目标机已确认使用 UEFI，且 efivars 可写；让 GRUB 注册正常的 NVRAM
   # 启动项，避免固件找不到磁盘项时退到 PXE 网络启动。
@@ -241,6 +240,7 @@ in
     openssh.authorizedKeys.keys = [
       # change this to your ssh key
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHbQy+HyFFvmiI4lFuugbrRLrEa2/TUMvh9RUYK4o73j liu_fanyi@hotmail.com"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFWb+YmgDVGKKkWwVtW2NAzZWDyPsY1oA9foknah6yeq liu0fanyi@gmail.com"
     ];
   };
   security.sudo.wheelNeedsPassword = false;
@@ -254,8 +254,14 @@ in
   # Nix 设置
   nixpkgs.config.allowUnfree = true;
   nix.settings = {
-    experimental-features = [ "nix-command" "flakes" ];
-    trusted-users = [ "root" username ];
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+    trusted-users = [
+      "root"
+      username
+    ];
     extra-substituters = [ "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store" ];
   };
 
@@ -265,7 +271,7 @@ in
     enable = true;
     # 与 Home Manager/Niri 配置模板使用同一个 flake 上游版本，避免
     # nixpkgs 的 Niri 与仓库中的配置模板发生版本错配。
-    package = inputs.niri.packages.${pkgs.system}.niri;
+    package = inputs.niri.packages.${pkgs.stdenv.hostPlatform.system}.niri;
   };
 
   # 登录管理器：greetd + tuigreet（轻量 TUI 登录界面，niri 生态标准搭配）
@@ -366,7 +372,10 @@ in
       xdg-desktop-portal-gtk
       xdg-desktop-portal-gnome
     ];
-    config.common.default = [ "gnome" "gtk" ];
+    config.common.default = [
+      "gnome"
+      "gtk"
+    ];
   };
   services.gnome.gnome-keyring.enable = true;
 
@@ -403,7 +412,7 @@ in
     # 鼠标光标主题（waybar/niri 的 cursor theme 警告）
     nordzy-cursor-theme
     # Zen Browser（Firefox 内核，独立于 firefox，无需另装 firefox）
-    inputs.zen-browser.packages.${pkgs.system}.zen-browser
+    inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.zen-browser
   ];
   # waybar 电池模块需要 upower
   services.upower.enable = true;
