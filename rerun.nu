@@ -74,9 +74,16 @@ def main [
     # $XDG_STATE_HOME/home-manager/gcroots/current-home 已废弃不再维护（会停在旧值，
     # 导致误报“未对齐”），故这里读 profile 链接。
     print $"(ansi cyan)--- 部署后自检 ---(ansi reset)"
-    let hm_profile = ($env.HOME | path join ".local/state/nix/profiles/home-manager" | path expand)
-    let current_gen = if ($hm_profile | path exists) {
-        (readlink -f $hm_profile | str trim)
+    # NixOS 集成的权威来源：home-manager-<user>.service 的 ExecStart 参数
+    # 就是实际激活的 generation（由 nixos-rebuild 生成/更新）。
+    # 读 ~/.local/state/nix/profiles/home-manager 指针在 NixOS 集成下不会被
+    # nixos-rebuild 更新（那是 standalone 模式的路径），会永久误报"未对齐"。
+    let current_gen = if $use_nixos {
+        # systemctl cat 输出含 ExecStart=...hm-setup-env <gen>，取最后一个 store 路径
+        let svc = (systemctl cat $"home-manager-($target).service" | lines | where { |l| ($l | str starts-with "ExecStart=") } | get 0 | str replace "ExecStart=" "")
+        ($svc | split row " " | last | str trim)
+    } else if ($env.HOME | path join ".local/state/nix/profiles/home-manager" | path exists) {
+        (readlink -f ($env.HOME | path join ".local/state/nix/profiles/home-manager") | str trim)
     } else {
         # 极老版本 fallback：读 legacy current-home
         let legacy = ($env.HOME | path join ".local/state/home-manager/gcroots/current-home" | path expand)
