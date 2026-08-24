@@ -2,18 +2,15 @@
 #
 # homebox / nuc 共享（homeConfigurations.liou / liou-nuc 都 import home.nix）。
 #
-# 二进制来源（优先级）：
-#   1. ~/.local/bin/clipboard-sync —— activation 脚本从 nix-tools/bin 同步的
-#      统一 release 二进制（`just deploy-linux` 安装到 nix-tools/bin）
-#   2. nix-tools/bin/clipboard-sync —— 直接来源
-#   3. 项目内 cargo 编译的 debug 二进制（fallback）
+# 二进制来源：activation 从已知的 nix-tools/bin 位置同步 release 二进制到
+# ~/.local/bin/clipboard-sync，service 始终只运行这个稳定路径。
 # 这样 nix-tools 换位置也不影响，~/.local/bin 位置稳定。
 
 { config, pkgs, lib, ... }:
 
 {
   # switch 时把 nix-tools/bin/clipboard-sync 同步到 ~/.local/bin/
-  # （若存在；不存在则静默跳过，wrapper 会 fallback 到项目 debug 版）
+  # （若存在；不存在则保留上一次成功安装的 release 二进制）
   home.activation.clipboardSyncBin = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     run() {
       if [ -x "$1" ]; then
@@ -32,47 +29,35 @@
       Wants = [ "network-online.target" ];
     };
     Service = {
-      # wrapper：优先 ~/.local/bin（activation 同步），fallback 到项目 debug 版
+      # wrapper：只运行 activation 安装的稳定 release 二进制。
       ExecStart = "${pkgs.writeShellScript "clipboard-sync-start" ''
         set -eu
         HOME_DIR="''${HOME:-/home/$(id -un)}"
-        BIN=""
-        for p in \
-          "$HOME_DIR/.local/bin/clipboard-sync" \
-          "$HOME_DIR/project/nix-tools/clipboard-sync/target/debug/clipboard-sync" \
-          "$HOME_DIR/dufs-lan/project/nix-tools/clipboard-sync/target/debug/clipboard-sync"
-        do
-          if [ -x "$p" ]; then
-            BIN="$p"
-            break
-          fi
-        done
-        if [ -z "$BIN" ]; then
-          echo "clipboard-sync binary not found (checked ~/.local/bin and project target/debug)" >&2
+        BIN="$HOME_DIR/.local/bin/clipboard-sync"
+        if [ ! -x "$BIN" ]; then
+          echo "clipboard-sync release binary not found: $BIN" >&2
           exit 1
         fi
-        # 探测 Wayland 会话 socket（最多等 30s，避免登录前空跑）
-        for i in $(seq 1 30); do
-          if [ -S "''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/''${WAYLAND_DISPLAY:-wayland-1}" ]; then
-            break
-          fi
-          sleep 1
-        done
-        export WAYLAND_DISPLAY="''${WAYLAND_DISPLAY:-wayland-1}"
+        # 不假设 compositor 固定使用 wayland-1。若 user manager 没继承变量，
+        # 从 runtime dir 中选择真实存在的 socket；X11 则保留 DISPLAY。
         export XDG_RUNTIME_DIR="''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+        if [ -z "''${WAYLAND_DISPLAY:-}" ]; then
+          for socket in "$XDG_RUNTIME_DIR"/wayland-*; do
+            if [ -S "$socket" ]; then
+              export WAYLAND_DISPLAY="''${socket##*/}"
+              break
+            fi
+          done
+        fi
         # DBus（通知走 notify-rust / mako）
         export DBUS_SESSION_BUS_ADDRESS="''${DBUS_SESSION_BUS_ADDRESS:-unix:path=''${XDG_RUNTIME_DIR}/bus}"
-        # zenity（接收/拒绝对话框）不在 systemd 默认 PATH：
-        # standalone hm 的 profile 在 ~/.local/state/nix/profiles/home-manager/home-path/bin，
-        # NixOS 集成 hm 的 profile 在 /etc/profiles/per-user/<user>/bin，
-        # NixOS 系统包在 /run/current-system/sw/bin
-        export PATH="$HOME/.local/state/nix/profiles/home-manager/home-path/bin:/etc/profiles/per-user/$(id -un)/bin:/run/current-system/sw/bin:$PATH"
+        # 运行期工具都从当前 Home Manager generation 获取，不依赖 NixOS profile。
+        export PATH="${lib.makeBinPath [ pkgs.zenity pkgs.iproute2 ]}:$PATH"
         exec "$BIN"
       ''}";
       Restart = "on-failure";
       RestartSec = "5";
-      # 崩溃后最多等 30s（探测 Wayland）
-      TimeoutStartSec = "35";
+      TimeoutStartSec = "15";
     };
     Install = {
       WantedBy = [ "default.target" ];

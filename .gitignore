@@ -36,3 +36,6 @@ __pycache__/
 
 # Local npm cache
 .npm-cache/
+
+# Local Cargo home used by sandboxed/project builds
+.cargo-home/

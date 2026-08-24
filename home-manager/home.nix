@@ -3,6 +3,7 @@
   pkgs,
   lib,
   username,
+  inputs,
   isNixOS ? false,
   ...
 }:
@@ -43,19 +44,11 @@
   };
 
   # 简单的软件包安装方式
-  home.packages = with pkgs; [
+  home.packages = (with pkgs; [
     ## libnotify：提供 notify-send（配合 mako 发桌面通知）
     libnotify
     ## zenity：clipboard-sync 接收/拒绝确认对话框（Linux 端统一交互）
     zenity
-
-    zellij
-    helix
-    starship
-    nushell
-    zoxide
-
-    alacritty
 
     fzf
     bat
@@ -92,8 +85,10 @@
     syncthing
     # yazi
     bottom
-    # codex
-  ];
+  ]) ++ lib.optional isNixOS
+    # Codex 仅由 NixOS homebox 管理；standalone 主机（如 nuc）保留已有安装，
+    # 避免两个 codex 命令共享 ~/.codex 时发生版本和 PATH 冲突。
+    inputs.codex-cli-nix.packages.${pkgs.stdenv.hostPlatform.system}.codex;
   programs.yazi = {
     enable = true;
     # Keep the existing wrapper command stable across Home Manager upgrades.
@@ -206,7 +201,6 @@
       # $env.NAVI_PATH = "/home/liu/nix_config/nix_modules/navi";
     '';
   };
-  programs.helix.enable = true;
   # zellij 目前在 home-manager 中也有配置项，也可以开启
   programs.zellij = {
     enable = true;
