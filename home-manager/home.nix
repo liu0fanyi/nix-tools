@@ -44,7 +44,7 @@
   };
 
   # 简单的软件包安装方式
-  home.packages = with pkgs; [
+  home.packages = (with pkgs; [
     ## libnotify：提供 notify-send（配合 mako 发桌面通知）
     libnotify
     ## zenity：clipboard-sync 接收/拒绝确认对话框（Linux 端统一交互）
@@ -85,11 +85,10 @@
     syncthing
     # yazi
     bottom
-    # OpenAI Codex CLI（社区滚动 flake：sadjow/codex-cli-nix，每小时更新）
-    # 用 inputs.codex-cli-nix 而非 nixpkgs#codex——前者追平上游 release
-    # （如 0.149.1），nixpkgs unstable 可能滞后多个版本。
-    inputs.codex-cli-nix.packages.${pkgs.stdenv.hostPlatform.system}.codex
-  ];
+  ]) ++ lib.optional isNixOS
+    # Codex 仅由 NixOS homebox 管理；standalone 主机（如 nuc）保留已有安装，
+    # 避免两个 codex 命令共享 ~/.codex 时发生版本和 PATH 冲突。
+    inputs.codex-cli-nix.packages.${pkgs.stdenv.hostPlatform.system}.codex;
   programs.yazi = {
     enable = true;
     # Keep the existing wrapper command stable across Home Manager upgrades.
