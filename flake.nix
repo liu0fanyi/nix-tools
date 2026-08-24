@@ -24,6 +24,13 @@
       url = "github:youwen5/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # OpenAI Codex CLI（sadjow/codex-cli-nix：社区维护、每小时自动更新、
+    # 原生 Rust 二进制 + Cachix 缓存；比 nixpkgs unstable 滞后更少，
+    # 见 https://github.com/sadjow/codex-cli-nix）
+    codex-cli-nix = {
+      url = "github:sadjow/codex-cli-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

@@ -3,6 +3,7 @@
   pkgs,
   lib,
   username,
+  inputs,
   isNixOS ? false,
   ...
 }:
@@ -92,7 +93,10 @@
     syncthing
     # yazi
     bottom
-    # codex
+    # OpenAI Codex CLI（社区滚动 flake：sadjow/codex-cli-nix，每小时更新）
+    # 用 inputs.codex-cli-nix 而非 nixpkgs#codex——前者追平上游 release
+    # （如 0.149.1），nixpkgs unstable 可能滞后多个版本。
+    inputs.codex-cli-nix.packages.${pkgs.system}.codex
   ];
   programs.yazi = {
     enable = true;
