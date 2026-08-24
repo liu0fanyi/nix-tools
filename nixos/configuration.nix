@@ -370,13 +370,15 @@ in
   };
   services.gnome.gnome-keyring.enable = true;
 
-  # 桌面组件包（waybar 状态栏、fuzzel 启动器、mako 通知、swaybg 壁纸、
+  # 桌面组件包（waybar 状态栏、fuzzel 启动器、swaybg 壁纸、
   # swaylock 锁屏、grim+slurp 截图、wl-clipboard 剪贴板、nautilus 文件选择器、
   # brightnessctl 亮度、playerctl 媒体控制、cliphist 剪贴板历史、swayidle 自动锁屏）
+  # 注：mako 通知守护进程已由 home-manager 的 services.mako 管理
+  # （home-manager/nix_modules/mako.nix：装包 + 配置 + D-Bus 激活），
+  # 系统级不再重复安装，避免同一二进制在系统/用户环境各一份。
   environment.systemPackages = with pkgs; [
     waybar
     fuzzel
-    mako
     swaybg
     swaylock
     grim
