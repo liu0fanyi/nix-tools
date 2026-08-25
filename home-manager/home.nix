@@ -56,6 +56,7 @@
     fzf
     bat
     dust
+    duf
     ripgrep
     glow
 
