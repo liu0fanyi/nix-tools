@@ -20,10 +20,12 @@
   # 如果多用户，需要把用户加入信任列表/etc/nix/nix.custom.conf
   # echo "trusted-users = root industio" | sudo tee /etc/nix/nix.custom.conf
   # sudo systemctl restart nix-daemon
-  home.file.".config/nix/nix.conf".text = ''
-    extra-substituters = https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store https://liu0fanyi-nix.cachix.org
-    extra-trusted-public-keys = liu0fanyi-nix.cachix.org-1:ihYHglsAtVvR6W+7m/tyjB+9S4f5e86mcygT7CMy144=
-  '';
+  home.file.".config/nix/nix.conf" = lib.mkIf (!isNixOS) {
+    text = ''
+      extra-substituters = https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store https://liu0fanyi-nix.cachix.org
+      extra-trusted-public-keys = liu0fanyi-nix.cachix.org-1:ihYHglsAtVvR6W+7m/tyjB+9S4f5e86mcygT7CMy144=
+    '';
+  };
 
   # 启用非 NixOS Linux 发行版（如 Ubuntu）的桌面集成
   # 原理：设置 XDG_DATA_DIRS 环境变量，使系统应用菜单能扫描到
