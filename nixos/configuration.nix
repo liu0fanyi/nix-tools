@@ -387,6 +387,8 @@ in
   # Nautilus 的 trash://、recent:// 及可移动设备等虚拟位置由 GVfs 提供。
   # 仅安装 Nautilus 不会自动启用这些 D-Bus 后端，会导致回收站提示“不支持位置”。
   services.gvfs.enable = true;
+  # 定期监控硬盘 SMART 健康状态；异常会写入 system journal。
+  services.smartd.enable = true;
 
   # 桌面组件包（waybar 状态栏、fuzzel 启动器、swaybg 壁纸、
   # swaylock 锁屏、grim+slurp 截图、wl-clipboard 剪贴板、nautilus 文件选择器、
@@ -418,6 +420,15 @@ in
     fzf
     # mihomo auto-route 需要 nft 命令（fwmark 打标 + DNS 劫持）
     nftables
+    # 系统、硬件及局域网故障诊断工具。
+    lsof
+    dnsutils
+    smartmontools
+    pciutils
+    usbutils
+    mtr
+    ethtool
+    iperf3
     # 鼠标光标主题（waybar/niri 的 cursor theme 警告）
     nordzy-cursor-theme
     # Zen Browser（Firefox 内核，独立于 firefox，无需另装 firefox）

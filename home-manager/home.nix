@@ -58,6 +58,8 @@
     dust
     duf
     ripgrep
+    fd
+    jq
     glow
 
     ## git tools
