@@ -22,8 +22,12 @@ def main [
         "all" => {
             print "--- 开始彻底清理 (删除所有历史版本) ---"
             if $is_nixos {
-                # NixOS 集成模式：home-manager 随系统 generation 管理，
-                # 没有独立 home-manager 命令。删除除当前外的所有 NixOS generations
+                # NixOS 集成模式仍会维护当前用户独立的 Home Manager profile；
+                # 先删除其历史 generations，否则它们会继续作为 GC roots 保留旧包。
+                print "NixOS 模式：清理 home-manager 历史 generations..."
+                let hm_profile = ($env.HOME | path join ".local" "state" "nix" "profiles" "home-manager")
+                nix-env --delete-generations old -p $hm_profile
+                # 删除除当前外的所有 NixOS generations
                 #（写 /nix/var/nix/profiles/system 需要 root）。
                 print "NixOS 模式：清理系统历史 generations..."
                 sudo nix-env --delete-generations old -p /nix/var/nix/profiles/system
