@@ -9,8 +9,8 @@
 { config, pkgs, lib, ... }:
 
 {
-  # switch 时把 nix-tools/bin/clipboard-sync 同步到 ~/.local/bin/
-  # （若存在；不存在则保留上一次成功安装的 release 二进制）
+  # switch 时同步 release 二进制，并在运行期从已解锁仓库安装共享密钥。
+  # 密钥路径不参与 Nix 求值，因此不会被复制进 world-readable Nix store。
   home.activation.clipboardSyncBin = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     run() {
       if [ -x "$1" ]; then
@@ -20,6 +20,20 @@
     }
     run "$HOME/project/nix-tools/bin/clipboard-sync"
     run "$HOME/dufs-lan/project/nix-tools/bin/clipboard-sync"
+
+    install_key() {
+      if [ -f "$1" ]; then
+        mkdir -p "$HOME/.config/clipboard-sync"
+        chmod 700 "$HOME/.config/clipboard-sync"
+        install -m 600 "$1" "$HOME/.config/clipboard-sync/shared-key"
+        echo "clipboard-sync: installed authentication key"
+        return 0
+      fi
+      return 1
+    }
+    install_key "$HOME/project/nix-tools/secrets/clipboard-sync/shared-key" || \
+      install_key "$HOME/dufs-lan/project/nix-tools/secrets/clipboard-sync/shared-key" || \
+      echo "clipboard-sync: authentication key not found; service will not start" >&2
   '';
 
   systemd.user.services.clipboard-sync = {
