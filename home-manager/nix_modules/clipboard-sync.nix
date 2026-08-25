@@ -9,6 +9,16 @@
 {
   home.packages = [ clipboardSyncPackage ];
 
+  # 一次性迁移旧 activation 安装的非声明式二进制，避免 ~/.local/bin 的 PATH
+  # 优先级遮住 Home Manager profile 中的 Nix package。保留备份便于回退。
+  home.activation.clipboardSyncLegacyBin = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    legacy="$HOME/.local/bin/clipboard-sync"
+    if [ -f "$legacy" ] && [ ! -L "$legacy" ]; then
+      mv -f "$legacy" "$legacy.pre-nix-package"
+      echo "clipboard-sync: moved legacy binary to $legacy.pre-nix-package"
+    fi
+  '';
+
   # 共享密钥仍只在 activation 运行时从已解锁仓库复制，绝不进入 Nix store。
   home.activation.clipboardSyncKey = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     install_key() {
