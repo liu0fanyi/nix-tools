@@ -384,6 +384,9 @@ in
     ];
   };
   services.gnome.gnome-keyring.enable = true;
+  # Nautilus 的 trash://、recent:// 及可移动设备等虚拟位置由 GVfs 提供。
+  # 仅安装 Nautilus 不会自动启用这些 D-Bus 后端，会导致回收站提示“不支持位置”。
+  services.gvfs.enable = true;
 
   # 桌面组件包（waybar 状态栏、fuzzel 启动器、swaybg 壁纸、
   # swaylock 锁屏、grim+slurp 截图、wl-clipboard 剪贴板、nautilus 文件选择器、
