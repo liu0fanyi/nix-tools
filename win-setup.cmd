@@ -9,7 +9,7 @@ if errorlevel 1 (
   exit /b 1
 )
 
-nu clipboard-sync\setup-windows.nu --use-existing --exe bin\clipboard-sync.exe
+nu clipboard-sync\setup-windows.nu --from-ci
 if errorlevel 1 (
   echo.
   echo clipboard-sync setup failed. See the error above.
