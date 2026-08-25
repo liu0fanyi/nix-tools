@@ -5,11 +5,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1787638154,
-        "narHash": "sha256-1Qrhf4GLod8eIEh/XPOE56w2I4sCc5KZftqZkxMb2bM=",
+        "lastModified": 1787638943,
+        "narHash": "sha256-vVoKOuQ9P/Ti70gRIgFND1qT05Zc1QrLhhGdGgQ/AF4=",
         "ref": "master",
-        "rev": "fe2b1f33fa12ed44de41c2e28f33a577485392cc",
-        "revCount": 73,
+        "rev": "25040831ab064f2b6ec2aaff41183cc8a2c9def7",
+        "revCount": 74,
         "type": "git",
         "url": "ssh://git@github.com/liu0fanyi/clipboard-sync.git"
       },
