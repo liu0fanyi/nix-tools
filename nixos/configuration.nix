@@ -262,7 +262,13 @@ in
       "root"
       username
     ];
-    extra-substituters = [ "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store" ];
+    extra-substituters = [
+      "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
+      "https://liu0fanyi-nix.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "liu0fanyi-nix.cachix.org-1:ihYHglsAtVvR6W+7m/tyjB+9S4f5e86mcygT7CMy144="
+    ];
   };
 
   # niri 桌面（Wayland 平铺，不需要 NixOS 默认桌面）

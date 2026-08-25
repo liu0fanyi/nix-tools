@@ -122,3 +122,25 @@
 本阶段验收：三端升级后文字、图片和大文件仍可互传；抓包中 UDP 内容摘要和 TCP
 内容均不可读；`--doctor` 在三端给出可操作结果；发布命令可从干净源码重复生成
 两个平台的已跟踪产物。
+
+## 当前阶段：通知去重与 Linux 二进制缓存
+
+- [x] 1. 修正通知去重语义
+  - 每个发送设备只保留最近一次内容作为去重依据；连续相同内容仍抑制。
+  - 不同内容会替换旧记录，保证 A → B → A 的第二个 A 能再次提示。
+  - 增加多设备隔离及 A → B → A 回归测试。
+- [x] 2. 独立 Nix package
+  - clipboard-sync 子仓库提供自己的 `flake.nix`、锁文件和默认 Linux package。
+  - nix-tools 直接消费子仓库 package，保证 CI 和客户端使用同一 derivation。
+- [x] 3. Cachix CI
+  - master 推送触发 GitHub Actions 的 Nix build，并使用仓库 Secret
+    `CACHIX_AUTH_TOKEN` 上传到 `liu0fanyi-nix`。
+  - token 不进入源码；公开 cache key 可安全提交。
+- [x] 4. 客户端拉取配置
+  - NixOS 和 standalone Home Manager 均加入 Cachix substituter 与公钥。
+  - 保留官方 cache 和已有清华镜像；缓存未命中时自动回退到本地编译。
+- [ ] 5. 发布与端到端验收
+  - [x] 推送子仓库并确认 GitHub Actions 成功上传构建产物及签名 narinfo。
+  - [x] 更新父仓库锁定 revision，并确认其 derivation 与 CI 完全一致。
+  - [ ] 部署 homebox，再让 nuc pull + rerun 验证命中缓存。
+  - 实机复测 A → B → A 通知，以及 Windows ↔ Linux 双向复制。

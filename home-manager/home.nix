@@ -16,12 +16,13 @@
   home.homeDirectory = "/home/${username}";
   home.stateVersion = "26.11";
 
-  # 配置 Nix 使用清华源加速（追加到现有 substituters，不覆盖默认配置）
+  # 配置 Nix 使用清华源和项目 Cachix（追加，不覆盖默认 cache.nixos.org）
   # 如果多用户，需要把用户加入信任列表/etc/nix/nix.custom.conf
   # echo "trusted-users = root industio" | sudo tee /etc/nix/nix.custom.conf
   # sudo systemctl restart nix-daemon
   home.file.".config/nix/nix.conf".text = ''
-    extra-substituters = https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store
+    extra-substituters = https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store https://liu0fanyi-nix.cachix.org
+    extra-trusted-public-keys = liu0fanyi-nix.cachix.org-1:ihYHglsAtVvR6W+7m/tyjB+9S4f5e86mcygT7CMy144=
   '';
 
   # 启用非 NixOS Linux 发行版（如 Ubuntu）的桌面集成

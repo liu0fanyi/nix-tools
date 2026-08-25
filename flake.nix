@@ -31,10 +31,9 @@
       url = "github:sadjow/codex-cli-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Rust 源码作为独立、锁定的非 flake input；由 buildRustPackage 可复现构建。
+    # 独立应用 flake：其 CI 与本仓库消费完全相同的 package derivation，便于命中 Cachix。
     clipboard-sync-src = {
       url = "git+ssh://git@github.com/liu0fanyi/clipboard-sync.git?ref=master";
-      flake = false;
     };
   };
 
@@ -44,9 +43,7 @@
       system = "x86_64-linux"; # 如果是 ARM 架构则改为 "aarch64-linux"
       pkgs = nixpkgs.legacyPackages.${system};
       username = "liou";
-      clipboardSyncPackage = pkgs.callPackage ./packages/clipboard-sync.nix {
-        src = inputs.clipboard-sync-src;
-      };
+      clipboardSyncPackage = inputs.clipboard-sync-src.packages.${system}.default;
 
       homeManagerNixosModule = {
         home-manager = {
