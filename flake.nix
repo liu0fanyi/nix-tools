@@ -31,6 +31,11 @@
       url = "github:sadjow/codex-cli-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Rust 源码作为独立、锁定的非 flake input；由 buildRustPackage 可复现构建。
+    clipboard-sync-src = {
+      url = "git+ssh://git@github.com/liu0fanyi/clipboard-sync.git?ref=master";
+      flake = false;
+    };
   };
 
   outputs =
@@ -39,13 +44,16 @@
       system = "x86_64-linux"; # 如果是 ARM 架构则改为 "aarch64-linux"
       pkgs = nixpkgs.legacyPackages.${system};
       username = "liou";
+      clipboardSyncPackage = pkgs.callPackage ./packages/clipboard-sync.nix {
+        src = inputs.clipboard-sync-src;
+      };
 
       homeManagerNixosModule = {
         home-manager = {
           useGlobalPkgs = true;
           useUserPackages = true;
           extraSpecialArgs = {
-            inherit username inputs;
+            inherit username inputs clipboardSyncPackage;
             # 标记 NixOS 集成，home.nix/niri.nix 据此分流。
             isNixOS = true;
           };
@@ -80,7 +88,7 @@
         home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
           extraSpecialArgs = {
-            inherit username inputs;
+            inherit username inputs clipboardSyncPackage;
             # standalone（非 NixOS）：显式提供 isNixOS = false
             isNixOS = false;
           };
@@ -93,7 +101,11 @@
     {
       # Expose the Home Manager CLI from the same locked input as the modules.
       # `nix run .#home-manager` therefore cannot drift to a registry nixpkgs.
-      packages.${system}.home-manager = home-manager.packages.${system}.home-manager;
+      packages.${system} = {
+        home-manager = home-manager.packages.${system}.home-manager;
+        clipboard-sync = clipboardSyncPackage;
+        default = clipboardSyncPackage;
+      };
 
       homeConfigurations = {
         "liou" = mkHomeConfig "liou" [ ];

@@ -1,5 +1,22 @@
 {
   "nodes": {
+    "clipboard-sync-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1787625940,
+        "narHash": "sha256-9JqJkY4TTIbJLGrT3Oo+r9l+eJnM39GBrRxk+c6gj8Y=",
+        "ref": "master",
+        "rev": "605f3743122f14f038ff7cb4069a02e424bc0cec",
+        "revCount": 68,
+        "type": "git",
+        "url": "ssh://git@github.com/liu0fanyi/clipboard-sync.git"
+      },
+      "original": {
+        "ref": "master",
+        "type": "git",
+        "url": "ssh://git@github.com/liu0fanyi/clipboard-sync.git"
+      }
+    },
     "codex-cli-nix": {
       "inputs": {
         "flake-utils": "flake-utils",
@@ -156,6 +173,7 @@
     },
     "root": {
       "inputs": {
+        "clipboard-sync-src": "clipboard-sync-src",
         "codex-cli-nix": "codex-cli-nix",
         "disko": "disko",
         "home-manager": "home-manager",

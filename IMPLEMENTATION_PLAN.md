@@ -31,7 +31,8 @@
   - Linux 服务优先使用稳定安装路径，去掉 debug binary fallback。
   - Windows 将 exe 安装到 `%LOCALAPPDATA%\\Programs\\clipboard-sync`，任务计划只引用稳定路径。
   - 修复 Windows build 模式的变量遮蔽问题，并让更新过程先停止旧任务再替换文件。
-  - 记录后续将 Rust 项目正式打包为 flake package 的迁移路径；受 git submodule 边界影响，本轮不强行引入脆弱的本地 path 打包。
+  - 将 clipboard-sync 源码作为锁定的私有 Git input，并用 `buildRustPackage`
+    可复现构建；Home Manager 服务直接引用 Nix store 包路径。
 - [x] 5. 验证
   - `nix flake check --no-build --offline`。
   - 强制求值 `homeConfigurations.liou-nuc.activationPackage`。
@@ -45,8 +46,9 @@
 - 两个 Nushell 部署脚本均已通过语法加载检查。
 - Linux 与 Windows 目标的 Clippy 均以 `-D warnings` 通过；Rust 单元测试 2/2
   通过，Linux/Windows release 二进制已重新构建并更新到 `bin/`。
-- 正式 `buildRustPackage` 迁移保留为后续工作：clipboard-sync 当前是独立 git
-  submodule，在父 flake 中直接引用工作树路径会破坏远程 flake 的可复现性。
+- clipboard-sync 已迁移为正式 `buildRustPackage`：应用仓库跟踪 `Cargo.lock`，父 flake
+  通过 SSH input 锁定源码 revision 和 cargo vendor hash；Linux 部署不再依赖父仓库
+  `bin/clipboard-sync` 或 activation 的运行时复制副作用。
 - clipboard-sync v0.2.0 已加密 UDP 通告和 TCP 内容，新增 `--doctor`、协议错误分类、
   防篡改/防重放/回环端到端测试、Windows 日志轮转及 `just release` 统一发布流程；
   Rust 测试现为 7/7，Linux/Windows release 由同一源码提交生成并输出 SHA-256。
