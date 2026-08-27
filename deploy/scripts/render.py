@@ -904,6 +904,8 @@ After=network-online.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
+Restart=on-failure
+RestartSec=15s
 WorkingDirectory={deploy_dir}
 Environment=HOME={host_home}
 Environment=PATH={host_path}

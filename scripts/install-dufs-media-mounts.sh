@@ -7,6 +7,8 @@ set -euo pipefail
 
 readonly marker_begin="# BEGIN dufs-plus stable media mounts"
 readonly marker_end="# END dufs-plus stable media mounts"
+readonly legacy_marker_begin="# BEGIN dufs-plus media mounts"
+readonly legacy_marker_end="# END dufs-plus media mounts"
 readonly art_uuid="5F82-B190"
 readonly project_uuid="8bce6197-7281-40a0-84ec-e31c3d313877"
 usage() {
@@ -89,9 +91,13 @@ cleanup() {
 }
 trap cleanup EXIT
 
-awk -v begin="$marker_begin" -v end="$marker_end" '
-  $0 == begin { skipping = 1; next }
-  $0 == end { skipping = 0; next }
+awk \
+  -v begin="$marker_begin" \
+  -v end="$marker_end" \
+  -v legacy_begin="$legacy_marker_begin" \
+  -v legacy_end="$legacy_marker_end" '
+  $0 == begin || $0 == legacy_begin { skipping = 1; next }
+  $0 == end || $0 == legacy_end { skipping = 0; next }
   !skipping { print }
 ' /etc/fstab >"$temporary"
 printf '\n%s\n' "$fstab_block" >>"$temporary"

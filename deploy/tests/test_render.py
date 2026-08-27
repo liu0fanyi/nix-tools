@@ -149,6 +149,9 @@ class RenderTests(unittest.TestCase):
         )
         self.assertIn("--metadata-dir /data/metadata", instance)
         self.assertTrue((output / "ttyd-compose.service").is_file())
+        unit = (output / "dufs-plus-compose.service").read_text(encoding="utf-8")
+        self.assertIn("Restart=on-failure", unit)
+        self.assertIn("RestartSec=15s", unit)
 
     def test_cors_origins_are_explicit_and_shell_quoted(self) -> None:
         config, output, temp = self.prepare("home-ipv6-cdn")
