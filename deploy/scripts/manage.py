@@ -10,6 +10,7 @@ import os
 import shutil
 import sqlite3
 import ssl
+import stat
 import subprocess
 import sys
 import tarfile
@@ -71,6 +72,91 @@ def mode_is_private(path: Path) -> bool:
     return path.stat().st_mode & 0o077 == 0
 
 
+def normalize_secret_permissions(secret_dir: Path) -> tuple[list[str], list[Path]]:
+    """Remove group/world access from locally owned runtime secrets.
+
+    Git only preserves the executable bit, so git-crypt may recreate tracked
+    secrets using the host umask (for example, 0664 with umask 0002). Tighten
+    those modes before preflight, but never follow symlinks or take ownership of
+    files belonging to another user.
+    """
+    errors: list[str] = []
+    changed: list[Path] = []
+    if not secret_dir.exists() and not secret_dir.is_symlink():
+        return errors, changed
+    if secret_dir.is_symlink():
+        return [
+            f"secret directory must not be a symbolic link: {secret_dir}"
+        ], changed
+
+    try:
+        directory_stat = secret_dir.lstat()
+    except OSError as error:
+        return [
+            f"unable to inspect secret directory {secret_dir}: {error}"
+        ], changed
+    if not stat.S_ISDIR(directory_stat.st_mode):
+        return errors, changed
+    if directory_stat.st_uid != os.getuid():
+        return [
+            f"secret directory is not owned by the current user: {secret_dir}"
+        ], changed
+
+    directory_mode = stat.S_IMODE(directory_stat.st_mode)
+    private_directory_mode = directory_mode & ~0o077
+    if private_directory_mode != directory_mode:
+        try:
+            secret_dir.chmod(private_directory_mode)
+            changed.append(secret_dir)
+        except OSError as error:
+            errors.append(
+                f"unable to tighten secret directory mode {secret_dir}: {error}"
+            )
+            return errors, changed
+
+    try:
+        entries = list(secret_dir.iterdir())
+    except OSError as error:
+        errors.append(f"unable to list secret directory {secret_dir}: {error}")
+        return errors, changed
+
+    for path in entries:
+        if path.name in {"README.md", ".gitignore"}:
+            continue
+        try:
+            path_stat = path.lstat()
+        except OSError as error:
+            errors.append(f"unable to inspect secret path {path}: {error}")
+            continue
+        if stat.S_ISLNK(path_stat.st_mode):
+            errors.append(f"secret path must not be a symbolic link: {path}")
+            continue
+        if not stat.S_ISREG(path_stat.st_mode):
+            continue
+        if path_stat.st_uid != os.getuid():
+            errors.append(f"secret file is not owned by the current user: {path}")
+            continue
+
+        file_mode = stat.S_IMODE(path_stat.st_mode)
+        private_file_mode = file_mode & ~0o077
+        if private_file_mode != file_mode:
+            try:
+                path.chmod(private_file_mode)
+                changed.append(path)
+            except OSError as error:
+                errors.append(f"unable to tighten secret file mode {path}: {error}")
+    return errors, changed
+
+
+def wait_for_mounts(paths: list[Path], wait_seconds: int = 30) -> list[Path]:
+    deadline = time.monotonic() + wait_seconds
+    while True:
+        missing = [path for path in paths if not path.is_mount()]
+        if not missing or time.monotonic() >= deadline:
+            return missing
+        time.sleep(1)
+
+
 def preflight(config_path: Path, output: Path) -> int:
     config = ensure_rendered(config_path, output)
     paths = renderer.table(config, "paths")
@@ -82,6 +168,10 @@ def preflight(config_path: Path, output: Path) -> int:
 
     if profile == "home-ipv6-cdn" and not features["ddns"]:
         errors.append("home-ipv6-cdn production preflight requires DDNS-Go")
+
+    required_mounts = [Path(path) for path in paths.get("required_mounts", [])]
+    for path in wait_for_mounts(required_mounts):
+        errors.append(f"required filesystem is not mounted: {path}")
 
     required_dirs = [
         "workspace",
@@ -130,10 +220,20 @@ def preflight(config_path: Path, output: Path) -> int:
             errors.append(f"missing runtime file: {path}")
 
     secret_dir = Path(paths["secrets"])
-    if secret_dir.is_dir() and not mode_is_private(secret_dir):
+    permission_errors, normalized_paths = normalize_secret_permissions(secret_dir)
+    errors.extend(permission_errors)
+    for path in normalized_paths:
+        warnings.append(f"tightened runtime secret permissions: {path}")
+    if (
+        secret_dir.is_dir()
+        and not secret_dir.is_symlink()
+        and not mode_is_private(secret_dir)
+    ):
         errors.append(f"secret directory must not be group/world accessible: {secret_dir}")
-    if secret_dir.is_dir():
+    if secret_dir.is_dir() and not secret_dir.is_symlink():
         for path in secret_dir.iterdir():
+            if path.is_symlink() and path.name not in {"README.md", ".gitignore"}:
+                continue
             if path.is_file() and path.name not in {"README.md", ".gitignore"}:
                 if not mode_is_private(path):
                     errors.append(f"secret file mode must be 0600 or stricter: {path}")

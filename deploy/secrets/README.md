@@ -14,13 +14,17 @@
 - `caddy_lan_basic_auth`
 - 可选：`tag-server.env`
 
-目录权限应为 `0700`，文件权限应为 `0600`（manage.py preflight 会检查）。
+目录权限应为 `0700`，文件权限应为 `0600`。`manage.py preflight` 会在启动前
+自动移除当前用户所拥有普通文件的 group/world 权限，然后再次检查；符号链接或
+其他用户拥有的路径仍会报错，避免静默接管不可信文件。
 
 ## 工作流程
 
 - **首次加入**（在持有明文的部署机上）：`git-crypt unlock` → 放置明文文件 →
   `git add` + `git commit` + `git push`（git-crypt 自动加密后提交）
-- **重装恢复**：`git pull` → `git-crypt unlock <key>` → 明文凭据自动出现在本目录
+- **重装恢复**：`git pull` → `git-crypt unlock <key>` →
+  `python3 deploy/scripts/manage.py preflight`。最后一步会将 Git 无法保存的私密权限
+  恢复为目录不高于 `0700`、凭据文件不高于 `0600`
 - 加密库中的 git-crypt key 由 KeePassXC 保管（`scripts/vault.sh nix-tools export`）
 
 ## 注意

@@ -40,8 +40,12 @@ Like the additional home read-only instance, it rejects Tag API mutations and
 mounts the served workspace read-only. Its separate SQLite database and
 thumbnail metadata directory remain writable for internal indexing and caches.
 
-Runtime secrets and databases remain outside Git. The home instance reuses the
-existing directories. The Aliyun instance reuses:
+Runtime databases remain outside Git. Home runtime secrets are encrypted in Git
+with git-crypt and are decrypted in the working tree on the deployment host.
+`manage.py preflight` removes group/world access from locally owned regular
+secret files before validating them; it rejects symlinks and paths owned by a
+different user. The home instance reuses the existing runtime directories. The
+Aliyun instance reuses:
 
 - `/root/nix-tools/dufs_data`
 - `/root/nix-tools/tag-db/tag_all.db`
@@ -81,9 +85,17 @@ completed snapshots. Use `backup --keep-last 0` to disable pruning or
 Render and install the generated user units on a new home host:
 
 ```bash
+./scripts/install-dufs-media-mounts.sh --dry-run
+sudo ./scripts/install-dufs-media-mounts.sh
 bash deploy/bootstrap/install-user-service.sh
 systemctl --user enable --now ttyd-compose.service dufs-plus-compose.service
 ```
+
+`install-dufs-media-mounts.sh` validates the Art exFAT and project ext4
+filesystem UUIDs, backs up `/etc/fstab`, and installs idempotent `nofail` mounts
+at `/media/liou/Art` and `/media/liou/project`. The home deployment declares both
+as required mounts and waits up to 30 seconds during preflight, preventing Podman
+from binding and publishing empty mount-point directories during boot.
 
 The VPS uses Docker and does not need the host terminal unit.
 

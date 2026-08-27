@@ -118,6 +118,12 @@ def validate(config: dict[str, Any]) -> None:
     media = paths.get("media", "")
     if not isinstance(media, str) or (media and not Path(media).is_absolute()):
         raise ConfigError("[paths].media must be empty or absolute")
+    required_mounts = paths.get("required_mounts", [])
+    if not isinstance(required_mounts, list) or not all(
+        isinstance(path, str) and Path(path).is_absolute()
+        for path in required_mounts
+    ):
+        raise ConfigError("[paths].required_mounts must be an array of absolute paths")
 
     ports = table(config, "ports")
     for key in ("lan", "readonly_origin", "main_origin", "http", "https"):

@@ -29,6 +29,7 @@ tag_data = "/home/liou/dufs-lan/.dufs_plus_state"
 readonly = "/home/liou/dufs"
 readonly_tag_data = "/home/liou/dufs/.dufs_plus_state"
 media = "/media/liou"
+required_mounts = ["/media/liou/Art", "/media/liou/project"]
 dist = "/home/liou/dufs-lan/dist"
 authelia_data = "/home/liou/.local/share/authelia"
 ddns_config = "/home/liou/.config/ddns-go"

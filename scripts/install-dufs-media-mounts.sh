@@ -44,6 +44,15 @@ verify_volume() {
   local device
   device="$(blkid -U "$uuid" 2>/dev/null || true)"
   if [[ -z "$device" ]]; then
+    local candidate discovered_uuid
+    while read -r candidate discovered_uuid; do
+      if [[ "$discovered_uuid" == "$uuid" ]]; then
+        device="$candidate"
+        break
+      fi
+    done < <(lsblk --noheadings --raw --paths --output PATH,UUID)
+  fi
+  if [[ -z "$device" ]]; then
     echo "$name volume UUID=$uuid is not currently available" >&2
     exit 3
   fi
