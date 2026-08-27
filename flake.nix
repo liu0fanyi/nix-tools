@@ -31,6 +31,12 @@
       url = "github:sadjow/codex-cli-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # OpenAI 官方 Linux 桌面包。上游只提供会滚动更新的 latest URL；把它作为
+    # 非 flake 输入锁进 flake.lock，运行 `nix flake update chatgpt-deb` 即可升级。
+    chatgpt-deb = {
+      url = "file+https://persistent.oaistatic.com/codex-app-prod/linux/deb/latest/chatgpt_amd64.deb";
+      flake = false;
+    };
     # 独立应用 flake：其 CI 与本仓库消费完全相同的 package derivation，便于命中 Cachix。
     clipboard-sync-src = {
       url = "git+ssh://git@github.com/liu0fanyi/clipboard-sync.git?ref=master";

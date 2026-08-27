@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Keep the two dufs-plus media roots stable even when their exFAT volume labels
-# change. This script only updates /etc/fstab; it deliberately never unmounts
+# Keep the two dufs-plus media roots stable even when volume labels change.
+# This script only updates /etc/fstab; it deliberately never unmounts
 # or remounts a live disk, because doing so could interrupt file operations.
 
 readonly marker_begin="# BEGIN dufs-plus stable media mounts"
 readonly marker_end="# END dufs-plus stable media mounts"
 readonly art_uuid="5F82-B190"
-readonly passport_uuid="AC2F-A91E"
+readonly project_uuid="8bce6197-7281-40a0-84ec-e31c3d313877"
 usage() {
   cat <<'EOF'
 Usage:
@@ -51,12 +51,13 @@ verify_volume() {
 }
 
 verify_volume "Art" "$art_uuid"
-verify_volume "My Passport" "$passport_uuid"
+verify_volume "project" "$project_uuid"
 
-mount_options="rw,nofail,x-systemd.automount,x-systemd.device-timeout=15s,uid=${mount_uid},gid=${mount_gid},fmask=0022,dmask=0022,iocharset=utf8"
+exfat_mount_options="rw,nofail,x-systemd.automount,x-systemd.device-timeout=15s,uid=${mount_uid},gid=${mount_gid},fmask=0022,dmask=0022,iocharset=utf8"
+ext4_mount_options="rw,nofail,x-systemd.automount,x-systemd.device-timeout=15s"
 fstab_block="$marker_begin
-UUID=$art_uuid /media/liou/Art exfat $mount_options 0 0
-UUID=$passport_uuid /media/liou/My\\040Passport exfat $mount_options 0 0
+UUID=$art_uuid /media/liou/Art exfat $exfat_mount_options 0 0
+UUID=$project_uuid /media/liou/project ext4 $ext4_mount_options 0 2
 $marker_end"
 
 if [[ "$mode" == "dry-run" ]]; then
@@ -68,6 +69,8 @@ if [[ "$EUID" -ne 0 ]]; then
   echo "Install mode must run as root. Use: sudo $0 $mount_user" >&2
   exit 4
 fi
+
+install -d -m 0755 /media/liou /media/liou/Art /media/liou/project
 
 backup="/etc/fstab.dufs-plus.$(date +%Y%m%d-%H%M%S).bak"
 cp --preserve=mode,ownership,timestamps /etc/fstab "$backup"

@@ -5,7 +5,7 @@
 | 逻辑路径 | 当前宿主挂载点 | 文件系统 | UUID |
 | --- | --- | --- | --- |
 | `media/Art` | `/media/liou/Art` | exFAT | `5F82-B190` |
-| `media/My Passport` | `/media/liou/My Passport` | exFAT | `AC2F-A91E` |
+| `media/project` | `/media/liou/project` | ext4 | `8bce6197-7281-40a0-84ec-e31c3d313877` |
 
 容器将 `/home/liou/dufs-lan` 挂载为 `/workspace`，并将宿主的
 `/media/liou` 覆盖挂载为 `/workspace/media`。持久关系应保存工作区相对路径，
@@ -15,7 +15,8 @@
 
 * `tag_all.db` 的 2795 条 `items.path` 中没有宿主绝对路径、容器绝对路径或
   前导 `/`。其中 2383 条属于 `media/Art/...`，24 条属于
-  `media/My Passport/...`。
+  `media/My Passport/...`。这 24 条是格式化前的历史路径；新盘路径为
+  `media/project/...`。
 * 标签和笔记最终都关联 `items.id`。dufs-plus 内部移动会在同一事务中改写
   整个路径子树，并保留标签和笔记关系。
 * 文件旁边的 `.tag`、阅读进度和 PDF/EPUB 分析目录不保存宿主挂载前缀；
@@ -52,4 +53,3 @@ sudo ./scripts/install-dufs-media-mounts.sh
   不保证自动迁移。
 * 缩略图和漫画 manifest 都是可再生缓存，路径变化后允许重新生成，不应为它们
   设计数据迁移。
-

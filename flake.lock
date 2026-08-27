@@ -1,15 +1,27 @@
 {
   "nodes": {
+    "chatgpt-deb": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-n7Ulu0zh+nqC/ubvyx4DbKJZGeQgLX4ygwVO8CnPZWo=",
+        "type": "file",
+        "url": "https://persistent.oaistatic.com/codex-app-prod/linux/deb/latest/chatgpt_amd64.deb"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://persistent.oaistatic.com/codex-app-prod/linux/deb/latest/chatgpt_amd64.deb"
+      }
+    },
     "clipboard-sync-src": {
       "inputs": {
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1787647577,
-        "narHash": "sha256-KCG4L3Jkam33qYYhXGibmyes5s36mRuRxmi881Y5+wY=",
+        "lastModified": 1787821493,
+        "narHash": "sha256-ebZs4tPP0V32c6sVAcataswoigehf/AmlTIZGgcMiXc=",
         "ref": "master",
-        "rev": "326fd133b75c942d356fbef0d41e9ed9fa0ecee4",
-        "revCount": 79,
+        "rev": "44b561e8623c71a47d016f0b702a53ef7462e38a",
+        "revCount": 82,
         "type": "git",
         "url": "ssh://git@github.com/liu0fanyi/clipboard-sync.git"
       },
@@ -191,6 +203,7 @@
     },
     "root": {
       "inputs": {
+        "chatgpt-deb": "chatgpt-deb",
         "clipboard-sync-src": "clipboard-sync-src",
         "codex-cli-nix": "codex-cli-nix",
         "disko": "disko",

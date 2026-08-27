@@ -84,6 +84,8 @@
     unzip
     zip
     p7zip
+    # exFAT 文件系统检查与修复工具（fsck.exfat 等）
+    exfatprogs
     # just：任务运行器（clipboard-sync 构建/分发/部署用，见 clipboard-sync/Justfile）
     just
     # Cross-device encrypted credential vault and its sync daemon.
