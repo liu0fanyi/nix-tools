@@ -72,7 +72,7 @@ vault_cli() {
   local command_name="$1"
   shift
   printf '%s\n' "$vault_password" |
-    keepassxc-cli "$command_name" --quiet "$@"
+    LC_ALL=C keepassxc-cli "$command_name" --quiet "$@"
 }
 
 if [[ "${1:-}" == "list" && $# -eq 1 ]]; then
