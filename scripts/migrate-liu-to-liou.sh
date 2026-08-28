@@ -33,6 +33,10 @@ perform_migration() {
   exec >>"$log_file" 2>&1
   echo "[$(date --iso-8601=seconds)] beginning account migration"
 
+  # Prevent the display manager and old per-user system services from
+  # immediately recreating UID 1000 processes while the account is renamed.
+  systemctl stop display-manager.service || true
+  systemctl stop syncthing.service || true
   loginctl terminate-user "$old_user" || true
   for _ in $(seq 1 30); do
     if ! pgrep -u "$expected_uid" >/dev/null 2>&1; then
