@@ -32,9 +32,9 @@
     ];
   };
 
-  # The dedicated 500 GB data disk is formatted separately with label data.
+  # The dedicated 500 GB ext4 data disk is identified by filesystem UUID.
   fileSystems."/data" = {
-    device = "/dev/disk/by-label/data";
+    device = "/dev/disk/by-uuid/92af0d70-de16-4502-93fb-651392709a7b";
     fsType = "ext4";
     options = [
       "nofail"
