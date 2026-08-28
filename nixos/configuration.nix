@@ -215,6 +215,8 @@ in
   # Nix 设置
   nixpkgs.config.allowUnfree = true;
   nix.settings = {
+    # CI 上传前查询到的 404 不应让机器持续一小时回退到本地编译。
+    narinfo-cache-negative-ttl = 60;
     experimental-features = [
       "nix-command"
       "flakes"

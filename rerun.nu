@@ -59,6 +59,41 @@ def main [
         error make { msg: "--boot 仅适用于 NixOS system 部署" }
     }
 
+    # clipboard-sync 是本仓库中由独立 CI 发布到 Cachix 的自有包。
+    # 部署前直接查询并预取精确的 store path：如果 CI 尚未上传，立即终止，
+    # 避免 nixos-rebuild / home-manager 静默回退到本机编译 Rust 项目。
+    # 显式访问 Cachix（而不是普通 nix build）也能绕过 nix-daemon 中旧的
+    # narinfo 404 负缓存。
+    let clipboard_cache = "https://liu0fanyi-nix.cachix.org"
+    let clipboard_attr = $"($env.PWD)#clipboard-sync.outPath"
+    print $"(ansi cyan)Checking clipboard-sync binary cache...(ansi reset)"
+
+    let clipboard_eval = (nix eval --raw $clipboard_attr | complete)
+    if $clipboard_eval.exit_code != 0 {
+        error make {
+            msg: $"无法求值 clipboard-sync store path：\n($clipboard_eval.stderr | str trim)"
+        }
+    }
+    let clipboard_path = ($clipboard_eval.stdout | str trim)
+    if ($clipboard_path | is-empty) {
+        error make { msg: "clipboard-sync store path 为空，停止部署" }
+    }
+
+    let cache_check = (nix path-info --refresh --store $clipboard_cache $clipboard_path | complete)
+    if $cache_check.exit_code != 0 {
+        error make {
+            msg: $"Cachix 尚未发布 clipboard-sync：($clipboard_path)\n请等待 clipboard-sync 的 GitHub Actions Linux 构建完成后重试。\n($cache_check.stderr | str trim)"
+        }
+    }
+
+    let cache_copy = (nix copy --refresh --no-recursive --from $clipboard_cache $clipboard_path | complete)
+    if $cache_copy.exit_code != 0 {
+        error make {
+            msg: $"从 Cachix 预取 clipboard-sync 失败，停止部署：\n($cache_copy.stderr | str trim)"
+        }
+    }
+    print $"(ansi green)✓ clipboard-sync 已命中 Cachix: ($clipboard_path)(ansi reset)"
+
     if $use_nixos {
         let action = if $boot { "boot" } else { "switch" }
         print $"(ansi green)NixOS system ($action): flake#($host)(ansi reset)"
