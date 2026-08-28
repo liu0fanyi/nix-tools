@@ -65,7 +65,10 @@
       };
 
       mkNixosConfiguration =
-        { installSwapSizeGiB ? null }:
+        {
+          hostModule,
+          installSwapSizeGiB ? null,
+        }:
         nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs =
@@ -79,6 +82,7 @@
             [
               inputs.disko.nixosModules.disko
               ./nixos/configuration.nix
+              hostModule
               home-manager.nixosModules.home-manager
               homeManagerNixosModule
             ]
@@ -125,22 +129,35 @@
       # 192.168.1.6 的 NixOS 配置（nixos-anywhere 远程安装用）。
       # hardware-configuration.nix 只保留通用占位；nixos-anywhere 安装时临时生成
       # 目标机版本，脚本退出后恢复占位文件。
-      nixosConfigurations.homebox = mkNixosConfiguration { };
+      nixosConfigurations.homebox = mkNixosConfiguration {
+        hostModule = ./nixos/hosts/homebox.nix;
+      };
+
+      # Existing Windows/NixOS dual-boot desktop. Its shared ESP and additional
+      # disks are intentionally kept out of the destructive homebox disko plan.
+      nixosConfigurations.liu-bigpc = mkNixosConfiguration {
+        hostModule = ./nixos/hosts/liu-bigpc;
+      };
 
       # Fresh nixos-anywhere installs. The script chooses a tier from target RAM.
       nixosConfigurations.homebox-install = mkNixosConfiguration {
+        hostModule = ./nixos/hosts/homebox.nix;
         installSwapSizeGiB = 16;
       };
       nixosConfigurations.homebox-install-16g = mkNixosConfiguration {
+        hostModule = ./nixos/hosts/homebox.nix;
         installSwapSizeGiB = 16;
       };
       nixosConfigurations.homebox-install-32g = mkNixosConfiguration {
+        hostModule = ./nixos/hosts/homebox.nix;
         installSwapSizeGiB = 32;
       };
       nixosConfigurations.homebox-install-24g = mkNixosConfiguration {
+        hostModule = ./nixos/hosts/homebox.nix;
         installSwapSizeGiB = 24;
       };
       nixosConfigurations.homebox-install-64g = mkNixosConfiguration {
+        hostModule = ./nixos/hosts/homebox.nix;
         installSwapSizeGiB = 64;
       };
     };

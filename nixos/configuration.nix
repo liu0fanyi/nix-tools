@@ -17,9 +17,6 @@
   ...
 }:
 let
-  # 合盖策略集中在这里切换：lock、suspend、hibernate 或
-  # suspend-then-hibernate。当前远程 homebox 采用后者。
-  lidSwitchAction = "suspend-then-hibernate";
   mihomoConfigDir = "/home/${username}/.config/clashtui/mihomo";
   # clashtui 以 liou 运行、mihomo 以 root 运行；让两者通过 users 组共享
   # 运行时文件。这个修复在每次 mihomo 启动前执行，因此首次打开 clashtui
@@ -46,52 +43,14 @@ let
   '';
 in
 {
-  imports = [
-    # 追加：nixos-anywhere 磁盘布局（官方 nixos-anywhere-examples）
-    ./disk-config.nix
-  ]
-  # hardware-configuration.nix 由 nixos-anywhere 在目标机上临时生成；仓库中
-  # 只保留通用占位文件，安装脚本退出时会恢复它。本地存在时用于当前 rebuild。
-  ++ lib.optional (builtins.pathExists ./hardware-configuration.nix) ./hardware-configuration.nix;
-
-  # 目标机已确认使用 UEFI，且 efivars 可写；让 GRUB 注册正常的 NVRAM
-  # 启动项，避免固件找不到磁盘项时退到 PXE 网络启动。
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.grub = {
-    efiSupport = true;
-    device = "nodev";
-    efiInstallAsRemovable = false;
-  };
-
-  networking.hostName = "homebox"; # Define your hostname.
+  # Hardware, disks, boot loader, hostname, swap and resume policy are supplied
+  # by a module under nixos/hosts/. Keep this file shared by all NixOS hosts.
 
   # Configure network connections interactively with nmcli or nmtui.
   networking.networkmanager.enable = true;
 
   # Set your time zone.
   time.timeZone = "Asia/Shanghai";
-
-  # 电源与合盖策略（目标机是远程笔记本 NixOS，不影响当前开发主机）。
-  # 外接显示器时保持当前会话，避免合盖后远程桌面被意外挂起。
-  services.logind.settings.Login = {
-    HandleLidSwitch = lidSwitchAction;
-    HandleLidSwitchExternalPower = lidSwitchAction;
-    HandleLidSwitchDocked = "ignore";
-  };
-  systemd.sleep.settings.Sleep.HibernateDelaySec = "1h";
-
-  # hibernate 必须使用磁盘 swap；zram 不能作为恢复设备。
-  # homebox 现有根 LV 已占满 VG，因此使用根 ext4 上的 16 GiB swapfile。
-  # resume_offset 是当前 homebox 上 swapfile 的首个物理块偏移；若重装/移动
-  # swapfile，需要重新执行 filefrag 并更新这里。
-  swapDevices = [
-    {
-      device = "/var/lib/swapfile";
-      size = 16384;
-    }
-  ];
-  boot.resumeDevice = "/dev/mapper/pool-root";
-  boot.kernelParams = [ "resume_offset=60665856" ];
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
