@@ -371,6 +371,25 @@
     };
   };
 
+  # programs.ssh normally links ~/.ssh/config into the Nix store. Inside the
+  # ChatGPT/Codex FHS user namespace, store files owned by root appear to be
+  # owned by nobody, so OpenSSH rejects the config before attempting a
+  # connection. Re-materialize it as a user-owned private file after every
+  # Home Manager link generation; force lets the next activation replace the
+  # materialized file with a fresh generated link before copying it again.
+  home.file.".ssh/config".force = true;
+  home.activation.materializeSshConfig = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+    ssh_config_path="$HOME/.ssh/config"
+    ssh_config_tmp="$HOME/.ssh/.config.hm-materialized"
+
+    if [ -L "$ssh_config_path" ]; then
+      $DRY_RUN_CMD rm -f -- "$ssh_config_tmp"
+      $DRY_RUN_CMD cp -L -- "$ssh_config_path" "$ssh_config_tmp"
+      $DRY_RUN_CMD chmod 600 "$ssh_config_tmp"
+      $DRY_RUN_CMD mv -f -- "$ssh_config_tmp" "$ssh_config_path"
+    fi
+  '';
+
   # Rime 默认简体输出（switches 定义在方案级 schema，
   # 须 patch luna_pinyin.custom.yaml 而非 default.custom.yaml）
   home.file.".local/share/fcitx5/rime/luna_pinyin.custom.yaml" = lib.mkIf isNixOS {
