@@ -199,6 +199,12 @@
           }]
         }
       )
+
+      # 将文件对象写入 Wayland 剪贴板，之后可在文件管理器中粘贴。
+      def cf [file: path] {
+        let p = ($file | path expand)
+        $"file://($p)\r\n" | wl-copy --type text/uri-list
+      }
     '';
     extraEnv = ''
       $env.NVM_DIR = ($env.HOME | path join ".nvm")
