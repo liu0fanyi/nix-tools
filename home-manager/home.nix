@@ -78,6 +78,9 @@
     ## deploy/ 脚本（manage.py / release-apps.py）运行依赖
     python3
     localsend
+    # Official universal Linux WeChat package maintained by nixpkgs. It follows
+    # this repository's locked rolling nixpkgs input; no local FHS wrapper.
+    wechat
     # GitHub CLI（创建/推送仓库、管理 issues 等）
     gh
     ## 解压工具（zip/7z/rar 等通用格式；tar/gzip/xz 系统已有）
