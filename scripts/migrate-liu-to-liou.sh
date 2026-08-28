@@ -67,6 +67,7 @@ schedule_migration() {
   systemd-run \
     --unit=migrate-liu-to-liou \
     --collect \
+    --setenv=PATH=/run/current-system/sw/bin:/run/wrappers/bin \
     --on-active=5s \
     /run/current-system/sw/bin/bash "$script_path" --perform
 
