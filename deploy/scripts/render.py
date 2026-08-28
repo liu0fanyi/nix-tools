@@ -9,7 +9,9 @@ import json
 import os
 import re
 import shlex
+import shutil
 import sys
+import tempfile
 import textwrap
 import tomllib
 import urllib.parse
@@ -109,6 +111,13 @@ def validate(config: dict[str, Any]) -> None:
         path = Path(required_string(paths, key, "paths"))
         if not path.is_absolute():
             raise ConfigError(f"[paths].{key} must be absolute")
+    secret_source = paths.get("secret_source")
+    if secret_source is not None and (
+        not isinstance(secret_source, str)
+        or not secret_source
+        or not Path(secret_source).is_absolute()
+    ):
+        raise ConfigError("[paths].secret_source must be an absolute path")
     if features["readonly"]:
         readonly_tag_data = Path(
             required_string(paths, "readonly_tag_data", "paths")
@@ -760,23 +769,84 @@ def env_line(key: str, value: Any) -> str:
     return f"{key}={text}"
 
 
-def compose_files(
-    deploy_dir: Path, generated_dir: Path, config: dict[str, Any]
-) -> list[Path]:
+def compose_asset_names(config: dict[str, Any]) -> list[str]:
     profile = table(config, "deployment")["profile"]
     features = table(config, "features")
-    files = [
-        deploy_dir / "compose.yaml",
-        deploy_dir / f"compose.{profile}.yaml",
-        generated_dir / "compose.instance.yaml",
-    ]
+    files = ["compose.yaml", f"compose.{profile}.yaml", "compose.instance.yaml"]
     if features["authelia"]:
-        files.insert(2, deploy_dir / "compose.authelia.yaml")
+        files.insert(2, "compose.authelia.yaml")
     if features["readonly"]:
-        files.insert(2, deploy_dir / "compose.readonly.yaml")
+        files.insert(2, "compose.readonly.yaml")
     if features["ddns"]:
-        files.insert(2, deploy_dir / "compose.ddns.yaml")
+        files.insert(2, "compose.ddns.yaml")
     return files
+
+
+def sync_runtime_secrets(source: Path, destination: Path) -> None:
+    """Materialize git-crypt plaintext into a stable private runtime directory."""
+    if source.resolve() == destination.resolve():
+        return
+    if source.is_symlink() or not source.is_dir():
+        raise ConfigError(
+            f"secret source must be a directory, not a symlink: {source}"
+        )
+    if destination.exists() and (
+        destination.is_symlink() or not destination.is_dir()
+    ):
+        raise ConfigError(
+            f"runtime secret destination must be a directory, not a symlink: {destination}"
+        )
+    destination.mkdir(parents=True, exist_ok=True, mode=0o700)
+    destination.chmod(0o700)
+    for source_path in source.iterdir():
+        if source_path.name in {"README.md", ".gitignore"}:
+            continue
+        if source_path.is_symlink():
+            raise ConfigError(
+                f"secret source must not contain symlinks: {source_path}"
+            )
+        if not source_path.is_file():
+            continue
+        if source_path.read_bytes().startswith(b"\x00GITCRYPT"):
+            raise ConfigError(
+                f"secret source is still git-crypt encrypted; unlock the repository: {source_path}"
+            )
+        destination_path = destination / source_path.name
+        if destination_path.is_symlink():
+            raise ConfigError(
+                f"runtime secret destination must not contain symlinks: {destination_path}"
+            )
+        temporary_path: Path | None = None
+        try:
+            with source_path.open("rb") as source_file, tempfile.NamedTemporaryFile(
+                dir=destination,
+                prefix=f".{source_path.name}.",
+                delete=False,
+            ) as temporary_file:
+                shutil.copyfileobj(source_file, temporary_file)
+                temporary_path = Path(temporary_file.name)
+            temporary_path.chmod(0o600)
+            temporary_path.replace(destination_path)
+        finally:
+            if temporary_path is not None:
+                temporary_path.unlink(missing_ok=True)
+
+
+def install_runtime_compose_assets(
+    deploy_dir: Path, output: Path, config: dict[str, Any]
+) -> list[Path]:
+    names = compose_asset_names(config)
+    for name in names:
+        if name == "compose.instance.yaml":
+            continue
+        destination = output / name
+        shutil.copyfile(deploy_dir / name, destination)
+        destination.chmod(0o600)
+    if table(config, "features")["readonly"]:
+        destination = output / "haproxy.readonly.cfg"
+        shutil.copyfile(deploy_dir / destination.name, destination)
+        destination.chmod(0o600)
+    return [output / name for name in names]
 
 
 def render(config_path: Path, output: Path) -> None:
@@ -786,6 +856,8 @@ def render(config_path: Path, output: Path) -> None:
     deploy_dir = Path(__file__).resolve().parents[1]
     paths = table(config, "paths")
     secret_dir = Path(paths["secrets"])
+    secret_source = Path(paths.get("secret_source", paths["secrets"]))
+    sync_runtime_secrets(secret_source, secret_dir)
     profile = table(config, "deployment")["profile"]
     features = table(config, "features")
     required_secrets: list[str] = []
@@ -807,7 +879,7 @@ def render(config_path: Path, output: Path) -> None:
     ]
     if missing:
         raise ConfigError(
-            "missing runtime secrets; provision deploy/secrets through a secure channel:\n  "
+            "missing runtime secrets; unlock and provision the configured secret source:\n  "
             + "\n  ".join(missing)
         )
 
@@ -863,7 +935,7 @@ def render(config_path: Path, output: Path) -> None:
     env_path.write_text("\n".join(env) + "\n", encoding="utf-8")
     env_path.chmod(0o600)
 
-    files = compose_files(deploy_dir, output, config)
+    files = install_runtime_compose_assets(deploy_dir, output, config)
     (output / "compose-files.txt").write_text(
         "\n".join(str(path) for path in files) + "\n", encoding="utf-8"
     )
@@ -895,6 +967,23 @@ def render(config_path: Path, output: Path) -> None:
         "/run/current-system/sw/bin:/usr/bin:/bin"
     )
 
+    compose_control = output / "compose-control"
+    compose_command = [
+        engine,
+        "compose",
+        "--env-file",
+        str(output / "compose.env"),
+    ]
+    for path in files:
+        compose_command.extend(["-f", str(path)])
+    compose_control.write_text(
+        "#!/bin/sh\nset -eu\nexec "
+        + shlex.join(compose_command)
+        + ' "$@"\n',
+        encoding="utf-8",
+    )
+    compose_control.chmod(0o700)
+
     unit = f"""[Unit]
 Description=dufs-plus {engine.capitalize()} Compose stack
 Wants=network-online.target
@@ -906,11 +995,11 @@ Type=oneshot
 RemainAfterExit=yes
 Restart=on-failure
 RestartSec=15s
-WorkingDirectory={deploy_dir}
+WorkingDirectory={output}
 Environment=HOME={host_home}
 Environment=PATH={host_path}
-ExecStart=/usr/bin/env python3 {deploy_dir / "scripts" / "manage.py"} --config {config_path} --output {output} up --confirm
-ExecStop=/usr/bin/env python3 {deploy_dir / "scripts" / "manage.py"} --config {config_path} --output {output} down
+ExecStart={compose_control} up -d
+ExecStop={compose_control} down
 TimeoutStartSec=180
 TimeoutStopSec=120
 
@@ -923,7 +1012,7 @@ WantedBy=default.target
 
     if table(config, "features")["terminal"]:
         terminal_path = paths["terminal_workspace"]
-        home_dir = str(Path(terminal_path).parents[1])
+        home_dir = paths["host_home"]
         username = Path(home_dir).name
         profile_bin = f"{home_dir}/.nix-profile/bin"
         terminal_unit = f"""[Unit]
@@ -957,7 +1046,12 @@ def main() -> int:
         "--config", type=Path, default=deploy_dir / "instances/home.toml"
     )
     parser.add_argument(
-        "--output", type=Path, default=deploy_dir / ".generated/home"
+        "--output",
+        type=Path,
+        default=Path(
+            os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share")
+        )
+        / "dufs-plus/runtime/home",
     )
     args = parser.parse_args()
     try:

@@ -18,7 +18,9 @@ NIX_TOOLS = Path(__file__).resolve().parents[2]
 WORKSPACE = NIX_TOOLS.parent
 PROJECT_ROOT = Path(os.environ.get("DUFS_PROJECT_ROOT", "/media/liou/project/me"))
 HOME_CONFIG = NIX_TOOLS / "deploy/instances/home.toml"
-HOME_OUTPUT = NIX_TOOLS / "deploy/.generated/home"
+HOME_OUTPUT = Path(
+    os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share")
+) / "dufs-plus/runtime/home"
 MANAGE = NIX_TOOLS / "deploy/scripts/manage.py"
 
 

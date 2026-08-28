@@ -21,6 +21,19 @@ class RenderTests(unittest.TestCase):
         self.assertIn("--allow-archive", writable)
         self.assertIn("--allow-archive", readonly)
 
+    def test_locked_git_crypt_secret_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_name:
+            root = Path(temp_name)
+            source = root / "source"
+            destination = root / "runtime"
+            source.mkdir()
+            (source / "token").write_bytes(b"\x00GITCRYPT\x00encrypted")
+
+            with self.assertRaisesRegex(
+                render.ConfigError, "still git-crypt encrypted"
+            ):
+                render.sync_runtime_secrets(source, destination)
+
     def prepare(self, profile: str) -> tuple[Path, Path, tempfile.TemporaryDirectory]:
         temp = tempfile.TemporaryDirectory()
         root = Path(temp.name)
@@ -42,8 +55,11 @@ class RenderTests(unittest.TestCase):
 
         text = (DEPLOY_DIR / "instances/home.toml").read_text(encoding="utf-8")
         text = text.replace(
-            'secrets = "/media/liou/project/me/nix-tools/deploy/secrets"',
-            f'secrets = "{secrets}"',
+            'secret_source = "/media/liou/project/me/nix-tools/deploy/secrets"',
+            f'secret_source = "{secrets}"',
+        ).replace(
+            'secrets = "/home/liou/.config/dufs-plus/secrets"',
+            f'secrets = "{root / "runtime-secrets"}"',
         )
         if profile == "vps-direct":
             text = text.replace(
@@ -149,9 +165,31 @@ class RenderTests(unittest.TestCase):
         )
         self.assertIn("--metadata-dir /data/metadata", instance)
         self.assertTrue((output / "ttyd-compose.service").is_file())
+        terminal_unit = (output / "ttyd-compose.service").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("Environment=HOME=/home/liou", terminal_unit)
+        self.assertIn("ExecStart=/home/liou/.nix-profile/bin/ttyd", terminal_unit)
+        self.assertNotIn("/media/liou/.nix-profile", terminal_unit)
         unit = (output / "dufs-plus-compose.service").read_text(encoding="utf-8")
         self.assertIn("Restart=on-failure", unit)
         self.assertIn("RestartSec=15s", unit)
+        self.assertIn(f"WorkingDirectory={output}", unit)
+        self.assertIn(f"ExecStart={output / 'compose-control'} up -d", unit)
+        self.assertNotIn(str(DEPLOY_DIR), unit)
+        self.assertTrue((output / "compose.yaml").is_file())
+        self.assertTrue((output / "compose.home-ipv6-cdn.yaml").is_file())
+        self.assertTrue((output / "haproxy.readonly.cfg").is_file())
+        self.assertTrue((output / "compose-control").is_file())
+        self.assertEqual((output / "compose-control").stat().st_mode & 0o777, 0o700)
+        runtime_secret = Path(temp.name) / "runtime-secrets/authelia_jwt_secret"
+        self.assertEqual(
+            runtime_secret.read_text(encoding="utf-8"),
+            "jwt-secret-long-enough-for-test",
+        )
+        self.assertEqual(runtime_secret.stat().st_mode & 0o777, 0o600)
+        self.assertIn(str(output / "compose.yaml"), files)
+        self.assertNotIn(str(DEPLOY_DIR / "compose.yaml"), files)
 
     def test_cors_origins_are_explicit_and_shell_quoted(self) -> None:
         config, output, temp = self.prepare("home-ipv6-cdn")

@@ -40,11 +40,18 @@ Like the additional home read-only instance, it rejects Tag API mutations and
 mounts the served workspace read-only. Its separate SQLite database and
 thumbnail metadata directory remain writable for internal indexing and caches.
 
-Runtime databases remain outside Git. Home runtime secrets are encrypted in Git
-with git-crypt and are decrypted in the working tree on the deployment host.
+Runtime databases remain outside Git. Home secret sources are encrypted in Git
+with git-crypt and decrypted in the deployment checkout. Each render securely
+materializes them into `~/.config/dufs-plus/secrets` with directory mode `0700`
+and file mode `0600`. Generated configuration, private Compose assets, and the
+standalone Compose control script live under
+`~/.local/share/dufs-plus/runtime/home`. Containers and the installed systemd
+unit therefore do not depend on the Git checkout after deployment.
+
 `manage.py preflight` removes group/world access from locally owned regular
-secret files before validating them; it rejects symlinks and paths owned by a
-different user. The home instance reuses the existing runtime directories. The
+runtime secret files before validating them; it rejects symlinks and paths owned
+by a different user. The encrypted repository files remain the recoverable
+source of truth. The home instance reuses the existing runtime directories. The
 Aliyun instance reuses:
 
 - `/root/nix-tools/dufs_data`
@@ -62,6 +69,10 @@ python3 deploy/scripts/manage.py backup
 python3 deploy/scripts/manage.py smoke \
   --base-url https://nas.wttliou.top:5009 --resolve-address 127.0.0.1
 ```
+
+The default generated-output directory is
+`~/.local/share/dufs-plus/runtime/home`. Passing `--output` remains supported for
+isolated tests and remote profiles.
 
 For Aliyun, pass its config and generated-output directory:
 

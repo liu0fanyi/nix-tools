@@ -42,8 +42,9 @@ python3 deploy/scripts/release-apps.py all
 ```
 
 See [deploy/README.md](deploy/README.md) for instance configuration, bootstrap,
-backup, validation, and release commands. Runtime secrets are supplied outside
-Git under `deploy/secrets/`.
+backup, validation, and release commands. Secret sources under `deploy/secrets/`
+are encrypted in Git with git-crypt and materialized into a checkout-independent
+runtime directory during deployment.
 
 For user services to start without an interactive login:
 

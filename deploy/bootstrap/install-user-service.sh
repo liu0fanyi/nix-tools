@@ -4,7 +4,7 @@ set -euo pipefail
 
 deploy_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 config="${1:-$deploy_dir/instances/home.toml}"
-output="${2:-$deploy_dir/.generated/home}"
+output="${2:-${XDG_DATA_HOME:-$HOME/.local/share}/dufs-plus/runtime/home}"
 unit_source="$output/dufs-plus-compose.service"
 unit_dir="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
 unit_target="$unit_dir/dufs-plus-compose.service"

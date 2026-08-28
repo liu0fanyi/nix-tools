@@ -28,8 +28,8 @@ python3 deploy/scripts/release-apps.py all
 ```
 
 实例配置、首次安装、备份、验证和发布命令见
-[deploy/README.md](deploy/README.md)。运行时 secret 不进入 Git，单独存放在
-`deploy/secrets/`。
+[deploy/README.md](deploy/README.md)。`deploy/secrets/` 中的 secret 源通过 git-crypt
+以密文进入 Git，部署时再生成与仓库位置无关的运行时副本。
 
 需要用户服务在未登录时启动，可启用 linger：
 

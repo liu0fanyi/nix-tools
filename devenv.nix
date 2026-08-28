@@ -21,7 +21,7 @@
 
   enterShell = ''
     echo "nix-tools devenv: python3"
-    echo "  manage  → python3 deploy/scripts/manage.py (home 实例, output 默认 deploy/.generated/home)"
+    echo "  manage  → python3 deploy/scripts/manage.py (home 实例, output 默认 ~/.local/share/dufs-plus/runtime/home)"
     echo "  release → python3 deploy/scripts/release-apps.py"
   '';
 }

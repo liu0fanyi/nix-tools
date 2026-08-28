@@ -27,7 +27,9 @@ import render as renderer
 
 DEPLOY_DIR = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = DEPLOY_DIR / "instances/home.toml"
-DEFAULT_OUTPUT = DEPLOY_DIR / ".generated/home"
+DEFAULT_OUTPUT = Path(
+    os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share")
+) / "dufs-plus/runtime/home"
 DEFAULT_STATE_DIR = Path(
     os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state")
 ) / "dufs-plus"
@@ -262,7 +264,7 @@ def preflight(config_path: Path, output: Path) -> int:
                 "[paths].terminal_socket_dir must match the systemd user runtime "
                 f"directory: {expected_socket_dir}"
             )
-        home_dir = Path(paths["terminal_workspace"]).parents[1]
+        home_dir = Path(paths["host_home"])
         for command in ("ttyd", "zellij", "bash"):
             binary = home_dir / ".nix-profile/bin" / command
             if not binary.exists():
