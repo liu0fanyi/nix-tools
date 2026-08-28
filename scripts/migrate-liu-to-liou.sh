@@ -68,7 +68,7 @@ schedule_migration() {
     --unit=migrate-liu-to-liou \
     --collect \
     --on-active=5s \
-    "$script_path" --perform
+    /run/current-system/sw/bin/bash "$script_path" --perform
 
   echo "Migration scheduled. This session will disconnect in about five seconds."
   echo "The machine will reboot into the new configuration when the rename succeeds."
