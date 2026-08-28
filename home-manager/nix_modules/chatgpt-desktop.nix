@@ -30,6 +30,11 @@ let
     '';
   };
 
+  # Prefer native Wayland so Niri can apply per-output fractional scaling.
+  chatgptWayland = pkgs.writeShellScript "chatgpt-wayland" ''
+    exec ${chatgptFiles}/bin/chatgpt --ozone-platform=wayland "$@"
+  '';
+
   chatgptFhs = pkgs.buildFHSEnv {
     name = "chatgpt";
     targetPkgs = p: [
@@ -83,7 +88,7 @@ let
       p.zlib
       p.zstd
     ];
-    runScript = "${chatgptFiles}/bin/chatgpt";
+    runScript = chatgptWayland;
   };
 
   desktopAssets = pkgs.stdenvNoCC.mkDerivation {

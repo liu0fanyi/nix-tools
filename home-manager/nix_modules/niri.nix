@@ -50,6 +50,22 @@ let
     + ''
       // ===== homebox 追加（参考官方 wiki 与社区配置）=====
 
+      // 双屏输出：Dell 主屏保持原生分辨率并放大界面，右侧 Philips 竖屏。
+      // 使用显示器 EDID 名称而非接口名，避免换接口或多 GPU 时名称漂移。
+      output "Dell Inc. DELL U2520D B465923" {
+          mode "2560x1440@59.951"
+          scale 1.25
+          transform "normal"
+          position x=0 y=0
+      }
+
+      output "Philips Consumer Electronics Company Philips 241E AU51048025954" {
+          mode "1920x1080@60.000"
+          scale 1
+          transform "90"
+          position x=2048 y=0
+      }
+
       // 命名工作区：仅 1-6（waybar 按数字显示，niri 0.1.6+ 声明式）
       workspace "1"
       workspace "2"
@@ -91,6 +107,8 @@ in
     home.packages =
       lib.optionals isNixOS [
         fanScript
+        # Wayland 图形化显示器布局、缩放与旋转工具（Niri 支持其输出协议）。
+        pkgs.wdisplays
         # Niri starts this on demand and exports DISPLAY for X11-only apps
         # such as the official Linux WeChat client.
         pkgs.xwayland-satellite

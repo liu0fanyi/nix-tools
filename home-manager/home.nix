@@ -55,6 +55,8 @@
 
     fzf
     bat
+    # 提供 bwrap；供 Codex 等工具创建轻量级 Linux 沙箱。
+    bubblewrap
     dust
     duf
     ripgrep
