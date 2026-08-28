@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import os
 import shlex
 import subprocess
 import sys
@@ -15,6 +16,7 @@ from pathlib import Path
 
 NIX_TOOLS = Path(__file__).resolve().parents[2]
 WORKSPACE = NIX_TOOLS.parent
+PROJECT_ROOT = Path(os.environ.get("DUFS_PROJECT_ROOT", "/media/liou/project/me"))
 HOME_CONFIG = NIX_TOOLS / "deploy/instances/home.toml"
 HOME_OUTPUT = NIX_TOOLS / "deploy/.generated/home"
 MANAGE = NIX_TOOLS / "deploy/scripts/manage.py"
@@ -303,7 +305,7 @@ def main() -> int:
     )
     parser.add_argument("--remote", default="root@47.93.153.102")
     parser.add_argument("--remote-root", default="/root/nix-tools")
-    parser.add_argument("--frontend-source", type=Path, default=WORKSPACE / "dufs-plus")
+    parser.add_argument("--frontend-source", type=Path, default=PROJECT_ROOT / "dufs-plus")
     parser.add_argument("--tag-source", type=Path, default=WORKSPACE / "tag-all")
     parser.add_argument("--skip-bevy", action="store_true")
     parser.add_argument("--skip-smoke", action="store_true")
