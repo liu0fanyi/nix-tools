@@ -33,21 +33,33 @@ let
   # 移除官方默认的 numlock 启动项（NumLock 状态应完全由键盘控制）。
   niriConfig =
     builtins.replaceStrings
-      [
-        "binds {"
-        "    Mod+7 { focus-workspace 7; }\n    Mod+8 { focus-workspace 8; }\n    Mod+9 { focus-workspace 9; }\n"
-        "        // Enable numlock on startup, omitting this setting disables it.\n        numlock\n"
-      ]
-      [
+      (
+        [
+          "binds {"
+          "    Mod+7 { focus-workspace 7; }\n    Mod+8 { focus-workspace 8; }\n    Mod+9 { focus-workspace 9; }\n"
+          "        // Enable numlock on startup, omitting this setting disables it.\n        numlock\n"
+        ]
+        ++ lib.optional isLiuBigpc "input {"
+      )
+      (
+        [
+          ''
+            binds {
+                // ===== homebox 追加键位 =====
+                // WiFi 选择（fuzzel 界面）
+                Mod+N { spawn "networkmanager_dmenu" "--dmenu" "fuzzel"; }
+          ''
+          ""
+          ""
+        ]
+        ++ lib.optional isLiuBigpc ''
+          input {
+              // 数位板跟随当前获得焦点的输出，避免绝对坐标铺满双屏。
+              tablet {
+                  map-to-focused-output
+              }
         ''
-          binds {
-              // ===== homebox 追加键位 =====
-              // WiFi 选择（fuzzel 界面）
-              Mod+N { spawn "networkmanager_dmenu" "--dmenu" "fuzzel"; }
-        ''
-        ""
-        ""
-      ]
+      )
       (builtins.readFile ./default-config.kdl)
     + lib.optionalString isLiuBigpc ''
       // ===== liu-bigpc 双屏输出 =====
