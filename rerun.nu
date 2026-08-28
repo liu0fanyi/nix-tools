@@ -5,6 +5,8 @@
 #   nu rerun.nu --home-target liou      # 非 NixOS 部署指定的 homeConfigurations
 #   nu rerun.nu --nixos [用户名]        # 强制 NixOS 系统 switch（与系统类型不一致会报错）
 #   nu rerun.nu --no-nixos [用户名]     # 强制 standalone home-manager switch（同上）
+#   nu rerun.nu liou --host liu-bigpc --boot
+#                                        # 仅设置下次启动，不热切换当前系统
 #
 # 说明:
 #   - 自动读取 /etc/os-release 判断系统：ID=nixos → NixOS 主机。
@@ -25,6 +27,7 @@ def main [
     --no-nixos # 强制 standalone home-manager switch（覆盖自动检测）
     --host: string = "homebox" # NixOS 配置名（flake 里的 nixosConfigurations.<host>）
     --home-target: string = "liou-nuc" # standalone 配置名
+    --boot # NixOS only：构建并设置下次启动，不立即切换当前系统
 ] {
     # 自动检测：/etc/os-release 中 ID=nixos 即为 NixOS 系统
     let os_id = (open /etc/os-release | lines | where ($it | str starts-with "ID=") | first | str replace "ID=" "" | str trim)
@@ -52,16 +55,27 @@ def main [
         }
     }
 
+    if ($boot and (not $use_nixos)) {
+        error make { msg: "--boot 仅适用于 NixOS system 部署" }
+    }
+
     if $use_nixos {
-        print $"(ansi green)NixOS system switch: flake#($host)(ansi reset)"
+        let action = if $boot { "boot" } else { "switch" }
+        print $"(ansi green)NixOS system ($action): flake#($host)(ansi reset)"
         # 需要 root：nixos-rebuild 最后要把新系统链接到 /nix/var/nix/profiles/system
         # 用绝对 flake 路径（sudo 可能改变 cwd/环境）；inputs 更新应单独执行
         # `nix flake update`，普通 switch 保持 flake.lock 的可复现性。
-        sudo nixos-rebuild switch --flake $"($env.PWD)#($host)"
+        sudo nixos-rebuild $action --flake $"($env.PWD)#($host)"
     } else {
         # CLI 与模块都来自当前 flake.lock 中的同一个 Home Manager input。
         print $"(ansi green)Deploying Home Manager target: ($home_target) - standalone(ansi reset)"
         nix run .#home-manager -- switch --flake $".#($home_target)" -b backup
+    }
+
+    if ($use_nixos and $boot) {
+        print $"(ansi yellow)✓ 已设置 flake#($host) 为下次启动配置；当前系统尚未热切换。(ansi reset)"
+        print "  确认账户迁移等启动前步骤完成后再重启。"
+        return
     }
 
     # ── 部署后自检：home-manager 是否真正更新到当前 git 状态 ──
