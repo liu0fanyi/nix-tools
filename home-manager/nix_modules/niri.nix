@@ -1,7 +1,9 @@
-{ config, pkgs, lib, inputs, isNixOS ? false, ... }:
+{ config, pkgs, lib, inputs, isNixOS ? false, osConfig ? null, ... }:
 
 let
   cfg = config.features.niri;
+  isLiuBigpc =
+    isNixOS && osConfig != null && osConfig.networking.hostName == "liu-bigpc";
   nixGL = inputs.nix-gl.packages.${pkgs.stdenv.hostPlatform.system}.nixGLDefault;
   niriPackage = inputs.niri.packages.${pkgs.stdenv.hostPlatform.system}.niri;
 
@@ -47,14 +49,14 @@ let
         ""
       ]
       (builtins.readFile ./default-config.kdl)
-    + ''
-      // ===== homebox 追加（参考官方 wiki 与社区配置）=====
+    + lib.optionalString isLiuBigpc ''
+      // ===== liu-bigpc 双屏输出 =====
 
-      // 双屏输出：Dell 主屏保持原生分辨率并放大界面，右侧 Philips 竖屏。
+      // Dell 主屏保持原生分辨率并放大界面，右侧 Philips 竖屏。
       // 使用显示器 EDID 名称而非接口名，避免换接口或多 GPU 时名称漂移。
       output "Dell Inc. DELL U2520D B465923" {
           mode "2560x1440@59.951"
-          scale 1.25
+          scale 1.5
           transform "normal"
           position x=0 y=0
       }
@@ -63,8 +65,10 @@ let
           mode "1920x1080@60.000"
           scale 1
           transform "90"
-          position x=2048 y=0
       }
+    ''
+    + ''
+      // ===== homebox 追加（参考官方 wiki 与社区配置）=====
 
       // 命名工作区：仅 1-6（waybar 按数字显示，niri 0.1.6+ 声明式）
       workspace "1"

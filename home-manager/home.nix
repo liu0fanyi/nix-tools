@@ -98,9 +98,10 @@
     syncthing
     # yazi
     bottom
-  ]) ++ lib.optional isNixOS
-    # Codex 仅由 NixOS homebox 管理；standalone 主机（如 nuc）保留已有安装，
-    # 避免两个 codex 命令共享 ~/.codex 时发生版本和 PATH 冲突。
+  ])
+  ++ lib.optional isNixOS
+    # Codex 仅由 NixOS 管理；standalone 主机（如 nuc）保留已有安装，避免两个
+    # codex 命令共享 ~/.codex 时发生版本和 PATH 冲突。
     inputs.codex-cli-nix.packages.${pkgs.stdenv.hostPlatform.system}.codex;
   programs.yazi = {
     enable = true;

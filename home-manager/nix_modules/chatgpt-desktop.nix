@@ -30,9 +30,13 @@ let
     '';
   };
 
-  # Prefer native Wayland so Niri can apply per-output fractional scaling.
-  chatgptWayland = pkgs.writeShellScript "chatgpt-wayland" ''
-    exec ${chatgptFiles}/bin/chatgpt --ozone-platform=wayland "$@"
+  # Prefer native Wayland for per-output scaling, while retaining X11 support
+  # for standalone Home Manager profiles launched outside a Wayland session.
+  chatgptLauncher = pkgs.writeShellScript "chatgpt-launcher" ''
+    if [ -n "''${WAYLAND_DISPLAY:-}" ]; then
+      exec ${chatgptFiles}/bin/chatgpt --ozone-platform=wayland "$@"
+    fi
+    exec ${chatgptFiles}/bin/chatgpt "$@"
   '';
 
   chatgptFhs = pkgs.buildFHSEnv {
@@ -88,7 +92,7 @@ let
       p.zlib
       p.zstd
     ];
-    runScript = chatgptWayland;
+    runScript = chatgptLauncher;
   };
 
   desktopAssets = pkgs.stdenvNoCC.mkDerivation {
