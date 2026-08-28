@@ -64,19 +64,20 @@ let
     + lib.optionalString isLiuBigpc ''
       // ===== liu-bigpc 双屏输出 =====
 
-      // Dell 主屏保持原生分辨率并放大界面，右侧 Philips 竖屏。
+      // 左侧 Philips 竖屏，右侧 Dell 主屏保持原生分辨率并放大界面。
       // 使用显示器 EDID 名称而非接口名，避免换接口或多 GPU 时名称漂移。
       output "Dell Inc. DELL U2520D B465923" {
           mode "2560x1440@59.951"
           scale 1.5
           transform "normal"
-          position x=0 y=0
+          position x=1080 y=0
       }
 
       output "Philips Consumer Electronics Company Philips 241E AU51048025954" {
           mode "1920x1080@60.000"
           scale 1
           transform "90"
+          position x=0 y=0
       }
     ''
     + ''
