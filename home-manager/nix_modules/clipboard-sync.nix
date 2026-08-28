@@ -31,7 +31,8 @@
       fi
       return 1
     }
-    install_key "$HOME/project/nix-tools/secrets/clipboard-sync/shared-key" || \
+    install_key "/media/liou/project/me/nix-tools/secrets/clipboard-sync/shared-key" || \
+      install_key "$HOME/project/nix-tools/secrets/clipboard-sync/shared-key" || \
       install_key "$HOME/dufs-lan/project/nix-tools/secrets/clipboard-sync/shared-key" || \
       echo "clipboard-sync: authentication key not found; service will not start" >&2
   '';

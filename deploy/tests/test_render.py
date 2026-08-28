@@ -42,7 +42,7 @@ class RenderTests(unittest.TestCase):
 
         text = (DEPLOY_DIR / "instances/home.toml").read_text(encoding="utf-8")
         text = text.replace(
-            'secrets = "/home/liou/dufs-lan/project/nix-tools/deploy/secrets"',
+            'secrets = "/media/liou/project/me/nix-tools/deploy/secrets"',
             f'secrets = "{secrets}"',
         )
         if profile == "vps-direct":

@@ -37,7 +37,7 @@ caddy_data = "/home/liou/.local/share/caddy"
 caddy_config = "/home/liou/.local/share/caddy-container-config"
 terminal_workspace = "/media/liou/project/me"
 terminal_socket_dir = "/run/user/1000/ttyd"
-secrets = "/home/liou/dufs-lan/project/nix-tools/deploy/secrets"
+secrets = "/media/liou/project/me/nix-tools/deploy/secrets"
 
 [ports]
 lan = 5006
