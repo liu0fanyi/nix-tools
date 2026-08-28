@@ -88,10 +88,17 @@ in
   config = lib.mkIf cfg.enable {
     # NixOS 上由系统模块 programs.niri 提供 niri 包与登录会话，
     # home 这里只负责配置文件；非 NixOS 才装包和 nixGL 包装。
-    home.packages = lib.optional isNixOS fanScript ++ lib.optionals (!isNixOS) [
-      niriPackage
-      niri-session-wrapped
-    ];
+    home.packages =
+      lib.optionals isNixOS [
+        fanScript
+        # Niri starts this on demand and exports DISPLAY for X11-only apps
+        # such as the official Linux WeChat client.
+        pkgs.xwayland-satellite
+      ]
+      ++ lib.optionals (!isNixOS) [
+        niriPackage
+        niri-session-wrapped
+      ];
 
     # 配置 = 官方默认（全部键位）+ 追加段
     xdg.configFile."niri/config.kdl".text = niriConfig;
