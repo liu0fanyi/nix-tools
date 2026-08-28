@@ -86,6 +86,7 @@ GEODATA_CACHE_DIR="${NIXOS_ANYWHERE_GEODATA_CACHE_DIR:-${XDG_CACHE_HOME:-$HOME/.
 GEOSITE_URL="https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat"
 GEOIP_URL="https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.dat"
 ssh_options=(
+  -F /dev/null
   -o BatchMode=yes
   -o ConnectTimeout=10
   -o StrictHostKeyChecking=no

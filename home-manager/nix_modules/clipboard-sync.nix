@@ -22,7 +22,7 @@
   # 共享密钥仍只在 activation 运行时从已解锁仓库复制，绝不进入 Nix store。
   home.activation.clipboardSyncKey = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     install_key() {
-      if [ -f "$1" ]; then
+      if [ -f "$1" ] && [ "$(wc -c < "$1")" -eq 32 ]; then
         mkdir -p "$HOME/.config/clipboard-sync"
         chmod 700 "$HOME/.config/clipboard-sync"
         install -m 600 "$1" "$HOME/.config/clipboard-sync/shared-key"
@@ -33,6 +33,7 @@
     }
     install_key "/media/liou/project/me/nix-tools/secrets/clipboard-sync/shared-key" || \
       install_key "$HOME/project/nix-tools/secrets/clipboard-sync/shared-key" || \
+      install_key "$HOME/nix-tools/secrets/clipboard-sync/shared-key" || \
       install_key "$HOME/dufs-lan/project/nix-tools/secrets/clipboard-sync/shared-key" || \
       echo "clipboard-sync: authentication key not found; service will not start" >&2
   '';
