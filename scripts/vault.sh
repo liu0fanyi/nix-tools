@@ -22,7 +22,7 @@
 #
 # 安全说明:
 #   - 必须在本机交互式终端运行（防 SSH 管道/CI 泄露主密码）
-#   - 主密码只由 keepassxc-cli 交互提示输入，不经过参数/环境变量
+#   - 主密码只读入一次并经 stdin 传给 keepassxc-cli，不经过参数/环境变量/磁盘
 #   - 导出到明文目录时自动设置 0700/0600 权限
 #   - 明文文件只放 ~/.config/secrets/（不入 Git，也不放回 Syncthing 同步目录）
 set -euo pipefail
@@ -63,9 +63,21 @@ if [[ "${1:-}" == "init" ]]; then
   exit 0
 fi
 
+# Read the database password once. Keep it only in this shell process; each
+# keepassxc-cli invocation receives it through stdin, never argv, env, or disk.
+read -r -s -p "KeePassXC database password: " vault_password
+printf '\n'
+trap 'unset vault_password' EXIT
+vault_cli() {
+  local command_name="$1"
+  shift
+  printf '%s\n' "$vault_password" |
+    keepassxc-cli "$command_name" --quiet "$@"
+}
+
 if [[ "${1:-}" == "list" && $# -eq 1 ]]; then
   echo "KeePassXC 库顶层组（↔ ~/.config/secrets/<组>/）："
-  keepassxc-cli ls "$vault_file" / 2>/dev/null | sed 's#/$##' | sed 's/^/  /'
+  vault_cli ls "$vault_file" / 2>/dev/null | sed 's#/$##' | sed 's/^/  /'
   exit 0
 fi
 
@@ -77,12 +89,13 @@ fi
 }
 
 group_name="$1"
+group_path="/${group_name#/}"
 action="$2"
 secrets_dir="$base_dir/$group_name"
 
 # 组是否存在（列出组下内容验证；不存在则报错并显示顶层组）
 group_exists() {
-  keepassxc-cli ls "$vault_file" "$group_name" >/dev/null 2>&1
+  vault_cli ls "$vault_file" "$group_path" >/dev/null 2>&1
 }
 
 case "$action" in
@@ -90,7 +103,7 @@ case "$action" in
     if ! group_exists; then
       echo "错误：库中不存在组 $group_name。" >&2
       echo "顶层组：" >&2
-      keepassxc-cli ls "$vault_file" / 2>/dev/null | sed 's#/$##' | sed 's/^/  /' >&2
+      vault_cli ls "$vault_file" / 2>/dev/null | sed 's#/$##' | sed 's/^/  /' >&2
       exit 1
     fi
     echo "组 $group_name 的条目及附件："
@@ -101,14 +114,14 @@ case "$action" in
         echo "  [子组] ${item%/}"
       else
         # 显示该条目的附件
-        atts="$(keepassxc-cli show --all "$vault_file" "$group_name/$item" 2>/dev/null \
+        atts="$(vault_cli show --all "$vault_file" "$group_path/$item" 2>/dev/null \
           | sed -n 's/^Attachments: //p')"
         echo "  $item"
         [[ -n "$atts" ]] && IFS=', ' read -r -a a <<< "$atts" && for x in "${a[@]}"; do
           [[ -n "$x" ]] && echo "      ↳ $x"
         done
       fi
-    done < <(keepassxc-cli ls "$vault_file" "$group_name" 2>/dev/null)
+    done < <(vault_cli ls "$vault_file" "$group_path" 2>/dev/null)
     ;;
   import)
     umask 077
@@ -121,20 +134,20 @@ case "$action" in
       exit 1
     }
     # 确保组存在
-    group_exists || keepassxc-cli mkdir "$vault_file" "$group_name" 2>/dev/null || true
+    group_exists || vault_cli mkdir "$vault_file" "$group_path" 2>/dev/null || true
     imported=0
     for f in "${files[@]}"; do
       [[ -f "$f" ]] || continue
       name="$(basename "$f")"
-      entry_path="$group_name/$name"
+      entry_path="$group_path/$name"
       # 条目不存在则创建（--no-password 是数据库访问标志，不是让条目密码为空）
-      if ! keepassxc-cli show "$vault_file" "$entry_path" >/dev/null 2>&1; then
-        keepassxc-cli add \
+      if ! vault_cli show "$vault_file" "$entry_path" >/dev/null 2>&1; then
+        vault_cli add \
           --notes "Imported by vault.sh from $secrets_dir" \
           "$vault_file" "$entry_path"
       fi
       echo "导入 $name → $entry_path ..."
-      keepassxc-cli attachment-import --force \
+      vault_cli attachment-import --force \
         "$vault_file" "$entry_path" "$name" "$f"
       imported=$((imported + 1))
     done
@@ -151,21 +164,21 @@ case "$action" in
     # 遍历组下条目（不带斜杠的行 = 条目）
     while IFS= read -r item; do
       [[ -z "$item" || "$item" == */ ]] && continue
-      atts="$(keepassxc-cli show --all "$vault_file" "$group_name/$item" 2>/dev/null \
+      atts="$(vault_cli show --all "$vault_file" "$group_path/$item" 2>/dev/null \
         | sed -n 's/^Attachments: //p')"
       [[ -z "$atts" ]] && continue
       IFS=', ' read -r -a attach_names <<< "$atts"
       for f in "${attach_names[@]}"; do
         [[ -n "$f" ]] || continue
         echo "导出 $f ..."
-        keepassxc-cli attachment-export \
-          "$vault_file" "$group_name/$item" "$f" "$secrets_dir/.$f.tmp" 2>/dev/null \
+        vault_cli attachment-export \
+          "$vault_file" "$group_path/$item" "$f" "$secrets_dir/.$f.tmp" 2>/dev/null \
           && mv -f "$secrets_dir/.$f.tmp" "$secrets_dir/$f"
         chmod 600 "$secrets_dir/$f"
         rm -f "$secrets_dir/.$f.tmp"
         exported=$((exported + 1))
       done
-    done < <(keepassxc-cli ls "$vault_file" "$group_name" 2>/dev/null)
+    done < <(vault_cli ls "$vault_file" "$group_path" 2>/dev/null)
     if (( exported == 0 )); then
       echo "错误：组 $group_name 下没有找到任何附件（import 可能未成功）。" >&2
       exit 1
