@@ -161,23 +161,22 @@ case "$action" in
       exit 1
     fi
     exported=0
-    # 遍历组下条目（不带斜杠的行 = 条目）
+    # vault.sh imports each file as an entry with an attachment of the same name.
+    # KeePassXC 2.7 does not expose attachment names through `show --all`, so
+    # export by that stable convention and skip unrelated entries safely.
     while IFS= read -r item; do
       [[ -z "$item" || "$item" == */ ]] && continue
-      atts="$(vault_cli show --all "$vault_file" "$group_path/$item" 2>/dev/null \
-        | sed -n 's/^Attachments: //p')"
-      [[ -z "$atts" ]] && continue
-      IFS=', ' read -r -a attach_names <<< "$atts"
-      for f in "${attach_names[@]}"; do
-        [[ -n "$f" ]] || continue
-        echo "导出 $f ..."
-        vault_cli attachment-export \
-          "$vault_file" "$group_path/$item" "$f" "$secrets_dir/.$f.tmp" 2>/dev/null \
-          && mv -f "$secrets_dir/.$f.tmp" "$secrets_dir/$f"
-        chmod 600 "$secrets_dir/$f"
-        rm -f "$secrets_dir/.$f.tmp"
+      tmp="$secrets_dir/.$item.tmp"
+      echo "导出 $item ..."
+      if vault_cli attachment-export \
+        "$vault_file" "$group_path/$item" "$item" "$tmp" 2>/dev/null; then
+        mv -f "$tmp" "$secrets_dir/$item"
+        chmod 600 "$secrets_dir/$item"
         exported=$((exported + 1))
-      done
+      else
+        rm -f "$tmp"
+        echo "跳过 $item：没有同名附件" >&2
+      fi
     done < <(vault_cli ls "$vault_file" "$group_path" 2>/dev/null)
     if (( exported == 0 )); then
       echo "错误：组 $group_name 下没有找到任何附件（import 可能未成功）。" >&2
