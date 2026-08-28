@@ -161,21 +161,23 @@ case "$action" in
       exit 1
     fi
     exported=0
-    # vault.sh imports each file as an entry with an attachment of the same name.
-    # KeePassXC 2.7 does not expose attachment names through `show --all`, so
-    # export by that stable convention and skip unrelated entries safely.
+    # vault.sh normally uses matching entry/attachment names; preserve the legacy
+    # git-crypt-key → nix-tools-git-crypt.key mapping used by this vault.
+    # Skip password-only entries such as cachix-ci-token safely.
     while IFS= read -r item; do
       [[ -z "$item" || "$item" == */ ]] && continue
-      tmp="$secrets_dir/.$item.tmp"
-      echo "导出 $item ..."
+      attachment="$item"
+      [ "$item" = git-crypt-key ] && attachment=nix-tools-git-crypt.key
+      tmp="$secrets_dir/.$attachment.tmp"
+      echo "导出 $attachment ..."
       if vault_cli attachment-export \
-        "$vault_file" "$group_path/$item" "$item" "$tmp" 2>/dev/null; then
-        mv -f "$tmp" "$secrets_dir/$item"
-        chmod 600 "$secrets_dir/$item"
+        "$vault_file" "$group_path/$item" "$attachment" "$tmp" 2>/dev/null; then
+        mv -f "$tmp" "$secrets_dir/$attachment"
+        chmod 600 "$secrets_dir/$attachment"
         exported=$((exported + 1))
       else
         rm -f "$tmp"
-        echo "跳过 $item：没有同名附件" >&2
+        echo "跳过 $item：没有附件 $attachment" >&2
       fi
     done < <(vault_cli ls "$vault_file" "$group_path" 2>/dev/null)
     if (( exported == 0 )); then
