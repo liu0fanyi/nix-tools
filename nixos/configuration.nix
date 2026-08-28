@@ -198,7 +198,9 @@ in
   services.avahi = {
     enable = true;
     nssmdns4 = true; # 通过 NSS 让系统解析 IPv4 的 .local 域名
-    nssmdns6 = true; # IPv6 的 .local 域名（可选；部分网络只有 v4）
+    # nuc.local 只广播 IPv4；启用 IPv6 mDNS 会让 Zen 的 AAAA 查询
+    # 等待超时，无法及时回退到可用的 IPv4 地址。
+    nssmdns6 = false;
     publish = {
       enable = true; # 广播本机主机名，方便其他机器发现 homebox
       addresses = true;

@@ -71,6 +71,9 @@ let
       p.mesa
       p.nspr
       p.nss
+      # buildFHSEnv does not inherit NixOS' NSS modules. Without nssmdns,
+      # Codex remote SSH connections cannot resolve hosts such as nuc.local.
+      p.nssmdns
       p.pango
       p.pipewire
       p.stdenv.cc.cc.lib
