@@ -62,10 +62,12 @@ def main [
     if $use_nixos {
         let action = if $boot { "boot" } else { "switch" }
         print $"(ansi green)NixOS system ($action): flake#($host)(ansi reset)"
-        # 需要 root：nixos-rebuild 最后要把新系统链接到 /nix/var/nix/profiles/system
-        # 用绝对 flake 路径（sudo 可能改变 cwd/环境）；inputs 更新应单独执行
+        # 需要提权：nixos-rebuild 最后要把新系统链接到
+        # /nix/var/nix/profiles/system。inputs 更新应单独执行
         # `nix flake update`，普通 switch 保持 flake.lock 的可复现性。
-        sudo nixos-rebuild $action --flake $"($env.PWD)#($host)"
+        # 以当前用户完成 flake 求值和构建（可使用 ~/.ssh 访问私有 inputs），
+        # 只在写系统 profile 和激活配置时由 nixos-rebuild 提权。
+        nixos-rebuild $action --sudo --flake $"($env.PWD)#($host)"
     } else {
         # CLI 与模块都来自当前 flake.lock 中的同一个 Home Manager input。
         print $"(ansi green)Deploying Home Manager target: ($home_target) - standalone(ansi reset)"

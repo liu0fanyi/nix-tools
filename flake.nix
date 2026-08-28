@@ -39,7 +39,10 @@
     };
     # 独立应用 flake：其 CI 与本仓库消费完全相同的 package derivation，便于命中 Cachix。
     clipboard-sync-src = {
-      url = "git+ssh://git@github.com/liu0fanyi/clipboard-sync.git?ref=master";
+      # refs/ 只保存上游源码参考 submodules，不参与构建。显式启用
+      # export-ignore，避免不同 Git fetch 状态是否保留空 submodule 目录而
+      # 产生不同 NAR hash。
+      url = "git+ssh://git@github.com/liu0fanyi/clipboard-sync.git?ref=master&exportIgnore=1";
     };
   };
 
