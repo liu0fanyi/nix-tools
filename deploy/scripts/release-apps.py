@@ -306,7 +306,7 @@ def main() -> int:
     parser.add_argument("--remote", default="root@47.93.153.102")
     parser.add_argument("--remote-root", default="/root/nix-tools")
     parser.add_argument("--frontend-source", type=Path, default=PROJECT_ROOT / "dufs-plus")
-    parser.add_argument("--tag-source", type=Path, default=WORKSPACE / "tag-all")
+    parser.add_argument("--tag-source", type=Path, default=PROJECT_ROOT / "tag-all")
     parser.add_argument("--skip-bevy", action="store_true")
     parser.add_argument("--skip-smoke", action="store_true")
     args = parser.parse_args()
