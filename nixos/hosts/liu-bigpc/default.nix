@@ -9,10 +9,12 @@
   # control the NixOS package version supplied by flake.lock.
   system.stateVersion = lib.mkForce "24.11";
 
-  # The existing ESP already contains systemd-boot and Windows Boot Manager.
+  # The existing ESP and firmware already contain systemd-boot and Windows
+  # Boot Manager entries. Update files on the ESP without rewriting firmware
+  # NVRAM; bootctl variable updates fail on this dual-boot machine with ESRCH.
   boot.loader.grub.enable = false;
   boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.efi.canTouchEfiVariables = false;
 
   # GTX 1650 (Turing), already proven with the old NixOS installation.
   services.xserver.videoDrivers = [ "nvidia" ];
