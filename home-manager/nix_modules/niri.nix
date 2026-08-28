@@ -68,7 +68,7 @@ let
       // 使用显示器 EDID 名称而非接口名，避免换接口或多 GPU 时名称漂移。
       output "Dell Inc. DELL U2520D B465923" {
           mode "2560x1440@59.951"
-          scale 1.5
+          scale ${toString cfg.primaryOutputScale}
           transform "normal"
           position x=1080 y=0
       }
@@ -109,6 +109,12 @@ let
 in
 {
   options.features.niri = {
+    primaryOutputScale = lib.mkOption {
+      type = lib.types.float;
+      default = if isLiuBigpc then 1.5 else 1.0;
+      description = "Scale factor shared by the primary Niri output and XWayland application wrappers";
+    };
+
     enable = lib.mkOption {
       type = lib.types.bool;
       # 仅在 NixOS 默认启用（非 NixOS 分支需要 nixGL，其求值含 impure

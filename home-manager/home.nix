@@ -81,9 +81,17 @@
     ## deploy/ 脚本（manage.py / release-apps.py）运行依赖
     python3
     localsend
-    # Official universal Linux WeChat package maintained by nixpkgs. It follows
-    # this repository's locked rolling nixpkgs input; no local FHS wrapper.
-    wechat
+    # 微信主窗口目前走 XWayland，不会自动继承 Niri 的输出缩放。保留 nixpkgs
+    # 提供的完整包（包括 desktop entry），只给启动程序注入同一份主屏缩放值。
+    (symlinkJoin {
+      name = "wechat-scaled";
+      paths = [ wechat ];
+      nativeBuildInputs = [ makeWrapper ];
+      postBuild = ''
+        wrapProgram "$out/bin/wechat" \
+          --set QT_SCALE_FACTOR ${toString config.features.niri.primaryOutputScale}
+      '';
+    })
     # GitHub CLI（创建/推送仓库、管理 issues 等）
     gh
     ## 解压工具（zip/7z/rar 等通用格式；tar/gzip/xz 系统已有）

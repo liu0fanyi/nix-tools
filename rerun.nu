@@ -67,6 +67,7 @@ def main [
     let clipboard_cache = "https://liu0fanyi-nix.cachix.org"
     let clipboard_attr = $"($env.PWD)#clipboard-sync.outPath"
     print $"(ansi cyan)Checking clipboard-sync binary cache...(ansi reset)"
+    print "  [1/3] Resolving store path..."
 
     let clipboard_eval = (nix eval --raw $clipboard_attr | complete)
     if $clipboard_eval.exit_code != 0 {
@@ -79,6 +80,7 @@ def main [
         error make { msg: "clipboard-sync store path 为空，停止部署" }
     }
 
+    print $"  [2/3] Verifying Cachix artifact: ($clipboard_path)"
     let cache_check = (nix path-info --refresh --store $clipboard_cache $clipboard_path | complete)
     if $cache_check.exit_code != 0 {
         error make {
@@ -86,6 +88,7 @@ def main [
         }
     }
 
+    print "  [3/3] Prefetching cached package..."
     let cache_copy = (nix copy --refresh --no-recursive --from $clipboard_cache $clipboard_path | complete)
     if $cache_copy.exit_code != 0 {
         error make {
