@@ -194,6 +194,7 @@ in
       "networkmanager"
       "video"
       "input"
+      "dialout"
     ];
     # 首次安装时的初始密码（仅全新创建用户时生效，用于图形登录；SSH 仍只走密钥）。
     # 已存在的用户不受影响——在这台机器上登录后请用 passwd 修改密码。
