@@ -78,6 +78,8 @@
 
     ffmpeg
     devenv
+    # 轻量级 Word 文档查看与编辑器（支持 .docx）。
+    abiword
     ## deploy/ 脚本（manage.py / release-apps.py）运行依赖
     python3
     localsend
