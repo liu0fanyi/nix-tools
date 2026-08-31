@@ -845,7 +845,12 @@ def install_runtime_compose_assets(
     if table(config, "features")["readonly"]:
         destination = output / "haproxy.readonly.cfg"
         shutil.copyfile(deploy_dir / destination.name, destination)
-        destination.chmod(0o600)
+        # The official HAProxy image runs as uid 99 rather than root. A
+        # rootless bind mount of a host-owned 0600 file is therefore
+        # unreadable inside the container and makes readonly-gateway restart
+        # forever. This file contains routing only (no credentials), so keep
+        # private runtime assets at 0600 but make this one config readable.
+        destination.chmod(0o644)
     return [output / name for name in names]
 
 

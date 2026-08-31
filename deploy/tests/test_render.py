@@ -180,6 +180,10 @@ class RenderTests(unittest.TestCase):
         self.assertTrue((output / "compose.yaml").is_file())
         self.assertTrue((output / "compose.home-ipv6-cdn.yaml").is_file())
         self.assertTrue((output / "haproxy.readonly.cfg").is_file())
+        self.assertEqual(
+            (output / "haproxy.readonly.cfg").stat().st_mode & 0o777,
+            0o644,
+        )
         self.assertTrue((output / "compose-control").is_file())
         self.assertEqual((output / "compose-control").stat().st_mode & 0o777, 0o700)
         runtime_secret = Path(temp.name) / "runtime-secrets/authelia_jwt_secret"

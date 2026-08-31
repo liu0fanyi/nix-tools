@@ -47,6 +47,9 @@ and file mode `0600`. Generated configuration, private Compose assets, and the
 standalone Compose control script live under
 `~/.local/share/dufs-plus/runtime/home`. Containers and the installed systemd
 unit therefore do not depend on the Git checkout after deployment.
+Private generated assets remain mode `0600`. The credential-free
+`haproxy.readonly.cfg` is intentionally mode `0644`, because the official
+HAProxy image runs as a non-root user and must read this bind-mounted file.
 
 `manage.py preflight` removes group/world access from locally owned regular
 runtime secret files before validating them; it rejects symlinks and paths owned
