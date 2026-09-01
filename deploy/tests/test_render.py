@@ -136,6 +136,7 @@ class RenderTests(unittest.TestCase):
         )
         self.assertIn("handle /tag-api/v1/device-enrollments*", caddy)
         self.assertIn("handle /tag-api/v1/device-tokens*", caddy)
+        self.assertIn("handle /tag-api/v1/writing-projects*", caddy)
         self.assertIn("uri strip_prefix /tag-api", caddy)
         self.assertIn("header_up X-Dufs-Device-Api 1", caddy)
         self.assertIn("header_up X-Dufs-Device-Provisioning 1", caddy)

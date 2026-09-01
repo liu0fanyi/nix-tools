@@ -586,6 +586,13 @@ http://:{ports["lan"]} {{
                 header_up -X-Dufs-Device-Api
             }}
         }}
+        handle /tag-api/v1/writing-projects* {{
+            uri strip_prefix /tag-api
+            reverse_proxy tag-server:8081 {{
+                header_up X-Dufs-Device-Provisioning 1
+                header_up -X-Dufs-Device-Api
+            }}
+        }}
 
 {textwrap.indent(routes, "        ")}
     }}
@@ -656,6 +663,13 @@ https://{domains["public"]}:{ports["main_origin"]}, https://{domains["origin"]}:
         }}
     }}
     handle /tag-api/v1/device-tokens* {{
+        uri strip_prefix /tag-api
+        reverse_proxy tag-server:8081 {{
+            header_up X-Dufs-Device-Provisioning 1
+            header_up -X-Dufs-Device-Api
+        }}
+    }}
+    handle /tag-api/v1/writing-projects* {{
         uri strip_prefix /tag-api
         reverse_proxy tag-server:8081 {{
             header_up X-Dufs-Device-Provisioning 1
