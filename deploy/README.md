@@ -125,6 +125,14 @@ python3 -m unittest discover -s deploy/tests -p 'test_*.py'
 
 The Aliyun test runs its HTTP origin temporarily on local port 15080.
 
+## EdgeOne and Authelia
+
+The private `nas.wttliou.top` CDN path must authorize at the edge before reading
+shared cache objects. The deployed Edge Function source, console setup, cache
+purge procedure, validation commands, quota caveat, and safe rollback order are
+documented in
+[`docs/edgeone-authelia-edge-auth.md`](docs/edgeone-authelia-edge-auth.md).
+
 ## Releasing applications to both machines
 
 After the initial VPS installation, this command builds both applications once,
