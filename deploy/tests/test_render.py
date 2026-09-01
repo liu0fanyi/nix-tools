@@ -131,6 +131,12 @@ class RenderTests(unittest.TestCase):
             "uri replace /device-api/v1/writing/snapshots /v1/device/writing/snapshots",
             caddy,
         )
+        self.assertIn("@device_writing_status {", caddy)
+        self.assertIn("path /device-api/v1/writing/status/*", caddy)
+        self.assertIn(
+            "uri replace /device-api/v1/writing/status /v1/device/writing/status",
+            caddy,
+        )
         self.assertIn("handle /tag-api/device-sessions", caddy)
         self.assertIn("@device_enrollment {", caddy)
         self.assertIn(
