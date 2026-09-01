@@ -105,7 +105,27 @@ class RenderTests(unittest.TestCase):
         self.assertIn("method PUT", caddy)
         self.assertIn("path /device-api/v1/progress", caddy)
         self.assertIn("handle @device_progress_write", caddy)
+        self.assertIn("@device_transcription_upload {", caddy)
+        self.assertIn("method POST", caddy)
+        self.assertIn("path /device-api/v1/transcriptions", caddy)
+        self.assertIn("@device_transcription_read {", caddy)
+        self.assertIn("path /device-api/v1/transcriptions/*", caddy)
+        self.assertIn(
+            "uri replace /device-api/v1/transcriptions /v1/device/transcriptions",
+            caddy,
+        )
         self.assertIn("handle /tag-api/device-sessions", caddy)
+        self.assertIn("@device_enrollment {", caddy)
+        self.assertIn(
+            "path /device-api/v1/enrollments /device-api/v1/enrollments/*/claim",
+            caddy,
+        )
+        self.assertIn(
+            "uri replace /device-api/v1/enrollments /v1/device/enrollments",
+            caddy,
+        )
+        self.assertIn("handle /tag-api/v1/device-enrollments*", caddy)
+        self.assertIn("handle /tag-api/v1/device-tokens*", caddy)
         self.assertIn("uri strip_prefix /tag-api", caddy)
         self.assertIn("header_up X-Dufs-Device-Api 1", caddy)
         self.assertIn("header_up X-Dufs-Device-Provisioning 1", caddy)
@@ -164,6 +184,10 @@ class RenderTests(unittest.TestCase):
             instance,
         )
         self.assertIn("--metadata-dir /data/metadata", instance)
+        self.assertIn(
+            '"/home/liou/.local/share/whisper.cpp/models:/models:ro"',
+            instance,
+        )
         self.assertTrue((output / "ttyd-compose.service").is_file())
         terminal_unit = (output / "ttyd-compose.service").read_text(
             encoding="utf-8"

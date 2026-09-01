@@ -249,7 +249,7 @@ root * /srv/dist
 
 @html_entry {{
     method GET HEAD
-    path / /index.html /dist/bevy-sketch /dist/bevy-sketch/ /dist/bevy-sketch/index.html /dist/bevy-game/animation-editor /dist/bevy-game/animation-editor/ /dist/bevy-game/animation-editor/index.html /dist/bevy-game/galgame /dist/bevy-game/galgame/ /dist/bevy-game/galgame/index.html /dist/bevy-game/gallery-2d /dist/bevy-game/gallery-2d/ /dist/bevy-game/gallery-2d/index.html /dist/bevy-game/gallery-3d /dist/bevy-game/gallery-3d/ /dist/bevy-game/gallery-3d/index.html
+    path / /index.html /dist/transcriptions /dist/transcriptions/ /dist/transcriptions/index.html /dist/bevy-sketch /dist/bevy-sketch/ /dist/bevy-sketch/index.html /dist/bevy-game/animation-editor /dist/bevy-game/animation-editor/ /dist/bevy-game/animation-editor/index.html /dist/bevy-game/galgame /dist/bevy-game/galgame/ /dist/bevy-game/galgame/index.html /dist/bevy-game/gallery-2d /dist/bevy-game/gallery-2d/ /dist/bevy-game/gallery-2d/index.html /dist/bevy-game/gallery-3d /dist/bevy-game/gallery-3d/ /dist/bevy-game/gallery-3d/index.html
 }}
 header @html_entry Cache-Control "no-cache, must-revalidate"
 
@@ -466,6 +466,42 @@ https://{domains["readonly_origin"]}:5443, https://{domains["readonly_public"]}:
         + readonly_site
         + f"""
 http://:{ports["lan"]} {{
+    @device_transcription_upload {{
+        remote_ip {lan_cidrs}
+        method POST
+        path /device-api/v1/transcriptions
+    }}
+    @device_transcription_read {{
+        remote_ip {lan_cidrs}
+        method GET HEAD
+        path /device-api/v1/transcriptions/*
+    }}
+    handle @device_transcription_upload {{
+        uri replace /device-api/v1/transcriptions /v1/device/transcriptions
+        reverse_proxy tag-server:8081 {{
+            header_up X-Dufs-Device-Api 1
+            header_up -X-Dufs-Device-Provisioning
+        }}
+    }}
+    handle @device_transcription_read {{
+        uri replace /device-api/v1/transcriptions /v1/device/transcriptions
+        reverse_proxy tag-server:8081 {{
+            header_up X-Dufs-Device-Api 1
+            header_up -X-Dufs-Device-Provisioning
+        }}
+    }}
+    @device_enrollment {{
+        remote_ip {lan_cidrs}
+        method POST
+        path /device-api/v1/enrollments /device-api/v1/enrollments/*/claim
+    }}
+    handle @device_enrollment {{
+        uri replace /device-api/v1/enrollments /v1/device/enrollments
+        reverse_proxy tag-server:8081 {{
+            header_up -X-Dufs-Device-Api
+            header_up -X-Dufs-Device-Provisioning
+        }}
+    }}
     @device_api {{
         remote_ip {lan_cidrs}
         method GET HEAD OPTIONS
@@ -524,6 +560,20 @@ http://:{ports["lan"]} {{
                 header_up -X-Dufs-Device-Api
             }}
         }}
+        handle /tag-api/v1/device-enrollments* {{
+            uri strip_prefix /tag-api
+            reverse_proxy tag-server:8081 {{
+                header_up X-Dufs-Device-Provisioning 1
+                header_up -X-Dufs-Device-Api
+            }}
+        }}
+        handle /tag-api/v1/device-tokens* {{
+            uri strip_prefix /tag-api
+            reverse_proxy tag-server:8081 {{
+                header_up X-Dufs-Device-Provisioning 1
+                header_up -X-Dufs-Device-Api
+            }}
+        }}
 
 {textwrap.indent(routes, "        ")}
     }}
@@ -537,10 +587,58 @@ https://{domains["public"]}:{ports["main_origin"]}, https://{domains["origin"]}:
     @origin_host host {domains["origin"]}
     redir @origin_host https://{domains["public"]}{{uri}} permanent
 
+    @device_transcription_upload {{
+        method POST
+        path /device-api/v1/transcriptions
+    }}
+    @device_transcription_read {{
+        method GET HEAD
+        path /device-api/v1/transcriptions/*
+    }}
+    handle @device_transcription_upload {{
+        uri replace /device-api/v1/transcriptions /v1/device/transcriptions
+        reverse_proxy tag-server:8081 {{
+            header_up X-Dufs-Device-Api 1
+            header_up -X-Dufs-Device-Provisioning
+        }}
+    }}
+    handle @device_transcription_read {{
+        uri replace /device-api/v1/transcriptions /v1/device/transcriptions
+        reverse_proxy tag-server:8081 {{
+            header_up X-Dufs-Device-Api 1
+            header_up -X-Dufs-Device-Provisioning
+        }}
+    }}
+    @device_enrollment {{
+        method POST
+        path /device-api/v1/enrollments /device-api/v1/enrollments/*/claim
+    }}
+    handle @device_enrollment {{
+        uri replace /device-api/v1/enrollments /v1/device/enrollments
+        reverse_proxy tag-server:8081 {{
+            header_up -X-Dufs-Device-Api
+            header_up -X-Dufs-Device-Provisioning
+        }}
+    }}
+
     @public_device_api path /device-api /device-api/*
     respond @public_device_api "Not found" 404
 
 {auth_block}
+    handle /tag-api/v1/device-enrollments* {{
+        uri strip_prefix /tag-api
+        reverse_proxy tag-server:8081 {{
+            header_up X-Dufs-Device-Provisioning 1
+            header_up -X-Dufs-Device-Api
+        }}
+    }}
+    handle /tag-api/v1/device-tokens* {{
+        uri strip_prefix /tag-api
+        reverse_proxy tag-server:8081 {{
+            header_up X-Dufs-Device-Provisioning 1
+            header_up -X-Dufs-Device-Api
+        }}
+    }}
 {textwrap.indent(routes, "    ")}
 }}
 """
@@ -655,6 +753,8 @@ def render_instance_compose(
     if paths.get("media"):
         dufs_volumes.append(f"{paths['media']}:/data/media{source_mode}")
         tag_volumes.append(f"{paths['media']}:/workspace/media{source_mode}")
+    if paths.get("whisper_models"):
+        tag_volumes.append(f"{paths['whisper_models']}:/models:ro")
 
     tag_secret = secret_dir / "tag-server.env"
     if is_file(tag_secret):
