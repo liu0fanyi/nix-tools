@@ -69,6 +69,10 @@ class RenderTests(unittest.TestCase):
             )
         config = root / "instance.toml"
         config.write_text(text, encoding="utf-8")
+        writing_ssh = root / "runtime-secrets" / "writing-git"
+        writing_ssh.mkdir(parents=True)
+        (writing_ssh / "id_ed25519").write_text("test-private-key\n")
+        (writing_ssh / "known_hosts").write_text("github.com test-key\n")
         output = root / "generated"
         return config, output, temp
 
@@ -194,6 +198,9 @@ class RenderTests(unittest.TestCase):
             '"/home/liou/.local/share/whisper.cpp/models:/models:ro"',
             instance,
         )
+        self.assertIn("runtime-secrets/writing-git:/root/.ssh:ro", instance)
+        readonly_service = instance.split("  tag-server-readonly:", 1)[1]
+        self.assertNotIn("writing-git:/root/.ssh", readonly_service)
         self.assertTrue((output / "ttyd-compose.service").is_file())
         terminal_unit = (output / "ttyd-compose.service").read_text(
             encoding="utf-8"

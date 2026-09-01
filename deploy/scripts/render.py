@@ -782,6 +782,14 @@ def render_instance_compose(
     tag_secret = secret_dir / "tag-server.env"
     if is_file(tag_secret):
         tag_volumes.append(f"{tag_secret}:/run/secrets/tag-server.env:ro")
+    writing_ssh = secret_dir / "writing-git"
+    if is_file(writing_ssh / "id_ed25519") and is_file(
+        writing_ssh / "known_hosts"
+    ):
+        # The writable service gets a repository-scoped deploy key. Never mount
+        # the operator's complete ~/.ssh, and never expose this key to the
+        # read-only tag-server instance.
+        tag_volumes.append(f"{writing_ssh}:/root/.ssh:ro")
     cors_args = "".join(
         f" --cors-origin {shlex.quote(origin)}"
         for origin in table(config, "security").get("cors_origins", [])
