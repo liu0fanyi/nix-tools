@@ -502,6 +502,18 @@ http://:{ports["lan"]} {{
             header_up -X-Dufs-Device-Provisioning
         }}
     }}
+    @device_writing_snapshot {{
+        remote_ip {lan_cidrs}
+        method GET HEAD
+        path /device-api/v1/writing/snapshots/*
+    }}
+    handle @device_writing_snapshot {{
+        uri replace /device-api/v1/writing/snapshots /v1/device/writing/snapshots
+        reverse_proxy tag-server:8081 {{
+            header_up X-Dufs-Device-Api 1
+            header_up -X-Dufs-Device-Provisioning
+        }}
+    }}
     @device_enrollment {{
         remote_ip {lan_cidrs}
         method POST
@@ -634,6 +646,17 @@ https://{domains["public"]}:{ports["main_origin"]}, https://{domains["origin"]}:
     }}
     handle @device_writing_commit {{
         uri replace /device-api/v1/writing/commits /v1/device/writing/commits
+        reverse_proxy tag-server:8081 {{
+            header_up X-Dufs-Device-Api 1
+            header_up -X-Dufs-Device-Provisioning
+        }}
+    }}
+    @device_writing_snapshot {{
+        method GET HEAD
+        path /device-api/v1/writing/snapshots/*
+    }}
+    handle @device_writing_snapshot {{
+        uri replace /device-api/v1/writing/snapshots /v1/device/writing/snapshots
         reverse_proxy tag-server:8081 {{
             header_up X-Dufs-Device-Api 1
             header_up -X-Dufs-Device-Provisioning
