@@ -502,6 +502,18 @@ http://:{ports["lan"]} {{
             header_up -X-Dufs-Device-Provisioning
         }}
     }}
+    @device_writing_conflict_resolved {{
+        remote_ip {lan_cidrs}
+        method POST
+        path /device-api/v1/writing/conflicts/*/resolved
+    }}
+    handle @device_writing_conflict_resolved {{
+        uri replace /device-api/v1/writing/conflicts /v1/device/writing/conflicts
+        reverse_proxy tag-server:8081 {{
+            header_up X-Dufs-Device-Api 1
+            header_up -X-Dufs-Device-Provisioning
+        }}
+    }}
     @device_writing_snapshot {{
         remote_ip {lan_cidrs}
         method GET HEAD
@@ -658,6 +670,17 @@ https://{domains["public"]}:{ports["main_origin"]}, https://{domains["origin"]}:
     }}
     handle @device_writing_commit {{
         uri replace /device-api/v1/writing/commits /v1/device/writing/commits
+        reverse_proxy tag-server:8081 {{
+            header_up X-Dufs-Device-Api 1
+            header_up -X-Dufs-Device-Provisioning
+        }}
+    }}
+    @device_writing_conflict_resolved {{
+        method POST
+        path /device-api/v1/writing/conflicts/*/resolved
+    }}
+    handle @device_writing_conflict_resolved {{
+        uri replace /device-api/v1/writing/conflicts /v1/device/writing/conflicts
         reverse_proxy tag-server:8081 {{
             header_up X-Dufs-Device-Api 1
             header_up -X-Dufs-Device-Provisioning
