@@ -23,11 +23,15 @@
   # control the NixOS package version supplied by flake.lock.
   system.stateVersion = lib.mkForce "24.11";
 
-  # The existing ESP and firmware already contain systemd-boot and Windows
-  # Boot Manager entries. Update files on the ESP without rewriting firmware
-  # NVRAM; bootctl variable updates fail on this dual-boot machine with ESRCH.
+  # NixOS and Windows use separate ESPs on the KIOXIA SSD. Keep firmware NVRAM
+  # writes disabled: bootctl variable updates fail on this machine with ESRCH,
+  # while the removable/fallback EFI path remains bootable from firmware.
   boot.loader.grub.enable = false;
   boot.loader.systemd-boot.enable = true;
+  # Newer systemd-boot updates use a Varlink path that can surface firmware
+  # errors such as ESRCH even when NVRAM writes are disabled.  Keep those
+  # non-essential EFI operations from aborting the whole NixOS activation.
+  boot.loader.systemd-boot.graceful = true;
   boot.loader.efi.canTouchEfiVariables = false;
 
   # GTX 1650 (Turing), already proven with the old NixOS installation.
@@ -49,8 +53,11 @@
     AllowSuspendThenHibernate = "no";
   };
 
-  # The data filesystem root should remain writable by the primary user.
-  systemd.tmpfiles.rules = [ "d /data 0755 liou users -" ];
+  # The data filesystem roots should remain writable by the primary user.
+  systemd.tmpfiles.rules = [
+    "d /data 0755 liou users -"
+    "d /data-ssd 0755 liou users -"
+  ];
 
   # Ensure this controller can still deploy after the liu -> liou rename.
   users.users.liou = {

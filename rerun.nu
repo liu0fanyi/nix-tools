@@ -7,6 +7,8 @@
 #   nu rerun.nu --no-nixos [用户名]     # 强制 standalone home-manager switch（同上）
 #   nu rerun.nu liou --host liu-bigpc --boot
 #                                        # 仅设置下次启动，不热切换当前系统
+#   nu rerun.nu liou --host liu-bigpc --install-bootloader
+#                                        # 重装 bootloader 并切换系统
 #
 # 说明:
 #   - 自动读取 /etc/os-release 判断系统：ID=nixos → NixOS 主机。
@@ -28,6 +30,7 @@ def main [
     --host: string = "homebox" # NixOS 配置名（flake 里的 nixosConfigurations.<host>）
     --home-target: string = "liou-nuc" # standalone 配置名
     --boot # NixOS only：构建并设置下次启动，不立即切换当前系统
+    --install-bootloader # NixOS only：强制（重）安装 bootloader，绕过普通 update 路径
 ] {
     # 自动检测：/etc/os-release 中 ID=nixos 即为 NixOS 系统
     let os_id = (open /etc/os-release | lines | where ($it | str starts-with "ID=") | first | str replace "ID=" "" | str trim)
@@ -57,6 +60,10 @@ def main [
 
     if ($boot and (not $use_nixos)) {
         error make { msg: "--boot 仅适用于 NixOS system 部署" }
+    }
+
+    if ($install_bootloader and (not $use_nixos)) {
+        error make { msg: "--install-bootloader 仅适用于 NixOS system 部署" }
     }
 
     # clipboard-sync 是本仓库中由独立 CI 发布到 Cachix 的自有包。
@@ -105,7 +112,11 @@ def main [
         # `nix flake update`，普通 switch 保持 flake.lock 的可复现性。
         # 以当前用户完成 flake 求值和构建（可使用 ~/.ssh 访问私有 inputs），
         # 只在写系统 profile 和激活配置时由 nixos-rebuild 提权。
-        nixos-rebuild $action --sudo --flake $"($env.PWD)#($host)"
+        if $install_bootloader {
+            nixos-rebuild $action --sudo --install-bootloader --flake $"($env.PWD)#($host)"
+        } else {
+            nixos-rebuild $action --sudo --flake $"($env.PWD)#($host)"
+        }
     } else {
         # CLI 与模块都来自当前 flake.lock 中的同一个 Home Manager input。
         print $"(ansi green)Deploying Home Manager target: ($home_target) - standalone(ansi reset)"

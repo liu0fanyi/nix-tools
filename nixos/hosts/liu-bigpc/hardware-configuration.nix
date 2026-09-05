@@ -17,14 +17,16 @@
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
+  # Migrated from the old 120 GB SATA SSD to the KIOXIA 480 GB SATA SSD.
   fileSystems."/" = {
-    device = "/dev/disk/by-uuid/428f77c1-1fe1-47f4-8457-9944aec9e0e9";
+    device = "/dev/disk/by-uuid/587d3eb3-3d34-47b5-bec1-391bbf56e634";
     fsType = "ext4";
   };
 
-  # This ESP is shared with Windows. It must be mounted, never reformatted.
+  # Dedicated NixOS ESP on the KIOXIA SSD. The pre-existing Windows ESP on
+  # partition 3 is deliberately kept separate and must never be reformatted.
   fileSystems."/boot" = {
-    device = "/dev/disk/by-uuid/332B-F609";
+    device = "/dev/disk/by-uuid/2909-BA9A";
     fsType = "vfat";
     options = [
       "fmask=0077"
@@ -42,8 +44,18 @@
     ];
   };
 
+  # Reused old 120 GB NixOS SSD, now a standalone data filesystem.
+  fileSystems."/data-ssd" = {
+    device = "/dev/disk/by-uuid/b2f8be6a-6739-46c7-8b85-070ac915c206";
+    fsType = "ext4";
+    options = [
+      "nofail"
+      "x-systemd.device-timeout=5s"
+    ];
+  };
+
   swapDevices = [
-    { device = "/dev/disk/by-uuid/ef3a79ac-83ff-4bbb-ba48-1b371418d9e3"; }
+    { device = "/dev/disk/by-uuid/bb4a5c9c-268f-4ddd-816a-2d3d062a6137"; }
   ];
 
   networking.useDHCP = lib.mkDefault true;
