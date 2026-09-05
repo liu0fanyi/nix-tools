@@ -189,6 +189,20 @@ in
   # 日常用户（官方模板示例用户是 alice，这里按本机用户名启用）
   users.users.${username} = {
     isNormalUser = true;
+    # Rootless Podman/Buildah need subordinate UID/GID mappings.  Declaring
+    # them here also makes NixOS generate /etc/subuid and /etc/subgid.
+    subUidRanges = [
+      {
+        startUid = 100000;
+        count = 65536;
+      }
+    ];
+    subGidRanges = [
+      {
+        startGid = 100000;
+        count = 65536;
+      }
+    ];
     extraGroups = [
       "wheel" # Enable ‘sudo’ for the user.
       "networkmanager"
