@@ -249,6 +249,17 @@
         | prepend ($env.HOME | path join ".npm-global" "bin")
         | prepend ($env.HOME | path join ".local" "bin")
       )
+      # 保留 dircolors 的默认文件类型配色，只把公开可写目录的高亮改为
+      # 浅黄字配暗红背景，避免默认亮绿色背景降低可读性。
+      $env.LS_COLORS = (
+        ^dircolors --sh
+        | lines
+        | first
+        | split row "'"
+        | get 1
+        | str replace "ow=34;42" "ow=38;5;223;48;5;52"
+        | str replace "tw=30;42" "tw=38;5;223;48;5;52"
+      )
         $env.config.buffer_editor = "hx"
         $env.EDITOR = "hx"
       # $env.NAVI_PATH = "/home/liu/nix_config/nix_modules/navi";
