@@ -354,12 +354,8 @@ in
   # 定期监控硬盘 SMART 健康状态；异常会写入 system journal。
   services.smartd.enable = true;
 
-  # 桌面组件包（waybar 状态栏、fuzzel 启动器、swaybg 壁纸、
-  # swaylock 锁屏、grim+slurp 截图、wl-clipboard 剪贴板、nautilus 文件选择器、
-  # brightnessctl 亮度、playerctl 媒体控制、cliphist 剪贴板历史、swayidle 自动锁屏）
-  # 注：mako 通知守护进程已由 home-manager 的 services.mako 管理
-  # （home-manager/nix_modules/mako.nix：装包 + 配置 + D-Bus 激活），
-  # 系统级不再重复安装，避免同一二进制在系统/用户环境各一份。
+  # Niri 桌面会话组件由 NixOS 统一安装；Home Manager 只管理其用户配置。
+  # mihomo 及相关工具也保留在系统层，供 root 服务和本机运行环境使用。
   environment.systemPackages = with pkgs; [
     waybar
     fuzzel
@@ -378,25 +374,12 @@ in
     nodejs_24
     # WiFi 选择器（Mod+N，fuzzel 界面；nmtui/nmcli 亦可直接使用）
     networkmanager_dmenu
-    # 代理：clashtui（TUI 管理）+ mihomo 内核 + fzf（clashtui 依赖）
+    # 代理的 TUI 管理工具。
     clashtui
+    # clashtui 配置和 root systemd 服务均使用此系统级 mihomo 路径。
     mihomo
-    fzf
     # mihomo auto-route 需要 nft 命令（fwmark 打标 + DNS 劫持）
     nftables
-    # 系统、硬件及局域网故障诊断工具。
-    lsof
-    dnsutils
-    smartmontools
-    pciutils
-    usbutils
-    mtr
-    ethtool
-    iperf3
-    # 鼠标光标主题（waybar/niri 的 cursor theme 警告）
-    nordzy-cursor-theme
-    # Zen Browser（Firefox 内核，独立于 firefox，无需另装 firefox）
-    inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.zen-browser
   ];
   # waybar 电池模块需要 upower
   services.upower.enable = true;

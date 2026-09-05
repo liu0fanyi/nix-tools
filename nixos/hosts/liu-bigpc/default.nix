@@ -1,9 +1,16 @@
-{ lib, ... }:
+{ lib, pkgs, ... }:
 
 {
   imports = [ ./hardware-configuration.nix ];
 
   networking.hostName = "liu-bigpc";
+
+  # Legacy Windows RF configuration tools and RAR extraction support.
+  environment.systemPackages = [
+    pkgs.unar
+    pkgs.wineWow64Packages.stable
+  ];
+
   # Syncthing is paired only across the trusted IPv4 LAN. Keep these ports
   # closed to global IPv6 and all non-LAN IPv4 sources.
   networking.firewall.extraCommands = ''

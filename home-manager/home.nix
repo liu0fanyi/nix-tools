@@ -63,6 +63,19 @@
     ripgrep
     fd
     jq
+    # SIP 容器入口在宿主机用 readelf 校验交叉编译库架构。
+    binutils
+    # 串口终端，用于嵌入式板卡的启动日志和 U-Boot 交互。
+    tio
+    # 系统、硬件及局域网故障诊断工具。
+    lsof
+    dnsutils
+    smartmontools
+    pciutils
+    usbutils
+    mtr
+    ethtool
+    iperf3
     glow
 
     ## git tools
@@ -80,6 +93,15 @@
     devenv
     # 轻量级 Word 文档查看与编辑器（支持 .docx）。
     abiword
+    # 轻量级 PDF 阅读器。
+    mupdf
+    # 轻量级音视频播放器，原生支持 Wayland。
+    mpv
+    # PJSIP 命令行软电话；便于脚本化验证注册、保持/恢复和多路通话。
+    pjsip
+    # 鼠标光标主题和 Zen Browser 由 Home Manager 统一提供给各 Linux 主机。
+    nordzy-cursor-theme
+    inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.zen-browser
     ## deploy/ 脚本（manage.py / release-apps.py）运行依赖
     python3
     localsend
