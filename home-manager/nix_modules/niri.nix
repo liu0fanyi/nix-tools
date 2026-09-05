@@ -345,5 +345,23 @@ in
       terminal = false;
       categories = [ "Development" "WebDevelopment" ];
     };
+
+    # 覆盖 Nautilus 自带的中文本地化名称，让 fuzzel 显示名与命令一致。
+    # desktop 文件 ID 保持不变，因此不会出现中英文两个重复入口。
+    xdg.desktopEntries."org.gnome.Nautilus" = {
+      name = "Nautilus";
+      genericName = "File Manager";
+      comment = "Access and organize files";
+      exec = "nautilus --new-window %U";
+      icon = "org.gnome.Nautilus";
+      terminal = false;
+      startupNotify = true;
+      categories = [ "GNOME" "GTK" "Utility" "Core" "FileManager" ];
+      mimeType = [ "inode/directory" "application/x-gnome-saved-search" ];
+      settings = {
+        DBusActivatable = "true";
+        StartupWMClass = "org.gnome.Nautilus";
+      };
+    };
   };
 }
