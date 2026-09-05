@@ -47,7 +47,7 @@ https = 443
 [images]
 caddy = "docker.io/library/caddy:2.11.4-alpine"
 readonly_gateway = "docker.io/library/haproxy:3.2.21-alpine"
-dufs = "docker.io/sigoden/dufs:0.46.0"
+dufs = "docker.io/sigoden/dufs:v0.46.0"
 tag_server = "localhost/tag-server:dufs-plus"
 authelia = "docker.io/authelia/authelia:4.39.20"
 ddns_go = "docker.io/jeessy/ddns-go:v6.17.2"

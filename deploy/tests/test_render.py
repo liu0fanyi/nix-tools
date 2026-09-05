@@ -13,6 +13,22 @@ import render
 
 
 class RenderTests(unittest.TestCase):
+    def test_readonly_apps_blocked_before_static_routing(self) -> None:
+        for service in ("dufs-readonly", "dufs"):
+            routes = render.app_routes(False, "{}", dufs_service=service,
+                                       tag_write=False, game_tools=False)
+            private_guard = routes.split("@private_apps {", 1)[1].split("}", 1)[0]
+            for app in ("devices", "transcriptions", "recorder-bean", "bevy-sketch", "project-planner"):
+                self.assertIn(f"/dist/{app} /dist/{app}/*", private_guard)
+                self.assertIn(f"/{app} /{app}/*", private_guard)
+            self.assertIn("/terminal /terminal/*", private_guard)
+            self.assertIn("path /dist/bevy-game /dist/bevy-game/*", routes)
+            self.assertIn("/bevy-game /bevy-game/*", routes)
+            self.assertLess(routes.index("handle @private_apps"), routes.index("handle_path /dist/*"))
+        writable = render.app_routes(True, "{}", tag_write=True, game_tools=True)
+        self.assertNotIn("@private_apps", writable)
+        self.assertNotIn("@game_tools", writable)
+
     def test_dufs_templates_enable_server_side_archives(self) -> None:
         writable = (DEPLOY_DIR / "compose.yaml").read_text(encoding="utf-8")
         readonly = (DEPLOY_DIR / "compose.readonly.yaml").read_text(
@@ -118,6 +134,18 @@ class RenderTests(unittest.TestCase):
             "uri replace /device-api/v1/transcriptions /v1/device/transcriptions",
             caddy,
         )
+        self.assertIn("@device_music {", caddy)
+        self.assertIn(
+            "path /device-api/v1/music/manifest /device-api/v1/music/files/*",
+            caddy,
+        )
+        self.assertIn(
+            "uri replace /device-api/v1/music /v1/device/music",
+            caddy,
+        )
+        self.assertIn("@device_music_upload {", caddy)
+        self.assertIn("method POST", caddy)
+        self.assertIn("path /device-api/v1/music/uploads", caddy)
         self.assertIn("@device_writing_commit {", caddy)
         self.assertIn("path /device-api/v1/writing/commits", caddy)
         self.assertIn(
@@ -167,6 +195,9 @@ class RenderTests(unittest.TestCase):
         self.assertIn("path /device-api /device-api/*", caddy)
         self.assertIn('respond "Unknown device API" 404', caddy)
         self.assertIn('@public_device_api path /device-api /device-api/*', caddy)
+        self.assertIn('@private_apps {', caddy)
+        self.assertIn('/dist/devices/* /dist/transcriptions', caddy)
+        self.assertLess(caddy.index('handle @private_apps'), caddy.index('handle_path /dist/*'))
         self.assertLess(caddy.index("@public_device_api"), caddy.index("forward_auth"))
         self.assertIn("not path /authelia/* /device-api /device-api/*", caddy)
         self.assertIn('respond "Read-only tag service" 405', caddy)

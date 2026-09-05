@@ -224,12 +224,18 @@ handle @terminal {
 handle @tag_api_mutation {
     respond "Read-only tag service" 405
 }
+@private_apps {
+    path /dist/devices /dist/devices/* /dist/transcriptions /dist/transcriptions/* /dist/recorder-bean /dist/recorder-bean/* /dist/bevy-sketch /dist/bevy-sketch/* /dist/project-planner /dist/project-planner/* /terminal /terminal/* /devices /devices/* /transcriptions /transcriptions/* /recorder-bean /recorder-bean/* /bevy-sketch /bevy-sketch/* /project-planner /project-planner/*
+}
+handle @private_apps {
+    respond "Not found" 404
+}
 """
     game_tools_guard = ""
     if not game_tools:
         game_tools_guard = """
 @game_tools {
-    path /dist/bevy-game /dist/bevy-game/*
+    path /dist/bevy-game /dist/bevy-game/* /bevy-game /bevy-game/*
 }
 handle @game_tools {
     respond "Not found" 404
@@ -490,6 +496,30 @@ http://:{ports["lan"]} {{
             header_up -X-Dufs-Device-Provisioning
         }}
     }}
+    @device_music {{
+        remote_ip {lan_cidrs}
+        method GET HEAD
+        path /device-api/v1/music/manifest /device-api/v1/music/files/*
+    }}
+    handle @device_music {{
+        uri replace /device-api/v1/music /v1/device/music
+        reverse_proxy tag-server:8081 {{
+            header_up X-Dufs-Device-Api 1
+            header_up -X-Dufs-Device-Provisioning
+        }}
+    }}
+    @device_music_upload {{
+        remote_ip {lan_cidrs}
+        method POST
+        path /device-api/v1/music/uploads
+    }}
+    handle @device_music_upload {{
+        uri replace /device-api/v1/music /v1/device/music
+        reverse_proxy tag-server:8081 {{
+            header_up X-Dufs-Device-Api 1
+            header_up -X-Dufs-Device-Provisioning
+        }}
+    }}
     @device_writing_commit {{
         remote_ip {lan_cidrs}
         method POST
@@ -659,6 +689,28 @@ https://{domains["public"]}:{ports["main_origin"]}, https://{domains["origin"]}:
     }}
     handle @device_transcription_read {{
         uri replace /device-api/v1/transcriptions /v1/device/transcriptions
+        reverse_proxy tag-server:8081 {{
+            header_up X-Dufs-Device-Api 1
+            header_up -X-Dufs-Device-Provisioning
+        }}
+    }}
+    @device_music {{
+        method GET HEAD
+        path /device-api/v1/music/manifest /device-api/v1/music/files/*
+    }}
+    handle @device_music {{
+        uri replace /device-api/v1/music /v1/device/music
+        reverse_proxy tag-server:8081 {{
+            header_up X-Dufs-Device-Api 1
+            header_up -X-Dufs-Device-Provisioning
+        }}
+    }}
+    @device_music_upload {{
+        method POST
+        path /device-api/v1/music/uploads
+    }}
+    handle @device_music_upload {{
+        uri replace /device-api/v1/music /v1/device/music
         reverse_proxy tag-server:8081 {{
             header_up X-Dufs-Device-Api 1
             header_up -X-Dufs-Device-Provisioning
