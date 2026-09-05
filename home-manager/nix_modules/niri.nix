@@ -20,6 +20,25 @@ let
     printf '{"text":"󰈐 %s RPM","tooltip":"风扇转速: %s RPM"}\n' "$rpm" "$rpm"
   '';
 
+  # Mako 勿扰模式切换与 Waybar 状态输出。
+  makoDndScript = pkgs.writeShellScriptBin "mako-dnd" ''
+    set -eu
+    makoctl=${lib.getExe' pkgs.mako "makoctl"}
+
+    if [ "''${1:-status}" = "toggle" ]; then
+      "$makoctl" mode -t do-not-disturb
+      "$makoctl" dismiss --all
+      ${pkgs.procps}/bin/pkill -RTMIN+8 waybar || true
+      exit 0
+    fi
+
+    if "$makoctl" mode | ${pkgs.gnugrep}/bin/grep -Fxq do-not-disturb; then
+      printf '{"text":"󰂛","class":"dnd","tooltip":"勿扰模式：已开启（点击恢复通知）"}\n'
+    else
+      printf '{"text":"󰂚","class":"enabled","tooltip":"通知：已开启（点击进入勿扰）"}\n'
+    fi
+  '';
+
   # Wrapper script to run niri-session with necessary environment variables
   niri-session-wrapped = pkgs.writeShellScriptBin "niri-session-wrapped" ''
     export GBM_BACKENDS_PATH="${pkgs.mesa}/lib/gbm"
@@ -48,6 +67,8 @@ let
                 // ===== homebox 追加键位 =====
                 // WiFi 选择（fuzzel 界面）
                 Mod+N { spawn "networkmanager_dmenu" "--dmenu" "fuzzel"; }
+                // 一键切换 Mako 勿扰模式，并清除当前可见通知。
+                Mod+Shift+N { spawn "mako-dnd" "toggle"; }
           ''
           ""
           ""
@@ -130,6 +151,7 @@ in
     home.packages =
       lib.optionals isNixOS [
         fanScript
+        makoDndScript
         # Wayland 图形化显示器布局、缩放与旋转工具（Niri 支持其输出协议）。
         pkgs.wdisplays
         # Niri starts this on demand and exports DISPLAY for X11-only apps
@@ -166,7 +188,7 @@ in
           "spacing": 8,
           "modules-left": ["niri/workspaces"],
           "modules-center": ["clock"],
-          "modules-right": ["temperature", "custom/fan", "mpris", "pulseaudio", "network", "cpu", "memory", "battery", "tray"],
+          "modules-right": ["custom/mako-dnd", "temperature", "custom/fan", "mpris", "pulseaudio", "network", "cpu", "memory", "battery", "tray"],
 
           "niri/workspaces": {
             "format": "{name}",
@@ -202,6 +224,14 @@ in
             "return-type": "json",
             "interval": 5,
             "format": "{}"
+          },
+          "custom/mako-dnd": {
+            "exec": "${makoDndScript}/bin/mako-dnd status",
+            "return-type": "json",
+            "format": "{}",
+            "interval": 5,
+            "signal": 8,
+            "on-click": "${makoDndScript}/bin/mako-dnd toggle"
           },
           "mpris": {
             "format": "{player_icon} {dynamic}",
@@ -274,10 +304,12 @@ in
           color: #ebdbb2;
           background: #3c3836;
         }
-        #clock, #tray, #cpu, #memory, #temperature, #custom-fan, #mpris, #network, #battery, #pulseaudio {
+        #clock, #tray, #cpu, #memory, #temperature, #custom-fan, #custom-mako-dnd, #mpris, #network, #battery, #pulseaudio {
           padding: 0 8px;
         }
         #custom-fan.unavailable { padding: 0; }
+        #custom-mako-dnd.enabled { color: #b8bb26; }
+        #custom-mako-dnd.dnd { color: #fb4934; }
         #battery.charging { color: #b8bb26; }
         #battery.warning { color: #fb4934; }
         #pulseaudio.muted { color: #fb4934; }

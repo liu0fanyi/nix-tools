@@ -38,6 +38,11 @@
         anchor = "top-right";
         # 最新通知排最前
         sort = "-time";
+
+        # 勿扰模式：通知仍进入历史记录，但不在屏幕上弹出。
+        "mode=do-not-disturb" = {
+          invisible = true;
+        };
       };
     };
 
