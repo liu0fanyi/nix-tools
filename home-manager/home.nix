@@ -506,9 +506,15 @@
           fi
           if [ "''$current" != "''$latest" ]; then
             echo "ensureDshLatest: 更新 ''$pkg ''$current → ''$latest"
-            # --legacy-peer-deps：npm 11 arborist 对 dsh-tui 依赖树有 bug
-            # （Cannot read properties of null），该标志绕过严格 peer 解析
-            npm install -g --legacy-peer-deps "''$pkg@''$latest" >/dev/null 2>&1 && echo "  ✓ 已更新" || echo "  ✗ 更新失败（保留当前版本）"
+            if [ "''$pkg" = "@deepseek-harness-tui/dsh-tui" ]; then
+              # npm 11 arborist 对 dsh-tui 依赖树有 bug
+              # （Cannot read properties of null），仅对此包绕过严格 peer 解析。
+              npm install -g --legacy-peer-deps "''$pkg@''$latest" >/dev/null 2>&1 && echo "  ✓ 已更新" || echo "  ✗ 更新失败（保留当前版本）"
+            else
+              # dsh 的内部包大量使用必需 peer dependencies；不能加
+              # --legacy-peer-deps，否则安装看似成功，启动时会连续缺包。
+              npm install -g "''$pkg@''$latest" >/dev/null 2>&1 && echo "  ✓ 已更新" || echo "  ✗ 更新失败（保留当前版本）"
+            fi
           else
             echo "ensureDshLatest: ''$pkg 已是最新（''$current）"
           fi
