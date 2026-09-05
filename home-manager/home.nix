@@ -272,6 +272,10 @@
       theme = "gruvbox-dark";
       default_shell = "nu";
       scrollback_editor = "hx";
+      # 更频繁地保存会话布局，降低关机或重启时留下过期恢复快照的概率。
+      session_serialization = true;
+      serialization_interval = 10;
+      on_force_close = "detach";
     };
   };
 
