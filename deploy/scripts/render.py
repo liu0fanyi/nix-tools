@@ -1235,6 +1235,7 @@ def render(config_path: Path, output: Path) -> None:
     host_home = paths["host_home"]
     host_username = Path(host_home).name
     host_path = (
+        "/run/wrappers/bin:"
         f"{host_home}/.nix-profile/bin:"
         "/nix/var/nix/profiles/default/bin:"
         f"/etc/profiles/per-user/{host_username}/bin:"
@@ -1250,8 +1251,22 @@ def render(config_path: Path, output: Path) -> None:
     ]
     for path in files:
         compose_command.extend(["-f", str(path)])
+    mount_guard = ""
+    required_mounts = paths.get("required_mounts", [])
+    if required_mounts:
+        mount_guard = (
+            'case "${1:-}" in up|start|restart)\n'
+            "  for mount_path in " + shlex.join(required_mounts) + "; do\n"
+            '    if ! timeout 20 stat -- "$mount_path/." >/dev/null 2>&1 ||\n'
+            '       ! findmnt -rn -M "$mount_path" -t noautofs >/dev/null; then\n'
+            '      echo "Required data disk is not mounted yet: $mount_path; retry later" >&2\n'
+            '      exit 1\n'
+            '    fi\n'
+            '  done\n'
+            ';; esac\n'
+        )
     compose_control.write_text(
-        "#!/bin/sh\nset -eu\nexec "
+        "#!/bin/sh\nset -eu\n" + mount_guard + "exec "
         + shlex.join(compose_command)
         + ' "$@"\n',
         encoding="utf-8",
@@ -1299,7 +1314,7 @@ RuntimeDirectory=ttyd
 RuntimeDirectoryMode=0700
 Environment=HOME={home_dir}
 Environment=SHELL={profile_bin}/bash
-Environment=PATH={profile_bin}:/nix/var/nix/profiles/default/bin:/etc/profiles/per-user/{username}/bin:/run/current-system/sw/bin:/usr/bin:/bin
+Environment=PATH=/run/wrappers/bin:{profile_bin}:/nix/var/nix/profiles/default/bin:/etc/profiles/per-user/{username}/bin:/run/current-system/sw/bin:/usr/bin:/bin
 ExecStart={profile_bin}/ttyd -i %t/ttyd/ttyd.sock -W -w {terminal_path} {profile_bin}/zellij attach -c web-dev options --mouse-mode false
 Restart=on-failure
 RestartSec=2s

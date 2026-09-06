@@ -96,6 +96,16 @@ class RenderTests(unittest.TestCase):
         config, output, temp = self.prepare("home-ipv6-cdn")
         self.addCleanup(temp.cleanup)
         render.render(config, output)
+        # Rootless Podman must find NixOS setuid helpers before unwrapped binaries.
+        control = (output / "compose-control").read_text(encoding="utf-8")
+        self.assertIn('case "${1:-}" in up|start|restart)', control)
+        self.assertIn('/media/liou/Art /media/liou/project', control)
+        self.assertIn('timeout 20 stat -- "$mount_path/."', control)
+        self.assertIn('findmnt -rn -M "$mount_path" -t noautofs', control)
+        for name in ("dufs-plus-compose.service", "ttyd-compose.service"):
+            unit = (output / name).read_text(encoding="utf-8")
+            path = next(line for line in unit.splitlines() if line.startswith("Environment=PATH="))
+            self.assertTrue(path.startswith("Environment=PATH=/run/wrappers/bin:"))
         caddy = (output / "Caddyfile").read_text(encoding="utf-8")
         files = (output / "compose-files.txt").read_text(encoding="utf-8")
         self.assertIn("home.wttliou.top:5009", caddy)

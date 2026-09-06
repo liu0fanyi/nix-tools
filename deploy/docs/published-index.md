@@ -1,6 +1,6 @@
 # nix-tools 发布文档
 
-[NUC 重装准备、备份与业务恢复](docs/nuc-migration.md)：保留桌面、无系统盘加密；尚未安装。
+[NUC 重装准备、备份与业务恢复](docs/nuc-migration.md)：业务恢复及修复后整机重启验收通过，保留现有 Art 检查策略。
 
 [设备结构与 NUC 重装适用性审查](docs/host-structure-review.md)
 

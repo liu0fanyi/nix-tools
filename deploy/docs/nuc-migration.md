@@ -1,5 +1,50 @@
 # NUC 重装：准备与恢复
 
+## 最终重启验收（2026-09-06）
+
+修复后已再次整机重启：Art 检查退出 0、正常读写挂载，8 个容器等待磁盘就绪后
+自动启动；容器内 Art 列目录及 DUFS JSON 接口 200，Authelia 200，隧道 active，
+系统失败服务为 0。用户确认访问正常，决定保留每次挂载前检查 Art 的现有策略。
+本次检查约 9 分钟；下方“待冷启动验证”是历史阶段状态，已由本节取代。
+
+用户授权仅保留最终业务快照 20260906T062004.899909Z（约 3.24 GB），
+恢复演练报告另存其内 restore-rehearsal-report.json；旧全量、中断和演练数据副本
+列为清理目标，不涉及资料盘上的正常业务文件。
+
+## Art 容器挂载时序修复（2026-09-06）
+
+宿主 Art 已挂载并不代表容器可访问：容器 16:15 启动，exFAT 16:24 才挂载完成，
+rprivate 绑定保留了旧 autofs 入口，tag-server 列目录报 ELOOP，网页出现 403/500。
+生成的 compose-control 现在对 up/start/restart 检查 required_mounts：先用有界 stat
+触发自动挂载，再用 findmnt 排除 autofs 占位；未就绪则失败，由服务每 15 秒重试。
+down 等清理操作不受此门禁影响。不修改磁盘、权限或挂载传播规则。
+
+已同步生成器和启动入口，旧入口保留为 compose-control.before-art-20260906。
+仅重启 dufs 与 tag-server 两个受影响容器；容器中确认 exFAT 子挂载存在，
+Art 列目录成功，Authelia 200。30 项部署测试通过；仍待下一次整机冷启动验收。
+
+## 重启验收与启动修复（2026-09-06）
+
+用户已再次重启。8 个容器自动启动，Authelia healthy、登录页 200、LAN 匿名 401，
+系统 mihomo、Avahi 与 coretemp 温度读取正常。Art 再次访问触发 exFAT 检查，仍在推进，
+未强停或关闭校验；随后检查成功（Result=success、退出 0），Art 已读写挂载。
+
+Compose 初始启动使用未包装的 newuidmap，报权限错误；重试后恢复。
+生成器已为 Compose 和 ttyd 的 PATH 优先加入 /run/wrappers/bin，30 项部署测试通过。
+用户再次明确许可后，已在 NUC 保留两个服务文件的 .before-path-20260906 旧副本，
+应用 PATH 修复，同步运行目录副本及 NUC render.py，然后 daemon-reload，未重启业务。
+独立用户服务验证 newuidmap/newgidmap 均解析为 /run/wrappers/bin 下的包装工具，
+podman unshare 成功；8 个容器持续运行。仍需修复后的再次冷启动，不能提前宣称通过。
+
+阿里云原 SSH 服务 ClientAliveInterval=0，NUC 重启前的旧会话持续占用 2222。
+已在阿里云安装 deploy/ssh/20-client-alive.conf 的副本到
+/etc/ssh/sshd_config.d/20-client-alive.conf，sshd -t 与有效配置检查通过，reload ssh
+而非重启；仅终止已确认的旧隧道 sshd PID 2167049，NUC autossh 随即自动恢复。
+此配置每 60 秒探测，连续 3 次未回应才断开；正常空闲连接保留，登录权限未改变。
+官方语义：https://man.openbsd.org/sshd_config#ClientAliveInterval 。
+该文件属于阿里云宿主 SSH 配置，当前需人工安装，不由容器 infra 发布自动覆盖。
+回滚仅删除这一新增配置文件、sshd -t 后 reload ssh，不修改既有 sshd_config。
+
 ## 收尾：用户确认业务正常（2026-09-06）
 
 用户已确认外网恢复、业务均正常，并授权撤销临时 root 权限及提交推送。
