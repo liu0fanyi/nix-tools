@@ -115,6 +115,14 @@ let
           transform "90"
           position x=0 y=0
       }
+
+      // 同一块 Philips 经当前 HDMI 转接器热插拔后会暴露这个 EDID 名称。
+      output "AlgolTek, Inc. 0x0001 0x434E3031" {
+          mode "1920x1080@60.000"
+          scale 1
+          transform "90"
+          position x=0 y=0
+      }
     ''
     + ''
       // ===== homebox 追加（参考官方 wiki 与社区配置）=====
