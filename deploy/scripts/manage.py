@@ -266,7 +266,7 @@ def preflight(config_path: Path, output: Path) -> int:
             )
         home_dir = Path(paths["host_home"])
         for command in ("ttyd", "zellij", "bash"):
-            binary = home_dir / ".nix-profile/bin" / command
+            binary = Path(paths.get("terminal_bin", str(home_dir / ".nix-profile/bin"))) / command
             if not binary.exists():
                 errors.append(f"host terminal command not found: {binary}")
 

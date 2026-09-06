@@ -142,6 +142,11 @@
         hostModule = ./nixos/hosts/liu-bigpc;
       };
 
+      # NUC desktop + container host; plain NVMe system disk, existing media preserved.
+      nixosConfigurations.nuc = mkNixosConfiguration {
+        hostModule = ./nixos/hosts/nuc;
+      };
+
       # Fresh nixos-anywhere installs. The script chooses a tier from target RAM.
       nixosConfigurations.homebox-install = mkNixosConfiguration {
         hostModule = ./nixos/hosts/homebox.nix;

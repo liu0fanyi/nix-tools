@@ -1,0 +1,26 @@
+{
+  "nuc": {
+    "ssh": "liou@nuc.local",
+    "hostname": "nuc",
+    "product": "NUC8i5BEH",
+    "disk": "/dev/disk/by-id/nvme-eui.0025385691b22dce",
+    "disk_bytes": 250059350016,
+    "flake": "nuc",
+    "hardware": "nixos/hosts/nuc/hardware-configuration.nix",
+    "backup_uuid": "8bce6197-7281-40a0-84ec-e31c3d313877",
+    "installation_enabled": false,
+    "reason": "NUC was installed and business recovery confirmed on 2026-09-06. Reinstallation is disabled; a future wipe requires fresh backup checks, device validation and explicit approval. Current maintenance uses Wi-Fi nuc.local / 192.168.1.12; installation still requires a prepared wired maintenance window."
+  },
+  "homebox": {
+    "ssh": "liou@homebox.local",
+    "hostname": "homebox",
+    "installation_enabled": false,
+    "reason": "Existing host; recapture stable disk ID and hardware before permitting reinstall. Legacy /dev/sda auto-selection is retired."
+  },
+  "liu-bigpc": {
+    "ssh": "liou@liu-bigpc.local",
+    "hostname": "liu-bigpc",
+    "installation_enabled": false,
+    "reason": "Existing Windows dual-boot and multiple data disks: no destructive installation profile is authorized."
+  }
+}

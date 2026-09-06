@@ -56,5 +56,8 @@ NUC dufs-lan 为认证读写，NUC dufs 为密码只读，阿里云为匿名只�
 
 ## 文档发布
 
-用户文档发布到 liou@nuc.local:/home/liou/dufs/nix-tools/，根部 README.md 为索引，
-正文放 docs/。本文对应发布副本为 docs/build-agent-guide.md；变更时同步更新索引和副本。
+用户文档保留仓库权威源文件，并在同一任务内自动发布到
+`liou@nuc.local:/home/liou/dufs-lan/todos/nix-tools/`，README.md 为索引，正文放 docs/。
+本文对应 docs/build-agent-guide.md；变更时同步更新索引和副本。
+不得覆盖 todos 根部三份计划或其他工程资料；不得向 xiaoqiang 专用的
+`/home/liou/dufs/` 重建本工程文档。容器发布流程不变。

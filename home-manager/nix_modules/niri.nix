@@ -2,6 +2,21 @@
 
 let
   cfg = config.features.niri;
+  isNuc = isNixOS && osConfig != null && osConfig.networking.hostName == "nuc";
+  cpuTemperature = pkgs.writeShellScript "nuc-cpu-temperature" ''
+    for device in /sys/class/hwmon/hwmon*; do
+      [ "$(cat "$device/name" 2>/dev/null)" = coretemp ] || continue
+      for label in "$device"/temp*_label; do
+        [ "$(cat "$label" 2>/dev/null)" = "Package id 0" ] || continue
+        value=$(cat "''${label%_label}_input" 2>/dev/null) || continue
+        case "$value" in ""|*[!0-9]*) continue ;; esac
+        [ "$value" -le 125000 ] || continue
+        printf '{"text":" %s°C","tooltip":"CPU Package","class":"normal"}\n' "$((value / 1000))"
+        exit 0
+      done
+    done
+    printf '{"text":" N/A","tooltip":"CPU temperature unavailable"}\n'
+  '';
   isLiuBigpc =
     isNixOS && osConfig != null && osConfig.networking.hostName == "liu-bigpc";
   nixGL = inputs.nix-gl.packages.${pkgs.stdenv.hostPlatform.system}.nixGLDefault;
@@ -188,7 +203,12 @@ in
           "spacing": 8,
           "modules-left": ["niri/workspaces"],
           "modules-center": ["clock"],
-          "modules-right": ["custom/mako-dnd", "temperature", "custom/fan", "mpris", "pulseaudio", "network", "cpu", "memory", "battery", "tray"],
+          "modules-right": ["custom/mako-dnd", "${if isNuc then "custom/cpu-temperature" else "temperature"}", "custom/fan", "mpris", "pulseaudio", "network", "cpu", "memory", "battery", "tray"],
+          "custom/cpu-temperature": {
+            "exec": "${cpuTemperature}",
+            "return-type": "json",
+            "interval": 5
+          },
 
           "niri/workspaces": {
             "format": "{name}",

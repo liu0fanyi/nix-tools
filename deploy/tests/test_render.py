@@ -260,7 +260,8 @@ class RenderTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn("Environment=HOME=/home/liou", terminal_unit)
-        self.assertIn("ExecStart=/home/liou/.nix-profile/bin/ttyd", terminal_unit)
+        self.assertIn("ExecStart=/etc/profiles/per-user/liou/bin/ttyd", terminal_unit)
+        self.assertIn("/etc/profiles/per-user/liou/bin/zellij", terminal_unit)
         self.assertNotIn("/media/liou/.nix-profile", terminal_unit)
         unit = (output / "dufs-plus-compose.service").read_text(encoding="utf-8")
         self.assertIn("Restart=on-failure", unit)

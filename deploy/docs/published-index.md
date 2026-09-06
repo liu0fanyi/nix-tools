@@ -1,5 +1,9 @@
 # nix-tools 发布文档
 
+[NUC 重装准备、备份与业务恢复](docs/nuc-migration.md)：保留桌面、无系统盘加密；尚未安装。
+
+[设备结构与 NUC 重装适用性审查](docs/host-structure-review.md)
+
 [最新：两端生产发布与三个访问场景验收](docs/production-verification.md)
 
 [构建发布命令与工程约束（根部 AGENTS.md）](docs/build-agent-guide.md)

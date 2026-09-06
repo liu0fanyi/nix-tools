@@ -111,6 +111,9 @@ def validate(config: dict[str, Any]) -> None:
         path = Path(required_string(paths, key, "paths"))
         if not path.is_absolute():
             raise ConfigError(f"[paths].{key} must be absolute")
+    terminal_bin = paths.get("terminal_bin")
+    if terminal_bin is not None and (not isinstance(terminal_bin, str) or not Path(terminal_bin).is_absolute()):
+        raise ConfigError("[paths].terminal_bin must be an absolute path")
     secret_source = paths.get("secret_source")
     if secret_source is not None and (
         not isinstance(secret_source, str)
@@ -1285,7 +1288,7 @@ WantedBy=default.target
         terminal_path = paths["terminal_workspace"]
         home_dir = paths["host_home"]
         username = Path(home_dir).name
-        profile_bin = f"{home_dir}/.nix-profile/bin"
+        profile_bin = paths.get("terminal_bin", f"{home_dir}/.nix-profile/bin")
         terminal_unit = f"""[Unit]
 Description=Host development terminal for the dufs-plus Compose stack
 Before=dufs-plus-compose.service

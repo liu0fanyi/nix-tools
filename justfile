@@ -11,3 +11,15 @@ manage +args:
 
 test:
     python3 -m unittest discover -s deploy/tests
+    python3 -m unittest discover -s scripts/tests
+
+# 只读设备预检；不接收 --yes/--flake，不执行安装。
+install-check host *args:
+    python3 scripts/host-install.py --host "$1" --check "${@:2}"
+
+install-plan host *args:
+    python3 scripts/host-install.py --host "$1" --plan "${@:2}"
+
+# PC 上用独立虚拟盘验证 NUC 分区和 UEFI 引导，不连接真实磁盘。
+install-test-nuc:
+    nix build --impure --no-link --print-out-paths -L --file scripts/tests/nuc-install-vm.nix

@@ -10,5 +10,7 @@ NUC 使用 private、阿里云使用 public。传输、备份、激活、回滚�
 实现，不能调用产品的 deploy/redeploy 快捷入口，以免反向调用形成递归。
 不把 PC 当生产 home 实例，不复制目标机密钥，不跳过 SSH 主机密钥验证。
 
-工程文档同步至 `liou@nuc.local:/home/liou/dufs/nix-tools/`，README.md 为入口，
-正文放在 docs/。跨工程待办仍使用远端 todos 三份文件。
+工程文档自动同步到 `liou@nuc.local:/home/liou/dufs-lan/todos/nix-tools/`，
+README.md 为索引，正文放 docs/，同时保留仓库权威源文件。
+不得向 xiaoqiang 专用的 `/home/liou/dufs/` 发布本工程文档。
+跨工程待办仍使用 todos 根部三份文件，不被文档同步覆盖。
