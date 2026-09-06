@@ -41,6 +41,32 @@ let
       ${pkgs.coreutils}/bin/chmod g+rw "$file"
     done < <(${pkgs.findutils}/bin/find "$config_dir" -maxdepth 2 -type f -print0)
   '';
+  avahiStalePidCleanup = pkgs.writeShellScript "avahi-stale-pid-cleanup" ''
+    set -eu
+
+    pid_file=/run/avahi-daemon/pid
+    [ -e "$pid_file" ] || exit 0
+
+    pid="$(${pkgs.coreutils}/bin/cat "$pid_file" 2>/dev/null || true)"
+    case "$pid" in
+      "" | *[!0-9]*)
+        echo "Removing invalid Avahi PID file: $pid_file" >&2
+        ${pkgs.coreutils}/bin/rm -f -- "$pid_file"
+        exit 0
+        ;;
+    esac
+
+    if kill -0 "$pid" 2>/dev/null; then
+      process_name="$(${pkgs.coreutils}/bin/cat "/proc/$pid/comm" 2>/dev/null || true)"
+      if [ "$process_name" = avahi-daemon ] || [ -z "$process_name" ]; then
+        echo "Refusing to remove PID file for live process $pid ($process_name)." >&2
+        exit 1
+      fi
+    fi
+
+    echo "Removing stale Avahi PID file for dead or unrelated PID $pid." >&2
+    ${pkgs.coreutils}/bin/rm -f -- "$pid_file"
+  '';
 in
 {
   # Hardware, disks, boot loader, hostname, swap and resume policy are supplied
@@ -166,6 +192,13 @@ in
       workstation = true;
     };
   };
+
+  # avahi-daemon 偶尔会正常退出却留下 /run 下的 PID 文件，随后由 socket
+  # 激活重启时会反复报 "Failed to create PID file: File exists"，最终触发
+  # start-limit-hit 并导致 nuc.local 等 mDNS 名称无法解析。
+  systemd.services.avahi-daemon.serviceConfig.ExecStartPre = [
+    avahiStalePidCleanup
+  ];
 
   # SSH 加固（官方模板仅 enable=true）
   services.openssh.settings = {
