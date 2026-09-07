@@ -6,6 +6,9 @@ let
       __include: rime_ice_suggestion:/
       schema_list:
         - schema: rime_ice
+      "key_binder/bindings/+":
+        - { accept: comma, send: Page_Up, when: paging }
+        - { accept: period, send: Page_Down, when: has_menu }
   '';
   rimeDeploy = pkgs.writeShellScript "rime-deploy" ''
     set -eu
