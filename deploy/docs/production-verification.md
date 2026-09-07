@@ -1,5 +1,36 @@
 # 统一 just 流程生产发布验收（2026-09-05）
 
+## 2026-09-07 录音联删精确路由
+
+按用户单独授权，LAN 与 nas 公网仅新增 DELETE
+`/device-api/v1/transcriptions/by-key/*`，继续由后端 transcriptions 令牌权限校验。
+不修改设备密钥，不放开通配写入。30项 deploy 测试通过，相对生产 render.py 仅此两处路由。
+通过 just manage backup/config/recreate caddy 激活；备份为
+`20260907-161731-534597432`。Caddy 配置验证通过；Compose 停止超时后结束旧代理，
+新代理及只读网关恢复。LAN 与公网匿名 DELETE 均401，根入口302、Authelia200。
+未发送带权限的真实录音删除请求；后端发布和实机进度见 tag-all 录音联删文档。
+
+## 2026-09-07 目录排序精确写路由
+
+按用户授权在LAN与nas公网音乐POST matcher增加 `/device-api/v1/music/order`，
+继续由后端music设备令牌权限校验；未开放通配写入，不修改密钥或音乐文件。
+对比现网render.py仅两行路由变化，51项测试通过。通过既有just manage
+backup/config/recreate caddy/smoke流程启用，未升级整套基础镜像。
+配置备份 `20260907-151357-642249916`。Caddy停止超过10秒后Compose强制结束旧进程，
+新Caddy及联动只读网关已正常恢复；根入口302、Authelia200；LAN及公网匿名POST均401。
+后端与App发布进度以tag-all目录排序文档为准，路由启用不等于端到端排序验收。
+
+## 2026-09-07 播放列表精确写路由
+
+按用户授权在 LAN 与 nas 公网入口的音乐 POST matcher 中增加
+`/device-api/v1/music/playlists`，沿用后端 music 设备令牌校验，未放开音乐通配写入。
+51项发布工具测试通过。经既有 just manage backup/render/recreate caddy/smoke 管理流程
+更新，仅同步 render.py；没有拉取升级整套基础镜像。配置备份：
+`20260907-131003-907255742`。Caddy及联动只读网关恢复，根入口302登录、Authelia200；
+LAN及真实公网域名匿名列表POST均为401，公网TLS校验开启。初次直连源站HTTPS curl因
+本机CA链校验失败未取得状态，不能计为该直连测试通过。
+后端播放列表版本的部署结果另见 tag-all 音乐文档。
+
 本记录为本轮最新状态，取代此前“仅构建/预演、尚未生产发布”的阶段说明。
 
 ## 执行结果

@@ -139,6 +139,9 @@ class RenderTests(unittest.TestCase):
         self.assertIn("method POST", caddy)
         self.assertIn("path /device-api/v1/transcriptions", caddy)
         self.assertIn("@device_transcription_read {", caddy)
+        self.assertEqual(caddy.count("    @device_transcription_delete {"), 2)
+        self.assertEqual(caddy.count("method DELETE\n        path /device-api/v1/transcriptions/by-key/*"), 2)
+        self.assertEqual(caddy.count("handle @device_transcription_delete {"), 2)
         self.assertIn("path /device-api/v1/transcriptions/*", caddy)
         self.assertIn(
             "uri replace /device-api/v1/transcriptions /v1/device/transcriptions",
@@ -155,7 +158,8 @@ class RenderTests(unittest.TestCase):
         )
         self.assertIn("@device_music_upload {", caddy)
         self.assertIn("method POST", caddy)
-        self.assertIn("path /device-api/v1/music/uploads", caddy)
+        self.assertEqual(caddy.count("path /device-api/v1/music/uploads /device-api/v1/music/playlists /device-api/v1/music/order"), 2)
+        self.assertNotIn("path /device-api/v1/music/*", caddy)
         self.assertIn("@device_writing_commit {", caddy)
         self.assertIn("path /device-api/v1/writing/commits", caddy)
         self.assertIn(

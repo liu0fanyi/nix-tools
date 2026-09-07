@@ -6,6 +6,9 @@
 
 [最新：两端生产发布与三个访问场景验收](docs/production-verification.md)
 
+同页补充2026-09-07音乐播放列表精确POST路由、配置备份与匿名拒绝验收。
+另补目录内歌曲排序order精确POST路由、备份和LAN/公网匿名401验收。
+
 [构建发布命令与工程约束（根部 AGENTS.md）](docs/build-agent-guide.md)
 
 当前入口：just deploy nuc|aliyun infra|frontend|tag-server|all；config 发布组件已改名 infra。

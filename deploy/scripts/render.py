@@ -485,6 +485,18 @@ http://:{ports["lan"]} {{
         method GET HEAD
         path /device-api/v1/transcriptions/*
     }}
+    @device_transcription_delete {{
+        remote_ip {lan_cidrs}
+        method DELETE
+        path /device-api/v1/transcriptions/by-key/*
+    }}
+    handle @device_transcription_delete {{
+        uri replace /device-api/v1/transcriptions /v1/device/transcriptions
+        reverse_proxy tag-server:8081 {{
+            header_up X-Dufs-Device-Api 1
+            header_up -X-Dufs-Device-Provisioning
+        }}
+    }}
     handle @device_transcription_upload {{
         uri replace /device-api/v1/transcriptions /v1/device/transcriptions
         reverse_proxy tag-server:8081 {{
@@ -514,7 +526,7 @@ http://:{ports["lan"]} {{
     @device_music_upload {{
         remote_ip {lan_cidrs}
         method POST
-        path /device-api/v1/music/uploads
+        path /device-api/v1/music/uploads /device-api/v1/music/playlists /device-api/v1/music/order
     }}
     @device_music_delete {{
         remote_ip {lan_cidrs}
@@ -695,6 +707,17 @@ https://{domains["public"]}:{ports["main_origin"]}, https://{domains["origin"]}:
         method GET HEAD
         path /device-api/v1/transcriptions/*
     }}
+    @device_transcription_delete {{
+        method DELETE
+        path /device-api/v1/transcriptions/by-key/*
+    }}
+    handle @device_transcription_delete {{
+        uri replace /device-api/v1/transcriptions /v1/device/transcriptions
+        reverse_proxy tag-server:8081 {{
+            header_up X-Dufs-Device-Api 1
+            header_up -X-Dufs-Device-Provisioning
+        }}
+    }}
     handle @device_transcription_upload {{
         uri replace /device-api/v1/transcriptions /v1/device/transcriptions
         reverse_proxy tag-server:8081 {{
@@ -722,7 +745,7 @@ https://{domains["public"]}:{ports["main_origin"]}, https://{domains["origin"]}:
     }}
     @device_music_upload {{
         method POST
-        path /device-api/v1/music/uploads
+        path /device-api/v1/music/uploads /device-api/v1/music/playlists /device-api/v1/music/order
     }}
     @device_music_delete {{
         method DELETE
