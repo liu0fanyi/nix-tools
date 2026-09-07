@@ -357,6 +357,18 @@ in
     53319 # clipboard-sync 内容传输（TCP）
   ];
   # UDP：LocalSend 发现 + clipboard-sync 设备发现
+  # SSD201 烧录工作站固定为 liu-bigpc；重装仍选择同名 flake 主机即可恢复。
+  # 板卡 192.168.1.88 -> 本机 eno1 / 192.168.1.100，仅开放 TFTP 请求。
+  # 数据端口由 TFTP helper 跟踪并通过 RELATED 放行，不开放整个 UDP 高端口段。
+  boot.kernelModules = lib.mkIf (config.networking.hostName == "liu-bigpc") [ "nf_conntrack_tftp" ];
+  networking.firewall.extraCommands = lib.mkIf (config.networking.hostName == "liu-bigpc") ''
+    iptables -w -t raw -C PREROUTING -i eno1 -s 192.168.1.88/32 -d 192.168.1.100/32 -p udp -m multiport --dports 69,1069 -j CT --helper tftp 2>/dev/null || iptables -w -t raw -A PREROUTING -i eno1 -s 192.168.1.88/32 -d 192.168.1.100/32 -p udp -m multiport --dports 69,1069 -j CT --helper tftp
+    iptables -w -A nixos-fw -i eno1 -s 192.168.1.88/32 -d 192.168.1.100/32 -p udp -m multiport --dports 69,1069 -j nixos-fw-accept
+  '';
+  networking.firewall.extraStopCommands = lib.mkIf (config.networking.hostName == "liu-bigpc") ''
+    iptables -w -t raw -D PREROUTING -i eno1 -s 192.168.1.88/32 -d 192.168.1.100/32 -p udp -m multiport --dports 69,1069 -j CT --helper tftp 2>/dev/null || true
+  '';
+
   networking.firewall.allowedUDPPorts = [
     53317 # LocalSend
     53318 # clipboard-sync 设备发现（UDP 广播）
