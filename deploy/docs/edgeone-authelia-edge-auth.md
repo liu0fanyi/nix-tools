@@ -95,6 +95,32 @@ successive cookie-free requests both returned 302 after the hostname purge.
 
 ## Updating and rollback
 
+### 2026-09-07 upload forwarding diagnostics (console deployment pending)
+
+The tracked source now wraps origin forwarding with request correlation and
+exception handling. Device API connect timeout is 15s and read/write timeouts
+are 300s, using `eo.timeoutSetting` in milliseconds. Other forwarding uses
+60s read/write limits. Redirects remain manual so POST bodies and login cookies
+are not silently redirected. Forwarding exceptions return non-cacheable JSON
+502 with `error=edge_forward_failed`, `request_id`, `stage=forward`, elapsed
+milliseconds and `outcome=unknown`; this is not proof of a timeout or a failed
+origin operation. Log only correlation/status/timing, not URLs or credentials.
+
+The device path exclusion skips interactive authorization, not Edge Functions.
+It still passes through `fetch`. Keep scoped token checks at the origin and
+keep device/auth API caching disabled in the EdgeOne rules; setting no-store
+on a returned response cannot undo a cache hit that has already happened.
+
+The source change alone does not update the EdgeOne console. Replace the full
+function with the tracked JS and deploy, retaining the existing HOST trigger.
+Do not paste Markdown link wrappers or a trailing character after the script.
+After publishing, verify unauthenticated private-page redirects and device API
+request-ID responses. Long transcoding still needs an asynchronous job/status
+API: increasing fetch limits is only interim mitigation, not a guarantee.
+
+Reference: https://cloud.tencent.cn/document/product/1552/81897
+
+
 Edit the tracked JavaScript first, copy it into the EdgeOne editor, deploy it,
 and validate the function's default hostname before changing the production
 trigger. Keep the origin Caddy `forward_auth`; the Edge Function is not a reason

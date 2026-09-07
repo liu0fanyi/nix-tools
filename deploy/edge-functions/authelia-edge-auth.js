@@ -2,6 +2,42 @@ const PORTAL = "https://nas.wttliou.top/authelia/";
 const AUTHZ =
   "https://nas.wttliou.top/authelia/api/authz/forward-auth";
 
+async function forwardRequest(request, deviceApi) {
+  const supplied = request.headers.get("X-Request-ID") || "";
+  const requestId = /^[A-Za-z0-9-]{1,64}$/.test(supplied)
+    ? supplied : `edge-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  const started = Date.now();
+  const headers = new Headers(request.headers);
+  headers.set("X-Request-ID", requestId);
+  try {
+    const response = await fetch(request, {
+      headers,
+      redirect: "manual",
+      eo: { timeoutSetting: {
+        connectTimeout: 15000,
+        readTimeout: deviceApi ? 300000 : 60000,
+        writeTimeout: deviceApi ? 300000 : 60000,
+      } },
+    });
+    console.log(JSON.stringify({ request_id: requestId, stage: "forward",
+      status: response.status, elapsed_ms: Date.now() - started }));
+    const result = new Response(response.body, response);
+    result.headers.set("X-Request-ID", requestId);
+    if (deviceApi) result.headers.set("Cache-Control", "private, no-store");
+    return result;
+  } catch (error) {
+    // Do not log URLs, credentials or arbitrary exception messages.
+    console.error(JSON.stringify({ request_id: requestId, stage: "forward",
+      error: "edge_forward_failed", elapsed_ms: Date.now() - started }));
+    return new Response(JSON.stringify({ error: "edge_forward_failed",
+      request_id: requestId, stage: "forward", outcome: "unknown",
+      elapsed_ms: Date.now() - started }), { status: 502, headers: {
+        "Content-Type": "application/json", "Cache-Control": "private, no-store",
+        "X-Request-ID": requestId,
+      } });
+  }
+}
+
 function loginRedirect(request) {
   const location = `${PORTAL}?rd=${encodeURIComponent(request.url)}`;
 
@@ -24,7 +60,7 @@ async function handleRequest(request) {
     url.pathname === "/device-api" ||
     url.pathname.startsWith("/device-api/")
   ) {
-    return fetch(request);
+    return forwardRequest(request, url.pathname === "/device-api" || url.pathname.startsWith("/device-api/"));
   }
 
   const headers = new Headers();
@@ -72,7 +108,7 @@ async function handleRequest(request) {
   if (authResponse.status >= 200 && authResponse.status < 300) {
     // This subrequest is the first operation allowed to consult EdgeOne's
     // content cache or pull from the origin.
-    return fetch(request);
+    return forwardRequest(request, false);
   }
 
   const location = authResponse.headers.get("Location");
