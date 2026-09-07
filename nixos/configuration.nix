@@ -372,6 +372,7 @@ in
   networking.firewall.allowedUDPPorts = [
     53317 # LocalSend
     53318 # clipboard-sync 设备发现（UDP 广播）
+    53320 # clipboard-sync Android 配对申请
   ];
 
   # 用户服务开机自启（podman 用户 socket 等）：
