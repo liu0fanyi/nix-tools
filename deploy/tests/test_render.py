@@ -146,7 +146,7 @@ class RenderTests(unittest.TestCase):
         )
         self.assertIn("@device_music {", caddy)
         self.assertIn(
-            "path /device-api/v1/music/manifest /device-api/v1/music/files/*",
+            "path /device-api/v1/music/manifest /device-api/v1/music/files/* /device-api/v1/music/uploads/*",
             caddy,
         )
         self.assertIn(

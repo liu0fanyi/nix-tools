@@ -502,7 +502,7 @@ http://:{ports["lan"]} {{
     @device_music {{
         remote_ip {lan_cidrs}
         method GET HEAD
-        path /device-api/v1/music/manifest /device-api/v1/music/files/*
+        path /device-api/v1/music/manifest /device-api/v1/music/files/* /device-api/v1/music/uploads/*
     }}
     handle @device_music {{
         uri replace /device-api/v1/music /v1/device/music
@@ -515,6 +515,18 @@ http://:{ports["lan"]} {{
         remote_ip {lan_cidrs}
         method POST
         path /device-api/v1/music/uploads
+    }}
+    @device_music_delete {{
+        remote_ip {lan_cidrs}
+        method DELETE
+        path /device-api/v1/music/files/*
+    }}
+    handle @device_music_delete {{
+        uri replace /device-api/v1/music /v1/device/music
+        reverse_proxy tag-server:8081 {{
+            header_up X-Dufs-Device-Api 1
+            header_up -X-Dufs-Device-Provisioning
+        }}
     }}
     handle @device_music_upload {{
         uri replace /device-api/v1/music /v1/device/music
@@ -699,7 +711,7 @@ https://{domains["public"]}:{ports["main_origin"]}, https://{domains["origin"]}:
     }}
     @device_music {{
         method GET HEAD
-        path /device-api/v1/music/manifest /device-api/v1/music/files/*
+        path /device-api/v1/music/manifest /device-api/v1/music/files/* /device-api/v1/music/uploads/*
     }}
     handle @device_music {{
         uri replace /device-api/v1/music /v1/device/music
@@ -711,6 +723,17 @@ https://{domains["public"]}:{ports["main_origin"]}, https://{domains["origin"]}:
     @device_music_upload {{
         method POST
         path /device-api/v1/music/uploads
+    }}
+    @device_music_delete {{
+        method DELETE
+        path /device-api/v1/music/files/*
+    }}
+    handle @device_music_delete {{
+        uri replace /device-api/v1/music /v1/device/music
+        reverse_proxy tag-server:8081 {{
+            header_up X-Dufs-Device-Api 1
+            header_up -X-Dufs-Device-Provisioning
+        }}
     }}
     handle @device_music_upload {{
         uri replace /device-api/v1/music /v1/device/music
