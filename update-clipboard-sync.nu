@@ -107,7 +107,12 @@ def main [
         error make { msg: "flake.lock 已有未提交修改，请先处理，避免覆盖现有工作" }
     }
 
-    git submodule update --init clipboard-sync
+    # 已初始化的子模块可能刚完成本地提交并推送，而父仓库仍指向旧提交。
+    # 此时再次执行 submodule update 会先把它退回旧指针，甚至令新版才加入的
+    # ignored 构建目录变成未跟踪文件，随后下面的干净检查反而自我中止。
+    if not ("clipboard-sync/.git" | path exists) {
+        git submodule update --init clipboard-sync
+    }
 
     let child_changes = (git -C clipboard-sync status --porcelain | str trim)
     if not ($child_changes | is-empty) {
