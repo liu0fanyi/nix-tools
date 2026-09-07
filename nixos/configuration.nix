@@ -364,6 +364,11 @@ in
   networking.firewall.extraCommands = lib.mkIf (config.networking.hostName == "liu-bigpc") ''
     iptables -w -t raw -C PREROUTING -i eno1 -s 192.168.1.88/32 -d 192.168.1.100/32 -p udp -m multiport --dports 69,1069 -j CT --helper tftp 2>/dev/null || iptables -w -t raw -A PREROUTING -i eno1 -s 192.168.1.88/32 -d 192.168.1.100/32 -p udp -m multiport --dports 69,1069 -j CT --helper tftp
     iptables -w -A nixos-fw -i eno1 -s 192.168.1.88/32 -d 192.168.1.100/32 -p udp -m multiport --dports 69,1069 -j nixos-fw-accept
+    # SSD201 discovery replies come from a dynamic device port. Fix the client
+    # search socket at 5001; do not open an ephemeral destination port range.
+    iptables -w -A nixos-fw -i eno1 -s 192.168.1.88/32 -d 192.168.1.100/32 -p udp --dport 5001 -j nixos-fw-accept
+    # Product-specific SSDP NOTIFY multicast (tauri_config_page listener).
+    iptables -w -A nixos-fw -i eno1 -s 192.168.1.88/32 -d 239.255.1.1/32 -p udp --dport 5000 -j nixos-fw-accept
   '';
   networking.firewall.extraStopCommands = lib.mkIf (config.networking.hostName == "liu-bigpc") ''
     iptables -w -t raw -D PREROUTING -i eno1 -s 192.168.1.88/32 -d 192.168.1.100/32 -p udp -m multiport --dports 69,1069 -j CT --helper tftp 2>/dev/null || true

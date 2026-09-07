@@ -5,6 +5,8 @@ DUFS Plus.
 
 ## Home Manager
 
+SSD201 本机发现端口与限制见 [防火墙说明](docs/ssd201-discovery-firewall.md)。
+
 Install Nix with the
 [Determinate Systems installer](https://github.com/DeterminateSystems/nix-installer),
 then apply the host configuration:
