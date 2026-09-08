@@ -24,6 +24,9 @@ provides `newuidmap` and `newgidmap` (for example `uidmap` on Debian/Ubuntu).
 
 ## Windows clipboard-sync
 
+Clip 跨平台模块划分、验证范围与待处理风险见
+[重构记录](docs/clipboard-sync-refactor.md)。
+
 Run this from the repository root, or double-click it in Explorer:
 
 ```powershell
