@@ -39,3 +39,10 @@ __pycache__/
 
 # Local Cargo home used by sandboxed/project builds
 .cargo-home/
+
+# Blender smoke-test artifacts (dsh-blender validation, not project files)
+.blender-smoke/
+
+# Ad-hoc nix/npm caches used when the sandbox blocks ~/.cache (like .nix-cache)
+.tmp-nix-cache/
+.tmp-npm-cache/

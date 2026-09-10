@@ -42,6 +42,23 @@
     nvidiaSettings = true;
   };
 
+  # uv（home-manager programs.uv）下载的 python-build-standalone 解释器和
+  # 部分带 C 扩展的 wheel 是面向通用 Linux 的预编译二进制，硬编码 FHS 路径，
+  # 在 NixOS 上找不到动态链接器（Could not start dynamically linked
+  # executable）。nix-ld 提供 /lib64/ld-linux-x86-64.so.2 垫片把它们重定向
+  # 到 nix store 的链接器与库。specify-cli 等纯 python 工具通常不触发，
+  # 但 uv 装带原生扩展的工具时必需。libraries 缺啥补啥（libstdc++ 最常见）。
+  programs.nix-ld = {
+    enable = true;
+    libraries = with pkgs; [
+      stdenv.cc.cc.lib # libstdc++.so.6 — 大多数 wheel 需要
+      zlib
+      openssl
+      libffi
+      glibc
+    ];
+  };
+
   # The previous NixOS generation resumed from deep S3 but immediately logged
   # NVIDIA Xid 13 errors in niri and LocalSend, leaving the display black.
   # Keep display power saving in the user session, but disable system sleep

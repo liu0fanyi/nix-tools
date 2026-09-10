@@ -254,8 +254,9 @@ fi
 echo "mihomo 已恢复，clashtui controller=127.0.0.1:9090 可访问。"
 REMOTE
 
-# 3. dsh/dsh-tui/pnpm 是独立的 npm 运行时工具；mihomo 恢复成功后再安装，
-# 避免 npm 临时网络失败掩盖 clashtui 的真正状态。
+# 3. dsh/dsh-tui 是独立的 npm 运行时工具；pnpm 由 home-manager 声明式安装
+# （home.nix 的 home.packages），不走 npm -g，避免与 nix 版本双份冲突。
+# mihomo 恢复成功后再安装，避免 npm 临时网络失败掩盖 clashtui 的真正状态。
 if (( ! skip_npm )); then
   echo "安装 npm 全局包到 $TARGET ..."
   ssh "${ssh_options[@]}" "$TARGET" bash -s -- "$remote_proxy_arg" <<'REMOTE'
@@ -285,7 +286,7 @@ if [[ -n "$proxy_url" ]]; then
 fi
 
 runuser -u liou -- env "${user_env[@]}" bash -c \
-  'cd /home/liou && npm install -g @deepseek-ai/dsh @deepseek-harness-tui/dsh-tui pnpm 2>&1 | tail -20'
+  'cd /home/liou && npm install -g @deepseek-ai/dsh @deepseek-harness-tui/dsh-tui 2>&1 | tail -20'
 REMOTE
 fi
 

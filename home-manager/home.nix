@@ -97,6 +97,9 @@
     mupdf
     # 轻量级音视频播放器，原生支持 Wayland。
     mpv
+    # Blender 3D 建模/渲染/导出（dsh-blender 等插件依赖 blender 可执行文件；
+    # 版本跟随 flake 锁定的 nixpkgs，当前为 5.2.x）。
+    blender
     # PJSIP 命令行软电话；便于脚本化验证注册、保持/恢复和多路通话。
     pjsip
     # 鼠标光标主题和 Zen Browser 由 Home Manager 统一提供给各 Linux 主机。
@@ -126,6 +129,10 @@
     exfatprogs
     # just：任务运行器（clipboard-sync 构建/分发/部署用，见 clipboard-sync/Justfile）
     just
+    # pnpm：dsh profile 插件管理工具（`dsh plugin --profile web ...` 转发到 pnpm，
+    # 见 ensureDshLatest 下方注释）。由 nix 声明式管理，跟随 flake.lock 的
+    # nixpkgs 升级；不复用 restore-secrets.sh 的 npm -g 安装（避免双份冲突）。
+    pnpm
     # Cross-device encrypted credential vault and its sync daemon.
     keepassxc
     syncthing
@@ -300,6 +307,21 @@
       };
       core.sshCommand = "ssh -4";
     };
+  };
+
+  # uv：Python 包/工具管理器（Rust 静态二进制，无 python 依赖）。
+  # 用 home-manager 原生模块（programs.uv）声明式管理，比 home.packages 塞 uv
+  # 更正规：activation 时自动 uv tool install/upgrade、uv python install。
+  # 注意：uv 的托管 Python 是 python-build-standalone 预编译版（非 nix），
+  # 若装带 C 扩展的工具报 libstdc++.so.6 找不到，需在 nixos 侧开
+  # programs.nix-ld（见 nixos 配置，不在本文件）。
+  # specify-cli = GitHub Spec Kit 的 CLI（Spec-Driven Development 脚手架），
+  # 纯 python 工具；版本不 pin 时每次 activation 自动 upgrade 到最新。
+  programs.uv = {
+    enable = true;
+    tool.packages = [
+      "specify-cli"
+    ];
   };
 
   programs.home-manager.enable = true;
@@ -525,11 +547,23 @@
     ''
   );
 
-  # dsh profile 插件（如 SSH 插件）由 dsh 自己管理（dsh plugin add/rm/update，
-  # 转发 pnpm），home-manager 不接管——插件是动态的、有依赖顺序，声明式管理
-  # 会与手动操作冲突。需要时手动执行：
-  #   dsh plugin --profile web add dsh-better-sidebar
-  #   dsh plugin --profile web add @zhangfengshun/dsh-remote-ssh
+  # dsh profile 插件由 dsh 自己管理（dsh plugin add/rm/update，转发 pnpm），
+  # home-manager 不接管——插件是动态的、有依赖顺序，声明式管理会与手动操作
+  # 冲突。当前 web profile 已装（2026-09，dsh 0.1.2-rc.1）：
+  #   dsh-better-sidebar              VSCode 式右侧栏（explorer/editor/terminal/git/browser）
+  #   @zhangfengshun/dsh-remote-ssh   远程 SSH 开发（remote workspace/文件树/终端）
+  #   dsh-context                     上下文洞察与 token 管理
+  #   dsh-doctor                      启动异常诊断与恢复
+  #   @openviking/dsh-memory-plugin   跨会话记忆（OpenViking，Apache-2.0）
+  # 重装/增删：dsh plugin --profile web add/rm <pkg>，然后
+  #   systemctl --user restart dsh-web 生效。
+  # 注意：better-sidebar/remote-ssh 依赖 node-pty（原生模块，npm 不带 linux
+  #   预编译）。NixOS 无 gcc/make，首次及每次 node-pty 升级后需在
+  #   ~/.dsh/profiles/web 下用临时工具链重建：
+  #   nix shell nixpkgs#gcc nixpkgs#gnumake nixpkgs#python3 \
+  #     --command bash -c 'pnpm rebuild node-pty'
+  # pnpm 11 默认拦 build scripts，node-pty 已在 pnpm-workspace.yaml 的
+  # allowBuilds 里放行（该文件是 dsh profile 生成物，不在本仓库）。
 
   # fcitx5 输入法列表（对齐本机：keyboard-us + pinyin + rime，默认 rime）
   xdg.configFile."fcitx5/profile" = lib.mkIf isNixOS {

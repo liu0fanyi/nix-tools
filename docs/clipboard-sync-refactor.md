@@ -7,6 +7,31 @@
 
 ## 模块职责
 
+### 0.1.13 实机短测（2026-09-08）
+
+- Linux 已由用户更新 flake.lock 并 switch，实际运行 `0.2.0+8eaff2028dd0`；
+  HONOR ANN-AN00 正式 Android `0.1.13 / 1013`。
+- Android 系统文字分享 → Linux 接收成功，剪贴板 SHA-256 与测试文字一致；
+  Linux → Android 30 字节测试文字接收成功，App 读取手机剪贴板显示原文。
+- `clip013-test,comma.txt`（53 字节）通告在手机保留英文逗号。
+  短暂前后台切换、强制停止 Clip 后重开，待接收项恢复，新进程及原生前台服务启动。
+- 暂停 Linux Clip 进程 38 秒模拟无响应发送端，退出 trap 自动恢复进程，未切断网络。
+  Android 约 30 秒后显示失败及“点击重试”；恢复后手动重试成功，保存到
+  `Download/Clip/clip013-test,comma.txt`，与 PC 的 SHA-256 一致：
+  `5fac742131e076660fe373652e788fe99bfd7c4025eed6b327d1ca7b2ec507e7`。
+- 待改善：超时错误仍直接显示 `Try again (os error 11)`，需要用户友好的错误映射。
+- 本次不涵盖长时间锁屏/系统低内存回收、真实切网、大文件中途断流、部分保存失败去重、
+  图片/多文件全矩阵、Windows UI。测试文件留在手机供用户核对，未删除既有待接收记录。
+
+### 短测收尾：错误提示修复（源码完成，未发布）
+
+用户决定暂不做 Windows 实机和长时间后台测试，本阶段收尾，不将这些项标成通过。
+网络接收处将 `TimedOut/WouldBlock` 映射为“接收超时，请确认发送方在线且两端网络正常，
+再点击重试”，并区分连接被拒绝和中断；保留原始错误 source，不改本地文件 I/O 错误。
+Android/Linux/Windows 共享该处理，不改重试行为或超时长度。
+新增真实阻塞 TCP 超时/断连回归及错误映射测试；Linux 共 33 项测试、严格 Clippy、
+Windows cargo check、Android 含测试目标 cargo check 通过。未提交/发布/安装，正式版仍为 0.1.13。
+
 | 位置（相对 clipboard-sync） | 职责 |
 | --- | --- |
 | `src/transfer/mod.rs` | 对外 API、类型、协议限额与缓存 |
