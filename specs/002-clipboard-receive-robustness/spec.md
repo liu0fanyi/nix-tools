@@ -1,6 +1,6 @@
 # 特性规格：clipboard-sync 接收体验与错误健壮性
 
-**Feature Branch**: `003-clipboard-receive-robustness`
+**Feature Branch**: `002-clipboard-receive-robustness`
 
 **Created**: 2026-09-10
 
@@ -128,4 +128,4 @@
 
 ## 与 todo.md 的关系
 
-本规格承接 `clipboard-sync/todo.md` 中尚未完成的条目。按项目宪法原则 IV（单源 Spec 规范），该 `todo.md` 在 spec 003 建立后**移除**：已完成条目为既成事实，剩余需求以本规格为准，待决策项转为上述 Open Questions。
+本规格承接 `clipboard-sync/todo.md` 中尚未完成的条目。按项目宪法原则 IV（单源 Spec 规范），该 `todo.md` 在 spec 002 建立后**移除**：已完成条目为既成事实，剩余需求以本规格为准，待决策项转为上述 Open Questions。
