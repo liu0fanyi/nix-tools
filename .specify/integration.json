@@ -2,15 +2,10 @@
   "version": "1.0.5",
   "integration_state_schema": 1,
   "installed_integrations": [
-    "agy",
     "dsh",
     "codex"
   ],
   "integration_settings": {
-    "agy": {
-      "script": "sh",
-      "invoke_separator": "-"
-    },
     "dsh": {
       "script": "sh",
       "invoke_separator": "-"
@@ -20,6 +15,6 @@
       "invoke_separator": "-"
     }
   },
-  "integration": "agy",
-  "default_integration": "agy"
+  "integration": "dsh",
+  "default_integration": "dsh"
 }

@@ -32,7 +32,7 @@
 
 ## 三、验收标准 (Success Criteria)
 
-- [x] **CR-1**：`.specify/memory/constitution.md` 经批准生效，包含 PC 权威构建、三级安全隔离、镜像真实性与单源 Spec 四项核心原则。
+- [x] **CR-1**：`.specify/memory/constitution.md` 经批准生效，包含 PC 权威构建、三级安全隔离、镜像真实性、单源 Spec 与同步边界五项核心原则。
 - [x] **CR-2**：根目录 `AGENTS.md` 紧凑重构，删除冗余的 `deploy/AGENTS.md`。
 - [x] **CR-3**：提供可重复运行的 `just sync-todos` 命令，能将 `specs/`、`docs/` 及生成的汇总看板可靠增量同步至 `liou@nuc.local:/home/liou/dufs-lan/todos/nix-tools/`。
 - [x] **CR-4**：同步到远端后的目录包含结构化的 `specs/` 镜像以及符合旧前端格式的 `plan.md` 兼容层。
