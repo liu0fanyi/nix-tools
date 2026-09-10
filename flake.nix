@@ -37,6 +37,16 @@
       url = "file+https://persistent.oaistatic.com/codex-app-prod/linux/deb/latest/chatgpt_amd64.deb";
       flake = false;
     };
+    # Google Antigravity 2.0（agentic IDE）。nixpkgs 里目前只有上一代
+    # antigravity-ide / antigravity-cli，没有 2.0 拆出的 Base App
+    # （antigravity-hub；NixOS/nixpkgs#524225 至今未合并），所以走这个社区
+    # flake：164 stars，GitHub Actions 每日跟进上游版本并校验哈希与构建。
+    # follows 本仓库 nixpkgs，避免引入第二份 nixpkgs，也让 google-chrome
+    # 等依赖与系统同源。
+    antigravity-nix = {
+      url = "github:jacopone/antigravity-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # 独立应用 flake：其 CI 与本仓库消费完全相同的 package derivation，便于命中 Cachix。
     clipboard-sync-src = {
       # refs/ 只保存上游源码参考 submodules，不参与构建。显式启用
