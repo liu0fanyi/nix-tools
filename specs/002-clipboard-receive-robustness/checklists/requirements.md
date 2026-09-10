@@ -32,5 +32,5 @@
 ## Notes
 
 - 本规格只覆盖 todo.md 中真实剩余的项；已完成的传输/通知/防回环等为既成事实，明确列为 Assumptions 不回炉。
-- 5 个 Open Questions 需要用户决策后才能进入 `/speckit-plan`；未用 [NEEDS CLARIFICATION] 标记，因为它们不阻断规格成立。
+- 5 个待决策问题已于 2026-09-10 `/speckit-clarify` 全部决议（见 spec 的 Clarifications 与「已决议问题」章节），规格可进入 `/speckit-plan`。
 - 实现位于 clipboard-sync 子模块，规格文档由 nix-tools 管理。
