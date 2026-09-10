@@ -109,17 +109,23 @@ def main():
     print(f"[*] Ensuring remote directories exist at {REMOTE_HOST}:{REMOTE_DIR}...")
     run_cmd(["ssh", REMOTE_HOST, f"mkdir -p {shlex.quote(REMOTE_DIR + '/specs')} {shlex.quote(REMOTE_DIR + '/docs')}"])
 
+    # Normalize permissions: source files may be created under a restrictive
+    # umask (e.g. 077 by some agents), which would mirror 700/600 to the NUC
+    # and make the planner/DUFS readers unable to serve them. Force the
+    # conventional 755/644 regardless of the local umask.
+    chmod = ["--chmod=D755,F644"]
+
     # 1. Sync specs/
     if (ROOT / "specs").is_dir():
         print("[*] Mirroring specs/...")
-        run_cmd(["rsync", "-avz", "--delete", f"{ROOT}/specs/", f"{REMOTE_HOST}:{REMOTE_DIR}/specs/"])
+        run_cmd(["rsync", "-avz", "--delete", *chmod, f"{ROOT}/specs/", f"{REMOTE_HOST}:{REMOTE_DIR}/specs/"])
 
     # 2. Sync docs/ and deploy/docs/
     print("[*] Mirroring docs/...")
     if (ROOT / "docs").is_dir():
-        run_cmd(["rsync", "-avz", f"{ROOT}/docs/", f"{REMOTE_HOST}:{REMOTE_DIR}/docs/"])
+        run_cmd(["rsync", "-avz", *chmod, f"{ROOT}/docs/", f"{REMOTE_HOST}:{REMOTE_DIR}/docs/"])
     if (ROOT / "deploy/docs").is_dir():
-        run_cmd(["rsync", "-avz", f"{ROOT}/deploy/docs/", f"{REMOTE_HOST}:{REMOTE_DIR}/docs/"])
+        run_cmd(["rsync", "-avz", *chmod, f"{ROOT}/deploy/docs/", f"{REMOTE_HOST}:{REMOTE_DIR}/docs/"])
 
     # 3. Sync README.md dashboard
     print("[*] Syncing README.md index...")
@@ -128,7 +134,7 @@ def main():
         temp_name = f.name
 
     try:
-        run_cmd(["rsync", "-avz", temp_name, f"{REMOTE_HOST}:{REMOTE_DIR}/README.md"])
+        run_cmd(["rsync", "-avz", *chmod, temp_name, f"{REMOTE_HOST}:{REMOTE_DIR}/README.md"])
     finally:
         Path(temp_name).unlink(missing_ok=True)
 
