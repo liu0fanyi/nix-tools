@@ -39,11 +39,11 @@
       },
       "locked": {
         "exportIgnore": true,
-        "lastModified": 1788836359,
-        "narHash": "sha256-oyapZsKq1aYJ1Mkf9IyYUZvQb/5KMUxeFZzIA1fAgPg=",
+        "lastModified": 1789054049,
+        "narHash": "sha256-OSx09nZDjM9pVGSJFxH2GTU5Hd5V7ou4HDc7PW2pfm8=",
         "ref": "master",
-        "rev": "8eaff2028dd0f215b000cd8d24eda9963a8673b3",
-        "revCount": 111,
+        "rev": "0dd79b278c7b00c395c0a2ad026656d8fba03051",
+        "revCount": 131,
         "type": "git",
         "url": "ssh://git@github.com/liu0fanyi/clipboard-sync.git"
       },
