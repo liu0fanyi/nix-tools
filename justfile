@@ -14,8 +14,8 @@ test:
     python3 -m unittest discover -s scripts/tests
 
 # 镜像 specs、docs 与看板到 NUC todos/nix-tools/
-sync-todos:
-    python3 scripts/sync-todos.py
+sync-todos *args:
+    python3 scripts/sync-todos.py {{args}}
 
 # 只读设备预检；不接收 --yes/--flake，不执行安装。
 install-check host *args:

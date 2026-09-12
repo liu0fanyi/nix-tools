@@ -90,3 +90,9 @@ devenv shell -- just manage <操作>                   # NUC 运维管理入口
 2. **目录保护隔离**：
    - 不得覆盖 NUC `todos/` 根部三份全局文件或其他工程资料。
    - 不得向 xiaoqiang 专用的 `/home/liou/dufs/` 重建本工程文档。容器发布流程不变。
+
+## Clip 规格归属
+
+按用户绑定维护决定，clipboard-sync 子模块的功能规格统一位于本仓库 specs/005-clipboard-core、006-clipboard-reliability、007-clipboard-release。子模块只留手册与指向本仓库的入口，代码/Git/构建保持独立。其他产品仍在各自仓库管理规格。本规则明确恢复既有父仓库规格归属，不恢复已经取消的 dsh Web 或 Clip 2 分钟过期需求。
+
+同步前可运行 `just sync-todos --dry-run`；正式同步只对本项目 specs 使用删除镜像，docs 增量，附带 constitution/操作入口并以 checksum 复查。

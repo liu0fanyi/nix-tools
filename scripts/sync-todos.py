@@ -1,145 +1,116 @@
 #!/usr/bin/env python3
-"""Sync nix-tools specs and documentation to NUC dufs-lan."""
-from __future__ import annotations
-
+"""Mirror this repository's specs and documentation to its fixed NUC directory."""
+from pathlib import Path
+import argparse
 import re
 import shlex
 import subprocess
-import sys
 import tempfile
-from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-REMOTE_HOST = "liou@nuc.local"
-REMOTE_DIR = "/home/liou/dufs-lan/todos/nix-tools"
+PROJECT = 'nix-tools'
+REMOTE_HOST = 'liou@nuc.local'
+REMOTE_DIR = '/home/liou/dufs-lan/todos/' + PROJECT
 
 
-def run_cmd(cmd: list[str], check: bool = True) -> subprocess.CompletedProcess[str]:
-    print("+ " + shlex.join(str(c) for c in cmd), flush=True)
-    return subprocess.run(cmd, check=check, text=True, capture_output=True)
-
-
-def collect_specs() -> list[dict]:
-    specs_dir = ROOT / "specs"
-    if not specs_dir.is_dir():
-        return []
-
-    specs = []
-    for entry in sorted(specs_dir.iterdir()):
-        if not entry.is_dir() or entry.name.startswith("."):
+def task_counts(path):
+    done = total = 0
+    fence = None
+    for line in path.read_text().splitlines() if path.is_file() else []:
+        match = re.match(r'^\s*(`{3,}|~{3,})', line)
+        if match:
+            marker = match[1]
+            if fence is None:
+                fence = marker
+            elif marker[0] == fence[0] and len(marker) >= len(fence):
+                fence = None
             continue
-
-        spec_file = entry / "spec.md"
-        tasks_file = entry / "tasks.md"
-
-        title = entry.name
-        if spec_file.is_file():
-            for line in spec_file.read_text(encoding="utf-8").splitlines():
-                if line.startswith("# "):
-                    title = line.removeprefix("# ").strip()
-                    break
-
-        tasks = []
-        if tasks_file.is_file():
-            for line in tasks_file.read_text(encoding="utf-8").splitlines():
-                m = re.match(r"^\s*[-*+]\s+\[([ xX])\]\s+(.+)$", line)
-                if m:
-                    done = m.group(1).lower() == "x"
-                    tasks.append({"title": m.group(2).strip(), "done": done})
-
-        total = len(tasks)
-        done_count = sum(1 for t in tasks if t["done"])
-        pct = int(done_count / total * 100) if total > 0 else 0
-        state = "已完成" if total > 0 and done_count == total else ("实施中" if done_count > 0 else "待实施")
-
-        specs.append({
-            "dir_name": entry.name,
-            "title": title,
-            "total": total,
-            "done": done_count,
-            "pct": pct,
-            "state": state,
-        })
-    return specs
+        match = re.match(r'^\s*[-*+]\s+\[([ xX])\]\s+', line)
+        if fence is None and match:
+            total += 1
+            done += match[1].lower() == 'x'
+    return done, total
 
 
-def render_readme(specs: list[dict]) -> str:
-    lines = [
-        "# nix-tools 状态看板与工程文档",
-        "",
-        "> 本目录由 PC `nix-tools` 通过 `just sync-todos` 自动同步镜像，只读查阅，请勿在远端手动编辑。",
-        "",
-        "## 一、特异规格与进展 (Specs)",
-        "",
-    ]
+def render():
+    lines = [f'# {PROJECT} 规格与进度', '',
+             '> 本地仓库为权威源；由 just sync-todos 生成，远端勿手工编辑。任务勾选不等于部署或实机验收。', '',
+             '| 特性 | 任务 | 规格 | 方案 |', '| --- | --- | --- | --- |']
+    for directory in sorted((ROOT / 'specs').iterdir()):
+        if not directory.is_dir() or not (directory / 'spec.md').is_file():
+            continue
+        title = next((line[2:].strip() for line in (directory / 'spec.md').read_text().splitlines()
+                      if line.startswith('# ')), directory.name).replace('|', '\\|')
+        done, total = task_counts(directory / 'tasks.md')
+        base = 'specs/' + directory.name
+        tasks = f'[{done}/{total}]({base}/tasks.md)' if (directory / 'tasks.md').is_file() else '未建任务清单'
+        plan = f'[plan]({base}/plan.md)' if (directory / 'plan.md').is_file() else '—'
+        lines.append(f'| {title} | {tasks} | [spec]({base}/spec.md) | {plan} |')
+    lines.extend(['', '- [项目宪法](.specify/memory/constitution.md)'])
+    if (ROOT / 'README.md').is_file():
+        lines.append('- [仓库操作入口](repository-readme.md)（源码相对链接请在仓库中查阅）')
+    if (ROOT / 'AGENTS.md').is_file():
+        lines.append('- [工程操作规则](AGENTS.md)')
+    for doc in sorted((ROOT / 'docs').rglob('*.md')) if (ROOT / 'docs').is_dir() else []:
+        rel = doc.relative_to(ROOT).as_posix()
+        lines.append(f'- [{doc.stem}]({rel})')
+    for doc in sorted((ROOT / 'deploy/docs').rglob('*.md')):
+        rel = 'docs/' + doc.relative_to(ROOT / 'deploy/docs').as_posix()
+        lines.append(f'- [{doc.stem}]({rel})')
+    return '\n'.join(lines) + '\n'
 
-    if not specs:
-        lines.append("暂无特异规格。")
-    else:
-        lines.append("| 编号与标识 | 特性名称 | 完成进度 | 状态 | 规格文档 | 任务清单 |")
-        lines.append("| :--- | :--- | :--- | :--- | :--- | :--- |")
-        for s in specs:
-            dir_name = s["dir_name"]
-            progress = f"{s['pct']}% ({s['done']}/{s['total']})"
-            spec_link = f"[spec.md](specs/{dir_name}/spec.md)"
-            tasks_link = f"[tasks.md](specs/{dir_name}/tasks.md)"
-            lines.append(f"| `{dir_name}` | {s['title']} | {progress} | {s['state']} | {spec_link} | {tasks_link} |")
 
-    lines.extend([
-        "",
-        "## 二、工程权威文档 (Documentation)",
-        "",
-        "- [构建发布命令与工程约束（AGENTS.md）](docs/build-agent-guide.md)",
-        "- [两端生产发布与三个访问场景验收](docs/production-verification.md)",
-        "- [PC 发起的 NUC 管理和阿里云发布](docs/pc-release.md)",
-        "- [设备结构与 NUC 重装适用性审查](docs/host-structure-review.md)",
-        "- [NUC 重装准备、备份与业务恢复](docs/nuc-migration.md)",
-        "",
-        "---",
-        "权威源码与构建入口：PC `liu-bigpc:/home/liou/nix-tools`",
-    ])
-    return "\n".join(lines) + "\n"
+def transfers(readme):
+    pairs = [(ROOT / 'specs', REMOTE_DIR + '/specs/', True),
+             (ROOT / '.specify/memory/constitution.md', REMOTE_DIR + '/.specify/memory/constitution.md', False),
+             (readme, REMOTE_DIR + '/README.md', False)]
+    for name, target in [('docs', 'docs/'), ('deploy/docs', 'docs/'), ('README.md', 'repository-readme.md'), ('AGENTS.md', 'AGENTS.md')]:
+        if (ROOT / name).exists():
+            pairs.append((ROOT / name, REMOTE_DIR + '/' + target, False))
+    return pairs
+
+
+def command(source, destination, delete=False, verify=False):
+    cmd = ['rsync', '-rptz', '--checksum', '--chmod=D755,F644']
+    if delete:
+        cmd.append('--delete')
+    if verify:
+        cmd += ['--dry-run', '--itemize-changes']
+    return cmd + [str(source) + ('/' if source.is_dir() else ''), REMOTE_HOST + ':' + destination]
 
 
 def main():
-    print(f"[*] Scanning specs from {ROOT / 'specs'}...")
-    specs = collect_specs()
-    readme_content = render_readme(specs)
-
-    print(f"[*] Ensuring remote directories exist at {REMOTE_HOST}:{REMOTE_DIR}...")
-    run_cmd(["ssh", REMOTE_HOST, f"mkdir -p {shlex.quote(REMOTE_DIR + '/specs')} {shlex.quote(REMOTE_DIR + '/docs')}"])
-
-    # Normalize permissions: source files may be created under a restrictive
-    # umask (e.g. 077 by some agents), which would mirror 700/600 to the NUC
-    # and make the planner/DUFS readers unable to serve them. Force the
-    # conventional 755/644 regardless of the local umask.
-    chmod = ["--chmod=D755,F644"]
-
-    # 1. Sync specs/
-    if (ROOT / "specs").is_dir():
-        print("[*] Mirroring specs/...")
-        run_cmd(["rsync", "-avz", "--delete", *chmod, f"{ROOT}/specs/", f"{REMOTE_HOST}:{REMOTE_DIR}/specs/"])
-
-    # 2. Sync docs/ and deploy/docs/
-    print("[*] Mirroring docs/...")
-    if (ROOT / "docs").is_dir():
-        run_cmd(["rsync", "-avz", *chmod, f"{ROOT}/docs/", f"{REMOTE_HOST}:{REMOTE_DIR}/docs/"])
-    if (ROOT / "deploy/docs").is_dir():
-        run_cmd(["rsync", "-avz", *chmod, f"{ROOT}/deploy/docs/", f"{REMOTE_HOST}:{REMOTE_DIR}/docs/"])
-
-    # 3. Sync README.md dashboard
-    print("[*] Syncing README.md index...")
-    with tempfile.NamedTemporaryFile(mode="w", suffix=".md", encoding="utf-8", delete=False) as f:
-        f.write(readme_content)
-        temp_name = f.name
-
-    try:
-        run_cmd(["rsync", "-avz", *chmod, temp_name, f"{REMOTE_HOST}:{REMOTE_DIR}/README.md"])
-    finally:
-        Path(temp_name).unlink(missing_ok=True)
-
-    print("[✓] Successfully synced specs, docs, and index dashboard to NUC!")
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--dry-run', action='store_true', help='Render and print commands locally; no network writes')
+    args = parser.parse_args()
+    if not (ROOT / 'specs').is_dir() or not (ROOT / '.specify/memory/constitution.md').is_file():
+        parser.error('specs/ and constitution are required')
+    for doc in (ROOT / 'deploy/docs').rglob('*'):
+        if doc.is_file() and (ROOT / 'docs' / doc.relative_to(ROOT / 'deploy/docs')).exists():
+            parser.error('duplicate docs mirror path: ' + str(doc))
+    with tempfile.TemporaryDirectory(prefix='spec-mirror-') as temp:
+        readme = Path(temp) / 'README.md'
+        readme.write_text(render())
+        pairs = transfers(readme)
+        # Refuse symlink sources: never publish files outside owned source directories.
+        for source, _, _ in pairs:
+            if source.is_symlink() or (source.is_dir() and any(p.is_symlink() for p in source.rglob('*'))):
+                parser.error('symlink source is not supported: ' + str(source))
+        mkdir = ['ssh', REMOTE_HOST, 'mkdir -p ' + shlex.quote(REMOTE_DIR + '/specs') + ' ' + shlex.quote(REMOTE_DIR + '/docs') + ' ' + shlex.quote(REMOTE_DIR + '/.specify/memory')]
+        commands = [mkdir] + [command(*pair) for pair in pairs]
+        if args.dry_run:
+            print(readme.read_text())
+            for cmd in commands:
+                print(shlex.join(cmd))
+            return
+        for cmd in commands:
+            subprocess.run(cmd, check=True)
+        for pair in pairs:
+            result = subprocess.run(command(*pair, verify=True), text=True, capture_output=True, check=True)
+            if result.stdout.strip():
+                raise RuntimeError('Mirror mismatch: ' + result.stdout)
+        print('Verified specs, constitution, documentation and dashboard: ' + REMOTE_DIR)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
