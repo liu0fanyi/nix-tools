@@ -2,7 +2,7 @@
 
 ## 范围
 
-复核本地 18 个工程、nix-tools 及其 clipboard-sync 子模块，与 NUC todos、历史 nix-tools checkout 和资料区交叉核对。个人事项、上游资料、许可、运行数据不转为产品 spec；xiaoqiang 仍只盘点不迁移。
+复核本地 18 个工程、nix-tools 及其 clipboard-sync 子模块，与 NUC todos、历史 nix-tools checkout 和资料区交叉核对。个人事项、上游资料、许可、运行数据不转为产品 spec；初轮 xiaoqiang 仅盘点；后续按用户逐仓库授权扩展，最新边界见下文。
 
 ## 验收标准
 
@@ -11,3 +11,11 @@
 - 源文件与镜像按 SHA-256 核对；已取消需求不恢复成待办，旧验证不冒充本轮实测。
 - 每个尚未闭环项明确记录，不以文件存在或任务勾选推断内容完整迁移。
 - 删除前需逐条核对内容去向；混合文档中个人和暂缓项目内容保留。
+
+
+## 2026-09-13 后续授权收尾
+
+软件工程范围已扩展到 xiaoqiang，包括独立 sip_old 与小智；signature-server 按用户
+决定继续暂缓。hardware-relation-studio 经用户确认归属 bevy-project-planner。
+各产品需求仍由自身仓库管理，本规格仅记录迁移审计，不代管产品待办。
+详见[本轮记录与保留边界](contracts/20260913-software-convergence.md)。
