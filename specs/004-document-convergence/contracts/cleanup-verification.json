@@ -1,0 +1,12 @@
+{
+  "verified_spec_markdown": 188,
+  "explicit_cleanup_paths": 17,
+  "changed_existing_documents": 31,
+  "unchanged_existing_documents": 1347,
+  "unexpected_changes": [],
+  "retained_lines": "verified original order and bytes",
+  "backups": [
+    "/home/liou/.local/state/spec-migration/cleanup-20260912T091428Z",
+    "/home/liou/.local/state/spec-migration/cleanup-20260912T091645Z"
+  ]
+}

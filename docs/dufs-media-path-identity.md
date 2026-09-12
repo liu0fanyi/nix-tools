@@ -11,33 +11,14 @@
 `/media/liou` 覆盖挂载为 `/workspace/media`。持久关系应保存工作区相对路径，
 例如 `media/Art/book/a.pdf`，不能保存 `/media/liou/...` 或 `/workspace/...`。
 
-## 2026-08-24 审计结果
-
-* `tag_all.db` 的 2795 条 `items.path` 中没有宿主绝对路径、容器绝对路径或
-  前导 `/`。其中 2383 条属于 `media/Art/...`，24 条属于
-  `media/My Passport/...`。这 24 条是格式化前的历史路径；新盘路径为
-  `media/project/...`。
-* 标签和笔记最终都关联 `items.id`。dufs-plus 内部移动会在同一事务中改写
-  整个路径子树，并保留标签和笔记关系。
-* 文件旁边的 `.tag`、阅读进度和 PDF/EPUB 分析目录不保存宿主挂载前缀；
-  它们跟着源文件一起移动时不受硬盘卷标影响。
-* 漫画 manifest 保存工作区相对 `source_path`，路径变化后属于可重新生成的
-  缓存，不是唯一数据。
-* `dufs-media-progress.json` 仍包含旧版 `/media/Art/...` 键，但当前代码已经不再
-  读取该文件；它是历史数据，不作为现行关系来源。
-* 浏览器最近目录、阅读缓存等可能以 URL 路径为键。挂载路径变化后它们会成为
-  无害的旧缓存，但不能用于恢复服务器关系。
-* Bevy Sketch 画板中的外部图片、视频和绘画来源使用 Web 根相对路径，例如
-  `/media/Art/...`。这不是宿主绝对路径，但硬盘挂载目录改名仍会使引用失效。
-
 ## 结论与操作边界
 
 硬盘自身的稳定身份是 UUID，不应让可修改的 exFAT 卷标决定应用路径。
-运行 `scripts/install-dufs-media-mounts.sh` 后，系统通过 UUID 将两块盘固定到现有
+非 NixOS 主机运行 `scripts/install-dufs-media-mounts.sh` 后，系统通过 UUID 将两块盘固定到现有
 目录；以后修改卷标不会改变 dufs-plus 中的逻辑路径，也无需批量重写数据库或
 画板文件。
 
-脚本只原子更新 `/etc/fstab`，不会卸载或重挂载正在使用的磁盘。应先完成或停止
+NUC NixOS 通过声明式 UUID 挂载，不再用此脚本修改 fstab。其他适用主机上，脚本只原子更新 `/etc/fstab`，不会卸载或重挂载正在使用的磁盘。应先完成或停止
 视频转换、移动等长任务，再重启系统使配置生效：
 
 ```bash

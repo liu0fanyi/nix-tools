@@ -3,6 +3,7 @@
 from pathlib import Path
 import argparse
 import re
+import shutil
 import shlex
 import subprocess
 import tempfile
@@ -67,7 +68,22 @@ def transfers(readme):
     for name, target in [('docs', 'docs/'), ('deploy/docs', 'docs/'), ('README.md', 'repository-readme.md'), ('AGENTS.md', 'AGENTS.md')]:
         if (ROOT / name).exists():
             pairs.append((ROOT / name, REMOTE_DIR + '/' + target, False))
-    return pairs
+    staged = []
+    for source, destination, delete in pairs:
+        if source.is_symlink() or (source.is_dir() and any(p.is_symlink() for p in source.rglob('*'))):
+            raise ValueError('symlink source is not supported: ' + str(source))
+        if source == ROOT / 'deploy/docs':
+            stage = readme.parent / 'deployment-docs'
+            shutil.copytree(source, stage)
+            for doc in stage.rglob('*.md'):
+                text = doc.read_text().replace('](../../specs/', '](../specs/')
+                doc.write_text(text.replace('](../README.md)', '](../deployment-readme.md)'))
+            source = stage
+        staged.append((source, destination, delete))
+    deployment_readme = ROOT / 'deploy/README.md'
+    if deployment_readme.is_file():
+        staged.append((deployment_readme, REMOTE_DIR + '/deployment-readme.md', False))
+    return staged
 
 
 def command(source, destination, delete=False, verify=False):

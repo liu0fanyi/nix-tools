@@ -1,0 +1,1308 @@
+[
+  {
+    "source": "/home/liou/dufs-lan/todos/a-observe.md",
+    "heading": "## 编辑器纸片预览范围（2026-09-08）",
+    "sha256": "d289dab4bd6b285051478608190f2888ddeba7cfed61b520359f15e892106ad4",
+    "targets": [
+      "bevy-game/specs/001-animation-authoring/spec.md",
+      "bevy-game/specs/002-gallery-activity/spec.md",
+      "bevy-game/specs/005-editor-maintenance/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-observe.md",
+    "heading": "## Gallery 3D 整体根显示层边界（2026-09-08）",
+    "sha256": "bf0d51aa76ee6a06edb2b687c8a64a7e3a240b8edc1608db6ea935641e7d7f77",
+    "targets": [
+      "bevy-game/specs/001-animation-authoring/spec.md",
+      "bevy-game/specs/002-gallery-activity/spec.md",
+      "bevy-game/specs/005-editor-maintenance/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-observe.md",
+    "heading": "## ESP32 协议重构保留风险（2026-09-08）",
+    "sha256": "6e6792e4c0ec39f89963d463a3552db3fbeae737669c71d4847485b37a15d550",
+    "targets": [
+      "esp32-common/specs/001-device-power/spec.md",
+      "esp32-common/specs/002-module-boundaries/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-observe.md",
+    "heading": "## NUC 最终重启验收及备份决定（2026-09-06）",
+    "sha256": "89470ba942b221ba71023a75809bc8bd153f06e5b766c51f216cfb9fe9f0861b",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-observe.md",
+    "heading": "## ESP32 累计重构验收边界（2026-09-06，NUC 恢复后）",
+    "sha256": "44d3ca81bc1b67932387abc3a981efadc2df092f0b1bf7c7f73cbfdc5569ccac",
+    "targets": [
+      "esp32-common/specs/001-device-power/spec.md",
+      "esp32-common/specs/002-module-boundaries/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-observe.md",
+    "heading": "## NUC 迁移收尾（2026-09-06，最新）",
+    "sha256": "e96f9976a7a92de88095d620cf26fe945d7996f3b3b942d3dc7403d9d373b08a",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-observe.md",
+    "heading": "## NUC 已进入业务维护窗口（2026-09-06）",
+    "sha256": "713f9ef8898847f7158b2b11ff082f6b5eb51bad54b20da4bb825a8306003963",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-observe.md",
+    "heading": "## NUC 重装准备更新（2026-09-06）",
+    "sha256": "91ce6c127b1c59a869f08cf8a1b10e30912b71a8abccfcda35b373c292a884c4",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-observe.md",
+    "heading": "## NUC 转 NixOS 安装审查（2026-09-05）",
+    "sha256": "424c1e6db7b891f03c1c5068a9e074a7845f564d5253e46238d4e4b0c6527d58",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-observe.md",
+    "heading": "## 发布命令迁移提醒（2026-09-05）",
+    "sha256": "8ab0ee35b9b2ab0581313aca1be954a8aa7eab0e8b122104413f92659e4a4cd9",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-observe.md",
+    "heading": "## 统一发布器生产端到端验收已完成（2026-09-05）",
+    "sha256": "958bb88f83c39c17942e586fd0391b395e4a00c8d514fd04cf07cd9a08a8cd20",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-observe.md",
+    "heading": "## 阿里云 PC 发布的 SSH 主机密钥核验（已解除）",
+    "sha256": "e109d6607417fecfddaa7d495d9f7841debde94df1c3c30055838e0982aea221",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-observe.md",
+    "heading": "## tag-all 发布时代理联动重建",
+    "sha256": "d042427ffa7fa6b4315a88b65d4abbc92df7710cf101c81befee25ccf162e902",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-observe.md",
+    "heading": "## 专注写作 diff/Git 冲突链路观察",
+    "sha256": "2af8e6a7b647df901f530ccd0b1421171402da9a4941d91842f27ada04ef4afb",
+    "targets": [
+      "esp32-focus-writer/specs/003-replication/spec.md",
+      "esp32-focus-writer/specs/004-offline-upload-workflow/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-observe.md",
+    "heading": "## dufs-plus 媒体盘固定挂载",
+    "sha256": "f50b599761798508a70bf3349b21bbf81cca5a2d4c5d688d3f3fa22da6012cc1",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-observe.md",
+    "heading": "## 工程回归清单归并（2026-08-28）",
+    "sha256": "4ca4e8377591fa950e60311e1680e9ca0cc6593d00fda0c754b66b62e1c3eadf",
+    "targets": [
+      "bevy-env/specs/001-local-build-deploy/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-observe.md",
+    "heading": "# EdgeOne 边缘鉴权运行观察",
+    "sha256": "d366235faab1e11b7d80c41381102edd178d63edf6decf0cee0f57b95d2eea35",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-observe.md",
+    "heading": "## Clip 重构后待观察风险（2026-09-08）",
+    "sha256": "fa0de8e90cda05f8dfd9bf78bfae03a65f3f9547c4170a363c3794955fc161e0",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-observe.md",
+    "heading": "## Clip 风险加固状态更新（2026-09-08，替代上一条“尚未实现”描述）",
+    "sha256": "777da21412d718e5204b0b117b77078d4894c5b8ca2ed09f3fb854f67b487671",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-observe.md",
+    "heading": "## Clip 本阶段收尾（2026-09-08）",
+    "sha256": "6d948b5e5da896cb8da1e910cc98780423032c2b2ee3ac60547727dee8a28f20",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-observe.md",
+    "heading": "## Android 正式版验收边界（2026-09-08）",
+    "sha256": "621655a695b61cf73058716f4ba935e6e2300c9db006e096bdb5cb8d3b4db4b0",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-observe.md",
+    "heading": "## Android 更新入口验证边界（2026-09-08）",
+    "sha256": "699abf2bc2561409fc304aa9a826cfb5b0c03b70b50bbacf324b2f56fa678b06",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-observe.md",
+    "heading": "## Ting 桌面焦点验收更新（2026-09-08）",
+    "sha256": "d6008ab747c5cccbbb785d7a309526cdc0d2dd3c763f8d1b2a60d0c0d580a052",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-observe.md",
+    "heading": "## 场景排练椅子目标检查（2026-09-08）",
+    "sha256": "af0eebd4962ddc11a3350b9904dbde3d7d3ac848b4b02ee284e033c1582e6703",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-observe.md",
+    "heading": "## DUFS 只读入口规则已上线验收（2026-09-05）",
+    "sha256": "2696d9d6bff9c011804d3b8ed3d54be6c2a20f43ab2ddf5d67249a59db373277",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-observe.md",
+    "heading": "### bevy-game",
+    "sha256": "3bd74968b6f91fc0fa08708ab24807dd381d94fef77bcd55d6095b3127836989",
+    "targets": [
+      "bevy-game/specs/001-animation-authoring/spec.md",
+      "bevy-game/specs/002-gallery-activity/spec.md",
+      "bevy-game/specs/005-editor-maintenance/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-next.md",
+    "heading": "## ESP32 四固件与 Android 协议重构：待短实机回归（2026-09-08）",
+    "sha256": "4173da770020729f665738268dec1eb6381216cf40c8291d5efe0e24a704e077",
+    "targets": [
+      "esp32-common/specs/001-device-power/spec.md",
+      "esp32-common/specs/002-module-boundaries/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-next.md",
+    "heading": "## clipboard-sync Android 生命周期与错误恢复（后续）",
+    "sha256": "b28943d911693b8186752fe164d7d3f6f35732588324b1dbb66ccddb144e7716",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-next.md",
+    "heading": "### bevy-sketch",
+    "sha256": "44de53be97698c00910b74023ca13dad83e4e3d38e07a747ebe52a4e448d0b20",
+    "targets": [
+      "bevy-sketch/specs/001-drawing-workspace/spec.md",
+      "bevy-sketch/specs/002-workspace-persistence/spec.md",
+      "bevy-sketch/specs/004-input-and-performance/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-next.md",
+    "heading": "## Android App Kit / 设备豆（2026-09-08）",
+    "sha256": "8cbfc100266443d7ad83727e5ad8842d02a01bc57f0863bc810a52e6d324e5d5",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-next.md",
+    "heading": "## Android 首次正式发布进行中（2026-09-08）",
+    "sha256": "1cd6714fe9b22994740de505c323957a92560a7b6129ea4848fe6dcf8d05ebd9",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-next.md",
+    "heading": "## Android 发布状态收尾（2026-09-08）",
+    "sha256": "f9f4974958233856c39aec04d8b4df915c3f6acee33dbddd4beb67742c22e8a9",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-next.md",
+    "heading": "## Android 紧凑更新控件正式发布中（2026-09-08）",
+    "sha256": "c548e647f845c96ada4e075d6b6f5ad770cb3e1aaf3f0c3ce7adf3c6c7836164",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## clipboard-sync Android 自有域名升级与可见进度（2026-09-08）",
+    "sha256": "058abe09ceb450115ba794d65bf97536111af2cff4482777cb9afebaf06827c5",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## clipboard-sync Android 签名材料 KeePassXC 备份（2026-09-07）",
+    "sha256": "2a66a3bd686299e85f1bff3ca7c21f6dd26624da2cc8d9949ed9f612cde39a16",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## clipboard-sync Android 更新客户端与首次正式发布（2026-09-07）",
+    "sha256": "bff16722f963f69a2eb108710ee982fcd04d6c36f98386617722b772a2c597e4",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## clipboard-sync Android 接收控制与外部图标（2026-09-07）",
+    "sha256": "8627e126e6a71487ce5a496b5c8204fb5a5fbfe0f34feed872ad723269420bb5",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## clipboard-sync Android MVP 与自动配对（2026-09-07）",
+    "sha256": "cfc40539af4f842bc8743f56344b872f547c9c4c68c32ad5734433b4059ad9e2",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## liu-bigpc declarative Rime-Ice dictionary (2026-09-07)",
+    "sha256": "227ce081d095c99dacbdf9095ed1f8e3133e3e0d915a4654e3f391ebee3e80bb",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## liu-bigpc Niri portrait hot-plug recovery (2026-09-06)",
+    "sha256": "7301527a77c70e43689d65f0486d147533851b437138806b120ff1d13338a4b6",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## NUC 启动修复最终验收（2026-09-06）",
+    "sha256": "0b541bb501ac7c69aa23f5dfae972e6751b32c6c56e940fe33d7f7de4f476964",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## ESP32 NUC 冻结期间成果同步（2026-09-06）",
+    "sha256": "a13435da71a96e7ba61a3fa97b22084d885ca2d09e7b31611bbf3cf88a6589cd",
+    "targets": [
+      "esp32-common/specs/001-device-power/spec.md",
+      "esp32-common/specs/002-module-boundaries/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## NUC NixOS 迁移及业务恢复（2026-09-06）",
+    "sha256": "f90d8975e707fe7fb06e22aabfdb8950d0c6bc07b5465704aee7ad3d1222dfc6",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## liu-bigpc Avahi stale PID recovery (2026-09-06)",
+    "sha256": "cf01e1f82bbf7bb5d8be87ebec6a04161dcc8c01a6d6f99b2cb94560ada005e3",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## 统一 just 流程两端生产发布及三种入口验收（2026-09-05）",
+    "sha256": "a42ca8cf877f4b916436ad43750dbef7346d42586dadfcf794aa52892b165135",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## 各工程 AGENTS 构建发布说明补齐（2026-09-05）",
+    "sha256": "137f10432f6071633f580e7244a1d0448a083ca208cc77515c680e34bd251e10",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## 构建发布统一为 just、config 改名 infra（2026-09-05）",
+    "sha256": "fd222d6ef545c7e909d6a693bd8286ca62e3f57428a9a82c0c647e9c8731dfbc",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## PC 产品构建与两端发布职责统一（2026-09-05）",
+    "sha256": "11dde805d093e2674107a2857ed8804c76773781d7cadd7fe2f2847156f0dfa6",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "### PC 统一发布入口与产品 private/public 构建",
+    "sha256": "aa99e768b2ed055c16d67789841cc4b8162176566fa24aca16f6972b7a3c7ad6",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "### Bevy galgame_core runtime 与 platform scene 收口",
+    "sha256": "7b553f5166c4e0e231fc500732b500b757e710b9997904fc7947d921c4c7a4a1",
+    "targets": [
+      "bevy-game/specs/001-animation-authoring/spec.md",
+      "bevy-game/specs/002-gallery-activity/spec.md",
+      "bevy-game/specs/005-editor-maintenance/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "### 专注写作机 Stage 3：连接即检查并自动拉取",
+    "sha256": "dd428b7934a2b7eb3ec9ddd54bdf722b1a1974fea4ae20a954cdde162d9c6d8e",
+    "targets": [
+      "esp32-focus-writer/specs/003-replication/spec.md",
+      "esp32-focus-writer/specs/004-offline-upload-workflow/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "### Bevy 模块化重构第一批：Gallery 3D composition root",
+    "sha256": "f9c31a83447cc67268e0948a0d54f618ecc039f3d952822027c9a1adf802866d",
+    "targets": [
+      "bevy-game/specs/001-animation-authoring/spec.md",
+      "bevy-game/specs/002-gallery-activity/spec.md",
+      "bevy-game/specs/005-editor-maintenance/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "### Bevy Gallery 3D 布局与编辑器领域拆分（第一组）",
+    "sha256": "063feae4020d1fdeb8cfcdc4aafb558669b2a99552494cd800ed3e06267037ac",
+    "targets": [
+      "bevy-game/specs/001-animation-authoring/spec.md",
+      "bevy-game/specs/002-gallery-activity/spec.md",
+      "bevy-game/specs/005-editor-maintenance/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "### Bevy Animation Editor 资源所有权收口",
+    "sha256": "bab5d9897bd45e6cbcefd6c08ae2246a4e7e17f7f72c0a17fd08c6e3083c84bb",
+    "targets": [
+      "bevy-game/specs/001-animation-authoring/spec.md",
+      "bevy-game/specs/002-gallery-activity/spec.md",
+      "bevy-game/specs/005-editor-maintenance/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "### 工程计划与测试文档归并",
+    "sha256": "9dcd4c6d90370f62fc28c4505acc8204aeb63917e8fede6aa66ac6bac1ed34c4",
+    "targets": [
+      "bevy-env/specs/001-local-build-deploy/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "### 3D 画廊阶段 3～7 归档",
+    "sha256": "a8726fa037414415ec9e1470f6bf94da79eb87db6f8d24226de328e8316047ca",
+    "targets": [
+      "bevy-game/specs/001-animation-authoring/spec.md",
+      "bevy-game/specs/002-gallery-activity/spec.md",
+      "bevy-game/specs/005-editor-maintenance/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "### 3D 画廊小游戏",
+    "sha256": "7716c42cfb8121351d8774866f080095f2d2f50a4fd2ef03502ab8a2cce73c12",
+    "targets": [
+      "bevy-game/specs/001-animation-authoring/spec.md",
+      "bevy-game/specs/002-gallery-activity/spec.md",
+      "bevy-game/specs/005-editor-maintenance/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "# 写作 Git 代推送与统一设备令牌第一阶段（2026-09-01）",
+    "sha256": "c0ea2e9bb23ae31711a9256b448981cf23f2382829a8a08828a75e612ae72b4c",
+    "targets": [
+      "esp32-focus-writer/specs/003-replication/spec.md",
+      "esp32-focus-writer/specs/004-offline-upload-workflow/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "# 写作仓库生产接线（2026-09-01）",
+    "sha256": "5072691f91511b91d4d52d925b6a9bfa7c51912f303edbb0c04373cbc6efd38f",
+    "targets": [
+      "esp32-focus-writer/specs/003-replication/spec.md",
+      "esp32-focus-writer/specs/004-offline-upload-workflow/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "# EdgeOne 缓存前 Authelia 鉴权（2026-09-01）",
+    "sha256": "ad121e9e26da03c3b1c32d2018c60a15dcfffaad55e02882610328f51fd76829",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "# 写作机阶段 1 无冲突全量快照闭环（2026-09-02）",
+    "sha256": "617e39c057390c8dea05a175fd3eb672e1054461b2f6b95cac0b1493da5a5948",
+    "targets": [
+      "esp32-focus-writer/specs/003-replication/spec.md",
+      "esp32-focus-writer/specs/004-offline-upload-workflow/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "# character_core 模块化（2026-09-02）",
+    "sha256": "d2f251f7a7435184b557ce17b49253c5753ab5774288827299ce2c91c8e5958e",
+    "targets": [
+      "bevy-game/specs/001-animation-authoring/spec.md",
+      "bevy-game/specs/002-gallery-activity/spec.md",
+      "bevy-game/specs/005-editor-maintenance/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "# bevy-sketch 阶段 1 已验证批次（2026-09-02）",
+    "sha256": "f9908b1a2f9deab8f24906e289d359b46990a0b12f025843c4e5ba08360a4b6f",
+    "targets": [
+      "bevy-sketch/specs/001-drawing-workspace/spec.md",
+      "bevy-sketch/specs/002-workspace-persistence/spec.md",
+      "bevy-sketch/specs/004-input-and-performance/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "# Animation Editor UI 结构拆分（2026-09-02）",
+    "sha256": "e217fed9eb63f39c7892a8800255e05374475f8de6e724b4460dfe2f312dff83",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## 写作机人工 Git 冲突实机闭环（2026-09-03）",
+    "sha256": "2ebd6bcea38c57e25111a8fd1f9f42a41799ce10b4c3d2e9a4040a80fd20ca04",
+    "targets": [
+      "esp32-focus-writer/specs/003-replication/spec.md",
+      "esp32-focus-writer/specs/004-offline-upload-workflow/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## clipboard-sync Android 基础收发真机闭环（2026-09-07）",
+    "sha256": "361daf262eceb4b366c1601b982f92a32e14af0ec370136964690d73c9db9cf7",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## Clip Android 纯事件独立验证（2026-09-08）",
+    "sha256": "bdab94b1aec52634f36223a680404f2af556707a80ccbbb30eba9e98537a9424",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## 3D 画廊椅子阅读活动（2026-09-08）",
+    "sha256": "4dc7c7bc09057b8ee7f4c1a4019b7d960ca435b7786fdf006798ffd51f490cf1",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## Clip Android 正式纯事件升级验收完成（2026-09-08）",
+    "sha256": "e474035c43a157d2d4793c7f0364aa7377c6b65eeec8efa418528de157567fd4",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## Clip 跨平台重构（2026-09-08，源码完成，未部署）",
+    "sha256": "efb5b506925d77e076a120f072d4db5e5ae9e5f42140408c9970523499b743c0",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## Clip 限额、兼容解析、生命周期与重试加固（2026-09-08，未部署）",
+    "sha256": "debbbc864103f5ae2356efbfd7f516fa1419ad953a3bee7234d76382be992b38",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## Clip Android 0.1.13 发布（2026-09-08）",
+    "sha256": "3276fd37e7aada7377a18ea1a259eade142e1b6364c89ec63ce50594e3fe7c78",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## Clip 0.1.13 实机短测（2026-09-08）",
+    "sha256": "de4d25de9a84ae69971308782d58aa2fa56e87b9bd62405d0d87e3a6a0e5aa9b",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## Clip 本阶段收尾（2026-09-08）",
+    "sha256": "6d948b5e5da896cb8da1e910cc98780423032c2b2ee3ac60547727dee8a28f20",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## Android 公共基础库首轮接入（2026-09-08）",
+    "sha256": "9ae2c20b8ed4a4cf699be721601883404e835391b3d4b157fd24c8abad15138a",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## 画廊编辑页对白与动作重试（2026-09-08）",
+    "sha256": "9f783c15344c567be1f9b04c96d7f071335c16e2eee18a59ac9d9b933ad69bee",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## Android 正式发布及首次安装完成（2026-09-08）",
+    "sha256": "3051376d88cbe38a79df1cc5ca0dd4c12e7ad7e6e4df6015aa07a6989da1e5c5",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## 两款 Android 更新入口统一（2026-09-08，源码完成）",
+    "sha256": "7f4a931678d0d272cb41125b85ea2b8ee71a55b73539ae742eae1f7b49b4e566",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## Android 右上角更新控件正式发布完成（2026-09-08）",
+    "sha256": "5e01a983113f85700d4948abb2aa42554f7536c8393b5a92d25f964fbbbcf8da",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## Ting 真实桌面切页与最小化验收（2026-09-08）",
+    "sha256": "3a804ee45c4399edb26b648e8a6362c83550ea16e9b2c71e93adf077ec33d356",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## Android权限/通知修复正式发布完成（2026-09-08）",
+    "sha256": "b774cee03f484f03c1093542e0dbb92da9975638c9f7ef1d74dc63b68f99c8c2",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## DUFS 两种只读入口收敛（2026-09-05）",
+    "sha256": "19fbcf7fac9c3bf6a641da76893d23965f058f6b1b8634ef060550545d37428a",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "### tag-all 本机 Podman 构建与 NUC 镜像发布",
+    "sha256": "4efd95b5d1d46951d8c22f9396b1b78df8c79a333aabd46607083f4ddc733cd8",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "### dufs-plus 本机构建与 NUC 前端发布",
+    "sha256": "3173b26c5b6bf9a2f416257c8d9a8a4136f79babbab8af439156140e0e9d9a3e",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/project-planner-md-trial/esp32-focus-writer.md",
+    "heading": "### EdgeOne 边缘鉴权运行观察",
+    "sha256": "0ab46d0183c6ed282f76cf12c6267d9743c692ee69165f1df358fcc0331d1fb1",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/project-planner-md-trial/esp32-focus-writer.md",
+    "heading": "### 写作机无冲突全量快照异常分支",
+    "sha256": "11319fc0494fae1d20c46643750c1235aabc833e54c9f96c2f3d9ab1c4baa239",
+    "targets": [
+      "esp32-focus-writer/specs/003-replication/spec.md",
+      "esp32-focus-writer/specs/004-offline-upload-workflow/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/project-planner-md-trial/general.md",
+    "heading": "### `nas.wttliou.top` 已使用 Edge Function 在缓存查找前调用 Authelia · 原状态：观察（0%）",
+    "sha256": "48d46feb6108bb155d5764c48155e8c2b4412b4f2f3ddcddc8ea5440de58ca96",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/project-planner-md-trial/general.md",
+    "heading": "### `nas.wttliou.top` 已使用 Edge Function 在缓存查找前调用 Authelia · 后续动作",
+    "sha256": "18e33a8923f5f679a4ed4bcd404180897cebbfd02018e9535a3c739e2d0c6b64",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/project-planner-md-trial/general.md",
+    "heading": "### 已否定“把每条通知压进单个 251-byte 链路包即可翻倍”的假设：实验固件将业务块由 504 改为 · 原状态：观察（0%）",
+    "sha256": "69a7a4db382a28114f9ca69b54994c935cdd4968a770660baee70cbd72e7beb9",
+    "targets": [
+      "esp32-common/specs/001-device-power/spec.md",
+      "esp32-common/specs/002-module-boundaries/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/project-planner-md-trial/camera.md",
+    "heading": "### 实机确认 UI 连续点击仍反应缓慢 · 后续动作",
+    "sha256": "aefeb759caa31d8475f56270e3d9ab6c52eec7c002720792ff545bf250e5e928",
+    "targets": [
+      "bevy-sketch/specs/001-drawing-workspace/spec.md",
+      "bevy-sketch/specs/002-workspace-persistence/spec.md",
+      "bevy-sketch/specs/004-input-and-performance/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/project-planner-md-trial/xiao.md",
+    "heading": "### 低功耗验收必须确认各外设状态：ST7789 与背光关闭、CST816 进入休眠或关闭中断、ES7210/ES8311 进入低功耗、NS4150B 关闭、QMI8658 suspend、SD 总 · 原状态：观察（0%）",
+    "sha256": "9ebd479eb7ea8590de5f1c71ce53c107af04ee5740bd7da97d2c30046dea95f8",
+    "targets": [
+      "esp32-common/specs/001-device-power/spec.md",
+      "esp32-common/specs/002-module-boundaries/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/project-planner-md-trial/xiao.md",
+    "heading": "### 阶段 1 的首次生产全量 pull 和设备重启恢复已通过 · 原状态：观察（0%）",
+    "sha256": "8eedb1d068df7f29586a964994dacb97ff563452355748221fdede9cb1db0ce7",
+    "targets": [
+      "esp32-focus-writer/specs/003-replication/spec.md",
+      "esp32-focus-writer/specs/004-offline-upload-workflow/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/project-planner-md-trial/xiao.md",
+    "heading": "### 2026-09-02 已覆盖“服务端 push 成功但 canonical 下行尚未完成”：sequence 6 被旧 API · 原状态：观察（0%）",
+    "sha256": "28e7871369fc78f15556c10593936d15637c2ada850d1da1f466e38b6194739e",
+    "targets": [
+      "esp32-focus-writer/specs/003-replication/spec.md",
+      "esp32-focus-writer/specs/004-offline-upload-workflow/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/project-planner-md-trial/xiao.md",
+    "heading": "### 2026-09-02 已停止 L2CAP CoC 路线：同机同板 RAM 基准在 1 KiB SDU buffer 下约 49.2 KiB/s， · 原状态：观察（0%）",
+    "sha256": "314067efe446ad0c28016a50b79e4ffe5b3e7a7087c72eae9b6e569dfa49c0fe",
+    "targets": [
+      "esp32-common/specs/001-device-power/spec.md",
+      "esp32-common/specs/002-module-boundaries/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/project-planner-md-trial/dufs-plus.md",
+    "heading": "### `nix-tools/scripts/install-dufs-media-mounts.sh` 已按 UUID 将 `Art`（`5F82-B190`）和 `My Passport`（`AC · 原状态：观察（0%）",
+    "sha256": "62944f43b59acc167edd3f284afc03b5648e919b3376736bf4204400e41fb61a",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/project-planner-md-trial/dufs-plus.md",
+    "heading": "### `nix-tools/scripts/install-dufs-media-mounts.sh` 已按 UUID 将 `Art`（`5F82-B190`）和 `My Passport`（`AC · 后续动作",
+    "sha256": "5d6b68519c8810f3e4e346a1a34b1f031f5c24f70fc1b639c5d0ffa34777265f",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md",
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "有效需求由目标规格管理；阶段历史移入清理前备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/device-bean-mobile/docs/ANDROID_RELEASE.md",
+    "sha256": "e90fc50bc091d3d4bc0bfe786333bed32bd861ce89dcff655edc6ec5f5ba3f84",
+    "targets": [
+      "device-bean-mobile/specs/001-background-device-sync/spec.md",
+      "android-app-kit/specs/002-signed-release/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md"
+    ],
+    "result": "旧平行文档删除，清理前私有备份保留"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/esp32-common/docs/REFACTORING.md",
+    "sha256": "c7ae2794067e56b515dda31d18abef9b7c6ecadb0a09a1ce6e2590abbdda8963",
+    "targets": [
+      "esp32-common/specs/002-module-boundaries/spec.md"
+    ],
+    "result": "旧平行文档删除，清理前私有备份保留"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/dufs-plus/docs/transcriptions.md",
+    "sha256": "cf31fdf9cd4cb216f01abf4a1de8f8a43debe778d7cbbffb2c98dc2278f501b9",
+    "targets": [
+      "dufs-plus/specs/003-transcription-management/spec.md"
+    ],
+    "result": "旧平行文档删除，清理前私有备份保留"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/nix-tools/docs/removable-backup-plan.md",
+    "sha256": "0e3d4c75b984bd637dc9f4ae5d84642b608caf9b73afe6d7166739eec4eea670",
+    "targets": [
+      "nix-tools/specs/008-removable-backup/plan.md"
+    ],
+    "result": "旧平行文档删除，清理前私有备份保留"
+  },
+  {
+    "source": "/media/liou/project/me/nix-tools/todo.md",
+    "sha256": "7119bf8282ebd9eaf6ba0a6983490cabe1fe6d4a7ef80aff28009f2b71535eca",
+    "targets": [
+      "nix-tools/specs/009-infrastructure/spec.md",
+      "nix-tools/specs/010-host-configuration/spec.md"
+    ],
+    "result": "旧平行文档删除，清理前私有备份保留"
+  },
+  {
+    "source": "/media/liou/project/me/nix-tools/IMPLEMENTATION_PLAN.md",
+    "sha256": "751f2cacec667d4683db0b5ae32f21d3d95c55a27d47c7bf0a33dae9180374b8",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/007-clipboard-release/spec.md"
+    ],
+    "result": "旧平行文档删除，清理前私有备份保留"
+  },
+  {
+    "source": "/media/liou/project/me/nix-tools/clipboard-sync/todo.md",
+    "sha256": "31d9895ecc9d85d231a945253397a843db98247f7227d8d5c96ea2c76f15be18",
+    "targets": [
+      "nix-tools/specs/005-clipboard-core/spec.md",
+      "nix-tools/specs/006-clipboard-reliability/spec.md"
+    ],
+    "result": "旧平行文档删除，清理前私有备份保留"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/clipboard-sync/README.md",
+    "sha256": "d8f210a63b7807a7ff97a53926ae8082b0bb7ae94afe6ca78d28c141c1438c4f",
+    "targets": [
+      "nix-tools/specs/007-clipboard-release/spec.md"
+    ],
+    "result": "旧副本改为统一源入口"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/clipboard-sync/docs/android-app-kit.md",
+    "sha256": "e15ae7d6f6a9d114a30680d8f36b9c95e7d882196c11fdd164629ac159223522",
+    "targets": [
+      "nix-tools/specs/007-clipboard-release/spec.md"
+    ],
+    "result": "旧副本改为统一源入口"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/a-done.md",
+    "heading": "## ESP32 六仓库本地提交（2026-09-08，等待硬件回归）",
+    "sha256": "eddc3cd3c8786e6acfcae21a4609d365cfeed924a3e59f80ccedccef2a4aa4c2",
+    "targets": [
+      "esp32-common/specs/002-module-boundaries/spec.md"
+    ],
+    "result": "有效边界归规格；旧实测流水仅存清理备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/project-planner-md-trial/general.md",
+    "heading": "### 当前首个生产包仅有 `book.toml` 与 `chapters/0001.md` 共 845 字节 · 原状态：观察（0%）",
+    "sha256": "a6f79056b1529fec7dfc2e8e5b22d6bd99a8ebe977f4661b55f74087b277cfe8",
+    "targets": [
+      "esp32-focus-writer/specs/003-replication/spec.md"
+    ],
+    "result": "有效边界归规格；旧实测流水仅存清理备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/project-planner-md-trial/general.md",
+    "heading": "### release WASM 已部署 · 原状态：观察（0%）",
+    "sha256": "7812768595cd38c514a3b83bc174ed0208ce8fb2de8e321fcc9a309d32d0848f",
+    "targets": [
+      "bevy-game/specs/006-runtime-parity/spec.md"
+    ],
+    "result": "有效边界归规格；旧实测流水仅存清理备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/project-planner-md-trial/camera.md",
+    "heading": "### 2026-08-31 部署版 `d17554ea68644d21` 仅在同步 Canvas2D 接管 Apple Pencil 的延迟提交画笔笔画时暂停场景、合成和 UI 相机，保留最后一帧， · 原状态：下一步（0%）",
+    "sha256": "dbbacee6b7fa8844253ba49aa2c663982aad4c1a54c215c074520d86da763185",
+    "targets": [
+      "bevy-sketch/specs/004-input-and-performance/spec.md"
+    ],
+    "result": "有效边界归规格；旧实测流水仅存清理备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/project-planner-md-trial/camera.md",
+    "heading": "### 2026-08-31 部署版 `d17554ea68644d21` 仅在同步 Canvas2D 接管 Apple Pencil 的延迟提交画笔笔画时暂停场景、合成和 UI 相机，保留最后一帧， · 后续动作",
+    "sha256": "86b774f511dd541b02686cacf3823c4fb903a71b14c522a4ed171d4e5020068e",
+    "targets": [
+      "bevy-sketch/specs/004-input-and-performance/spec.md"
+    ],
+    "result": "有效边界归规格；旧实测流水仅存清理备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/project-planner-md-trial/camera.md",
+    "heading": "### 实机确认 UI 连续点击仍反应缓慢 · 原状态：下一步（0%）",
+    "sha256": "bfa38eb7c9a0dd817dad5a85e3408a61c3de9ba10dd1e0ee60146e5be39c60e1",
+    "targets": [
+      "bevy-sketch/specs/004-input-and-performance/spec.md"
+    ],
+    "result": "有效边界归规格；旧实测流水仅存清理备份"
+  },
+  {
+    "source": "/home/liou/dufs-lan/todos/project-planner-md-trial/camera.md",
+    "heading": "### 2D 画廊：native/WASM 应通过同一 `SceneData` 和 `DialogScript` asset 得到一致的 · 原状态：观察（0%）",
+    "sha256": "b422d10e2e7e129ca05ed1e6d4d5bf2632f9483fbe3aa3540a1f5650d1cd842d",
+    "targets": [
+      "bevy-game/specs/006-runtime-parity/spec.md"
+    ],
+    "result": "有效边界归规格；旧实测流水仅存清理备份"
+  }
+]
