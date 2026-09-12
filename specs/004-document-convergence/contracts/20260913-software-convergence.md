@@ -42,3 +42,14 @@
 ## 最终镜像核对
 
 [逐项目 SHA256 比较结果](20260913-mirror-verification.json)：工作区审计的 30 个规格源中，29 个路径集合与文件摘要完全一致；唯一差异为明确暂缓的 signature-server 草案。nix-tools 和小智固件规格另由各自同步脚本回读校验。核对反映本次快照，后续开发需继续通过 sync-todos 更新。
+
+
+## 发布目标纠正（同日用户重申，取代上节目标判定）
+
+此前核对把 xiaoqiang 的 todos 副本当成正确目标，属于审计遗漏；“29/30 一致”只证明
+内容相同，不能证明符合发布位置约束。xiaoqiang 的唯一镜像目标是既有 dufs 项目目录。
+10 个同步脚本、各仓库 AGENTS/constitution 与工作区入口已纠正，脚本拒绝错误目标。
+已按 dufs 副本逐文件 SHA256 核对，清理 todos 下 10 个误放目录、225 个重复文件，
+并移除 a-next 的 sip_old 失效入口。400m 下载首页不动，文档入口仍为 SPECIFICATIONS.md。
+[纠正后的逐项目核验](20260913-dufs-only-verification.json) 记录完整目标：29 个一致，
+signature-server 仍为明确暂缓例外；不再将该例外默认指向 todos。

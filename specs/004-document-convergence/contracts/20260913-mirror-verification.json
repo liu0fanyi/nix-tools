@@ -220,5 +220,6 @@
       "extra": [],
       "changed": []
     }
-  ]
+  ],
+  "superseded": "Path policy was wrong for xiaoqiang; superseded by 20260913-dufs-only-verification.json. Historical content equality is not destination compliance."
 }
