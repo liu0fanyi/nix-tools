@@ -71,7 +71,8 @@ def transfers(readme):
 
 
 def command(source, destination, delete=False, verify=False):
-    cmd = ['rsync', '-rptz', '--checksum', '--chmod=D755,F644']
+    # docs/ and deploy/docs/ share a destination; directory mtimes are not content.
+    cmd = ['rsync', '-rptz', '--omit-dir-times', '--checksum', '--chmod=D755,F644']
     if delete:
         cmd.append('--delete')
     if verify:
