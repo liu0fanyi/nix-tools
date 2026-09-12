@@ -1,0 +1,224 @@
+{
+  "date": "2026-09-13",
+  "scope": "30 spec sources in /data/project audit; nix-tools and embedded xiaozhi firmware separately verified by own sync scripts",
+  "method": "SHA256 per spec file, exact path sets",
+  "exceptions": [
+    "signature-server: user-deferred local draft, no mirror expected"
+  ],
+  "results": [
+    {
+      "project": "esp32-p4-dufs-terminal",
+      "mirror": "esp32-p4-dufs-terminal",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "android-app-kit",
+      "mirror": "android-app-kit",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "esp32-mp3-player",
+      "mirror": "esp32-mp3-player",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "tag-all",
+      "mirror": "tag-all",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "esp32-recorder-bean",
+      "mirror": "esp32-recorder-bean",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "dufs-client-rs",
+      "mirror": "dufs-client-rs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "bevy-env",
+      "mirror": "bevy-env",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "esp32-p4-game",
+      "mirror": "esp32-p4-game",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "device-bean-mobile",
+      "mirror": "device-bean-mobile",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "esp32-focus-writer",
+      "mirror": "esp32-focus-writer",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "esp32-multi-timer",
+      "mirror": "esp32-multi-timer",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "dufs-plus",
+      "mirror": "dufs-plus",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "esp32-common",
+      "mirror": "esp32-common",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "bevy-game",
+      "mirror": "bevy-game",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "bevy-canvas-kit",
+      "mirror": "bevy-canvas-kit",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "bevy-sketch",
+      "mirror": "bevy-sketch",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "bevy-app-foundation",
+      "mirror": "bevy-app-foundation",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "bevy-project-planner",
+      "mirror": "project-planner",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "esp32-p4-400m20s",
+      "mirror": "esp32-p4-400m20s",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "sip-rk3506",
+      "mirror": "sip-rk3506",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "xiaozhi",
+      "mirror": "xiaozhi",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "device-common",
+      "mirror": "device-common",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "esp32-p4-cmt2300a",
+      "mirror": "esp32-p4-cmt2300a",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "signature-server",
+      "mirror": "signature-server",
+      "missing": [
+        "specs/001-service-consolidation/plan.md",
+        "specs/001-service-consolidation/spec.md",
+        "specs/001-service-consolidation/tasks.md"
+      ],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "sip",
+      "mirror": "sip",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "sip_old",
+      "mirror": "sip-old",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "tauri_config_page",
+      "mirror": "tauri_config_page",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "esp32-p4-sip",
+      "mirror": "esp32-p4-sip",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "demo",
+      "mirror": "sip-demo",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "project": "nix-tools",
+      "mirror": "nix-tools",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    }
+  ]
+}

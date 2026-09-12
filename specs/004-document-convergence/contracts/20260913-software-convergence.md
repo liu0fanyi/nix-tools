@@ -38,3 +38,7 @@
   功能/板端验收继续待办。本轮没有部署应用、重启服务、烧录或发起 SIP 通话。
 
 此前 document-audit.md、inventory.json 等是初轮范围的历史证据，不代表本轮新范围。
+
+## 最终镜像核对
+
+[逐项目 SHA256 比较结果](20260913-mirror-verification.json)：工作区审计的 30 个规格源中，29 个路径集合与文件摘要完全一致；唯一差异为明确暂缓的 signature-server 草案。nix-tools 和小智固件规格另由各自同步脚本回读校验。核对反映本次快照，后续开发需继续通过 sync-todos 更新。
