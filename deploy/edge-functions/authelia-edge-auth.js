@@ -9,6 +9,9 @@ async function forwardRequest(request, deviceApi) {
   const started = Date.now();
   const headers = new Headers(request.headers);
   headers.set("X-Request-ID", requestId);
+  // Fetch bodies are decoded by the edge runtime. Prefer the identity cache
+  // variant so wrapping the body cannot retain a stale compression envelope.
+  headers.set("Accept-Encoding", "identity");
   try {
     const response = await fetch(request, {
       headers,
@@ -21,7 +24,14 @@ async function forwardRequest(request, deviceApi) {
     });
     console.log(JSON.stringify({ request_id: requestId, stage: "forward",
       status: response.status, elapsed_ms: Date.now() - started }));
-    const result = new Response(response.body, response);
+    const resultHeaders = new Headers(response.headers);
+    resultHeaders.delete("Content-Encoding");
+    resultHeaders.delete("Content-Length");
+    // This origin advertises its private :5009 HTTP/3 listener.
+    resultHeaders.delete("Alt-Svc");
+    const result = new Response(response.body, {
+      status: response.status, statusText: response.statusText, headers: resultHeaders,
+    });
     result.headers.set("X-Request-ID", requestId);
     if (deviceApi) result.headers.set("Cache-Control", "private, no-store");
     return result;

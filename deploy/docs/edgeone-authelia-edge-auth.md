@@ -144,3 +144,7 @@ health check rather than merely a performance metric.
 - <https://edgeone.ai/zh/document/57425> — remote authentication example
 - <https://www.authelia.com/reference/guides/proxy-authorization/> — Authelia
   proxy authorization metadata and CookieSession
+
+## 响应编码一致性修复（控制台发布待验收）
+公网实测：请求br时响应声明Content-Encoding: br，但正文实际是未压缩JS，Node Brotli解码失败；无压缩请求取得完整JS。转发子请求现显式请求identity，包装响应移除旧Content-Encoding、Content-Length及源站Alt-Svc，保留CSP与认证边界。运行`node deploy/tests/test_edge_response.cjs`覆盖7种场景；这是模拟运行时已解码正文的回归，不代替EdgeOne实测。
+控制台用`deploy/edge-functions/authelia-edge-auth.js`完整纯JS替换原函数，先验证调试域名，再验证公网JS/CSS/favicon的identity/gzip/br及登录。未认证私有资源仍应跳登录、device-api仍须令牌，不能因为资源可加载就把App401/502标为修复。

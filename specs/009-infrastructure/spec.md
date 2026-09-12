@@ -14,3 +14,8 @@
 ## 已取消
 
 NUC dsh Web 公网入口已在 ca987da 取消：源码与开发环境迁至 PC。本轮不恢复此需求。
+
+## Edge 响应编码一致性
+- 转发响应的Content-Encoding和Content-Length必须与实际正文一致；JS/CSS/favicon在identity、gzip、br请求下均可解码。不能通过放宽CSP或绕过认证修复加载失败。
+- 缓存命中也必须先鉴权；保留设备API令牌、手动重定向、流式正文、错误request_id和no-store约束。禁止把源站专用Alt-Svc端口暴露给公网客户端。
+- 本地修复/测试与EdgeOne控制台发布、压缩变体验收分别追踪。
