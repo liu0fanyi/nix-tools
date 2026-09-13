@@ -10,7 +10,8 @@ ROOT = Path(__file__).resolve().parents[1]
 def rules(root=ROOT, home=None, workspace=Path('/data/project')):
     home = Path.home() if home is None else home
     base = root / 'config/agent-rules'
-    pairs = [(base / 'project/AGENTS.md', workspace / 'AGENTS.md')]
+    pairs = [(base / 'project/AGENTS.md', workspace / 'AGENTS.md'),
+             (base / 'project/xiaoqiang/AGENTS.md', workspace / 'xiaoqiang/AGENTS.md')]
     for name in ['SKILL.md', 'agents/openai.yaml', 'scripts/work_file.py']:
         pairs.append((base / 'skills/work-progress' / name,
                       home / '.codex/skills/work-progress' / name))

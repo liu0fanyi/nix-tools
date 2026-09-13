@@ -5,6 +5,7 @@
 | 版本化源（相对 nix-tools） | 本机使用位置 |
 | --- | --- |
 | config/agent-rules/project/AGENTS.md | /data/project/AGENTS.md |
+| config/agent-rules/project/xiaoqiang/AGENTS.md | /data/project/xiaoqiang/AGENTS.md |
 | config/agent-rules/skills/work-progress/SKILL.md | ~/.codex/skills/work-progress/SKILL.md |
 | config/agent-rules/skills/work-progress/agents/openai.yaml | ~/.codex/skills/work-progress/agents/openai.yaml |
 | config/agent-rules/skills/work-progress/scripts/work_file.py | ~/.codex/skills/work-progress/scripts/work_file.py |
@@ -21,6 +22,6 @@
 work_file.py 是保留的旧工作文件兼容工具，不用于 specs 状态维护；本次仅版本化它，
 没有运行它或恢复旧计划流程。日常规格同步仍走各产品自己的 sync-todos。
 
-这两个配置位于 Home Manager 管理范围之外或尚未接入其配置，因此使用本地显式入口，
+这些配置位于 Home Manager 管理范围之外或尚未接入其配置，因此使用本地显式入口，
 不执行 Home Manager/NixOS switch，不向 NUC 安装规则，也不把 config/agent-rules
 加入文档镜像白名单。只有本手册和本仓库规格按既有 sync-todos 镜像。

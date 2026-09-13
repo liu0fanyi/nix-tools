@@ -1,0 +1,88 @@
+{
+  "scope": "inactive only; active tag-all, bevy-sketch, dufs-plus, esp32-focus-writer excluded",
+  "results": [
+    {
+      "repo": "esp32-p4-dufs-terminal",
+      "commit": "2ef92e83a9e003ebc3173990987ee172a4eed7bf",
+      "mirror": "verified"
+    },
+    {
+      "repo": "esp32-p4-game",
+      "commit": "1c3adca576eb38b34e65325c7ef7bd0675c95ab0",
+      "mirror": "verified"
+    },
+    {
+      "repo": "esp32-common",
+      "commit": "1556c50ffe99c272ec1ae5fd3974a5675d3b3812",
+      "mirror": "verified"
+    },
+    {
+      "repo": "android-app-kit",
+      "commit": "94e7a34363b4121da60a39e7a7e5c0e8c468a0b7",
+      "mirror": "verified"
+    },
+    {
+      "repo": "dufs-client-rs",
+      "commit": "7ae937cffbdd14e567e571053d3529d77eaf613a",
+      "mirror": "verified"
+    },
+    {
+      "repo": "bevy-env/bevy-canvas-kit",
+      "commit": "65e2abfb02b4dbf682b9957faa6fa2b94a44f7b5",
+      "mirror": "verified"
+    },
+    {
+      "repo": "bevy-env/bevy-app-foundation",
+      "commit": "d43c99d3cfbb009b7c8fea4989c02a7aa073ce40",
+      "mirror": "verified"
+    },
+    {
+      "repo": "bevy-env/bevy-project-planner",
+      "commit": "e2c8786c0ecd313d8f9823909dd3dfcdb24be65a",
+      "mirror": "verified"
+    },
+    {
+      "repo": "device-bean-mobile",
+      "commit": "abd473b9c2c961df083b6b2115f1d8dbc572b7e0",
+      "mirror": "verified"
+    },
+    {
+      "repo": "xiaoqiang/sip/demo",
+      "commit": "98ff28ed8ba0bf81ae72b89f59c76270a42e37fb",
+      "mirror": "verified"
+    },
+    {
+      "repo": "xiaoqiang/sip_old",
+      "commit": "bc9026def7e5510324791c7bf1ea393796b29dda",
+      "mirror": "verified"
+    },
+    {
+      "repo": "bevy-env",
+      "commit": "38899664fa75f8af27d238f93b9cf1c9eafcfd7e",
+      "mirror": "verified"
+    },
+    {
+      "repo": "bevy-env",
+      "parent_commit": "be61b920edd69f97cbcc6bce1b2001fd782d6c89"
+    },
+    {
+      "repo": "xiaoqiang/sip",
+      "parent_commit": "42ae389fa1ac362f5d07950638f8782908b65ee5"
+    }
+  ],
+  "checks": {
+    "rule_tests": 4,
+    "rule_links": 5,
+    "changed_relative_links": "passed",
+    "compatibility_links": "passed",
+    "git_diff_check": "passed"
+  },
+  "backups": {
+    "test-markdown": "/home/liou/.local/state/spec-cleanup/20260913-inactive/test-markdown",
+    "remote-work": "/home/liou/.local/state/spec-cleanup/20260913-inactive/remote-work"
+  },
+  "skipped_hidden_copies": [
+    ".remote-work/tag-all",
+    ".remote-work/dufs-plus"
+  ]
+}

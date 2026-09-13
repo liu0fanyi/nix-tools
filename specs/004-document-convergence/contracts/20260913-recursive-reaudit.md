@@ -1,6 +1,6 @@
 # 全工作区递归复核（2026-09-13）
 
-## 结论与范围
+## 复核时快照与范围
 
 仍有遗漏；此前 30/30 仅证明当时已列入的规格文件与镜像相同，不证明所有散落资料
 已归纳。本次重新遍历 /data/project（不跟随符号链接；排除 Git 内部及具名构建缓存），
@@ -15,7 +15,7 @@
 测试产品功能。已跟踪自有 Markdown 的本地相对文件链接扫描未发现失效候选；不包含
 锚点、动态路由、外部 URL 或未提交文件的完整语义验收。本轮未改产品或远端数据。
 
-## 确认需要处理
+## 复核时发现的事项（处理结果见下文）
 
 1. **仓库外测试资料**：xiaoqiang/test 中 14 份 Markdown，包括六类设备用例、人工
    手册、结果表和总入口，仍称自己是统一测试管理源。MIC-A006 的 5 MiB 资源门槛、
@@ -67,3 +67,35 @@
 先将 xiaoqiang/test 有效用例逐项映射到所属 spec，再核对并退役 .remote-work 旧副本；
 随后逐仓库补规格阶段、长期约束和子工作区规则版本化。活跃开发的同步由对应任务收尾。
 本报告记录复核结果，不代替各产品规格，也不授权部署或硬件测试。
+
+## 本轮非活跃项处理结果
+
+用户授权先处理遗漏、正在开发项目跳过。本节更新前文审计快照，不把未处理项改为完成。
+
+| 审计项 | 本轮结果 |
+| --- | --- |
+| xiaoqiang/test 的 14 份 Markdown | 6 份用例正文进入 sip/demo/003 与 sip_old/005 的 contracts；人工手册进入 sip/demo/docs；补全 sip_old 对话筒共通判据的隐含引用。6 份 RESULTS 删除，根 README 改为工具入口，原用例/手册位置为兼容链接。脚本、.secrets、results 产物保留。 |
+| 非活跃隐藏副本 | .remote-work/nix-tools（5084 文件/链接）及 nix-release-scope（43）校验私有备份后删除工作副本。 |
+| 非活跃规格缺口 | terminal/002 的 tasks，game/002/003/004 与 common/001/002/003 的 plan/tasks 共 7 组补齐。回溯实现与后续复验区分，UI 重设计仍待实施。 |
+| 长期约束 | terminal、game、android-app-kit、dufs-client-rs、bevy-env、canvas-kit、foundation、planner、device-bean-mobile 共 9 个 constitution 补齐外部参考、固定 SHA/shallow、来源分层和 plan 检查；修正 bevy-env 已有私有远程的过期表述。 |
+| 未版本化规则 | xiaoqiang/AGENTS.md 纳入 config/agent-rules/project/xiaoqiang/AGENTS.md，与根规则/技能由同一安装器管理，原位置链接读取。没有把 xiaoqiang 的 dufs 例外扩展到其他工程。 |
+
+### 旧副本有效信息映射
+
+- nix-tools/todo.md：主机休眠/合盖/swap、Rime、mihomo 与桌面配置对应 specs/010-host-configuration；dsh Web 对应 specs/009-infrastructure 的已取消项，不恢复。
+- IMPLEMENTATION_PLAN.md：Clip 协议、发现加密、手动接收、通知去重与配对对应 specs/005；资源限制、错误恢复与诊断对应 specs/006；CI 精确 revision、安装器、自检、缓存及公开发行门槛对应 specs/007。旧测试数字只作历史依据。
+- nix-release-scope/deploy 文档：PC 发布、NUC/公网分层、摘要验收、Edge/Authelia 及失败回滚对应 specs/009 与现有 deploy/docs；旧副本不再作为运行操作入口。
+- 未逐项替换旧副本的源码/制品；整个副本保存在本机私有恢复目录，独有旧文件没有丢失，也没有作为当前有效代码重新合并。
+
+### 备份与验证边界
+
+本机恢复目录 `/home/liou/.local/state/spec-cleanup/20260913-inactive/`：test-markdown 保存原 14 份文件及 SHA256.json；remote-work 保存两份原副本及逐文件 SHA256/链接目标清单。复制后与源逐项相同才删除原位置。仅本机保存，不加密、不上传这批备份。
+
+本轮不执行产品构建或硬件测试。规则安装器 4 项回归通过，5 个规则链接核验通过；变更文档相对文件链接、兼容链接及 Git diff 检查通过。测试要求归并不代表当前板端已通过。
+
+### 按用户要求未处理
+
+tag-all、bevy-sketch、dufs-plus、esp32-focus-writer 的开发工作树、规格与镜像由原任务收尾；即使检查期间它们变成干净也不自动纳入本轮。.remote-work/tag-all 和 .remote-work/dufs-plus 同样保留。
+tag-all 6 组与 writer 3 组历史 feature 的 plan/tasks，以及这些活跃工程的规则缺口未在本轮补齐。个人文件、上游/SDK、运行与构建产物、已记录的 signature-server 远端和小智构建债务维持原边界。
+
+本轮 12 个文档仓库已提交推送并完成各自 NUC 镜像 checksum 回查；sip/demo 与 foundation 先推，随后更新 sip 与 bevy-env 对应 gitlink。活跃子仓库指针未由本轮更新。提交与验证记录见 [非活跃收尾记录](20260913-inactive-close.json)。SIP 文档只写 dufs/sip-demo 与 dufs/sip-old，其余按各自 todos 目录同步。
