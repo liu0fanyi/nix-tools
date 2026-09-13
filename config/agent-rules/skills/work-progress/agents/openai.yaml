@@ -1,0 +1,4 @@
+interface:
+  display_name: "工作进展"
+  short_description: "维护仓库 Spec 与任务进度，通过 sync-todos 镜像至 NUC"
+  default_prompt: "使用 $work-progress 更新当前仓库 specs 中的任务进度，核对仓库同步入口并将规格与文档镜像至 NUC。"

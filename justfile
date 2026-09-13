@@ -27,3 +27,7 @@ install-plan host *args:
 # PC 上用独立虚拟盘验证 NUC 分区和 UEFI 引导，不连接真实磁盘。
 install-test-nuc:
     nix build --impure --no-link --print-out-paths -L --file scripts/tests/nuc-install-vm.nix
+
+# 本机规则安装：默认预演，--apply 安装，--check 核验。
+agent-rules *args:
+    python3 scripts/agent-rules.py "$@"

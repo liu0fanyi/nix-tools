@@ -1,0 +1,245 @@
+{
+  "method": "SHA256 and exact file paths; read-only snapshot after signature document completion",
+  "results": [
+    {
+      "source": "/data/project/esp32-p4-dufs-terminal",
+      "destination": "/home/liou/dufs-lan/todos/esp32-p4-dufs-terminal",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/android-app-kit",
+      "destination": "/home/liou/dufs-lan/todos/android-app-kit",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/esp32-mp3-player",
+      "destination": "/home/liou/dufs-lan/todos/esp32-mp3-player",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/tag-all",
+      "destination": "/home/liou/dufs-lan/todos/tag-all",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/esp32-recorder-bean",
+      "destination": "/home/liou/dufs-lan/todos/esp32-recorder-bean",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/dufs-client-rs",
+      "destination": "/home/liou/dufs-lan/todos/dufs-client-rs",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/bevy-env",
+      "destination": "/home/liou/dufs-lan/todos/bevy-env",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/esp32-p4-game",
+      "destination": "/home/liou/dufs-lan/todos/esp32-p4-game",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/device-bean-mobile",
+      "destination": "/home/liou/dufs-lan/todos/device-bean-mobile",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/esp32-focus-writer",
+      "destination": "/home/liou/dufs-lan/todos/esp32-focus-writer",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/esp32-multi-timer",
+      "destination": "/home/liou/dufs-lan/todos/esp32-multi-timer",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/dufs-plus",
+      "destination": "/home/liou/dufs-lan/todos/dufs-plus",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/esp32-common",
+      "destination": "/home/liou/dufs-lan/todos/esp32-common",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/bevy-env/bevy-game",
+      "destination": "/home/liou/dufs-lan/todos/bevy-game",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/bevy-env/bevy-canvas-kit",
+      "destination": "/home/liou/dufs-lan/todos/bevy-canvas-kit",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/bevy-env/bevy-sketch",
+      "destination": "/home/liou/dufs-lan/todos/bevy-sketch",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/bevy-env/bevy-app-foundation",
+      "destination": "/home/liou/dufs-lan/todos/bevy-app-foundation",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/bevy-env/bevy-project-planner",
+      "destination": "/home/liou/dufs-lan/todos/project-planner",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/xiaoqiang/esp32-p4-400m20s",
+      "destination": "/home/liou/dufs/esp32-p4-400m2s",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/xiaoqiang/sip-rk3506",
+      "destination": "/home/liou/dufs/sip-rk3506",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/xiaoqiang/xiaozhi",
+      "destination": "/home/liou/dufs/xiaozhi",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/xiaoqiang/device-common",
+      "destination": "/home/liou/dufs/device-common",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/xiaoqiang/esp32-p4-cmt2300a",
+      "destination": "/home/liou/dufs/esp32-p4-cmt2300a",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/xiaoqiang/signature-server",
+      "destination": "/home/liou/dufs/signature-server",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/xiaoqiang/sip",
+      "destination": "/home/liou/dufs/sip",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/xiaoqiang/sip_old",
+      "destination": "/home/liou/dufs/sip-old",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/xiaoqiang/tauri_config_page",
+      "destination": "/home/liou/dufs/config-app-new",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/xiaoqiang/esp32-p4-sip",
+      "destination": "/home/liou/dufs/esp32-p4-sip",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/xiaoqiang/sip/demo",
+      "destination": "/home/liou/dufs/sip-demo",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/home/liou/nix-tools",
+      "destination": "/home/liou/dufs-lan/todos/nix-tools",
+      "deferred": false,
+      "missing": [],
+      "extra": [],
+      "changed": []
+    }
+  ]
+}

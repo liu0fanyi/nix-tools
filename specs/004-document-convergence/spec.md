@@ -18,3 +18,11 @@
 软件工程范围已扩展到 xiaoqiang，包括独立 sip_old 与小智；signature-server 功能改造暂缓，文档已按用户澄清归纳并同步。hardware-relation-studio 经用户确认归属 bevy-project-planner。
 各产品需求仍由自身仓库管理，本规格仅记录迁移审计，不代管产品待办。
 详见[本轮记录与保留边界](contracts/20260913-software-convergence.md)。
+
+
+## 工作区规则版本化（用户授权）
+
+根 AGENTS 与 work-progress 完整技能由 nix-tools 的 config/agent-rules 管理，
+本机使用位置以符号链接引用。安装必须先核对所有目标：不存在或内容相同才接管，
+不同本地内容或其他链接必须保留并报错；提供预演、安装、只读核验和可重复运行入口。
+不迁移产品 spec，不执行系统切换，不将规则配置加入 NUC 文档同步白名单。

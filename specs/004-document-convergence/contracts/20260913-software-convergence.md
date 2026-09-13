@@ -1,65 +1,47 @@
 # 软件资料迁移收尾（2026-09-13）
 
-## 已核对的归属与处理
+## 当前结论
 
-- 初轮 18 个工程及 nix-tools/clipboard-sync 的规格仍以各自已确定权威源维护。
-- xiaoqiang 的 CMT/400m 共用一仓两分支；其他已整理工程独立管理，sip 与 sip_old
-  不合并。SDK/大镜像采用原格式归档、SHA256 与源码补丁，不能因体积大而一律加密。
-- 小智父仓库与独立固件已建立 xiaoqiang-xiaozhi / xiaoqiang-xiaozhi-firmware 私有远程；
-  历史 roadmap 提炼为 7 组规格，参考依赖固定 SHA，真实未提交修改已保存。
-  新 clone 已恢复父仓库和固件提交；容器解包因 UID/GID 映射失败，构建验收未通过。
-- xiaoqiang 根部 6 份 Markdown/Word 已提取关键需求和契约至 sip/demo、sip_old、
-  device-common。Word 示例账号密码未复制到规格；原件先私有备份再移除。
-- device-common 的 main 已经 NUC 既有凭据正常推送 Gitee，远端核对
-  449a7fa8186aea9af1228e6cfbaad9fa8d001549；本机 SSH 凭据问题没有通过跳过校验解决。
-- hardware-relation-studio 旧入口归入 bevy-project-planner/specs/001-bevy-planner；
-  旧 Leptos MVP 结论不等同当前 Bevy 版验收。旧 DUFS trial 里的独立画板 origin 需求
-  归入 bevy-sketch/specs/004-input-and-performance，保持延后。
-- camera.md 中两条误放的画板性能记录已有 Sketch 对应规格，只移除此两条软件记录。
-- tag-all、device-bean-mobile、esp32-focus-writer、dufs-plus 的本轮规格快照已同步；
-  正在开发的未提交代码不随文档整理提交。
+本轮软件工程规格归纳已完成，包含 signature-server。核验快照中 30 个规格源的
+路径集合与文件 SHA256 均与正确目的地一致，见
+[完整核验](20260913-final-mirror-verification.json)。此结论不代替产品构建或实机验收。
 
-## 清理与备份边界
+一般工程镜像到 dufs-lan/todos，各 xiaoqiang 工程只镜像到既有 dufs 项目目录。
+误放的 10 个 todos 目录、225 个文件已逐项核对 dufs 副本后清理，sip_old 的失效
+跨项目入口已移除。400m 原下载首页保留，规格入口为 SPECIFICATIONS.md。
 
-已按摘要核对后移除旧计划。NUC project-planner 的 6 个历史备份目录转入
-`/home/liou/.local/state/xiaoqiang-repo-audit/planner-document-backups-20260913/`；
-本轮 trial 原件保存在同级 `planner-final-cleanup-20260913/`，不作为第二套计划。
-小智旧远端资料保存在同级 `xiaozhi-cleanup-20260913/remote-documents/`。
-根部 Word/Markdown 原件在本机同级 `loose-documents-20260913/`，含敏感示例，不发布。
-小智 Git bundle 与修改原件在本机同级 `xiaozhi-cleanup-20260913/`。
+## 归纳与保留
 
-## 明确保留与未完成项
+- 初轮 18 个工程各自维护 specs；clipboard-sync 按用户约定归属 nix-tools。
+- CMT/400m 共用一仓两分支；sip 与 sip_old 独立。SDK/image/ZIP 默认原格式、SHA256
+  与源码补丁，不因体积或私有标签一律加密；已完成归档不自动重做。
+- 小智父仓库和固件各有私有远程，历史 roadmap 已提炼为 7 组规格；源和固件可恢复。
+  容器构建仍受 UID/GID 映射问题阻塞。
+- xiaoqiang 根部 6 份 Markdown/Word 要点归入 sip/demo、sip_old、device-common。
+  示例账号密码未复制到文档镜像。
+- hardware-relation-studio 归入 bevy-project-planner；独立画板 origin 延后需求归入
+  bevy-sketch。camera.md 两条误放的软件性能记录已提炼并移除，硬件记录保留。
+- signature-server 的接口契约、长期约束、手册和 dufs 镜像已完成。
+  暂缓的是私钥注入、额度/事务修复、容器与生产改造；整库推送待历史敏感信息处理。
+- 个人购物、学习、写作、未归属软件工程的硬件探索、运行画布与固件、厂商原件和
+  SDK 私有归档保留，不强行转为 spec。活跃项目的未提交代码不随本次文档整理提交。
 
-- signature-server：用户明确暂缓；本地草案不计入已推送/已镜像清单。
-- 个人购物、学习、写作，以及尚未归属软件工程的相机/XIAO 等硬件探索保留原文件。
-- 生产 document.json、下载固件、厂商原始资料、SDK 归档和私有备份属于运行数据或参考，
-  不要求转换成 spec，也不因整理文档删除。
-- 源码恢复、构建、部署与实机验收分别记录；小智容器复验、各仓库 spec 中未勾选的
-  功能/板端验收继续待办。本轮没有部署应用、重启服务、烧录或发起 SIP 通话。
+## 备份位置
 
-此前 document-audit.md、inventory.json 等是初轮范围的历史证据，不代表本轮新范围。
+NUC /home/liou/.local/state/xiaoqiang-repo-audit/ 下保留 planner-document-backups-20260913、
+planner-final-cleanup-20260913 与 xiaozhi-cleanup-20260913/remote-documents 原件。
+本机同级 loose-documents-20260913 保存根部 Word/Markdown 原件，
+xiaozhi-cleanup-20260913 保存原 Git bundle 和修改备份。它们不作为第二套计划。
 
-## 最终镜像核对
+## 规则与 Git 收尾
 
-[逐项目 SHA256 比较结果](20260913-mirror-verification.json)：工作区审计的 30 个规格源中，29 个路径集合与文件摘要完全一致；唯一差异为明确暂缓的 signature-server 草案。nix-tools 和小智固件规格另由各自同步脚本回读校验。核对反映本次快照，后续开发需继续通过 sync-todos 更新。
+根 AGENTS 和 work-progress 技能现由 nix-tools/config/agent-rules 管理，原位置用
+符号链接引用；操作见 [本机规则管理](../../../docs/local-agent-rules.md)。
+Tauri main 跟踪已确认最新的 origin/main；签名服务 .password 忽略规则已本地提交，
+未因此上传含未处理敏感历史的整库。无产品部署、重启、烧录、数据库迁移或签名请求。
 
+## 核验记录的效力
 
-## 发布目标纠正（同日用户重申，取代上节目标判定）
-
-此前核对把 xiaoqiang 的 todos 副本当成正确目标，属于审计遗漏；“29/30 一致”只证明
-内容相同，不能证明符合发布位置约束。xiaoqiang 的唯一镜像目标是既有 dufs 项目目录。
-10 个同步脚本、各仓库 AGENTS/constitution 与工作区入口已纠正，脚本拒绝错误目标。
-已按 dufs 副本逐文件 SHA256 核对，清理 todos 下 10 个误放目录、225 个重复文件，
-并移除 a-next 的 sip_old 失效入口。400m 下载首页不动，文档入口仍为 SPECIFICATIONS.md。
-[纠正后的逐项目核验](20260913-dufs-only-verification.json) 记录完整目标：29 个一致，
-signature-server 仍为明确暂缓例外；不再将该例外默认指向 todos。
-
-
-## signature-server 暂缓范围澄清（同日用户确认）
-
-此前将“下次用到再改”扩大为文档归纳暂停，属于误读。本节取代前文将其列为文档例外
-的判定。现已完成 Spec Kit/constitution、接口与签名契约、操作手册和同步入口，
-step.md 提炼后删除并保留 Git 历史；规格已本地提交并镜像到 dufs/signature-server。
-[本次摘要核验](20260913-signature-document-verification.json) 确认内容一致。
-暂缓项是密钥注入、额度/事务修复、容器改造及生产验证；整库 Git 推送等待历史敏感
-信息处理，不再作为文档归纳前置条件。没有实施产品代码改造、运行服务或部署。
+旧 document-audit/inventory、29/30 及目标纠正 JSON 仅作当时快照，不代表当前待办。
+本页和完整核验文件为本轮最终结论；signature-server 不再是文档例外。
+后续代码和规格变化仍须通过各仓库 sync-todos 更新，不以本快照证明未来状态。

@@ -170,3 +170,9 @@ bash scripts/install-nixos-anywhere.sh --check
 ## 规格入口
 
 Clip 与本仓库绑定维护，功能规格见 specs/005-clipboard-core、006-clipboard-reliability、007-clipboard-release；备份见 specs/008-removable-backup；发布恢复见 specs/009-infrastructure；主机配置见 specs/010-host-configuration。文档核验及未闭环项见 [审计规格](specs/004-document-convergence/spec.md)。旧 IMPLEMENTATION_PLAN 已退出，远端只镜像此处。
+
+## Local agent rules
+
+Workspace AGENTS and the work-progress skill are versioned here. See
+[installation and recovery](docs/local-agent-rules.md); preview with `just agent-rules`,
+install with `just agent-rules --apply`, and verify with `just agent-rules --check`.

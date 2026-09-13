@@ -14,3 +14,12 @@
 - [x] T006 核对小智私有源码恢复、Gitee 推送和旧资料清理；构建受阻单独保留，不冒充通过。
 
 本轮边界见 [2026-09-13 收尾审计](contracts/20260913-software-convergence.md)。
+
+
+## 最终小项收尾
+
+- [x] T007 纳入根 AGENTS 与完整 work-progress 技能，实现预演/安装/核验及差异文件保护。
+- [x] T008 验证安装链接、源更新生效及重复执行，合并审计为当前结论。
+- [x] T009 将 Tauri 跟踪改为 origin/main；签名服务 .password 忽略规则本地提交。
+
+当前结果以 [最终收尾结论](contracts/20260913-software-convergence.md) 为准，旧记录为历史快照。
