@@ -1,0 +1,783 @@
+{
+  "scope": "Fresh filesystem scan of /data/project, no symlink traversal; Git internals and named build/cache directories pruned; vendor/ref trees inventoried but not migrated",
+  "git_markers": 200,
+  "enumerated_document_files": 30025,
+  "enumerated_document_directories": 346,
+  "scan_errors": 0,
+  "spec_roots": [
+    {
+      "path": "/data/project/esp32-p4-dufs-terminal",
+      "top": "/data/project/esp32-p4-dufs-terminal",
+      "common": "/data/project/esp32-p4-dufs-terminal/.git",
+      "head": "55e0037530072456dce50d6b5c7bb17c31c9b8bb",
+      "specs": 2,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/android-app-kit",
+      "top": "/data/project/android-app-kit",
+      "common": "/data/project/android-app-kit/.git",
+      "head": "7dbc49db4e8dc8f3d888a74c4501701b019c4f6e",
+      "specs": 2,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/esp32-mp3-player",
+      "top": "/data/project/esp32-mp3-player",
+      "common": "/data/project/esp32-mp3-player/.git",
+      "head": "c651c83bc135630a457df805f86247905f55a39c",
+      "specs": 2,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/tag-all",
+      "top": "/data/project/tag-all",
+      "common": "/data/project/tag-all/.git",
+      "head": "ddebee7f945e53592e026150f10209852eff83eb",
+      "specs": 9,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/esp32-recorder-bean",
+      "top": "/data/project/esp32-recorder-bean",
+      "common": "/data/project/esp32-recorder-bean/.git",
+      "head": "c95f20ee0dcc3b801b4b423757d96cd492d4cb23",
+      "specs": 3,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/dufs-client-rs",
+      "top": "/data/project/dufs-client-rs",
+      "common": "/data/project/dufs-client-rs/.git",
+      "head": "69086bd4bf6f0997e7e29579caeb5d26a900310b",
+      "specs": 1,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/bevy-env",
+      "top": "/data/project/bevy-env",
+      "common": "/data/project/bevy-env/.git",
+      "head": "29529e7258b29af90586e4bae3ce1d8d2b73de14",
+      "specs": 1,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/bevy-env/bevy-game",
+      "top": "/data/project/bevy-env/bevy-game",
+      "common": "/data/project/bevy-env/bevy-game/.git",
+      "head": "98a6c52cfe93e3218cf88fdfe5220bc82c492711",
+      "specs": 6,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/bevy-env/bevy-canvas-kit",
+      "top": "/data/project/bevy-env/bevy-canvas-kit",
+      "common": "/data/project/bevy-env/bevy-canvas-kit/.git",
+      "head": "e82dc6e5ba6abaf1377b72d395ca7ad3d7861278",
+      "specs": 1,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/bevy-env/bevy-sketch",
+      "top": "/data/project/bevy-env/bevy-sketch",
+      "common": "/data/project/bevy-env/bevy-sketch/.git",
+      "head": "b14f2fac77feff0919a6b3124ab30a13dd2f7e28",
+      "specs": 4,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/bevy-env/bevy-app-foundation",
+      "top": "/data/project/bevy-env/bevy-app-foundation",
+      "common": "/data/project/bevy-env/bevy-app-foundation/.git",
+      "head": "61ebe2d37317dd3e397ef8f3b75afa2b4776d5a7",
+      "specs": 1,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/bevy-env/bevy-project-planner",
+      "top": "/data/project/bevy-env/bevy-project-planner",
+      "common": "/data/project/bevy-env/bevy-project-planner/.git",
+      "head": "d7d6b7f77e42060d0490af856dec93cedf12d73e",
+      "specs": 4,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/esp32-p4-game",
+      "top": "/data/project/esp32-p4-game",
+      "common": "/data/project/esp32-p4-game/.git",
+      "head": "46fda7d8f24164bff536ee1710e2f6e6a4eb97c6",
+      "specs": 4,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/device-bean-mobile",
+      "top": "/data/project/device-bean-mobile",
+      "common": "/data/project/device-bean-mobile/.git",
+      "head": "8553c6b8aba579ff35e1c40af705f439ef99bc0c",
+      "specs": 6,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/esp32-focus-writer",
+      "top": "/data/project/esp32-focus-writer",
+      "common": "/data/project/esp32-focus-writer/.git",
+      "head": "116e5cc642923e4ab40009ef16219e8d9b6eeefe",
+      "specs": 4,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/esp32-multi-timer",
+      "top": "/data/project/esp32-multi-timer",
+      "common": "/data/project/esp32-multi-timer/.git",
+      "head": "66172f69490592c30617cd2faf440c9ddd929e56",
+      "specs": 2,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/dufs-plus",
+      "top": "/data/project/dufs-plus",
+      "common": "/data/project/dufs-plus/.git",
+      "head": "f8f2272106d1081294cd8134f0da97290ff7ebd7",
+      "specs": 4,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/xiaoqiang/esp32-p4-400m20s",
+      "top": "/data/project/xiaoqiang/esp32-p4-400m20s",
+      "common": "/data/project/xiaoqiang/esp32-p4-400m20s/.git",
+      "head": "5622c88398c3ced3feb0348630543864b5efd93f",
+      "specs": 4,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/xiaoqiang/sip-rk3506",
+      "top": "/data/project/xiaoqiang/sip-rk3506",
+      "common": "/data/project/xiaoqiang/sip-rk3506/.git",
+      "head": "fa3e06f8330430a5b03beb8d90b079fe530a4c0c",
+      "specs": 4,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/xiaoqiang/xiaozhi",
+      "top": "/data/project/xiaoqiang/xiaozhi",
+      "common": "/data/project/xiaoqiang/xiaozhi/.git",
+      "head": "6a5ede2063be009866ba3424ee6d69c3128ba467",
+      "specs": 7,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/xiaoqiang/xiaozhi/xiaozhi-esp32-2.0.3",
+      "top": "/data/project/xiaoqiang/xiaozhi/xiaozhi-esp32-2.0.3",
+      "common": "/data/project/xiaoqiang/xiaozhi/xiaozhi-esp32-2.0.3/.git",
+      "head": "aa57f6de54751a4f47faf0d677dfee603485b6bb",
+      "specs": 1,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/xiaoqiang/device-common",
+      "top": "/data/project/xiaoqiang/device-common",
+      "common": "/data/project/xiaoqiang/device-common/.git",
+      "head": "b2245df236250b554873b08e650a5dbf9e4f86a9",
+      "specs": 4,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/xiaoqiang/esp32-p4-cmt2300a",
+      "top": "/data/project/xiaoqiang/esp32-p4-cmt2300a",
+      "common": "/data/project/xiaoqiang/esp32-p4-400m20s/.git",
+      "head": "d3c1b6a5f33d13bfc71e606d6fe8d390e6c263f1",
+      "specs": 5,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/xiaoqiang/signature-server",
+      "top": "/data/project/xiaoqiang/signature-server",
+      "common": "/data/project/xiaoqiang/signature-server/.git",
+      "head": "e49555063143c7114c9b1903d6583dafc730d208",
+      "specs": 1,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/xiaoqiang/sip",
+      "top": "/data/project/xiaoqiang/sip",
+      "common": "/data/project/xiaoqiang/sip/.git",
+      "head": "43bcd0ac7383bc85358387e79bf8e80326aa90d1",
+      "specs": 3,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/xiaoqiang/sip/demo",
+      "top": "/data/project/xiaoqiang/sip/demo",
+      "common": "/data/project/xiaoqiang/sip/.git/modules/demo",
+      "head": "eea7a17ea9aec4572f0540e08e2d49011b72d4db",
+      "specs": 6,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/xiaoqiang/sip_old",
+      "top": "/data/project/xiaoqiang/sip_old",
+      "common": "/data/project/xiaoqiang/sip_old/.git",
+      "head": "eb538581d6f0315bd3644e2e70437119da0004e0",
+      "specs": 6,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/xiaoqiang/tauri_config_page",
+      "top": "/data/project/xiaoqiang/tauri_config_page",
+      "common": "/data/project/xiaoqiang/tauri_config_page/.git",
+      "head": "87c7d70e3276d2a920708c40b796338576cc9ba7",
+      "specs": 3,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/xiaoqiang/esp32-p4-sip",
+      "top": "/data/project/xiaoqiang/esp32-p4-sip",
+      "common": "/data/project/xiaoqiang/esp32-p4-sip/.git",
+      "head": "3192302834f8aaf82b8318b6bc9230d47ea3d8db",
+      "specs": 4,
+      "constitution": true,
+      "ref": false
+    },
+    {
+      "path": "/data/project/esp32-common",
+      "top": "/data/project/esp32-common",
+      "common": "/data/project/esp32-common/.git",
+      "head": "cee7068ffd48423acab97bec5bdb2e5cf778a38f",
+      "specs": 5,
+      "constitution": true,
+      "ref": false
+    }
+  ],
+  "structure": [
+    {
+      "path": "/data/project/esp32-p4-dufs-terminal",
+      "features": 2,
+      "missing": [
+        "specs/002-chinese-input/tasks.md"
+      ],
+      "status": [],
+      "docs": 10
+    },
+    {
+      "path": "/data/project/android-app-kit",
+      "features": 2,
+      "missing": [],
+      "status": [],
+      "docs": 9
+    },
+    {
+      "path": "/data/project/esp32-mp3-player",
+      "features": 2,
+      "missing": [],
+      "status": [],
+      "docs": 15
+    },
+    {
+      "path": "/data/project/tag-all",
+      "features": 9,
+      "missing": [
+        "specs/006-epub-position/plan.md",
+        "specs/006-epub-position/tasks.md",
+        "specs/005-writing-replication/plan.md",
+        "specs/005-writing-replication/tasks.md",
+        "specs/007-openapi-from-code/plan.md",
+        "specs/007-openapi-from-code/tasks.md",
+        "specs/002-music-directory-order/plan.md",
+        "specs/002-music-directory-order/tasks.md",
+        "specs/003-recording-cloud-deletion/plan.md",
+        "specs/003-recording-cloud-deletion/tasks.md",
+        "specs/001-music-upload/plan.md",
+        "specs/001-music-upload/tasks.md"
+      ],
+      "status": [
+        " M README.md",
+        " M tag-server",
+        "?? specs/009-transcription-audio/"
+      ],
+      "docs": 22
+    },
+    {
+      "path": "/data/project/esp32-recorder-bean",
+      "features": 3,
+      "missing": [],
+      "status": [],
+      "docs": 22
+    },
+    {
+      "path": "/data/project/dufs-client-rs",
+      "features": 1,
+      "missing": [],
+      "status": [],
+      "docs": 7
+    },
+    {
+      "path": "/data/project/bevy-env",
+      "features": 1,
+      "missing": [],
+      "status": [
+        " M bevy-sketch"
+      ],
+      "docs": 6
+    },
+    {
+      "path": "/data/project/bevy-env/bevy-game",
+      "features": 6,
+      "missing": [],
+      "status": [],
+      "docs": 36
+    },
+    {
+      "path": "/data/project/bevy-env/bevy-canvas-kit",
+      "features": 1,
+      "missing": [],
+      "status": [],
+      "docs": 6
+    },
+    {
+      "path": "/data/project/bevy-env/bevy-sketch",
+      "features": 4,
+      "missing": [],
+      "status": [
+        " M specs/004-input-and-performance/plan.md",
+        " M specs/004-input-and-performance/spec.md",
+        " M specs/004-input-and-performance/tasks.md",
+        " M src/drawing_plugin.rs",
+        " M src/semantic_input/tests.rs",
+        " M src/shortcuts.rs",
+        " M src/shortcuts/commands.rs",
+        " M src/shortcuts/history.rs",
+        "?? scripts/test-history-shortcuts.cjs"
+      ],
+      "docs": 16
+    },
+    {
+      "path": "/data/project/bevy-env/bevy-app-foundation",
+      "features": 1,
+      "missing": [],
+      "status": [],
+      "docs": 6
+    },
+    {
+      "path": "/data/project/bevy-env/bevy-project-planner",
+      "features": 4,
+      "missing": [],
+      "status": [],
+      "docs": 19
+    },
+    {
+      "path": "/data/project/esp32-p4-game",
+      "features": 4,
+      "missing": [
+        "specs/003-ppa-rendering/plan.md",
+        "specs/003-ppa-rendering/tasks.md",
+        "specs/004-ui-redesign/plan.md",
+        "specs/004-ui-redesign/tasks.md",
+        "specs/002-ota-partition/plan.md",
+        "specs/002-ota-partition/tasks.md"
+      ],
+      "status": [],
+      "docs": 16
+    },
+    {
+      "path": "/data/project/device-bean-mobile",
+      "features": 6,
+      "missing": [],
+      "status": [],
+      "docs": 32
+    },
+    {
+      "path": "/data/project/esp32-focus-writer",
+      "features": 4,
+      "missing": [
+        "specs/000-hardware-selection/spec.md",
+        "specs/000-hardware-selection/plan.md",
+        "specs/000-hardware-selection/tasks.md",
+        "specs/003-replication/plan.md",
+        "specs/003-replication/tasks.md",
+        "specs/001-pending-patch/plan.md",
+        "specs/001-pending-patch/tasks.md",
+        "specs/002-sync-envelope/plan.md",
+        "specs/002-sync-envelope/tasks.md"
+      ],
+      "status": [
+        " M .specify/memory/constitution.md",
+        " M AGENTS.md",
+        "?? docs/",
+        "?? specs/000-hardware-selection/"
+      ],
+      "docs": 13
+    },
+    {
+      "path": "/data/project/esp32-multi-timer",
+      "features": 2,
+      "missing": [],
+      "status": [],
+      "docs": 14
+    },
+    {
+      "path": "/data/project/dufs-plus",
+      "features": 4,
+      "missing": [],
+      "status": [
+        " M README.md",
+        " M apps/transcriptions/app.css",
+        " M apps/transcriptions/app.js",
+        " M apps/transcriptions/index.html",
+        " M specs/003-transcription-management/plan.md",
+        " M specs/003-transcription-management/tasks.md",
+        "?? tests/transcriptions-audio.cjs"
+      ],
+      "docs": 17
+    },
+    {
+      "path": "/data/project/xiaoqiang/esp32-p4-400m20s",
+      "features": 4,
+      "missing": [],
+      "status": [],
+      "docs": 20
+    },
+    {
+      "path": "/data/project/xiaoqiang/sip-rk3506",
+      "features": 4,
+      "missing": [],
+      "status": [],
+      "docs": 19
+    },
+    {
+      "path": "/data/project/xiaoqiang/xiaozhi",
+      "features": 7,
+      "missing": [],
+      "status": [],
+      "docs": 33
+    },
+    {
+      "path": "/data/project/xiaoqiang/xiaozhi/xiaozhi-esp32-2.0.3",
+      "features": 1,
+      "missing": [],
+      "status": [],
+      "docs": 80
+    },
+    {
+      "path": "/data/project/xiaoqiang/device-common",
+      "features": 4,
+      "missing": [],
+      "status": [],
+      "docs": 24
+    },
+    {
+      "path": "/data/project/xiaoqiang/esp32-p4-cmt2300a",
+      "features": 5,
+      "missing": [],
+      "status": [],
+      "docs": 23
+    },
+    {
+      "path": "/data/project/xiaoqiang/signature-server",
+      "features": 1,
+      "missing": [],
+      "status": [],
+      "docs": 6
+    },
+    {
+      "path": "/data/project/xiaoqiang/sip",
+      "features": 3,
+      "missing": [],
+      "status": [],
+      "docs": 13
+    },
+    {
+      "path": "/data/project/xiaoqiang/sip/demo",
+      "features": 6,
+      "missing": [],
+      "status": [],
+      "docs": 30
+    },
+    {
+      "path": "/data/project/xiaoqiang/sip_old",
+      "features": 6,
+      "missing": [],
+      "status": [],
+      "docs": 34
+    },
+    {
+      "path": "/data/project/xiaoqiang/tauri_config_page",
+      "features": 3,
+      "missing": [],
+      "status": [],
+      "docs": 16
+    },
+    {
+      "path": "/data/project/xiaoqiang/esp32-p4-sip",
+      "features": 4,
+      "missing": [],
+      "status": [],
+      "docs": 18
+    },
+    {
+      "path": "/data/project/esp32-common",
+      "features": 5,
+      "missing": [
+        "specs/002-module-boundaries/plan.md",
+        "specs/002-module-boundaries/tasks.md",
+        "specs/001-device-power/plan.md",
+        "specs/001-device-power/tasks.md",
+        "specs/003-secure-ota/plan.md",
+        "specs/003-secure-ota/tasks.md"
+      ],
+      "status": [],
+      "docs": 30
+    }
+  ],
+  "mirror_snapshot": [
+    {
+      "source": "/data/project/esp32-p4-dufs-terminal",
+      "destination": "/home/liou/dufs-lan/todos/esp32-p4-dufs-terminal/specs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/android-app-kit",
+      "destination": "/home/liou/dufs-lan/todos/android-app-kit/specs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/esp32-mp3-player",
+      "destination": "/home/liou/dufs-lan/todos/esp32-mp3-player/specs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/tag-all",
+      "destination": "/home/liou/dufs-lan/todos/tag-all/specs",
+      "missing": [
+        "009-transcription-audio/plan.md",
+        "009-transcription-audio/spec.md",
+        "009-transcription-audio/tasks.md"
+      ],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/esp32-recorder-bean",
+      "destination": "/home/liou/dufs-lan/todos/esp32-recorder-bean/specs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/dufs-client-rs",
+      "destination": "/home/liou/dufs-lan/todos/dufs-client-rs/specs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/bevy-env",
+      "destination": "/home/liou/dufs-lan/todos/bevy-env/specs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/bevy-env/bevy-game",
+      "destination": "/home/liou/dufs-lan/todos/bevy-game/specs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/bevy-env/bevy-canvas-kit",
+      "destination": "/home/liou/dufs-lan/todos/bevy-canvas-kit/specs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/bevy-env/bevy-sketch",
+      "destination": "/home/liou/dufs-lan/todos/bevy-sketch/specs",
+      "missing": [],
+      "extra": [],
+      "changed": [
+        "004-input-and-performance/plan.md",
+        "004-input-and-performance/spec.md",
+        "004-input-and-performance/tasks.md"
+      ]
+    },
+    {
+      "source": "/data/project/bevy-env/bevy-app-foundation",
+      "destination": "/home/liou/dufs-lan/todos/bevy-app-foundation/specs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/bevy-env/bevy-project-planner",
+      "destination": "/home/liou/dufs-lan/todos/project-planner/specs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/esp32-p4-game",
+      "destination": "/home/liou/dufs-lan/todos/esp32-p4-game/specs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/device-bean-mobile",
+      "destination": "/home/liou/dufs-lan/todos/device-bean-mobile/specs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/esp32-focus-writer",
+      "destination": "/home/liou/dufs-lan/todos/esp32-focus-writer/specs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/esp32-multi-timer",
+      "destination": "/home/liou/dufs-lan/todos/esp32-multi-timer/specs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/dufs-plus",
+      "destination": "/home/liou/dufs-lan/todos/dufs-plus/specs",
+      "missing": [],
+      "extra": [],
+      "changed": [
+        "003-transcription-management/plan.md",
+        "003-transcription-management/tasks.md"
+      ]
+    },
+    {
+      "source": "/data/project/xiaoqiang/esp32-p4-400m20s",
+      "destination": "/home/liou/dufs/esp32-p4-400m2s/specs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/xiaoqiang/sip-rk3506",
+      "destination": "/home/liou/dufs/sip-rk3506/specs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/xiaoqiang/xiaozhi",
+      "destination": "/home/liou/dufs/xiaozhi/specs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/xiaoqiang/xiaozhi/xiaozhi-esp32-2.0.3",
+      "destination": "/home/liou/dufs/xiaozhi/firmware-specs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/xiaoqiang/device-common",
+      "destination": "/home/liou/dufs/device-common/specs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/xiaoqiang/esp32-p4-cmt2300a",
+      "destination": "/home/liou/dufs/esp32-p4-cmt2300a/specs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/xiaoqiang/signature-server",
+      "destination": "/home/liou/dufs/signature-server/specs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/xiaoqiang/sip",
+      "destination": "/home/liou/dufs/sip/specs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/xiaoqiang/sip/demo",
+      "destination": "/home/liou/dufs/sip-demo/specs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/xiaoqiang/sip_old",
+      "destination": "/home/liou/dufs/sip-old/specs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/xiaoqiang/tauri_config_page",
+      "destination": "/home/liou/dufs/config-app-new/specs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/xiaoqiang/esp32-p4-sip",
+      "destination": "/home/liou/dufs/esp32-p4-sip/specs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    },
+    {
+      "source": "/data/project/esp32-common",
+      "destination": "/home/liou/dufs-lan/todos/esp32-common/specs",
+      "missing": [],
+      "extra": [],
+      "changed": []
+    }
+  ],
+  "broken_tracked_markdown_link_candidates": []
+}
