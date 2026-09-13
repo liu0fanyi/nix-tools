@@ -53,3 +53,13 @@
 并移除 a-next 的 sip_old 失效入口。400m 下载首页不动，文档入口仍为 SPECIFICATIONS.md。
 [纠正后的逐项目核验](20260913-dufs-only-verification.json) 记录完整目标：29 个一致，
 signature-server 仍为明确暂缓例外；不再将该例外默认指向 todos。
+
+
+## signature-server 暂缓范围澄清（同日用户确认）
+
+此前将“下次用到再改”扩大为文档归纳暂停，属于误读。本节取代前文将其列为文档例外
+的判定。现已完成 Spec Kit/constitution、接口与签名契约、操作手册和同步入口，
+step.md 提炼后删除并保留 Git 历史；规格已本地提交并镜像到 dufs/signature-server。
+[本次摘要核验](20260913-signature-document-verification.json) 确认内容一致。
+暂缓项是密钥注入、额度/事务修复、容器改造及生产验证；整库 Git 推送等待历史敏感
+信息处理，不再作为文档归纳前置条件。没有实施产品代码改造、运行服务或部署。

@@ -1,0 +1,14 @@
+{
+  "source": "/data/project/xiaoqiang/signature-server",
+  "destination": "/home/liou/dufs/signature-server",
+  "files_sha256": {
+    "specs/001-service-consolidation/tasks.md": "643032a604afa1b092a11dc55f904bdf4d6ac26e4c248695b26ce2af289066f0",
+    "specs/001-service-consolidation/spec.md": "6c85d098840ad13dced9f9916570ab79d7b573d4850e516984d7775ce79c96c5",
+    "specs/001-service-consolidation/plan.md": "09e9558b81d8bd5d3b5b9dbf1d03152eeabd8307dc87111799c0f3bd8070c1f7",
+    "specs/001-service-consolidation/contracts/http-signature.md": "baca76b1fa6a43eb314bf0ea62cb17acb64b3c091c14defeee387dbb9a575c08"
+  },
+  "exact_match": true,
+  "local_commit": "56d3f1f3d798b6681c9a0875c6136181615fca62",
+  "implementation": "deferred; documentation completed",
+  "git_remote": "not created; history secret remediation and full-repository push pending"
+}
