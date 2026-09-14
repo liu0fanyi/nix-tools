@@ -19,3 +19,7 @@ NUC dsh Web 公网入口已在 ca987da 取消：源码与开发环境迁至 PC�
 - 转发响应的Content-Encoding和Content-Length必须与实际正文一致；JS/CSS/favicon在identity、gzip、br请求下均可解码。不能通过放宽CSP或绕过认证修复加载失败。
 - 缓存命中也必须先鉴权；保留设备API令牌、手动重定向、流式正文、错误request_id和no-store约束。禁止把源站专用Alt-Svc端口暴露给公网客户端。
 - 本地修复/测试与EdgeOne控制台发布、压缩变体验收分别追踪。
+
+## ESP32 静态固件发布
+
+接收本机已核验的三应用签名候选，仅写 `/root/nix-tools/dufs_data/releases/esp32/`，公网入口 `https://wttliou.top/releases/esp32/catalog.json`。先验证不可变镜像的公网大小/SHA，再发布兼容目录；保留旧版本，冲突拒绝。禁止传源码、密钥、模型及设备用户数据；不复用 Android 上传密钥，不重启容器。产品兼容和固件规格仍由各产品/common 持有。
