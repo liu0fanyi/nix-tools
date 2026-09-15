@@ -6,24 +6,10 @@
 # 它会把子模块快进到 origin/master，等待该精确提交的 Linux/Cachix 与 Windows
 # workflow 成功，然后更新 flake.lock、提交并推送 main。
 # 使用 --no-push 可只生成本地提交。
-def wait-for-ci [revision: string] {
-    if (which gh | is-empty) {
-        error make { msg: "需要 GitHub CLI (`gh`) 才能确认 CI；安装并登录后重试，或显式使用 --skip-ci-check" }
-    }
-
-    let repo = "liu0fanyi/clipboard-sync"
-    let workflow = "nix.yml"
-    mut run = {
-        databaseId: 0
-        status: ""
-        conclusion: ""
-        headSha: ""
-        url: ""
-    }
-    mut found = false
-
-    print $"等待 GitHub Actions 登记提交 ($revision | str substring 0..11)..."
-    for _ in 1..12 {
+# 在限定次数内轮询该 revision 对应的 workflow run；找到即返回，超时返回 null。
+# 抽成独立函数，让「等待既有 run」和「补跑后等待」复用同一段查询逻辑。
+def poll-run [repo: string, workflow: string, revision: string, attempts: int] {
+    for _ in 1..$attempts {
         let query = (
             gh run list --repo $repo --workflow $workflow --commit $revision --limit 1
                 --json databaseId,status,conclusion,headSha,url
@@ -41,16 +27,51 @@ def wait-for-ci [revision: string] {
             $query.stdout
         }
         if ($runs | length) > 0 {
-            $run = ($runs | first)
-            $found = true
-            break
+            return ($runs | first)
         }
         sleep 5sec
     }
+    null
+}
 
-    if not $found {
-        error make { msg: $"60 秒内未找到提交 ($revision) 对应的 ($workflow)；请检查 workflow 是否触发" }
+def wait-for-ci [revision: string] {
+    if (which gh | is-empty) {
+        error make { msg: "需要 GitHub CLI (`gh`) 才能确认 CI；安装并登录后重试，或显式使用 --skip-ci-check" }
     }
+
+    let repo = "liu0fanyi/clipboard-sync"
+    let workflow = "nix.yml"
+    let short = ($revision | str substring 0..11)
+
+    print $"等待 GitHub Actions 登记提交 ($short)..."
+    mut run = (poll-run $repo $workflow $revision 12)
+
+    # push 不会为带 `[skip ci]` 的提交产生 run；而 flake.nix 把 revision 编进
+    # derivation（CLIPBOARD_SYNC_REVISION），连纯文档提交都会改变父仓库期望的
+    # store path（实测：同一份源码只换 revision 即得到不同 outPath）。此时主动
+    # workflow_dispatch 补跑，而不是直接失败——否则 docs 提交会卡死整条发布链。
+    if $run == null {
+        # workflow_dispatch 只能针对分支顶端，先确认该提交就是 origin/master 顶端。
+        let tip = (
+            git -C clipboard-sync ls-remote origin master
+            | lines | first | split row "\t" | first | str trim
+        )
+        if $tip != $revision {
+            error make {
+                msg: $"提交 ($short) 没有 CI run，且不是 origin/master 顶端（顶端为 ($tip | str substring 0..11)）；workflow_dispatch 只能补跑分支顶端。请先推送该提交，或显式使用 --skip-ci-check。"
+            }
+        }
+        print $"(ansi yellow)未找到 CI run（提交可能带 [skip ci]）；自动补跑 ($workflow)@master...(ansi reset)"
+        let dispatch = (gh workflow run $workflow --repo $repo --ref master | complete)
+        if $dispatch.exit_code != 0 {
+            error make { msg: $"触发 ($workflow) 失败：($dispatch.stderr | str trim)" }
+        }
+        $run = (poll-run $repo $workflow $revision 24)
+        if $run == null {
+            error make { msg: $"补跑后 120 秒内仍未找到提交 ($short) 对应的 ($workflow)" }
+        }
+    }
+
     if $run.headSha != $revision {
         error make { msg: $"CI revision 不匹配：expected=($revision) actual=($run.headSha)" }
     }
