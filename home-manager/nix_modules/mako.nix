@@ -1,19 +1,24 @@
 # mako 通知守护进程配置（与 niri.nix 的 spawn-at-startup "mako" 配合）。
 #
-# 核心诉求：通知必须自动消失，不能常驻右上角。
+# 普通通知自动消失；需要用户决定的蓝牙请求保留操作入口。
 #
 # 背景：clipboard-sync 的 notify_accept_ok 用 notify-rust 且不设 timeout，
 # notify-rust 默认 Timeout::Never → D-Bus expire_timeout=-1（永不超时），
 # mako 对 -1 会一直显示直到被 dismiss；其他 daemon 也可能发 -1。
 #
 # 方案：ignore-timeout = true 让 mako 忽略应用声明的超时，
-# 统一按 default-timeout（5 秒）自动消失，任何通知都不会常驻。
+# 普通通知按 default-timeout（5 秒）消失，蓝牙交互请求例外。
 #
 # 仅在 NixOS（homebox）启用：非 NixOS（nuc）走 standalone home-manager，
 # 其 niri 不启用（niri.nix 的 features.niri.enable = full.enable && isNixOS），
 # 也不 spawn mako，因此 mako 配置不应作用于 nuc。
 { config, pkgs, lib, isNixOS ? false, ... }:
-
+let
+  bluetoothActions = pkgs.writeShellScript "mako-bluetooth-actions" ''
+    export PATH=${lib.makeBinPath [ pkgs.jq pkgs.coreutils ]}:"$PATH"
+    exec ${pkgs.mako}/bin/makoctl menu -n "$1" -- ${pkgs.fuzzel}/bin/fuzzel --dmenu --prompt='蓝牙操作： '
+  '';
+in
 {
   config = lib.mkIf isNixOS {
     services.mako = {
@@ -38,6 +43,20 @@
         anchor = "top-right";
         # 最新通知排最前
         sort = "-time";
+
+        # Mako 不绘制 action buttons；点击通知弹出该通知自己的动作菜单。
+        # 不直接确认、不默认信任；Esc 可取消菜单，右键仍只关闭通知。
+        "app-name=blueman actionable" = {
+          # Blueman may leave an earlier request behind when replacing its
+          # active notification. Never leave actionable authentication UI forever.
+          default-timeout = 60000;
+          ignore-timeout = true;
+          history = false;
+          height = 200;
+          format = "<b>%s</b>\\n%b\\n<span foreground='#fabd2f'>点击选择操作（Confirm 确认 / Deny 拒绝）</span>";
+          on-button-left = ''exec ${bluetoothActions} "$id"'';
+          on-touch = ''exec ${bluetoothActions} "$id"'';
+        };
 
         # 勿扰模式：通知仍进入历史记录，但不在屏幕上弹出。
         "mode=do-not-disturb" = {

@@ -5,6 +5,14 @@
 
   networking.hostName = "liu-bigpc";
 
+  # USB Bluetooth adapter: kernel btusb is already detected; enable BlueZ
+  # and the graphical pairing manager without enabling discoverability.
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+  };
+  services.blueman.enable = true;
+
   # Legacy Windows RF configuration tools and RAR extraction support.
   environment.systemPackages = [
     pkgs.unar

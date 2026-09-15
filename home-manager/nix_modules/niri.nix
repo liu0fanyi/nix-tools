@@ -211,7 +211,7 @@ in
           "spacing": 8,
           "modules-left": ["niri/workspaces"],
           "modules-center": ["clock"],
-          "modules-right": ["custom/mako-dnd", "${if isNuc then "custom/cpu-temperature" else "temperature"}", "custom/fan", "mpris", "pulseaudio", "network", "cpu", "memory", "battery", "tray"],
+          "modules-right": ["custom/mako-dnd", "${if isNuc then "custom/cpu-temperature" else "temperature"}", "custom/fan", "mpris", "pulseaudio", ${lib.optionalString isLiuBigpc ''"bluetooth", ''}"network", "cpu", "memory", "battery", "tray"],
           "custom/cpu-temperature": {
             "exec": "${cpuTemperature}",
             "return-type": "json",
@@ -278,6 +278,18 @@ in
             "max-length": 48,
             "interval": 2
           },
+          ${lib.optionalString isLiuBigpc ''
+          "bluetooth": {
+            "format": "󰂯",
+            "format-disabled": "󰂲",
+            "format-off": "󰂲",
+            "format-connected": "󰂱 {num_connections}",
+            "tooltip-format": "蓝牙：{status}\n点击管理设备",
+            "tooltip-format-connected": "蓝牙：{status}\n{device_enumerate}",
+            "tooltip-format-enumerate-connected": "{device_alias}",
+            "on-click": "${pkgs.blueman}/bin/blueman-manager"
+          },
+          ''}
           "network": {
             "format-wifi": "󰤨",
             "format-ethernet": "󰈀",
@@ -332,7 +344,7 @@ in
           color: #ebdbb2;
           background: #3c3836;
         }
-        #clock, #tray, #cpu, #memory, #temperature, #custom-fan, #custom-mako-dnd, #mpris, #network, #battery, #pulseaudio {
+        #clock, #tray, #cpu, #memory, #temperature, #custom-fan, #custom-mako-dnd, #mpris, #network, #battery, #pulseaudio, #bluetooth {
           padding: 0 8px;
         }
         #custom-fan.unavailable { padding: 0; }
@@ -342,6 +354,8 @@ in
         #battery.warning { color: #fb4934; }
         #pulseaudio.muted { color: #fb4934; }
         #network.disconnected { color: #928374; }
+        #bluetooth.off, #bluetooth.disabled { color: #928374; }
+        #bluetooth.connected { color: #b8bb26; }
       '';
     };
     
