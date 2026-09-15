@@ -16,7 +16,7 @@
     ./chatgpt-desktop.nix
     # AnyDesk 远程桌面客户端（unfree 官方二进制；客户端跑在用户会话）
     ./anydesk.nix
-    # Google Antigravity IDE + CLI（nixpkgs 内置，unfree 官方二进制）
+    # Google Antigravity 2.0 + CLI（jacopone/antigravity-nix，unfree 官方二进制）
     ./antigravity.nix
     # wayland need newer linux try later
     # ./rustdesk.nix
