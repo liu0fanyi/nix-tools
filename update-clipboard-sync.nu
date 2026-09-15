@@ -46,10 +46,10 @@ def wait-for-ci [revision: string] {
     print $"等待 GitHub Actions 登记提交 ($short)..."
     mut run = (poll-run $repo $workflow $revision 12)
 
-    # push 不会为带 `[skip ci]` 的提交产生 run；而 flake.nix 把 revision 编进
-    # derivation（CLIPBOARD_SYNC_REVISION），连纯文档提交都会改变父仓库期望的
-    # store path（实测：同一份源码只换 revision 即得到不同 outPath）。此时主动
-    # workflow_dispatch 补跑，而不是直接失败——否则 docs 提交会卡死整条发布链。
+    # push 不会为带 CI 跳过标记的提交产生 run；而 flake.nix 曾把 revision 编进
+    # derivation，连纯文档提交都会改变父仓库期望的 store path。该注入已改为运行期
+    # 处理，但源码真正变动时仍依赖 CI 产物。此时主动 workflow_dispatch 补跑，
+    # 而不是直接失败——否则被跳过的提交会卡死整条发布链。
     if $run == null {
         # workflow_dispatch 只能针对分支顶端，先确认该提交就是 origin/master 顶端。
         let tip = (
@@ -61,7 +61,7 @@ def wait-for-ci [revision: string] {
                 msg: $"提交 ($short) 没有 CI run，且不是 origin/master 顶端（顶端为 ($tip | str substring 0..11)）；workflow_dispatch 只能补跑分支顶端。请先推送该提交，或显式使用 --skip-ci-check。"
             }
         }
-        print $"(ansi yellow)未找到 CI run（提交可能带 [skip ci]）；自动补跑 ($workflow)@master...(ansi reset)"
+        print $"(ansi yellow)未找到 CI run（提交可能带跳过标记）；自动补跑 ($workflow)@master...(ansi reset)"
         let dispatch = (gh workflow run $workflow --repo $repo --ref master | complete)
         if $dispatch.exit_code != 0 {
             error make { msg: $"触发 ($workflow) 失败：($dispatch.stderr | str trim)" }
