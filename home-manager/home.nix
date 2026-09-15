@@ -93,6 +93,8 @@
     devenv
     # 轻量级 Word 文档查看与编辑器（支持 .docx）。
     abiword
+    # 二维 CAD：检查键盘定位板等 DXF 图纸。
+    qcad
     # 轻量级 PDF 阅读器。
     mupdf
     # 轻量级音视频播放器，原生支持 Wayland。
