@@ -93,8 +93,15 @@
     devenv
     # 轻量级 Word 文档查看与编辑器（支持 .docx）。
     abiword
-    # 二维 CAD：检查键盘定位板等 DXF 图纸。
-    qcad
+    # 二维 CAD：检查 DXF；Qt5 在当前 Niri 环境使用 XWayland。
+    (symlinkJoin {
+      name = "qcad-desktop";
+      paths = [ qcad ];
+      nativeBuildInputs = [ makeWrapper ];
+      postBuild = ''
+        wrapProgram "$out/bin/qcad" --set QT_QPA_PLATFORM xcb
+      '';
+    })
     # 轻量级 PDF 阅读器。
     mupdf
     # 轻量级音视频播放器，原生支持 Wayland。
