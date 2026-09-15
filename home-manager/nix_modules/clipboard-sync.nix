@@ -4,10 +4,21 @@
 #
 # 二进制由父 flake 的 buildRustPackage 构建，service 直接引用锁定的 Nix store 路径。
 
-{ config, pkgs, lib, clipboardSyncPackage, ... }:
+{ config, pkgs, lib, clipboardSyncPackage, clipboardSyncRevision ? "unknown", ... }:
+
+let
+  # 运行期注入源码 revision。不在编译期烘焙是因为该值会参与派生哈希，
+  # 使每个提交（含纯文档提交）都产生新的 store path，导致父仓库基于精确
+  # store path 的 Cachix 校验无谓失败。这里只生成一个轻量包装脚本，
+  # 底层仍是同一个 Rust 包，store path 与内容只由源码决定。
+  clipboardSync = pkgs.writeShellScriptBin "clipboard-sync" ''
+    export CLIPBOARD_SYNC_REVISION="''${CLIPBOARD_SYNC_REVISION:-${clipboardSyncRevision}}"
+    exec ${clipboardSyncPackage}/bin/clipboard-sync "$@"
+  '';
+in
 
 {
-  home.packages = [ clipboardSyncPackage ];
+  home.packages = [ clipboardSync ];
 
   # 一次性迁移旧 activation 安装的非声明式二进制，避免 ~/.local/bin 的 PATH
   # 优先级遮住 Home Manager profile 中的 Nix package。保留备份便于回退。
@@ -63,7 +74,7 @@
         export DBUS_SESSION_BUS_ADDRESS="''${DBUS_SESSION_BUS_ADDRESS:-unix:path=''${XDG_RUNTIME_DIR}/bus}"
         # 运行期工具都从当前 Home Manager generation 获取，不依赖 NixOS profile。
         export PATH="${lib.makeBinPath [ pkgs.zenity pkgs.iproute2 ]}:$PATH"
-        exec "${clipboardSyncPackage}/bin/clipboard-sync"
+        exec "${clipboardSync}/bin/clipboard-sync"
       ''}";
       Restart = "on-failure";
       RestartSec = "5";

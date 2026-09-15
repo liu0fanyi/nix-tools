@@ -2,7 +2,7 @@
 
 ## 需求与验收
 
-- Clip 独立 flake/package 被 nix-tools 固定 revision 消费；更新脚本等待精确提交 CI 完整成功再更新父锁文件与 gitlink，失败不发布。子模块 revision 参与 derivation（编入二进制的 `CLIPBOARD_SYNC_REVISION`），因此每个提交都必须有对应 Cachix 产物；带 `[skip ci]` 的提交没有 run 时，脚本对分支顶端提交自动补跑 `workflow_dispatch`，非顶端提交明确拒绝而不静默跳过。
+- Clip 独立 flake/package 被 nix-tools 固定 revision 消费；更新脚本等待精确提交 CI 完整成功再更新父锁文件与 gitlink，失败不发布。源码 revision 仅在运行期注入（用于 `--version`、doctor、托盘展示），不参与 derivation 哈希，因此 store path 只由源码内容决定，纯文档提交不再产生新 path；需要真实产物的提交若被 GitHub 跳过 CI，脚本对分支顶端提交自动补跑 `workflow_dispatch`，非顶端提交明确拒绝而不静默跳过。
 - Linux 使用 Nix store 稳定包路径，支持 standalone Home Manager；Windows 安装到固定用户目录，停止旧进程、校验 exe 后替换，doctor 成功才建立/启动计划任务。版本包含源码 revision 和协议版本。
 - Android 使用固定 android-app-kit gitlink、相对依赖和只读 APP_KIT_READ_KEY；更新器、HTTPS 目录限制、SHA/大小/包名/签名验证归公共库，配对/接收归 Clip。
 - 正式 APK 签名不变，只有一个手机启动入口，无 TV 入口。受限上传密钥只写 Clip 发布目录，无 shell/转发/删除。版本 APK 公网回下载验证后才更新清单；签名材料只在私有目录和 Secrets，备份写入不等于恢复演练。

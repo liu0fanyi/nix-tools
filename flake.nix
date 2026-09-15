@@ -62,14 +62,25 @@
       system = "x86_64-linux"; # 如果是 ARM 架构则改为 "aarch64-linux"
       pkgs = nixpkgs.legacyPackages.${system};
       username = "liou";
+      # 原始 Rust 包（未包装）。保持它作为 `.#clipboard-sync` 与 Cachix 校验目标，
+      # 使 rerun.nu 仍然校验真正的编译产物，而不是被本地包装层掩盖。
       clipboardSyncPackage = inputs.clipboard-sync-src.packages.${system}.default;
+
+      # 源码 revision 不在编译期烘焙（否则每个提交都会改变 store path），
+      # 改由运行期注入。这里取子模块 input 的 rev；本地脏树等无 rev 情形回退
+      # "unknown"，不影响功能，只影响 `--version` 显示。
+      clipboardSyncRevision =
+        if inputs.clipboard-sync-src ? rev then
+          builtins.substring 0 12 inputs.clipboard-sync-src.rev
+        else
+          "unknown";
 
       homeManagerNixosModule = {
         home-manager = {
           useGlobalPkgs = true;
           useUserPackages = true;
           extraSpecialArgs = {
-            inherit username inputs clipboardSyncPackage;
+            inherit username inputs clipboardSyncPackage clipboardSyncRevision;
             # 标记 NixOS 集成，home.nix/niri.nix 据此分流。
             isNixOS = true;
           };
@@ -108,7 +119,7 @@
         home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
           extraSpecialArgs = {
-            inherit username inputs clipboardSyncPackage;
+            inherit username inputs clipboardSyncPackage clipboardSyncRevision;
             # standalone（非 NixOS）：显式提供 isNixOS = false
             isNixOS = false;
           };
