@@ -142,7 +142,7 @@ SDK、image、历史 ZIP 默认按原格式备份并记录来源与 SHA256，不
 | `esp32-multi-timer` | 独立固件仓库 | ✅ github:esp32-multi-timer |
 | `android-app-kit` | Android 组件库 | ✅ github:android-app-kit |
 | `dufs-client-rs` | DUFS 客户端 | ✅ github:dufs-client-rs |
-| `quick-note` | 手机速记 PWA（零依赖 textarea，CAS 写 `/todos/a-杂鱼整理.md`） | 待建远程 |
+| `quick-note` | 手机速记 PWA（零依赖 textarea，CAS 写 `/todos/a-杂鱼整理.md`） | ✅ github:quick-note（private） |
 | `bevy-env` | Bevy 工程环境仓（下辖 5 个子仓库） | ✅ github:bevy-env |
 
 #### `bevy-env/` 下 5 个独立子仓库
