@@ -228,7 +228,7 @@ handle @tag_api_mutation {
     respond "Read-only tag service" 405
 }
 @private_apps {
-    path /dist/devices /dist/devices/* /dist/transcriptions /dist/transcriptions/* /dist/recorder-bean /dist/recorder-bean/* /dist/bevy-sketch /dist/bevy-sketch/* /dist/project-planner /dist/project-planner/* /terminal /terminal/* /devices /devices/* /transcriptions /transcriptions/* /recorder-bean /recorder-bean/* /bevy-sketch /bevy-sketch/* /project-planner /project-planner/*
+    path /dist/devices /dist/devices/* /dist/transcriptions /dist/transcriptions/* /dist/recorder-bean /dist/recorder-bean/* /dist/bevy-sketch /dist/bevy-sketch/* /dist/project-planner /dist/project-planner/* /dist/quick-note /dist/quick-note/* /terminal /terminal/* /devices /devices/* /transcriptions /transcriptions/* /recorder-bean /recorder-bean/* /bevy-sketch /bevy-sketch/* /project-planner /project-planner/* /quick-note /quick-note/*
 }
 handle @private_apps {
     respond "Not found" 404
@@ -244,6 +244,24 @@ handle @game_tools {
     respond "Not found" 404
 }
 """
+    # quick-note 的秒开依赖静态资源被浏览器与 CDN 强缓存；若沿用默认（无显式缓存头），
+    # 每次启动都要回源校验，Service Worker 的价值被抵消。HTML 壳仍走 @html_entry 的
+    # no-cache 以便更新，这里只给带 ?v= 版本号的资源加长缓存。
+    # manifest 不带版本号，若强缓存会让安装信息长期陈旧，因此单独短缓存。
+    quick_note_cache = """
+@quick_note_assets {
+    method GET HEAD
+    path /dist/quick-note/*.js /dist/quick-note/*.css /dist/quick-note/*.png /dist/quick-note/*.svg
+}
+header @quick_note_assets Cache-Control "public, max-age=31536000, immutable"
+header @quick_note_assets X-Content-Type-Options "nosniff"
+
+@quick_note_manifest {
+    method GET HEAD
+    path /dist/quick-note/manifest.webmanifest
+}
+header @quick_note_manifest Cache-Control "no-cache, must-revalidate"
+"""
     return f"""
 @dufs_plus_capabilities {{
     path /.dufs-plus/capabilities.json
@@ -258,10 +276,11 @@ root * /srv/dist
 
 @html_entry {{
     method GET HEAD
-    path / /index.html /dist/transcriptions /dist/transcriptions/ /dist/transcriptions/index.html /dist/bevy-sketch /dist/bevy-sketch/ /dist/bevy-sketch/index.html /dist/bevy-game/animation-editor /dist/bevy-game/animation-editor/ /dist/bevy-game/animation-editor/index.html /dist/bevy-game/galgame /dist/bevy-game/galgame/ /dist/bevy-game/galgame/index.html /dist/bevy-game/gallery-2d /dist/bevy-game/gallery-2d/ /dist/bevy-game/gallery-2d/index.html /dist/bevy-game/gallery-3d /dist/bevy-game/gallery-3d/ /dist/bevy-game/gallery-3d/index.html
+    path / /index.html /dist/transcriptions /dist/transcriptions/ /dist/transcriptions/index.html /dist/bevy-sketch /dist/bevy-sketch/ /dist/bevy-sketch/index.html /dist/quick-note /dist/quick-note/ /dist/quick-note/index.html /dist/bevy-game/animation-editor /dist/bevy-game/animation-editor/ /dist/bevy-game/animation-editor/index.html /dist/bevy-game/galgame /dist/bevy-game/galgame/ /dist/bevy-game/galgame/index.html /dist/bevy-game/gallery-2d /dist/bevy-game/gallery-2d/ /dist/bevy-game/gallery-2d/index.html /dist/bevy-game/gallery-3d /dist/bevy-game/gallery-3d/ /dist/bevy-game/gallery-3d/index.html
 }}
 header @html_entry Cache-Control "no-cache, must-revalidate"
 
+{quick_note_cache}
 {tag_write_guard}
 {game_tools_guard}
 handle_path /tag-api/* {{

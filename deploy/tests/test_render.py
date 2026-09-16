@@ -235,6 +235,21 @@ class RenderTests(unittest.TestCase):
             'header @html_entry Cache-Control "no-cache, must-revalidate"',
             caddy,
         )
+        # quick-note：壳走 no-cache 以便更新，带版本的静态资源走长缓存以支持秒开；
+        # manifest 不带版本号，必须单独保持可校验，否则安装信息会长期陈旧。
+        self.assertIn("/dist/quick-note/index.html", caddy)
+        self.assertIn("@quick_note_assets {", caddy)
+        self.assertIn(
+            'header @quick_note_assets Cache-Control "public, max-age=31536000, immutable"',
+            caddy,
+        )
+        self.assertIn("@quick_note_manifest {", caddy)
+        self.assertIn(
+            'header @quick_note_manifest Cache-Control "no-cache, must-revalidate"',
+            caddy,
+        )
+        # 只读配置必须把 quick-note 一并挡掉，不能泄露为公开可读。
+        self.assertIn("/dist/quick-note /dist/quick-note/*", caddy)
         self.assertNotIn("{query}.contains('json')", caddy)
         self.assertIn(
             "expression {query}=='json'||{query}.startsWith('json&')",
