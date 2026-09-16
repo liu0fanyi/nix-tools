@@ -67,15 +67,25 @@
     ];
   };
 
-  # The previous NixOS generation resumed from deep S3 but immediately logged
-  # NVIDIA Xid 13 errors in niri and LocalSend, leaving the display black.
-  # Keep display power saving in the user session, but disable system sleep
-  # until NVIDIA suspend/resume is tested deliberately on the new generation.
+  # 挂起策略：只启用 s2idle，不启用 deep/hibernate。
+  #
+  # 历史：上一代从 deep S3 恢复后立刻报 NVIDIA Xid 13，niri/LocalSend 黑屏，
+  # 因此当时把四种睡眠全部禁用。现在改为保守地放开最浅的 s2idle（freeze）：
+  # 内存持续供电、不写盘、不碰 NVIDIA 显存换出，恢复路径最短，最不容易挂。
+  # deep(S3) 与 hibernate 仍保持禁用，等 s2idle 实测稳定后再单独评估。
+  #
+  # SuspendState=freeze 直接向 /sys/power/state 写 `freeze`（systemd 261 官方
+  # 支持，见 systemd-sleep.conf(5) 的示例），等价于 s2idle，且明确绕开
+  # mem_sleep 里被优先选中的 deep —— 这台机器 /sys/power/mem_sleep 是
+  # "s2idle [deep]"，不指定就会走那条已知会黑屏的 S3 路径。
+  # 这里不用 mem_sleep_default= 内核参数：freeze 由 systemd 在运行期写入，
+  # 可本机验证，不依赖内核参数名。
   systemd.sleep.settings.Sleep = {
-    AllowSuspend = "no";
+    AllowSuspend = "yes";
     AllowHibernation = "no";
     AllowHybridSleep = "no";
     AllowSuspendThenHibernate = "no";
+    SuspendState = "freeze";
   };
 
   # The data filesystem roots should remain writable by the primary user.

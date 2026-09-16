@@ -146,9 +146,19 @@ let
       spawn-at-startup "swaybg" "-c" "#1e1e2e"
       // 剪贴板历史（cliphist，配合 fuzzel 可搜索历史）
       spawn-sh-at-startup "wl-paste --watch cliphist store"
-      // 空闲自动锁屏（10 分钟无操作）+ 挂起前锁屏并关闭 DPMS
-      // （wlopm 作用于 Wayland 输出，恢复后重新打开显示器）
-      spawn-sh-at-startup "swayidle -w before-sleep 'swaylock -f; wlopm --off \"*\"' after-resume 'wlopm --on \"*\"' timeout 600 'swaylock -f'"
+      // 空闲自动锁屏 / 熄屏 / 挂起。
+      //
+      // 熄屏必须用 niri 自己的 DPMS 动作，不能用 wlopm：niri 不实现
+      // wlr-output-power-management-v1，`wlopm --off` 会以
+      // "Wayland server does not support wlr-output-power-management-v1"
+      // 静默失败——这正是此前"到点只锁屏、屏幕永不熄灭"的原因。
+      // niri msg action power-off-monitors / power-on-monitors 实测有效。
+      //
+      // 挂起用 s2idle/freeze（主机配置里 systemd.sleep 的 SuspendState=freeze）：
+      // 内存持续供电、不写盘、不换出 NVIDIA 显存，恢复路径最短，最不容易挂。
+      // deep(S3) 历史上曾在恢复后立刻报 Xid 13 黑屏，故不采用。
+      // 顺序：10 分钟锁屏+熄屏 → 再 20 分钟（共 30 分钟）挂起。
+      spawn-sh-at-startup "swayidle -w before-sleep 'swaylock -f' after-resume 'niri msg action power-on-monitors' timeout 600 'swaylock -f; niri msg action power-off-monitors' timeout 1800 'swaylock -f; systemctl suspend'"
     '';
 in
 {
