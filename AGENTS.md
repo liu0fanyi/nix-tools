@@ -47,6 +47,44 @@ devenv shell -- just manage <操作>                   # NUC 运维管理入口
 
 理由与教训：`rerun.nu` 的 `--host` 曾固定默认为 `homebox`，在 `liu-bigpc` 上漏传即会构建并安装**另一台主机**的系统，把 `/nix/var/nix/profiles/system` 切到错误代，并尝试在 `/dev/sda` 安装 bootloader（2026-09-16 实际发生，需手工恢复 profile）。该默认值现已改为取当前主机名，并对未知主机名报错；即便如此，Agent 仍不承担用户的系统切换与回滚，执行权保留给用户。
 
+### DSH 沙箱下 `ssh`/`rsync` 失败与绕过（`ssh_config.d` 属主）
+
+**症状**：Agent 会话内执行任何 `ssh` 或 `rsync`（含 `just sync-todos`、部署）立即失败：
+
+```
+Bad owner or permissions on /nix/store/<hash>-systemd-<ver>/lib/systemd/ssh_config.d/20-systemd-ssh-proxy.conf
+```
+
+退出码 255，`mkdir`、`rsync` 全部报 `change_dir ... failed: No such file or directory` 或
+`errors selecting input/output files, dirs (code 3)`。
+
+**原因**：DSH 文件沙箱把 **workspace 之外**的文件属主统一伪装成 `nobody:nogroup`
+（`/etc/shadow`、`/nix/store/*` 均如此），且会话为 `no_new_privs`、无 sudo。
+`/etc/ssh/ssh_config` 通过 `Include` 加载该 store 文件，OpenSSH 10.5 校验属主后拒绝加载，
+于是配置解析整体失败。**这是会话沙箱的表象，不是主机真实故障，也不是仓库代码问题。**
+
+**绕过**（Agent 自行使用，不改仓库脚本）：显式指定用户配置，跳过 system 级 `Include`：
+
+```bash
+ssh -F ~/.ssh/config liou@nuc.local '...'
+rsync -e "ssh -F $HOME/.ssh/config" ... liou@nuc.local:/path
+```
+
+**`just sync-todos` 的临时替代**：脚本内部硬编码 `ssh`/`rsync`，无法从外部传 `-F`。
+可用下面的等价流程（手动顺序传输，**不要并发**）：
+
+1. `ssh -F ~/.ssh/config liou@nuc.local 'mkdir -p <远端>/specs <远端>/docs <远端>/.specify/memory'`
+2. 逐条 `rsync -e "ssh -F ~/.ssh/config" -rptz --omit-dir-times --checksum --chmod=D755,F644 [--delete] <src> liou@nuc.local:<dst>`，每条之间 `sleep 1`。
+3. 看板 `README.md` 由 `scripts/sync-todos.py` 的 `render()` 生成到临时文件后再单独传输；
+   `deploy/docs` 需先按脚本规则重写链接（`](../../specs/` → `](../specs/`、`](../README.md)` → `](../deployment-readme.md)`）再传。
+4. 用 `--dry-run --itemize-changes` 复核（输出为空即一致；`<fcst......` 表示仅时间戳差异，内容相同）。
+
+**并发陷阱（2026-09-16 实测）**：连续快速建立多个 SSH/rsync 连接时，失败率显著上升，
+表现为上述 code 3 / code 11；单条命令重复执行 3 次均成功。因此**必须串行并加间隔**，
+失败时按 1.5×(尝试次数) 秒退避重试，不要并行跑多个 rsync。
+
+同样的 `-F` 绕过对 `just deploy` 等一切走 SSH 的流程适用；恢复正常 shell 后无需该参数。
+
 ---
 
 ## 三、构建与部署边界
@@ -187,6 +225,18 @@ podman image prune -f          # 仅删 <none> 悬空镜像，不动有 tag 的
      必须用 `podman ps -a --external` 列出后 `podman rm -f`。
   清理前先给保护镜像打临时 tag（`podman tag <id> keep-protect:N`）可防误删；
   注意 podman 会规范化为 `localhost/keep-protect:N`，grep 时别锚定 `^keep-protect:`。
+- 2026-09-16（第三轮）：继续清理构建产物与备份，释放约 **31G**
+  （根分区 151G→123G，38%→31%）：
+  1. `clipboard-sync/target`（2.2G，`cargo clean` 可重建）。
+  2. `clipboard-sync/mobile/src-tauri/target`（7.1G，Android 构建产物，可重建）
+     ——**只删 target，不要删整个 `mobile/`**，源码与 `node_modules` 保留。
+  3. `~/.cache/codex-runtimes`（1.8G，会重新下载）。
+  4. `~/.local/state/xiaoqiang-repo-audit/`（20G，9-12/9-13 的清理前快照，
+     含 `*.bundle`/`*.gitcrypt`/`*.tar`）。
+     删除前逐一核对 `/data/project/xiaoqiang/{sip_old,sip-rk3506,xiaozhi,sip}`
+     四个活跃仓库均存在且 9-13 后仍在提交，确认备份非唯一副本。
+     **教训**：这类「清理前备份」目录删除前必须先核对对应活跃仓库是否存在，
+     不能只看目录名——含 git bundle 的备份可能是某仓库的唯一历史。
 
 ## Clip 规格归属
 
