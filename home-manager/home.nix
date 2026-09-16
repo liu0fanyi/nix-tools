@@ -395,6 +395,75 @@ in
     '';
   };
 
+  # DSH 任务完成通知（桌面 toast）。
+  #
+  # 为什么不用浏览器通知：dsh 前端完全不调用 Web Notification API
+  # （实测 dsh-web-frontend 构建产物中 Notification 出现 0 次），浏览器无从弹起。
+  # 改用 dsh 官方 hooks 桥接（@deepseek-ai/dsh-hooks-claude-code），它在**主机**上
+  # 执行命令，可直接走 D-Bus → mako。挂载点写在
+  # ~/.dsh/profiles/web/cordis.patch.yml（dsh profile 生成物，不在本仓库）。
+  #
+  # 协议约束（dsh-hook-protocol）：退出码 2 = 阻塞并强制 agent 再跑一轮。
+  # 因此脚本在**所有失败路径**都必须静默 exit 0，且不向 stdout 输出内容，
+  # 否则每次任务结束都会迫使 agent 继续，形成死循环。
+  home.file.".dsh/hooks/notify-stop.sh" = lib.mkIf isNixOS {
+    executable = true;
+    text = ''
+      #!/usr/bin/env bash
+      set -uo pipefail
+
+      # 钩子由 dsh-web 派生，环境不保证等同交互 shell，显式补齐 PATH 与 D-Bus。
+      export PATH="${pkgs.libnotify}/bin:/run/current-system/sw/bin:/usr/bin:/bin:''${PATH:-}"
+      export DBUS_SESSION_BUS_ADDRESS="''${DBUS_SESSION_BUS_ADDRESS:-unix:path=/run/user/$(id -u)/bus}"
+      export XDG_RUNTIME_DIR="''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+
+      notify="${pkgs.libnotify}/bin/notify-send"
+      [ -x "$notify" ] || exit 0
+
+      payload="$(cat 2>/dev/null || true)"
+
+      # 用 python3 解析（jq 不保证在钩子 PATH 中）。解析失败退化为默认文案，
+      # 绝不因此失败——通知是附加功能，不能影响 agent 运行。
+      where=""
+      if [ -n "$payload" ]; then
+        where="$(printf '%s' "$payload" | ${pkgs.python3}/bin/python3 -c '
+      import json,sys
+      try:
+          d = json.load(sys.stdin)
+      except Exception:
+          print("")
+          raise SystemExit(0)
+      print((d.get("cwd") or "").strip())
+      ' 2>/dev/null || true)"
+      fi
+      if [ -n "$where" ]; then
+        where="$(basename -- "$where" 2>/dev/null || true)"
+      fi
+      [ -n "$where" ] || where="未知工作区"
+
+      "$notify" -a "DSH" -i "utilities-terminal" "DSH 任务完成" "$where" >/dev/null 2>&1 || true
+
+      exit 0
+    '';
+  };
+
+  # hooks.json：Stop = 一轮运行即将结束。cat 由 stdin 传入 payload。
+  home.file.".dsh/hooks/hooks.json" = lib.mkIf isNixOS {
+    text = builtins.toJSON {
+      Stop = [
+        {
+          hooks = [
+            {
+              type = "command";
+              command = "${config.home.homeDirectory}/.dsh/hooks/notify-stop.sh";
+              timeoutSec = 10;
+            }
+          ];
+        }
+      ];
+    };
+  };
+
   # dsh web 启动切换脚本（供 dsh-web.desktop 的 Mod+D 调用）：
   # - 未运行 → systemctl --user start（启动后 notify-send 弹 toast）
   # - 已运行 → systemctl --user restart（重启后弹 toast）
@@ -587,21 +656,37 @@ in
 
   # dsh profile 插件由 dsh 自己管理（dsh plugin add/rm/update，转发 pnpm），
   # home-manager 不接管——插件是动态的、有依赖顺序，声明式管理会与手动操作
-  # 冲突。当前 web profile 已装（2026-09，dsh 0.1.2-rc.1）：
-  #   dsh-better-sidebar              VSCode 式右侧栏（explorer/editor/terminal/git/browser）
-  #   @zhangfengshun/dsh-remote-ssh   远程 SSH 开发（remote workspace/文件树/终端）
-  #   dsh-context                     上下文洞察与 token 管理
-  #   dsh-doctor                      启动异常诊断与恢复
-  #   @openviking/dsh-memory-plugin   跨会话记忆（OpenViking，Apache-2.0）
+  # 冲突。当前 web profile 已装（2026-09-16，dsh 0.1.5-rc.1）：
+  #   dsh-better-sidebar              0.19.1  VSCode 式右侧栏（explorer/editor/terminal/git/browser）
+  #   @zhangfengshun/dsh-remote-ssh   2.4.4   远程 SSH 开发（remote workspace/文件树/终端）
+  #   dsh-context                     0.52.2  上下文洞察与 token 管理
+  #   @openviking/dsh-memory-plugin   0.3.2   跨会话记忆（OpenViking，Apache-2.0）
+  #   dsh-blender                     0.2.1   Blender 建模/渲染工具
+  #
+  # 升级 dsh 后必须逐个复核插件兼容性，不能假定还能启动：
+  #   2026-09-10 dsh 0.1.2-rc.1 → 0.1.5-rc.1 后，dsh-doctor@0.4.3 加载失败
+  #   （cannot get property "webServer" without inject），整个 profile 起不来，
+  #   当时只能把坏 profile 挪走并重建空白 profile 才恢复。2026-09-16 复测
+  #   dsh-doctor 上游最新仍是 0.4.3（发布于 08-15，早于 dsh 0.1.5 近一个月），
+  #   同样崩溃，故**不安装 dsh-doctor**；等上游出适配版再评估。
+  #   其余插件升级到当时最新版后逐个实测可启动。
+  #
   # 重装/增删：dsh plugin --profile web add/rm <pkg>，然后
-  #   systemctl --user restart dsh-web 生效。
-  # 注意：better-sidebar/remote-ssh 依赖 node-pty（原生模块，npm 不带 linux
-  #   预编译）。NixOS 无 gcc/make，首次及每次 node-pty 升级后需在
-  #   ~/.dsh/profiles/web 下用临时工具链重建：
-  #   nix shell nixpkgs#gcc nixpkgs#gnumake nixpkgs#python3 \
-  #     --command bash -c 'pnpm rebuild node-pty'
-  # pnpm 11 默认拦 build scripts，node-pty 已在 pnpm-workspace.yaml 的
-  # allowBuilds 里放行（该文件是 dsh profile 生成物，不在本仓库）。
+  #   systemctl --user restart dsh-web 生效（cordis.patch.yml 能热重载，
+  #   但 npm 依赖变更必须重启）。
+  #
+  # 两个已知坑：
+  # 1) dsh plugin add 只写 package.json 的 dependencies，**不会同步
+  #    dsh.profile.bundles**；只加依赖不补 bundles，插件根本不会加载。
+  #    加完记得手工把包名按顺序补进 bundles。
+  # 2) better-sidebar/remote-ssh 依赖 node-pty（原生模块，npm 不带 linux
+  #    预编译）。NixOS 无 gcc/make，首次及每次 node-pty 升级后需在
+  #    ~/.dsh/profiles/web 下用临时工具链重建：
+  #    nix shell nixpkgs#gcc nixpkgs#gnumake nixpkgs#python3 \
+  #      --command bash -c 'pnpm rebuild node-pty'
+  #    pnpm 11 默认拦 build scripts，需在 pnpm-workspace.yaml 的 allowBuilds
+  #    里把 node-pty 设为 true（该文件是 dsh profile 生成物，不在本仓库；
+  #    pnpm 首次会写成 "set this to true or false" 占位符，需手工改）。
 
   # fcitx5 输入法列表（对齐本机：keyboard-us + pinyin + rime，默认 rime）
   xdg.configFile."fcitx5/profile" = lib.mkIf isNixOS {
