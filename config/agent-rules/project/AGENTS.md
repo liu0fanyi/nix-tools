@@ -126,7 +126,7 @@ SDK、image、历史 ZIP 默认按原格式备份并记录来源与 SHA256，不
 **每个独立仓库自行管理 Git 历史与 spec**；下表列主要工程入口，不是完整递归
 仓库计数或 spec 清单。worktree 不重复计为独立仓库，子模块及更深层仓库需另行核对。
 
-#### 顶层 13 个仓库
+#### 顶层 14 个仓库
 
 | 工程 | 说明 | 远程 |
 | --- | --- | --- |
@@ -142,6 +142,7 @@ SDK、image、历史 ZIP 默认按原格式备份并记录来源与 SHA256，不
 | `esp32-multi-timer` | 独立固件仓库 | ✅ github:esp32-multi-timer |
 | `android-app-kit` | Android 组件库 | ✅ github:android-app-kit |
 | `dufs-client-rs` | DUFS 客户端 | ✅ github:dufs-client-rs |
+| `quick-note` | 手机速记 PWA（零依赖 textarea，CAS 写 `/todos/a-杂鱼整理.md`） | 待建远程 |
 | `bevy-env` | Bevy 工程环境仓（下辖 5 个子仓库） | ✅ github:bevy-env |
 
 #### `bevy-env/` 下 5 个独立子仓库
@@ -247,5 +248,11 @@ just deploy
 - dufs-plus只同步自己的dist内容，必须排除`bevy-sketch/`、`bevy-game/`和`project-planner/`，不得覆盖Bevy产物。
 
 文件浏览器为`http://nuc.local:5006/#/`；独立应用直接使用`/dist/`路径：
-`/dist/project-planner/`、`/dist/bevy-sketch/index.html?...`、`/dist/bevy-game/<app>/`，
-不能套用文件浏览器的`#/`路由。只有用户明确要求本地调试时才启动临时预览端口。
+`/dist/project-planner/`、`/dist/bevy-sketch/index.html?...`、`/dist/bevy-game/<app>/`、
+`/dist/quick-note/`，不能套用文件浏览器的`#/`路由。只有用户明确要求本地调试时才启动
+临时预览端口。
+
+`quick-note`（手机速记）在本机执行 `just deploy`，只同步它自己的 `dist/quick-note/`；
+其静态资源缓存头由本机 `nix-tools` 的 `deploy/scripts/render.py` 生成，
+改动后需 `devenv shell -- just deploy nuc infra` 生效。它必须保持零依赖、无构建，
+否则会重新引入该应用要消除的启动等待。
