@@ -25,8 +25,10 @@
 - 一般工程状态汇总镜像到 `liou@nuc.local:/home/liou/dufs-lan/todos/<项目>/`。
   **xiaoqiang 全部工程例外：只同步到 `/home/liou/dufs/<工程发布目录>/`，禁止 todos 双镜像**；
   精确路径和白名单遵守 `xiaoqiang/AGENTS.md` 及各仓库规则。
-- 跨项目事项查阅根部 `a-next.md`、`a-observe.md`、`a-done.md`；项目内状态以该仓库
-  `specs/` 为准，不另建冲突计划。
+- 跨项目事项与项目内状态一律以各仓库 `specs/` 为准，不另建冲突计划。未立项的构想、
+  采购清单等暂存于 `liou@nuc.local:/home/liou/dufs-lan/todos/a-杂鱼整理.md`；旧的
+  `a-next.md`、`a-observe.md`、`a-done.md` 已于 2026-09-16 迁移到各工程 specs 后删除
+  （可从 dufs-lan Git 历史查阅），不要再新建或写回这三个文件。
 
 新增需规格驱动的工程时，在该仓库执行 `specify init --here --force --non-interactive
 --integration dsh`（并按需 `specify integration install codex`），不要在此工作区根
