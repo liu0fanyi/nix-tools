@@ -238,16 +238,24 @@ class RenderTests(unittest.TestCase):
         # quick-note：壳走 no-cache 以便更新，带版本的静态资源走长缓存以支持秒开；
         # manifest 不带版本号，必须单独保持可校验，否则安装信息会长期陈旧。
         self.assertIn("/dist/quick-note/index.html", caddy)
-        self.assertIn("@quick_note_assets {", caddy)
+        # 带版本的 js/css 长缓存
+        self.assertIn("@quick_note_versioned {", caddy)
         self.assertIn(
-            'header @quick_note_assets Cache-Control "public, max-age=31536000, immutable"',
+            'header @quick_note_versioned Cache-Control "public, max-age=31536000, immutable"',
             caddy,
         )
-        self.assertIn("@quick_note_manifest {", caddy)
+        # sw.js 与 manifest 必须可校验，否则更新机制与安装信息会长期陈旧
+        self.assertIn("@quick_note_revalidate {", caddy)
         self.assertIn(
-            'header @quick_note_manifest Cache-Control "no-cache, must-revalidate"',
+            'path /dist/quick-note/sw.js /dist/quick-note/manifest.webmanifest',
             caddy,
         )
+        # 图标用正则匹配以覆盖 icons/ 子目录
+        self.assertIn("@quick_note_icons {", caddy)
+        # 渲染结果是单个反斜杠的正则转义（Caddy 的 path_regexp 语法）。
+        self.assertIn("path_regexp qn_icons ^/dist/quick-note/.*\\.(png|svg)$", caddy)
+        # sw.js 不得落进 immutable 档
+        self.assertIn("not path /dist/quick-note/sw.js", caddy)
         # 只读配置必须把 quick-note 一并挡掉，不能泄露为公开可读。
         self.assertIn("/dist/quick-note /dist/quick-note/*", caddy)
         self.assertNotIn("{query}.contains('json')", caddy)

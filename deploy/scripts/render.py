@@ -244,23 +244,33 @@ handle @game_tools {
     respond "Not found" 404
 }
 """
-    # quick-note 的秒开依赖静态资源被浏览器与 CDN 强缓存；若沿用默认（无显式缓存头），
-    # 每次启动都要回源校验，Service Worker 的价值被抵消。HTML 壳仍走 @html_entry 的
-    # no-cache 以便更新，这里只给带 ?v= 版本号的资源加长缓存。
-    # manifest 不带版本号，若强缓存会让安装信息长期陈旧，因此单独短缓存。
+    # quick-note 的秒开由 Service Worker 缓存保证；HTTP 缓存头只负责减少回源，
+    # 因此这里按"能否安全长缓存"分三档，而不是一律 immutable：
+    #   - 带 ?v= 版本的 js/css：内容变了 URL 就变，可 immutable；
+    #   - 图标（png/svg）：清单里不带版本号，长缓存会让换图标后长期不更新，用 1 天；
+    #   - sw.js 是更新机制本身，manifest 影响安装信息，都必须可校验。
+    # 用 path_regexp 而不是 `path *.png`：后者不匹配 icons/ 这类子目录。
     quick_note_cache = """
-@quick_note_assets {
+@quick_note_versioned {
     method GET HEAD
-    path /dist/quick-note/*.js /dist/quick-note/*.css /dist/quick-note/*.png /dist/quick-note/*.svg
+    path_regexp qn_versioned ^/dist/quick-note/.*\\.(js|css)$
+    not path /dist/quick-note/sw.js
 }
-header @quick_note_assets Cache-Control "public, max-age=31536000, immutable"
-header @quick_note_assets X-Content-Type-Options "nosniff"
+header @quick_note_versioned Cache-Control "public, max-age=31536000, immutable"
+header @quick_note_versioned X-Content-Type-Options "nosniff"
 
-@quick_note_manifest {
+@quick_note_icons {
     method GET HEAD
-    path /dist/quick-note/manifest.webmanifest
+    path_regexp qn_icons ^/dist/quick-note/.*\\.(png|svg)$
 }
-header @quick_note_manifest Cache-Control "no-cache, must-revalidate"
+header @quick_note_icons Cache-Control "public, max-age=86400"
+header @quick_note_icons X-Content-Type-Options "nosniff"
+
+@quick_note_revalidate {
+    method GET HEAD
+    path /dist/quick-note/sw.js /dist/quick-note/manifest.webmanifest
+}
+header @quick_note_revalidate Cache-Control "no-cache, must-revalidate"
 """
     return f"""
 @dufs_plus_capabilities {{
