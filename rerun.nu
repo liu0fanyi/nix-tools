@@ -20,14 +20,15 @@
 #     此时 nixos-rebuild / nixosConfigurations 不可用。
 #   - --nixos / --no-nixos 可显式覆盖自动检测；若覆盖结果与本机系统类型矛盾，
 #     脚本拒绝执行并提示（防止在 NixOS 上跑 standalone、或反之）。
-#   - 目标默认 liou；NixOS 主机名默认 homebox（可用 --host 覆盖）。
+#   - 目标默认 liou；NixOS 主机名默认取当前主机名（可用 --host 显式覆盖）。
+#     不再固定默认 homebox：那会在非 homebox 机器上误切到别的系统配置。
 #   - 非 NixOS 机器默认部署 homeConfigurations.liou-nuc；可用
 #     --home-target 选择其他 standalone 配置。target 参数仅 NixOS 分支有效。
 def main [
     target: string = "liou"
     --nixos # 强制 NixOS 系统 switch（覆盖自动检测）
     --no-nixos # 强制 standalone home-manager switch（覆盖自动检测）
-    --host: string = "homebox" # NixOS 配置名（flake 里的 nixosConfigurations.<host>）
+    --host: string = "" # NixOS 配置名（flake 里的 nixosConfigurations.<host>）；留空则取当前主机名
     --home-target: string = "liou-nuc" # standalone 配置名
     --boot # NixOS only：构建并设置下次启动，不立即切换当前系统
     --install-bootloader # NixOS only：强制（重）安装 bootloader，绕过普通 update 路径
@@ -35,6 +36,28 @@ def main [
     # 自动检测：/etc/os-release 中 ID=nixos 即为 NixOS 系统
     let os_id = (open /etc/os-release | lines | where ($it | str starts-with "ID=") | first | str replace "ID=" "" | str trim)
     let detected_is_nixos = ($os_id == "nixos")
+
+    # --host 留空时按当前主机名推断，避免把「工作站」默认成别的机器。
+    # 曾因固定默认 homebox 而在 liu-bigpc 上误切系统 profile，故不再保留固定默认值。
+    let resolved_host = if ($host | str trim) == "" {
+        (hostname | str trim)
+    } else {
+        $host
+    }
+    # 显式传入的主机名必须真实存在于 flake，避免拼写错误落到错误配置。
+    let known_hosts = [
+        "homebox"
+        "homebox-install"
+        "homebox-install-16g"
+        "homebox-install-24g"
+        "homebox-install-32g"
+        "homebox-install-64g"
+        "liu-bigpc"
+        "nuc"
+    ]
+    if ($detected_is_nixos and (not ($known_hosts | any {|h| $h == $resolved_host }))) {
+        error make { msg: $"flake 中不存在主机 ($resolved_host)；可用 --host 指定，候选：($known_hosts | str join ', ')" }
+    }
 
     # 显式覆盖：--nixos 与 --no-nixos 互斥
     if ($nixos and $no_nixos) {
@@ -106,16 +129,16 @@ def main [
 
     if $use_nixos {
         let action = if $boot { "boot" } else { "switch" }
-        print $"(ansi green)NixOS system ($action): flake#($host)(ansi reset)"
+        print $"(ansi green)NixOS system ($action): flake#($resolved_host)(ansi reset)"
         # 需要提权：nixos-rebuild 最后要把新系统链接到
         # /nix/var/nix/profiles/system。inputs 更新应单独执行
         # `nix flake update`，普通 switch 保持 flake.lock 的可复现性。
         # 以当前用户完成 flake 求值和构建（可使用 ~/.ssh 访问私有 inputs），
         # 只在写系统 profile 和激活配置时由 nixos-rebuild 提权。
         if $install_bootloader {
-            nixos-rebuild $action --sudo --install-bootloader --flake $"($env.PWD)#($host)"
+            nixos-rebuild $action --sudo --install-bootloader --flake $"($env.PWD)#($resolved_host)"
         } else {
-            nixos-rebuild $action --sudo --flake $"($env.PWD)#($host)"
+            nixos-rebuild $action --sudo --flake $"($env.PWD)#($resolved_host)"
         }
     } else {
         # CLI 与模块都来自当前 flake.lock 中的同一个 Home Manager input。
@@ -124,7 +147,7 @@ def main [
     }
 
     if ($use_nixos and $boot) {
-        print $"(ansi yellow)✓ 已设置 flake#($host) 为下次启动配置；当前系统尚未热切换。(ansi reset)"
+        print $"(ansi yellow)✓ 已设置 flake#($resolved_host) 为下次启动配置；当前系统尚未热切换。(ansi reset)"
         print "  确认账户迁移等启动前步骤完成后再重启。"
         return
     }
@@ -169,7 +192,7 @@ def main [
     }
     # 按系统类型取构建路径；standalone 必须与上面实际 switch 的目标一致。
     let flake_attr = if $use_nixos {
-        $".#nixosConfigurations.($host).config.home-manager.users.($target).home.activationPackage"
+        $".#nixosConfigurations.($resolved_host).config.home-manager.users.($target).home.activationPackage"
     } else {
         $".#homeConfigurations.($home_target).activationPackage"
     }

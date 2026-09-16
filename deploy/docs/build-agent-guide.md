@@ -37,6 +37,16 @@ devenv shell -- just manage <操作>                   # NUC 运维管理入口
 - **目标与组件**：目标 `nuc/aliyun` 必须明确；组件可用 `infra/frontend/tag-server/all/runtime-images`，省略组件时默认为 `infra`。`infra` 是基础设施发布，原 `config` 发布组件不再接受。
 - **管理器与预演**：管理器内部 `manage config` 是渲染配置，含义不同；NUC 运维入口为 `just manage <操作>`。全流程预演使用 `just -- deploy ... --dry-run`；`just --dry-run` 仅展开 recipe。
 
+### 本机宿主配置 switch（`rerun.nu`）不得由 Agent 直接执行
+
+`rerun.nu` 切换的是**用户当前正在使用的工作站系统**，属于用户本人的环境操作。**Agent 只说明改动并提醒用户在普通终端手动运行，不得代为执行。**
+
+- Agent 的正确行为：说明改了什么、给出用户要在普通终端执行的命令（`nu rerun.nu liou --host <当前主机名>`），然后停止，等用户反馈结果。
+- 需要验证配置是否正确时，Agent 用只读求值/构建核对产物（`nix eval`、`nix build --no-link`、`nix eval .#nixosConfigurations.<host>.config...`），不触发 switch。
+- 仅当用户明确要求并由 Agent 执行时，必须显式传 `--host <当前主机名>`，不得依赖默认值。
+
+理由与教训：`rerun.nu` 的 `--host` 曾固定默认为 `homebox`，在 `liu-bigpc` 上漏传即会构建并安装**另一台主机**的系统，把 `/nix/var/nix/profiles/system` 切到错误代，并尝试在 `/dev/sda` 安装 bootloader（2026-09-16 实际发生，需手工恢复 profile）。该默认值现已改为取当前主机名，并对未知主机名报错；即便如此，Agent 仍不承担用户的系统切换与回滚，执行权保留给用户。
+
 ---
 
 ## 三、构建与部署边界
@@ -88,7 +98,9 @@ devenv shell -- just manage <操作>                   # NUC 运维管理入口
    - 用户文档保留仓库权威源文件，并在每次状态变动或任务结束时由 `just sync-todos` 统一镜像同步到 `liou@nuc.local:/home/liou/dufs-lan/todos/nix-tools/`。
    - `README.md` 为索引，正文放 `docs/`。本文对应 `deploy/docs/build-agent-guide.md`；变更时同步更新索引和副本。
 2. **目录保护隔离**：
-   - 不得覆盖 NUC `todos/` 根部三份全局文件或其他工程资料。
+   - 不得覆盖 NUC `todos/` 根部的个人资料（待办、购物清单等）或其他工程资料。
+     原 `a-next.md` / `a-observe.md` / `a-done.md` 已于 2026-09-16 迁入各工程 specs 后删除，
+     未立项内容并入 `todos/a-杂鱼整理.md`；详见工作区 `AGENTS.md`，不要再写回这三个文件。
    - 不得向 xiaoqiang 专用的 `/home/liou/dufs/` 重建本工程文档。容器发布流程不变。
 
 ## Clip 规格归属
