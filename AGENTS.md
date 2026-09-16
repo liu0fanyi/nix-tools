@@ -103,6 +103,91 @@ devenv shell -- just manage <操作>                   # NUC 运维管理入口
      未立项内容并入 `todos/a-杂鱼整理.md`；详见工作区 `AGENTS.md`，不要再写回这三个文件。
    - 不得向 xiaoqiang 专用的 `/home/liou/dufs/` 重建本工程文档。容器发布流程不变。
 
+## 七、PC 磁盘清理（统一入口）
+
+**PC 磁盘清理一律记录在本节**，新增发现的可清理项、保护清单与操作记录都追加到这里，
+不再另建清理文档。背景：2026-09-16 根分区 `/dev/sdc4` 曾达 100%（399G/423G），
+执行 `nu clean.nu all` 后回到 50%。
+
+### 必须先查清再删
+
+清理前按此顺序定位，不要凭目录名猜：
+
+```bash
+df -h /                                  # 根分区占用
+du -xsh /home/liou/* /home/liou/.[!.]*   # 家目录大头
+du -xsh <大头>/* | sort -rh | head       # 逐层下钻
+lsof +D <目录>                           # 是否被进程占用
+```
+
+`du -x` 会跳过挂载点（`/data`、`/data-ssd`、`/boot` 是独立盘，不算根分区），
+排查根分区时**不要**对整个 `/` 用 `du -xsh /*`，否则会漏掉根分区本体。
+
+### 已知泄漏与可清理项
+
+| 位置 | 大小 | 性质 | 处理 |
+|---|---|---|---|
+| `~/.codex/.tmp/bundled-marketplaces/*.staging-*` | 36G | **泄漏**：1316 个 48M 临时安装目录，正式目录仅 260K | 删 `*.staging-*`，保留 `openai-bundled` |
+| Podman 悬空镜像（`<none>`） | ~38.8G 可回收 | 258 个镜像中 98% 可回收 | `podman system prune`，见下方保护清单 |
+| `~/.local/state/xiaoqiang-repo-audit/` | 20G | 历史清理备份快照（`*-cleanup-*`/`-recovery-*`） | 确认不再需要后按目录删 |
+| `~/nix-tools/clipboard-sync/mobile/` | 7.5G | Android 构建产物（`mobile/src-tauri/target`） | 可重编，按需删 |
+| `~/nix-tools/clipboard-sync/target/` | 2.2G | Rust 构建产物 | `cargo clean`，可重编 |
+| `~/.cache/codex-runtimes` | 1.8G | codex 运行期缓存 | 可删，会重新下载 |
+
+### 保护清单（严禁删除）
+
+- **SSD201 / RK3506 编译环境镜像**——保留用于交叉编译环境，删了要重建：
+  - `localhost/my-ssd201-rust:v1` (`b6c6c60eb5e3`, 6.12G)
+  - `localhost/sip-ssd201-validation:recovery`（同上 ID，同一镜像的别名）
+  - `localhost/sip-ssd201-validation:gitcrypt` (`ab55e6a2aed6`, 6.09G)
+  - `localhost/rk3506-rust:v1` (`1d76a74d215c`, 3.85G)
+  - `localhost/sip-rk3506-validation:gitcrypt`（同上 ID，别名）
+- `docker.io/authelia/authelia`、`caddy`、`haproxy`、`dufs`、`ddns-go`、`alpine`
+  —— NUC/阿里云部署用的基础镜像，由 `just deploy ... runtime-images` 管理。
+- `localhost/tag-server:public` / `:private`——当前发布指向的镜像。
+
+因此**不要**直接跑 `podman system prune -a`（会删掉上述基础镜像）。
+安全的做法是只清理悬空镜像并显式保留需要的：
+
+```bash
+podman image prune -f          # 仅删 <none> 悬空镜像，不动有 tag 的
+```
+
+`podman system df` 可查当前可回收量；258 个镜像里绝大多数是
+`tag-server:release-*` 历史构建与 `<none>` 中间层。
+
+**关于悬空镜像的实测结论（2026-09-16）**：`<none>` 大层（1.5–2.4G 那些）
+初看像垃圾，实际是 **SSD201/RK3506 构建过程的中间层**。但它们**并非活跃编译
+环境的一部分**——真正持有它们的是 buildah 中断残留的工作容器
+（`*-working-container`）。因此正确处理不是直接 `podman image prune`（会因
+"image is in use by a container" 失败），而是：
+
+1. `podman ps -a --external` 列出 buildah 残留容器（默认 `podman ps -a` 看不到）；
+2. 确认**没有 buildah/podman build 进程在跑**（`pgrep -af buildah`），
+   有活跃构建时**不要动**；
+3. `podman rm -f <容器>` 清掉残留，其持有的层随之下落，再 `podman image prune -f`。
+
+**注意**：删这些中间层会损失构建缓存，下次 SSD201/RK3506 构建要重新
+`cargo build`。若正在密集迭代该环境，可只删容器不删层。
+
+### 操作记录
+
+- 2026-09-16：根分区 100%，`nu clean.nu all` 清理 Nix 历史 generation，
+  释放约 199G（399G→200G），`/nix/store` 降至 56G。
+  原因未最终定位到单一来源，但 `nix-store --optimise` 与历史 generation 累积是主因。
+- 2026-09-16（第二轮）：根分区 45%，继续清理两个真实泄漏，共释放约 **64G**
+  （根分区 200G→151G，45%→38%）：
+  1. `~/.codex/.tmp/bundled-marketplaces/*.staging-*`：1316 个目录 36G→564K。
+     每个 staging 里的 `plugins/sites` 等子目录是 `dr-xr-xr-x`（codex 故意设的
+     只读防篡改），**直接 `rm -rf` 会报"权限不够"**；必须先
+     `chmod -R u+w <dir>` 再删。保留 `openai-bundled` 正式目录。
+  2. Podman：39.8G→12.9G。含 18 个 `tag-server:release-*` 历史 tag，
+     以及 buildah 残留容器（`*-working-container`，中断构建产物）——
+     正是它们持有那些删不掉的 `<none>` 大层。`podman ps -a` 默认看不到，
+     必须用 `podman ps -a --external` 列出后 `podman rm -f`。
+  清理前先给保护镜像打临时 tag（`podman tag <id> keep-protect:N`）可防误删；
+  注意 podman 会规范化为 `localhost/keep-protect:N`，grep 时别锚定 `^keep-protect:`。
+
 ## Clip 规格归属
 
 按用户绑定维护决定，clipboard-sync 子模块的功能规格统一位于本仓库 specs/005-clipboard-core、006-clipboard-reliability、007-clipboard-release。子模块只留手册与指向本仓库的入口，代码/Git/构建保持独立。其他产品仍在各自仓库管理规格。本规则明确恢复既有父仓库规格归属，不恢复已经取消的 dsh Web 或 Clip 2 分钟过期需求。
