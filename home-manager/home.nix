@@ -7,6 +7,29 @@
   isNixOS ? false,
   ...
 }:
+let
+  # Zen 的 flake 只给 wrapFirefox 传了 pname，没有启用 withFFmpeg，因此 libavcodec
+  # 从未进入 wrapper 的 LD_LIBRARY_PATH。浏览器是用 dlopen 按 soname 在运行时加载
+  # ffmpeg 的，所以缺失时表现为 H.264/AAC 无法解码、站点提示“不支持 HTML5 视频”，
+  # 而单个 ffmpeg 版本装了也没有用（它不在搜索路径里）。
+  #
+  # 另外 wrapFirefox 用 browser.version 与 Firefox 的 153.1 阈值比较来挑选 ffmpeg。
+  # Zen 在此暴露的是自身版本 1.22.1b，永远低于该阈值，会被误判成旧浏览器；
+  # 实际内核是 Gecko 155（application.ini 的 MinVersion/MaxVersion=155.0.1），
+  # 应使用 ffmpeg_9（libavcodec.so.63）。这里按内核版本显式修正该属性，
+  # 只用于 ffmpeg 选择，不重建浏览器本体（unwrapped 派生不变，仅重新包装）。
+  zenBrowser = pkgs.wrapFirefox (
+    inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.zen-browser-unwrapped
+    // {
+      withFFmpeg = true;
+      version = "155.0";
+    }
+  ) {
+    pname = "zen-browser";
+    # 保留 Zen 自己的版本号作为派生名，避免把 Gecko 版本泄漏到包标识。
+    version = inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.zen-browser.version;
+  };
+in
 {
   imports = [
     ./nix_modules
@@ -48,110 +71,116 @@
   };
 
   # 简单的软件包安装方式
-  home.packages = (with pkgs; [
-    ## libnotify：提供 notify-send（配合 mako 发桌面通知）
-    libnotify
-    ## zenity：clipboard-sync 接收/拒绝确认对话框（Linux 端统一交互）
-    zenity
+  home.packages =
+    (with pkgs; [
+      ## libnotify：提供 notify-send（配合 mako 发桌面通知）
+      libnotify
+      ## zenity：clipboard-sync 接收/拒绝确认对话框（Linux 端统一交互）
+      zenity
 
-    fzf
-    bat
-    # 提供 bwrap；供 Codex 等工具创建轻量级 Linux 沙箱。
-    bubblewrap
-    dust
-    duf
-    ripgrep
-    fd
-    jq
-    # SIP 容器入口在宿主机用 readelf 校验交叉编译库架构。
-    binutils
-    # 串口终端，用于嵌入式板卡的启动日志和 U-Boot 交互。
-    tio
-    # 系统、硬件及局域网故障诊断工具。
-    lsof
-    dnsutils
-    smartmontools
-    pciutils
-    usbutils
-    mtr
-    ethtool
-    iperf3
-    glow
+      fzf
+      bat
+      # 提供 bwrap；供 Codex 等工具创建轻量级 Linux 沙箱。
+      bubblewrap
+      dust
+      duf
+      ripgrep
+      fd
+      jq
+      # SIP 容器入口在宿主机用 readelf 校验交叉编译库架构。
+      binutils
+      # 串口终端，用于嵌入式板卡的启动日志和 U-Boot 交互。
+      tio
+      # 系统、硬件及局域网故障诊断工具。
+      lsof
+      dnsutils
+      smartmontools
+      pciutils
+      usbutils
+      mtr
+      ethtool
+      iperf3
+      glow
 
-    ## git tools
-    gitui
-    ## git-crypt（解密仓库 secrets：secrets/**，restore 脚本依赖）
-    git-crypt
-    ## docker tools
-    lazydocker
-    ## fonts
-    nerd-fonts.bigblue-terminal
-    ## X11 终端（VMware 兼容）
-    # 使用sakura
+      ## git tools
+      gitui
+      ## git-crypt（解密仓库 secrets：secrets/**，restore 脚本依赖）
+      git-crypt
+      ## docker tools
+      lazydocker
+      ## fonts
+      nerd-fonts.bigblue-terminal
+      ## X11 终端（VMware 兼容）
+      # 使用sakura
 
-    ffmpeg
-    devenv
-    # 轻量级 Word 文档查看与编辑器（支持 .docx）。
-    abiword
-    # 二维 CAD：检查 DXF；Qt5 在当前 Niri 环境使用 XWayland。
-    (symlinkJoin {
-      name = "qcad-desktop";
-      paths = [ qcad ];
-      nativeBuildInputs = [ makeWrapper ];
-      postBuild = ''
-        wrapProgram "$out/bin/qcad" --set QT_QPA_PLATFORM xcb
-      '';
-    })
-    # 轻量级 PDF 阅读器。
-    mupdf
-    # 轻量级音视频播放器，原生支持 Wayland。
-    mpv
-    # Blender 3D 建模/渲染/导出（dsh-blender 等插件依赖 blender 可执行文件；
-    # 版本跟随 flake 锁定的 nixpkgs，当前为 5.2.x）。
-    blender
-    # PJSIP 命令行软电话；便于脚本化验证注册、保持/恢复和多路通话。
-    pjsip
-    # 鼠标光标主题和 Zen Browser 由 Home Manager 统一提供给各 Linux 主机。
-    nordzy-cursor-theme
-    inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.zen-browser
-    ## deploy/ 脚本（manage.py / release-apps.py）运行依赖
-    python3
-    localsend
-    # 微信主窗口目前走 XWayland，不会自动继承 Niri 的输出缩放。保留 nixpkgs
-    # 提供的完整包（包括 desktop entry），只给启动程序注入同一份主屏缩放值。
-    (symlinkJoin {
-      name = "wechat-scaled";
-      paths = [ wechat ];
-      nativeBuildInputs = [ makeWrapper ];
-      postBuild = ''
-        wrapProgram "$out/bin/wechat" \
-          --set QT_SCALE_FACTOR ${toString config.features.niri.primaryOutputScale}
-      '';
-    })
-    # GitHub CLI（创建/推送仓库、管理 issues 等）
-    gh
-    ## 解压工具（zip/7z/rar 等通用格式；tar/gzip/xz 系统已有）
-    unzip
-    zip
-    p7zip
-    # exFAT 文件系统检查与修复工具（fsck.exfat 等）
-    exfatprogs
-    # just：任务运行器（clipboard-sync 构建/分发/部署用，见 clipboard-sync/Justfile）
-    just
-    # pnpm：dsh profile 插件管理工具（`dsh plugin --profile web ...` 转发到 pnpm，
-    # 见 ensureDshLatest 下方注释）。由 nix 声明式管理，跟随 flake.lock 的
-    # nixpkgs 升级；不复用 restore-secrets.sh 的 npm -g 安装（避免双份冲突）。
-    pnpm
-    # Cross-device encrypted credential vault and its sync daemon.
-    keepassxc
-    syncthing
-    # yazi
-    bottom
-  ])
-  ++ lib.optional isNixOS
-    # Codex 仅由 NixOS 管理；standalone 主机（如 nuc）保留已有安装，避免两个
-    # codex 命令共享 ~/.codex 时发生版本和 PATH 冲突。
-    inputs.codex-cli-nix.packages.${pkgs.stdenv.hostPlatform.system}.codex;
+      # ffmpeg 命令行工具，跟随 flake 锁定的 nixpkgs。
+      # 不再额外装 ffmpeg_4：zen 的 ffmpeg 由 zenBrowser 包装层注入搜索路径，
+      # 单个旧版本装进 profile 既不被 zen 读取，也让命令行版本与库版本不一致。
+      ffmpeg
+      devenv
+      # 轻量级 Word 文档查看与编辑器（支持 .docx）。
+      abiword
+      # 二维 CAD：检查 DXF；Qt5 在当前 Niri 环境使用 XWayland。
+      (symlinkJoin {
+        name = "qcad-desktop";
+        paths = [ qcad ];
+        nativeBuildInputs = [ makeWrapper ];
+        postBuild = ''
+          wrapProgram "$out/bin/qcad" --set QT_QPA_PLATFORM xcb
+        '';
+      })
+      # 轻量级 PDF 阅读器。
+      mupdf
+      # 轻量级音视频播放器，原生支持 Wayland。
+      mpv
+      # Blender 3D 建模/渲染/导出（dsh-blender 等插件依赖 blender 可执行文件；
+      # 版本跟随 flake 锁定的 nixpkgs，当前为 5.2.x）。
+      blender
+      # PJSIP 命令行软电话；便于脚本化验证注册、保持/恢复和多路通话。
+      pjsip
+      # 鼠标光标主题和 Zen Browser 由 Home Manager 统一提供给各 Linux 主机。
+      # zenBrowser 是本文件上方补过 withFFmpeg 的包装版本，勿改回上游原始包。
+      nordzy-cursor-theme
+      zenBrowser
+      ## deploy/ 脚本（manage.py / release-apps.py）运行依赖
+      python3
+      localsend
+      # 微信主窗口目前走 XWayland，不会自动继承 Niri 的输出缩放。保留 nixpkgs
+      # 提供的完整包（包括 desktop entry），只给启动程序注入同一份主屏缩放值。
+      (symlinkJoin {
+        name = "wechat-scaled";
+        paths = [ wechat ];
+        nativeBuildInputs = [ makeWrapper ];
+        postBuild = ''
+          wrapProgram "$out/bin/wechat" \
+            --set QT_SCALE_FACTOR ${toString config.features.niri.primaryOutputScale}
+        '';
+      })
+      # GitHub CLI（创建/推送仓库、管理 issues 等）
+      gh
+      ## 解压工具（zip/7z/rar 等通用格式；tar/gzip/xz 系统已有）
+      unzip
+      zip
+      p7zip
+      # exFAT 文件系统检查与修复工具（fsck.exfat 等）
+      exfatprogs
+      # just：任务运行器（clipboard-sync 构建/分发/部署用，见 clipboard-sync/Justfile）
+      just
+      # pnpm：dsh profile 插件管理工具（`dsh plugin --profile web ...` 转发到 pnpm，
+      # 见 ensureDshLatest 下方注释）。由 nix 声明式管理，跟随 flake.lock 的
+      # nixpkgs 升级；不复用 restore-secrets.sh 的 npm -g 安装（避免双份冲突）。
+      pnpm
+      # Cross-device encrypted credential vault and its sync daemon.
+      keepassxc
+      syncthing
+      # yazi
+      bottom
+    ])
+    ++
+      lib.optional isNixOS
+        # Codex 仅由 NixOS 管理；standalone 主机（如 nuc）保留已有安装，避免两个
+        # codex 命令共享 ~/.codex 时发生版本和 PATH 冲突。
+        inputs.codex-cli-nix.packages.${pkgs.stdenv.hostPlatform.system}.codex;
   programs.yazi = {
     enable = true;
     # Keep the existing wrapper command stable across Home Manager upgrades.
