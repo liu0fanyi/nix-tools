@@ -65,6 +65,11 @@ Wacom One (CTL-472) 的笔没有滚轮/触摸环，Linux Wayland 也没有 Windo
 | `horizontal` | `false` | 改为 `REL_HWHEEL` 横向滚动 |
 | `barrelButton` | `lower` | `lower` = 下方侧键(BTN_STYLUS)，`upper` = 上方侧键(BTN_STYLUS2) |
 
+**滚动速度**：默认每 **4mm** 笔尖行程 = 一个滚轮刻度（由 ABS_X resolution 自动换算，
+CTL-472 上是 400 单位）。本机有效区约 95mm，故一次全幅划动约 24 个刻度、
+约 70 行文本，滚一屏约需 53mm。此值 2026-09-17 按用户反馈从 6mm 调快（+50%）；
+若仍不合适，用 `pixelsPerTick`（如 `300`）或 `PEN_SCROLL_UNITS_PER_TICK` 覆盖。
+
 也可用同名环境变量直接运行脚本调试：`PEN_SCROLL_UNITS_PER_TICK`、
 `PEN_SCROLL_DEADZONE_PIXELS`、`PEN_SCROLL_NATURAL`、`PEN_SCROLL_HORIZONTAL`、
 `PEN_SCROLL_BARREL`。
@@ -95,10 +100,17 @@ systemctl --user reset-failed pen-scroll 2>/dev/null || true
 所以"先悬空移到别处再落笔"不会立刻触发滚动。
 （初期版本只判断"越过死区"，导致悬空划动也滚动 —— 已修。）
 
+**笔尖离板即结束手势（2026-09-17 修正）**：一次划动结束后抬笔即停止滚动，
+不会因为侧键还按着而把手臂回带的动作当成反向划动。
+这与 libinput 的 on-button scrolling 一致（松开指定按钮即 `stop_scroll`）。
+抬笔后回到"已武装"状态，因此**按住侧键不放可以连续划多次**；
+已经滚动过的一次按压在松开侧键时**不会**再补发点击，纯点击行为不受影响。
+
 手工验收：
 
 1. 浏览器里按住笔杆侧键、**笔尖接触板面**垂直划动 → 页面滚动，且**不**选中文本。
 1b. 按住侧键但笔**悬空**划动 → 只移动光标，**不**滚动。
+1c. 一次划动后**抬笔** → 立即停止滚动，不出现反向回滚；按住侧键可继续下一次划动。
 2. 侧键快速点一下 → 正常侧键点击（右键菜单）。
 3. 正常书写、悬停、笔尖点击、按住笔尖拖动选中 → 与改动前一致。
 4. 绘画软件里正常画线不受影响。

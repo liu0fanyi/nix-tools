@@ -81,6 +81,13 @@ WantedBy=multi-user.target。无需注销/重启，待用户 switch 后验收手
 另外发现构建期 flake8 会报 W503（早先本地用 --max-line-length 未覆盖），
 已改为提取 _should_begin_scroll() 规避行首二元运算符。toplevel 构建通过。
 
+2026-09-17 体验修正（用户实测反馈"划动结束后又往回滚一点"）：复现确认这不是
+灵敏度/死区问题，而是状态机 bug——抬笔只更新 tip_down、未结束手势，侧键仍按住时
+引擎停留在 SCROLLING，把手部自然回带当成反向划动。已改为**笔尖离板即结束手势**并
+回到 ARMED（对齐 libinput on-button scrolling：松开指定按钮即 stop_scroll）；
+新增 gestured 标志避免滚动过的按压在松开侧键时补发点击。另按用户反馈把滚动速度
+从 6mm/刻度调为 4mm/刻度（+50%）。pen-scroll 测试 32 项通过，toplevel 构建通过。
+
 2026-09-16 pen-scroll：确认 niri 仅转发设备真实上报的数位板滚轮轴（smithay
 `wp_tool.wheel`），libinput 只对 libwacom 标注带滚轮的笔产生该轴，Chromium
 `WaylandTabletTool::Wheel()` 明确未实现，故必须软件翻译。已求值 hardware.uinput、

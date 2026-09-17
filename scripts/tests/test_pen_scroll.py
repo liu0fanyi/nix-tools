@@ -400,6 +400,47 @@ class MirrorCapabilitiesTests(unittest.TestCase):
         self.assertEqual(events[module.EV_REL], sorted(set(events[module.EV_REL])))
 
 
+class ScrollSpeedTests(unittest.TestCase):
+    """Lock the default scroll distance so it cannot drift silently.
+
+    4 mm per notch was chosen after testing on the CTL-472: a full-height
+    stroke is about 95 mm, so this scrolls roughly a screenful. The user
+    asked for a faster feel than the original 6 mm.
+    """
+
+    def test_default_is_four_mm_per_notch(self):
+        self.assertEqual(module.DEFAULT_MM_PER_TICK, 4.0)
+
+    def test_tick_distance_scales_with_axis_resolution(self):
+        # units_per_tick_for imports evdev; skip where it is unavailable.
+        try:
+            import evdev  # noqa: F401
+        except ImportError:
+            self.skipTest("evdev not importable in this environment")
+
+        class FakeAbs:
+            resolution = 100
+
+        class FakeDevice:
+            def absinfo(self, _code):
+                return FakeAbs()
+
+        # 100 units/mm * 4 mm = 400 units per notch.
+        self.assertEqual(module.units_per_tick_for(FakeDevice(), 0.0), 400.0)
+
+    def test_explicit_override_wins(self):
+        try:
+            import evdev  # noqa: F401
+        except ImportError:
+            self.skipTest("evdev not importable in this environment")
+
+        class FakeDevice:
+            def absinfo(self, _code):  # pragma: no cover - must not be called
+                raise AssertionError("resolution should not be consulted")
+
+        self.assertEqual(module.units_per_tick_for(FakeDevice(), 250.0), 250.0)
+
+
 class RetryableErrorsTests(unittest.TestCase):
     """evdev's UInputError must be caught, not crash the service.
 

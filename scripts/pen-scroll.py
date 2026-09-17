@@ -62,7 +62,9 @@ MODE_ARMED = "armed"
 MODE_SCROLLING = "scrolling"
 
 # Physical pen travel per wheel notch when the axis resolution is known.
-DEFAULT_MM_PER_TICK = 6.0
+# 4 mm keeps a full-height stroke on the CTL-472 (about 95 mm of active area)
+# near a screenful of text, which felt closer to a touchpad than 6 mm did.
+DEFAULT_MM_PER_TICK = 4.0
 # Notches a full-height stroke should cover when resolution is unavailable.
 FALLBACK_NOTCHES_PER_AXIS = 40.0
 DEFAULT_DEADZONE_PIXELS = 20.0
