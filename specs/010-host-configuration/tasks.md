@@ -88,6 +88,13 @@ WantedBy=multi-user.target。无需注销/重启，待用户 switch 后验收手
 新增 gestured 标志避免滚动过的按压在松开侧键时补发点击。另按用户反馈把滚动速度
 从 6mm/刻度调为 4mm/刻度（+50%）。pen-scroll 测试 32 项通过，toplevel 构建通过。
 
+2026-09-17 起手响应修正：用户反馈"向上划相当长度才开始滚动"。量化确认死区只有 0.2mm
+（非主因），真正延迟是"必须攒满一整格（4mm）才发滚轮事件"，即离散量化。
+改为**越过死区即刻发出第一个刻度**（对齐 libinput "once engaged, any movement will
+scroll"）：起始延迟 4.3mm→1.6mm，而同样划 45mm 前后都是 12 格，**速率不变**。
+死区同时改为按分辨率换算的 **1.5mm**（原为抽象 20 单位），仅用于吸收点击抖动。
+pen-scroll 测试 36 项通过，toplevel 构建通过。
+
 2026-09-16 pen-scroll：确认 niri 仅转发设备真实上报的数位板滚轮轴（smithay
 `wp_tool.wheel`），libinput 只对 libwacom 标注带滚轮的笔产生该轴，Chromium
 `WaylandTabletTool::Wheel()` 明确未实现，故必须软件翻译。已求值 hardware.uinput、

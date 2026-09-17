@@ -137,7 +137,8 @@ class PenScrollEngineTests(unittest.TestCase):
                 (EV_ABS, ABS_Y, 1000),
                 (EV_KEY, BTN_STYLUS, 1),
                 *contact_down(),
-                # The move that crosses the deadzone only starts the gesture.
+                # Crossing the deadzone engages the gesture and emits the
+                # first notch straight away (see test_first_notch_is_immediate).
                 (EV_ABS, ABS_Y, 1500),
                 # Later motion converts at 100 units per notch.
                 (EV_ABS, ABS_Y, 2000),
@@ -145,10 +146,60 @@ class PenScrollEngineTests(unittest.TestCase):
                 *contact_up(),
             ],
         )
+        # One notch on engage, then 500 units / 100 = 5 while scrolling.
         ticks = sum(value for _, value in scrolled)
-        self.assertEqual(ticks, 5)
+        self.assertEqual(ticks, 6)
         self.assertNotIn((EV_KEY, BTN_TOUCH, 1), forwarded)
         self.assertNotIn((EV_ABS, ABS_PRESSURE, 200), forwarded)
+
+    def test_first_notch_is_immediate(self):
+        """Engaging must scroll at once, not after a whole extra notch.
+
+        Reported as "I have to move a long way before it starts scrolling".
+        The deadzone itself was only 0.2 mm; the delay came from having to
+        fill a full 4 mm notch before the first wheel event.
+        """
+        engine = self.make(units_per_tick=400.0, deadzone_pixels=20.0)
+        replay(
+            engine,
+            [
+                (EV_ABS, ABS_X, 10000),
+                (EV_ABS, ABS_Y, 10000),
+                (EV_KEY, BTN_STYLUS, 1),
+                *contact_down(),
+            ],
+        )
+
+        # A hair past the deadzone must already produce a wheel event.
+        _, scrolled = replay(engine, [(EV_ABS, ABS_Y, 10000 - 25)])
+        self.assertNotEqual(scrolled, [])
+        self.assertEqual(abs(sum(v for _, v in scrolled)), 1)
+
+    def test_onset_does_not_change_the_ongoing_rate(self):
+        """Engaging must not make the same drag scroll materially further."""
+        def ticks_over(distance):
+            engine = self.make(units_per_tick=400.0, deadzone_pixels=20.0)
+            replay(
+                engine,
+                [
+                    (EV_ABS, ABS_X, 10000),
+                    (EV_ABS, ABS_Y, 10000),
+                    (EV_KEY, BTN_STYLUS, 1),
+                    *contact_down(),
+                ],
+            )
+            _, scrolled = replay(
+                engine,
+                [
+                    (EV_ABS, ABS_Y, 10000 - step)
+                    for step in range(10, distance + 1, 10)
+                ],
+            )
+            return abs(sum(v for _, v in scrolled))
+
+        # 40 mm at 4 mm per notch, plus the single engage notch.
+        ticks = ticks_over(4000)
+        self.assertIn(ticks, (10, 11))
 
     def test_movement_inside_deadzone_does_not_scroll(self):
         engine = self.make(deadzone_pixels=50.0)
@@ -439,6 +490,31 @@ class ScrollSpeedTests(unittest.TestCase):
                 raise AssertionError("resolution should not be consulted")
 
         self.assertEqual(module.units_per_tick_for(FakeDevice(), 250.0), 250.0)
+
+    def test_deadzone_is_physical_and_smaller_than_a_notch(self):
+        """The deadzone must stay well below one notch.
+
+        It only absorbs tap tremor; a deadzone near a full notch is what made
+        the gesture feel like it needed a long drag before starting.
+        """
+        self.assertLess(module.DEFAULT_MM_DEADZONE, module.DEFAULT_MM_PER_TICK)
+        self.assertGreater(module.DEFAULT_MM_DEADZONE, 0.0)
+
+    def test_deadzone_scales_with_resolution(self):
+        try:
+            import evdev  # noqa: F401
+        except ImportError:
+            self.skipTest("evdev not importable in this environment")
+
+        class FakeAbs:
+            resolution = 100
+
+        class FakeDevice:
+            def absinfo(self, _code):
+                return FakeAbs()
+
+        # 100 units/mm * 1.5 mm = 150 units.
+        self.assertEqual(module.deadzone_units_for(FakeDevice(), 0.0), 150.0)
 
 
 class RetryableErrorsTests(unittest.TestCase):

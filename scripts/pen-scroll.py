@@ -65,6 +65,10 @@ MODE_SCROLLING = "scrolling"
 # 4 mm keeps a full-height stroke on the CTL-472 (about 95 mm of active area)
 # near a screenful of text, which felt closer to a touchpad than 6 mm did.
 DEFAULT_MM_PER_TICK = 4.0
+# Physical travel that must be crossed before a gesture scrolls anything.
+# Small enough to feel immediate, large enough that a deliberate barrel tap
+# with the tip down is not mistaken for a drag.
+DEFAULT_MM_DEADZONE = 1.5
 # Notches a full-height stroke should cover when resolution is unavailable.
 FALLBACK_NOTCHES_PER_AXIS = 40.0
 DEFAULT_DEADZONE_PIXELS = 20.0
@@ -143,11 +147,34 @@ class PenScrollEngine:
         dy = self.position[ABS_Y] - self.anchor[1]
         return (dx * dx + dy * dy) ** 0.5
 
-    def _begin_scroll(self) -> None:
+    def _begin_scroll(self):
+        """Engage the gesture, emitting the first notch immediately.
+
+        Wheel events are discrete, so without this the user had to drag a
+        whole notch (4 mm) before anything moved -- reported as "I have to
+        move a long way before it starts scrolling". libinput describes the
+        intended feel for the equivalent gesture as: a threshold must be met
+        to engage, but once engaged any movement scrolls. Emitting one notch
+        on engage makes the response immediate while leaving the ongoing rate
+        unchanged.
+
+        Returns the initial ``(axis, ticks)`` pair, or an empty list.
+        """
         self.mode = MODE_SCROLLING
         self.gestured = True
         self.accumulated = 0.0
         self.last = (self.position[ABS_X], self.position[ABS_Y])
+
+        travelled = self.position[ABS_X if self.horizontal else ABS_Y]
+        origin = self.anchor[0 if self.horizontal else 1]
+        offset = travelled - origin
+        if offset == 0:
+            return []
+        # Match _ticks_for's sign convention (natural = dragging down scrolls
+        # towards earlier content).
+        sign = 1.0 if self.natural else -1.0
+        tick = 1 if sign * offset > 0 else -1
+        return [(REL_HWHEEL if self.horizontal else REL_WHEEL, tick)]
 
     def _should_begin_scroll(self) -> bool:
         """Whether an armed barrel press has now become a scroll gesture.
@@ -220,7 +247,7 @@ class PenScrollEngine:
                     axis = REL_HWHEEL if self.horizontal else REL_WHEEL
                     scroll.append((axis, ticks))
             elif self._should_begin_scroll():
-                self._begin_scroll()
+                scroll.extend(self._begin_scroll())
             return forward, scroll
 
         # Pressure and BTN_TOUCH are what libinput turns into tip contact;
@@ -512,7 +539,6 @@ def units_per_tick_for(device, requested: float) -> float:
         resolution = 0
     if resolution and resolution > 0:
         return DEFAULT_MM_PER_TICK * resolution
-
     try:
         info = device.absinfo(ecodes.ABS_X)
         span = abs(info.max - info.min)
@@ -521,6 +547,36 @@ def units_per_tick_for(device, requested: float) -> float:
     if span:
         return span / FALLBACK_NOTCHES_PER_AXIS
     return 1.0
+
+
+def deadzone_units_for(device, requested: float) -> float:
+    """Gesture deadzone in axis units.
+
+    Defaults to DEFAULT_MM_DEADZONE millimetres so the threshold has the same
+    physical feel on any tablet. It only has to absorb hand tremor during a
+    barrel tap; the deadzone is not what makes scrolling feel slow, since it
+    is an order of magnitude smaller than one wheel notch.
+    """
+    from evdev import ecodes
+
+    if requested > 0:
+        return requested
+    try:
+        resolution = device.absinfo(ecodes.ABS_X).resolution
+    except OSError:
+        resolution = 0
+    if resolution and resolution > 0:
+        return DEFAULT_MM_DEADZONE * resolution
+
+    try:
+        info = device.absinfo(ecodes.ABS_X)
+        span = abs(info.max - info.min)
+    except OSError:
+        span = 0
+    if span:
+        # Assume a plausible 100 mm of active travel for an unknown tablet.
+        return span * (DEFAULT_MM_DEADZONE / 100.0)
+    return DEFAULT_DEADZONE_PIXELS
 
 
 class _Stop(Exception):
@@ -540,6 +596,7 @@ def run(device, engine: PenScrollEngine, out=sys.stdout) -> int:
     from evdev import ecodes
 
     engine.units_per_tick = units_per_tick_for(device, engine.units_per_tick)
+    engine.deadzone_pixels = deadzone_units_for(device, engine.deadzone_pixels)
     # Build the virtual pen *before* grabbing: if this raises (typically
     # /dev/uinput permissions), the physical pen was never grabbed, so the
     # failure cannot strand the user without a working stylus.
@@ -547,7 +604,8 @@ def run(device, engine: PenScrollEngine, out=sys.stdout) -> int:
 
     print(
         f"pen-scroll: grabbing {device.path} ({device.name}); "
-        f"{engine.units_per_tick:.1f} units per wheel notch",
+        f"{engine.units_per_tick:.1f} units per wheel notch, "
+        f"{engine.deadzone_pixels:.0f} units deadzone",
         file=out,
         flush=True,
     )
@@ -596,9 +654,7 @@ def main(argv=None) -> int:
     engine = PenScrollEngine(
         # 0 means "derive from the device resolution at grab time".
         units_per_tick=_env_float("PEN_SCROLL_UNITS_PER_TICK", 0.0),
-        deadzone_pixels=_env_float(
-            "PEN_SCROLL_DEADZONE_PIXELS", DEFAULT_DEADZONE_PIXELS
-        ),
+        deadzone_pixels=_env_float("PEN_SCROLL_DEADZONE_PIXELS", 0.0),
         natural=_env_bool("PEN_SCROLL_NATURAL", True),
         horizontal=_env_bool("PEN_SCROLL_HORIZONTAL", False),
         barrel_code=(

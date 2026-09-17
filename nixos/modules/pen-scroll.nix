@@ -49,9 +49,14 @@ in
     };
 
     deadzonePixels = lib.mkOption {
-      type = lib.types.numbers.positive;
-      default = 20.0;
-      description = "Pen travel in axis units before a drag becomes a scroll.";
+      type = lib.types.nullOr lib.types.numbers.positive;
+      default = null;
+      description = ''
+        Pen travel before a drag becomes a scroll. Null derives it from the
+        tablet resolution as a physical distance (1.5 mm), which is what
+        keeps the feel consistent; the deadzone only absorbs tap tremor and
+        is far smaller than one wheel notch.
+      '';
     };
 
     natural = lib.mkOption {
@@ -94,13 +99,15 @@ in
         SupplementaryGroups = [ "input" "uinput" ];
 
         Environment = [
-          "PEN_SCROLL_DEADZONE_PIXELS=${toString cfg.deadzonePixels}"
           "PEN_SCROLL_NATURAL=${if cfg.natural then "1" else "0"}"
           "PEN_SCROLL_HORIZONTAL=${if cfg.horizontal then "1" else "0"}"
           "PEN_SCROLL_BARREL=${cfg.barrelButton}"
         ]
         ++ lib.optional (cfg.pixelsPerTick != null) (
           "PEN_SCROLL_UNITS_PER_TICK=${toString cfg.pixelsPerTick}"
+        )
+        ++ lib.optional (cfg.deadzonePixels != null) (
+          "PEN_SCROLL_DEADZONE_PIXELS=${toString cfg.deadzonePixels}"
         );
 
         # 平板热插拔：脚本自身会等待设备/权限并重试，这里只兜底真崩溃。
