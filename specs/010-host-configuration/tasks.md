@@ -26,3 +26,64 @@ JBL随后读取Paired/Bonded/Connected均yes，未删除配对或断开。截图
 2026-09-14 点击失败复现：makoctl menu 缺少程序参数分隔符，Fuzzel 的 --dmenu 被当成
 makoctl 参数，报 invalid option。补充 -- 后，用独立测试通知151和无副作用选择器验证
 菜单命令退出0；Fuzzel显示测试单独执行，未操作JBL配对。修正后仍需switch及用户点击验收。
+
+- [x] T009 liu-bigpc 增加数位笔"侧键+划动=滚轮"手势守护进程（evdev→uinput 虚拟笔带
+  REL_WHEEL），普通划动/绘画不受影响；不改其他主机。
+- [x] T010 手势状态机单元测试 14 项通过；`pen-scroll` 经 writePython3 打包成功
+  （flake8 构建期校验通过），systemd 单元与 uinput 组求值正确。
+- [x] T011 用户 rerun 后实机验收：侧键+**笔尖接触**划动滚动、悬空划动不滚动、
+  不选中文本、侧键单击仍是点击、绘画与笔尖拖动选中行为不变（见 docs/pen-scroll.md）。
+   2026-09-17 用户确认可用；首轮曾出现悬空也滚动，修正接触判定后通过。
+
+2026-09-16 首次 switch 失败：`writePython3` 产出单文件，`home-manager-path` 的
+buildEnv 拒绝合并（"is a file and can't be merged into an environment"）。
+改用 `writePython3Bin` 后，`toplevel`、`home-manager-path`(glnpn00angymgmjw4rw3lwhzcxfmbdaq)
+与 `home-manager-generation` 均构建通过；`home-path/bin/pen-scroll` 指向
+`2wpr1abwcxcv60jv1y3dxpksnmvmwzd8-pen-scroll/bin/pen-scroll`。
+教训已记入 docs/pen-scroll.md：只构建单个包不足以发现此类错误，必须构建到
+home-manager path / toplevel。仍未 switch，T011 待用户验收。
+
+2026-09-16 第二次 switch：toplevel 构建并激活成功（uinput 组 uinput:x:987:liou 生效），
+但 home-manager 激活被 ~/.dsh/hooks/{hooks.json,notify-stop.sh} 两个手写遗留文件阻断
+（398ac6d 声明、文件更早手写；HM 报 would be clobbered）。该冲突与本功能无关，但会
+阻断整个 HM 激活并连带 pen-scroll 服务装不上。已在 flake.nix 设
+home-manager.backupFileExtension = "hm-backup"，求值确认
+home-manager-liou.service 环境含 HOME_MANAGER_BACKUP_EXT。用户需重跑 rerun 并重新登录，
+T011 仍待桌面手势验收。
+
+2026-09-17 第三次：服务已安装并启动，但 /dev/uinput 不可写导致退出循环
+（evdev.uinput.UInputError，restart counter 70）。两处修复：(1) 服务加
+SupplementaryGroups=[input,uinput]，由 systemd 启动时 setgroups，无需重新登录
+（extraGroups 只写 /etc/group，附加组在登录时捕获，故对已有会话无效）；
+(2) UInputError 派生自 Exception 而非 OSError，原 except OSError 抓不到，
+已改为 retryable_errors() 并在 grab 前检查 /dev/uinput 可写性，且把
+build_mirror 移到 grab 之前。toplevel 与 home-manager-generation 构建通过，
+生成的 pen-scroll.service 含 SupplementaryGroups=input/uinput 且二进制含新逻辑。
+仍未实测桌面手势，T011 待用户验收。
+
+2026-09-17 权限方案定稿：SupplementaryGroups 在 user service 上以 216/GROUP 失败
+（systemd#15659：systemd --user 无 CAP_SETGID）；udev uaccess 因 extraRules 落在
+99-local.rules、晚于 73-seat-late.rules 的执行点而不生效（nixpkgs#308681）。
+两条均回退，最终采用最简单的 extraGroups=[uinput] + **重新登录**。
+toplevel 构建通过。**随后定位到真正的根因：本机启用 linger**
+（configuration.nix 声明式创建 /var/lib/systemd/linger/liou），user@1000.service
+不随注销停止、长期持有首次启动的组快照，因此"重新登录"对本机用户服务永远无效
+（实测 id 有 input 无 uinput，而 /dev/uinput 权限正常）。最终改为 **systemd 系统服务**
+（nixos/modules/pen-scroll.nix）：由 PID 1 启动、具备 CAP_SETGID，
+SupplementaryGroups=[input,uinput] 正常工作且不依赖会话组快照；home-manager 用户服务
+已整体移除。生成的 unit 已验证含 SupplementaryGroups=input/uinput、User=liou、
+WantedBy=multi-user.target。无需注销/重启，待用户 switch 后验收手势。
+
+2026-09-17 手势语义修正：用户实测反馈"悬空也会滚动"。原因是手势启动只判断越过
+死区、未要求笔尖接触板面。已加 tip_down 条件，并把死区锚点改为**笔尖落点**
+（先悬空移远再落笔不会立刻滚动）；同时修正 armed 期间被吞掉的落点收尾，
+避免出现没有配对的抬笔事件。新增"悬空不得滚动"回归测试，共 25 项 pen-scroll 测试通过。
+另外发现构建期 flake8 会报 W503（早先本地用 --max-line-length 未覆盖），
+已改为提取 _should_begin_scroll() 规避行首二元运算符。toplevel 构建通过。
+
+2026-09-16 pen-scroll：确认 niri 仅转发设备真实上报的数位板滚轮轴（smithay
+`wp_tool.wheel`），libinput 只对 libwacom 标注带滚轮的笔产生该轴，Chromium
+`WaylandTabletTool::Wheel()` 明确未实现，故必须软件翻译。已求值 hardware.uinput、
+uinput 组、systemd 单元与包构建；未执行 switch，未由 Agent 代改本机系统，
+T011 保持待用户验收。
+

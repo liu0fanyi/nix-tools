@@ -7,6 +7,9 @@ DUFS Plus.
 
 SSD201 本机发现端口与限制见 [防火墙说明](docs/ssd201-discovery-firewall.md)。
 
+数位笔（Wacom One CTL-472）"按住笔杆侧键 + 划动 = 滚轮"手势的原因、实现与
+验收见 [数位笔侧键滚动说明](docs/pen-scroll.md)。
+
 Install Nix with the
 [Determinate Systems installer](https://github.com/DeterminateSystems/nix-installer),
 then apply the host configuration:

@@ -19,3 +19,29 @@
 - Blueman 带操作的请求保留60秒且不进历史，不能永久残留；Mako 显示可点击提示，点击弹出该通知的操作菜单，由用户确认或拒绝，不自动确认配对。应用自身的认证超时仍有效。
 
 操作说明保留 README、nixos/reinstall-checklist.md 和 docs/secret-vault-cli.md；本轮不执行 switch、重启或恢复密钥。
+
+### liu-bigpc 数位笔侧键滚动（2026-09-17）
+
+Wacom One (CTL-472) 的笔无滚轮/触摸环，Linux Wayland 也无 Windows Ink 那种
+"笔尖拖动=平移"的系统约定（libinput 只对 libwacom 标注带滚轮的笔产生滚轮轴；
+niri 仅转发设备真实上报的数位板滚轮轴；Chromium 明确未实现该协议），因此必须由
+一层 evdev→uinput 守护进程翻译手势。
+
+- **手势语义**：按住笔杆侧键（默认下方 BTN_STYLUS）**且笔尖接触板面**后划动 → 滚轮；
+  笔**悬空**划动只移动光标、绝不滚动；死区自**笔尖落点**起算。
+- **不破坏原有行为**：普通书写/悬停/笔尖拖动选中不受影响；侧键快速点按仍为正常侧键点击；
+  已在书写过程中按下侧键则全程透传（不打断笔迹）；一次手势不会同时选中文本或画线。
+- **实现约束**：独占抓取真实笔并镜像出**带 REL_WHEEL 的虚拟笔**，使 niri 将滚轮
+  转发给笔尖所在窗口（不移动鼠标指针、不做坐标换算）；**必须先建虚拟设备再 grab**，
+  构建失败时不得抓取用户设备。
+- **权限约束**：守护进程必须是 **systemd 系统服务**并声明
+  `SupplementaryGroups=[input,uinput]`。用户服务不可用——本机启用 linger 使
+  `user@<uid>.service` 跨注销存活、长期持有陈旧组快照，且 systemd --user 无
+  `CAP_SETGID`（报 216/GROUP）；udev `uaccess` 因 `extraRules` 落在 99-local.rules
+  而晚于 `73-seat-late.rules` 亦不可行。详见 docs/pen-scroll.md。
+- **范围**：仅 liu-bigpc 启用；不改变其他主机、不修改 niri 上游行为。
+- **验收**：单元测试覆盖手势状态机（含"悬空不得滚动"回归）；配置求值与
+  `toplevel` 构建通过；实机手势由用户验收，不以构建通过代替。
+
+操作说明见 docs/pen-scroll.md，索引见 README。
+

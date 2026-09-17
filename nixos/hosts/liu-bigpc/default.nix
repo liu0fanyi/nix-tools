@@ -1,7 +1,12 @@
 { lib, pkgs, ... }:
 
 {
-  imports = [ ./hardware-configuration.nix ];
+  imports = [
+    ./hardware-configuration.nix
+    # 数位笔"侧键+划动=滚轮"手势守护进程（systemd 系统服务；该文件顶部记录了
+    # 为什么不能用 home-manager 用户服务）
+    ../../modules/pen-scroll.nix
+  ];
 
   networking.hostName = "liu-bigpc";
 
@@ -18,6 +23,21 @@
     pkgs.unar
     pkgs.wineWow64Packages.stable
   ];
+
+  # 数位笔"侧键+划动=滚轮"手势需要 uinput 才能合成带滚轮的虚拟笔设备。
+  # hardware.uinput 提供 /dev/uinput（0660 root:uinput）与 uinput 组。
+  #
+  # 设备权限由 systemd 系统服务的 SupplementaryGroups 授予，**不依赖登录会话**：
+  # 本机启用了 linger，`user@1000.service` 不随注销停止、会一直持有旧组快照，
+  # 所以"重新登录"对用户服务无效；而用户服务又因 systemd --user 无 CAP_SETGID
+  # 无法用 SupplementaryGroups 自救（216/GROUP）。详见 nixos/modules/pen-scroll.nix。
+  #
+  # extraGroups 仍保留：便于在终端手工运行脚本调试时直接访问 /dev/uinput。
+  hardware.uinput.enable = true;
+  users.users.liou.extraGroups = [ "uinput" ];
+
+  # 手势守护进程本体（系统服务）。
+  features.penScroll.enable = true;
 
   # Syncthing is paired only across the trusted IPv4 LAN. Keep these ports
   # closed to global IPv6 and all non-LAN IPv4 sources.
