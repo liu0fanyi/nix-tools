@@ -85,6 +85,62 @@ rsync -e "ssh -F $HOME/.ssh/config" ... liou@nuc.local:/path
 
 同样的 `-F` 绕过对 `just deploy` 等一切走 SSH 的流程适用；恢复正常 shell 后无需该参数。
 
+### 本机配置变更的验证义务（避免把错误留到用户 switch）
+
+Agent 在用户 switch 前必须**只读**验证到用户实际会走的那一步，不能只验证"单个包能构建"。
+2026-09-16/17 数位笔滚动功能连续踩中下面几个此类错误，全部由用户 switch 才发现：
+
+1. **`home.packages` 只接受目录，不接受单文件派生物。**
+   `pkgs.writers.writePython3` 产出**单个可执行文件**，装进 `home.packages` 会在构建
+   home-manager path 时失败：
+   ```
+   pkgs.buildEnv error: The store path ...-xxx is a file and can't be merged
+   into an environment using pkgs.buildEnv!
+   ```
+   必须用 `writePython3Bin`（产出带 `$out/bin/` 的目录）。
+   **教训**：验证必须覆盖 `home-manager-path` / `home-manager-generation` / 完整
+   `toplevel`，即 `nix build .#nixosConfigurations.<host>.config.system.build.toplevel`；
+   只 `nix build` 那个包本身发现不了这类错误。
+
+2. **非 Home Manager 管理的同名文件会让 HM 激活整体中止。**
+   手写遗留文件（如 `~/.dsh/hooks/*` 由更早的临时方案创建）与声明冲突时，HM 报
+   `Existing file '...' would be clobbered` 并 exit 1。**一次冲突会阻断整个 HM 激活**，
+   连带本次新增的用户服务（如 `pen-scroll.service`）也装不上，容易被误判成新功能的问题。
+   本仓库已在 `flake.nix` 设置 `home-manager.backupFileExtension = "hm-backup"`
+   （非破坏性改名备份）；求值确认方式：
+   ```bash
+   nix eval --json .#nixosConfigurations.<host>.config.systemd.services.home-manager-<user>.environment
+   # 应含 HOME_MANAGER_BACKUP_EXT=hm-backup
+   ```
+   该变量注入在 **systemd 单元环境**里，不在 generation 产物中，别在 store 里 grep。
+
+3. **给服务加设备权限：优先用 systemd 系统服务 + `SupplementaryGroups`，
+   不要指望用户服务的组。**（2026-09-17 依次实测，最终方案）
+   - `users.users.<name>.extraGroups` 只写 `/etc/group`；**附加组在登录时被捕获进
+     会话**，对已登录会话无效。
+   - 更隐蔽的是 **linger**：本机声明式创建 `/var/lib/systemd/linger/<user>`，
+     于是 `user@<uid>.service` **不随注销停止**、长期持有首次启动的组快照，
+     **"重新登录"也不会刷新它** —— 用户服务永远拿不到新组。排查时先看
+     `loginctl show-user <u> -p Linger`。
+   - 用户服务里也无法用 `SupplementaryGroups` 自救：**systemd --user 没有
+     `CAP_SETGID`**，服务以 **216/GROUP** 退出（[systemd#15659](https://github.com/systemd/systemd/issues/15659)）。
+   - udev `uaccess` 有优先级陷阱：执行点是 `73-seat-late.rules`，规则必须**早于**它；
+     `services.udev.extraRules` 固定落在 **99-local.rules** 太晚（[nixpkgs#308681](https://github.com/NixOS/nixpkgs/issues/308681)）。
+   **推荐做法**：需要设备权限的守护进程写成 `systemd.services.<name>`（系统服务），
+   用 `serviceConfig.SupplementaryGroups = [ ... ]` + `User = "<user>"`。PID 1 启动时
+   由 systemd 自己 `setgroups`，一次 switch 生效，不依赖会话/linger。
+   仅在交互式终端手工调试时才需要 `extraGroups`。
+
+4. **`evdev.uinput.UInputError` 派生自 `Exception`，不是 `OSError`。**
+   用 `except OSError` 保护时会漏掉它，服务表现为"启动即退出 + 无限重启"
+   （实测 restart counter 到 70），日志里只有裸 traceback。
+   凡是用 evdev uinput 的脚本，重试逻辑必须显式覆盖该类型；并且应当在
+   **抓取真实设备之前**先构造虚拟设备，避免失败时把用户设备 grab 住。
+
+**验证清单（改动本机系统配置时逐项做）**：求值选项 → 构建 `toplevel` → 构建
+`home-manager-generation` → 确认新用户服务单元 `ExecStart` 指向预期 store 路径 →
+确认 system 侧组/内核模块/udev 规则求值正确。任何一步没做，都不得告诉用户"可以 switch 了"。
+
 ---
 
 ## 三、构建与部署边界

@@ -79,6 +79,11 @@
         home-manager = {
           useGlobalPkgs = true;
           useUserPackages = true;
+          # 遇到非 Home Manager 管理的同名文件（手写遗留文件、旧 activation
+          # 产物）时，改名为 <file>.hm-backup 而不是直接失败。默认 null 会让
+          # 整个 home-manager 激活以 "Existing file ... would be clobbered"
+          # 中止，一次冲突就会连带阻断所有其它声明（如用户 systemd 服务）。
+          backupFileExtension = "hm-backup";
           extraSpecialArgs = {
             inherit username inputs clipboardSyncPackage clipboardSyncRevision;
             # 标记 NixOS 集成，home.nix/niri.nix 据此分流。
