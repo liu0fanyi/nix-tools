@@ -268,6 +268,93 @@ class PenScrollEngineTests(unittest.TestCase):
         self.assertEqual(forwarded, events)
         self.assertEqual(scrolled, [])
 
+    def test_lifting_the_tip_end_stops_scrolling(self):
+        """The reported jerk: after a stroke, drifting back must not scroll.
+
+        The first version kept SCROLLING after the tip left the tablet while
+        the barrel button was still held, so the hand's natural drift back
+        scrolled the view the other way.
+        """
+        engine = self.make(deadzone_pixels=20.0)
+        replay(
+            engine,
+            [
+                (EV_ABS, ABS_X, 1000),
+                (EV_ABS, ABS_Y, 6000),
+                (EV_KEY, BTN_STYLUS, 1),
+                *contact_down(),
+                (EV_ABS, ABS_Y, 5000),
+                (EV_ABS, ABS_Y, 4000),
+                *contact_up(),
+            ],
+        )
+        self.assertNotEqual(engine.mode, module.MODE_SCROLLING)
+
+        # Hovering back towards the start must produce no wheel events.
+        _, scrolled = replay(
+            engine, [(EV_ABS, ABS_Y, 4600), (EV_ABS, ABS_Y, 5200)]
+        )
+        self.assertEqual(scrolled, [])
+
+    def test_second_stroke_works_without_releasing_the_barrel_button(self):
+        engine = self.make(deadzone_pixels=20.0)
+        replay(
+            engine,
+            [
+                (EV_ABS, ABS_X, 1000),
+                (EV_ABS, ABS_Y, 6000),
+                (EV_KEY, BTN_STYLUS, 1),
+                *contact_down(),
+                (EV_ABS, ABS_Y, 4000),
+                *contact_up(),
+            ],
+        )
+        self.assertEqual(engine.mode, module.MODE_ARMED)
+
+        # Touch down again and drag: another stroke should scroll.
+        _, scrolled = replay(
+            engine,
+            [
+                *contact_down(),
+                (EV_ABS, ABS_Y, 2000),
+                (EV_ABS, ABS_Y, 1000),
+            ],
+        )
+        self.assertNotEqual(scrolled, [])
+
+    def test_releasing_after_scrolling_does_not_click(self):
+        engine = self.make(deadzone_pixels=20.0)
+        forwarded, _ = replay(
+            engine,
+            [
+                (EV_ABS, ABS_X, 1000),
+                (EV_ABS, ABS_Y, 6000),
+                (EV_KEY, BTN_STYLUS, 1),
+                *contact_down(),
+                (EV_ABS, ABS_Y, 4000),
+                *contact_up(),
+                (EV_KEY, BTN_STYLUS, 0),
+            ],
+        )
+        self.assertNotIn((EV_KEY, BTN_STYLUS, 1), forwarded)
+        self.assertNotIn((EV_KEY, BTN_STYLUS, 0), forwarded)
+        self.assertEqual(engine.mode, module.MODE_IDLE)
+
+    def test_tap_still_clicks_after_the_stroke_fix(self):
+        """Regression guard: the click replay must survive the state changes."""
+        engine = self.make()
+        forwarded, scrolled = replay(
+            engine,
+            [
+                (EV_ABS, ABS_X, 500),
+                (EV_KEY, BTN_STYLUS, 1),
+                (EV_KEY, BTN_STYLUS, 0),
+            ],
+        )
+        self.assertIn((EV_KEY, BTN_STYLUS, 1), forwarded)
+        self.assertIn((EV_KEY, BTN_STYLUS, 0), forwarded)
+        self.assertEqual(scrolled, [])
+
 
 class MirrorCapabilitiesTests(unittest.TestCase):
     def sample(self):

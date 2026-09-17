@@ -128,6 +128,9 @@ class PenScrollEngine:
         # A tip-down that we swallowed must not later be followed by an
         # unmatched tip-up on the virtual device.
         self.withheld_tip = False
+        # True once this barrel press has actually scrolled. A press that
+        # scrolled must never also be replayed as a click on release.
+        self.gestured = False
         self.anchor = (0, 0)
         self.last = (0, 0)
         self.accumulated = 0.0
@@ -140,6 +143,7 @@ class PenScrollEngine:
 
     def _begin_scroll(self) -> None:
         self.mode = MODE_SCROLLING
+        self.gestured = True
         self.accumulated = 0.0
         self.last = (self.position[ABS_X], self.position[ABS_Y])
 
@@ -164,7 +168,22 @@ class PenScrollEngine:
             self.suppress_until_lift = True
         self.mode = MODE_IDLE
         self.passthrough = False
+        self.gestured = False
         self.accumulated = 0.0
+
+    def _end_stroke_scroll(self) -> None:
+        """The tip lifted mid-gesture. Stop scrolling, stay ready for another.
+
+        The barrel button is usually still held here, so going back to ARMED
+        lets the user drag again without releasing it. Re-anchoring on the next
+        touch-down keeps the deadzone honest; ``gestured`` stays set so
+        releasing the barrel afterwards does not fire a stray click.
+        """
+        self.mode = MODE_ARMED
+        self.withheld_tip = False
+        self.accumulated = 0.0
+        self.anchor = (self.position[ABS_X], self.position[ABS_Y])
+        self.last = (self.position[ABS_X], self.position[ABS_Y])
 
     def _ticks_for(self, delta: float) -> int:
         if self.units_per_tick <= 0:
@@ -230,6 +249,12 @@ class PenScrollEngine:
             if self._intercepting_tip():
                 if self.tip_down:
                     self.withheld_tip = True
+                elif self.mode == MODE_SCROLLING:
+                    # Lifting the tip ends the gesture even while the barrel
+                    # button is still held. Otherwise the hand's natural drift
+                    # back after the stroke keeps scrolling, which is felt as
+                    # the view jerking in the opposite direction.
+                    self._end_stroke_scroll()
                 elif self.mode == MODE_IDLE:
                     # The pen finally lifted: forget the contact silently.
                     self.suppress_until_lift = False
@@ -256,16 +281,21 @@ class PenScrollEngine:
                     self.passthrough = False
                     forward.append((etype, code, value))
                 elif self.mode == MODE_ARMED:
-                    # A tap that never left the deadzone: replay a real click.
-                    # If the tip was pressed during the gesture, its contact
-                    # was withheld too, so re-emit it in the right order.
-                    if self.withheld_tip:
-                        forward.append((EV_KEY, BTN_TOUCH, KEY_PRESS))
-                        forward.append((EV_KEY, BTN_TOUCH, KEY_RELEASE))
-                        self.withheld_tip = False
-                    forward.append((EV_KEY, self.barrel_code, KEY_PRESS))
-                    forward.append((EV_KEY, self.barrel_code, KEY_RELEASE))
-                    self.mode = MODE_IDLE
+                    if self.gestured:
+                        # This press already scrolled (possibly several
+                        # strokes); releasing it must not also click.
+                        self._reset()
+                    else:
+                        # A tap that never left the deadzone: replay a real
+                        # click. If the tip was pressed during the gesture its
+                        # contact was withheld too, so re-emit it in order.
+                        if self.withheld_tip:
+                            forward.append((EV_KEY, BTN_TOUCH, KEY_PRESS))
+                            forward.append((EV_KEY, BTN_TOUCH, KEY_RELEASE))
+                            self.withheld_tip = False
+                        forward.append((EV_KEY, self.barrel_code, KEY_PRESS))
+                        forward.append((EV_KEY, self.barrel_code, KEY_RELEASE))
+                        self.mode = MODE_IDLE
                 else:
                     forward.append((etype, code, value))
             return forward, scroll
