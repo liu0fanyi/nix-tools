@@ -146,9 +146,10 @@ class PenScrollEngineTests(unittest.TestCase):
                 *contact_up(),
             ],
         )
-        # One notch on engage, then 500 units / 100 = 5 while scrolling.
-        ticks = sum(value for _, value in scrolled)
-        self.assertEqual(ticks, 6)
+        # One full notch (120 v120) on engage, then 500 units of pen travel
+        # at 100 units per notch = 5 notches = 600 v120.
+        v120 = sum(value for _, value in scrolled)
+        self.assertEqual(v120, 120 + 600)
         self.assertNotIn((EV_KEY, BTN_TOUCH, 1), forwarded)
         self.assertNotIn((EV_ABS, ABS_PRESSURE, 200), forwarded)
 
@@ -173,7 +174,8 @@ class PenScrollEngineTests(unittest.TestCase):
         # A hair past the deadzone must already produce a wheel event.
         _, scrolled = replay(engine, [(EV_ABS, ABS_Y, 10000 - 25)])
         self.assertNotEqual(scrolled, [])
-        self.assertEqual(abs(sum(v for _, v in scrolled)), 1)
+        # The engage notch is one full notch in v120 units.
+        self.assertEqual(abs(sum(v for _, v in scrolled)), 120)
 
     def test_onset_does_not_change_the_ongoing_rate(self):
         """Engaging must not make the same drag scroll materially further."""
@@ -197,9 +199,12 @@ class PenScrollEngineTests(unittest.TestCase):
             )
             return abs(sum(v for _, v in scrolled))
 
-        # 40 mm at 4 mm per notch, plus the single engage notch.
-        ticks = ticks_over(4000)
-        self.assertIn(ticks, (10, 11))
+        # 4000 units at 400 units per notch == 10 notches == 1200 v120, plus
+        # the engage notch (120); the last partial step rounds down, so accept
+        # a small window rather than an exact value.
+        v120 = ticks_over(4000)
+        self.assertGreaterEqual(v120, 1200)
+        self.assertLessEqual(v120, 1320)
 
     def test_movement_inside_deadzone_does_not_scroll(self):
         engine = self.make(deadzone_pixels=50.0)
@@ -588,3 +593,145 @@ class RetryableErrorsTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class NiriMappingTests(unittest.TestCase):
+    """The hi-res pointer needs niri's output geometry to aim the scroll.
+
+    A virtual pointer cannot follow the focused output the way a virtual
+    tablet can (niri's libinput devices report no output), so the daemon asks
+    niri via IPC and maps the pen into that output itself.
+    """
+
+    def test_envelope_unwraps_ok_with_method_name(self):
+        reply = {"Ok": {"FocusedOutput": {"name": "eDP-1"}}}
+        self.assertEqual(
+            module.niri_reply_payload(reply, "FocusedOutput"),
+            {"name": "eDP-1"},
+        )
+
+    def test_envelope_rejects_error(self):
+        self.assertIsNone(module.niri_reply_payload({"Err": "nope"}))
+
+    def test_envelope_tolerates_unexpected_shape(self):
+        self.assertIsNone(module.niri_reply_payload("garbage"))
+        self.assertIsNone(module.niri_reply_payload({"Ok": 5}))
+
+    def test_bounding_rect_is_the_union_of_outputs(self):
+        reply = {
+            "Ok": {
+                "Outputs": {
+                    "A": {"logical": {"x": 1080, "y": 0, "width": 1706, "height": 960}},
+                    "B": {"logical": {"x": 0, "y": 0, "width": 1080, "height": 1920}},
+                }
+            }
+        }
+        rect = module.bounding_rect_from_outputs(reply)
+        self.assertEqual(rect["x"], 0)
+        self.assertEqual(rect["y"], 0)
+        self.assertEqual(rect["width"], 2786)
+        self.assertEqual(rect["height"], 1920)
+
+    def test_mapping_stays_inside_the_target_output(self):
+        output = {"name": "D", "x": 1080.0, "y": 0.0, "width": 1706.0, "height": 960.0}
+        pen = {"x": (0.0, 15200.0), "y": (0.0, 9500.0)}
+        for point in [(0, 0), (15200, 0), (0, 9500), (15200, 9500), (7600, 4750)]:
+            x, y = module.map_pen_to_output(point, pen, output)
+            self.assertGreaterEqual(x, output["x"])
+            self.assertLessEqual(x, output["x"] + output["width"])
+            self.assertGreaterEqual(y, output["y"])
+            self.assertLessEqual(y, output["y"] + output["height"])
+
+    def test_mapping_preserves_aspect_ratio(self):
+        # A wide tablet into a tall output must letterbox, not stretch.
+        output = {"name": "P", "x": 0.0, "y": 0.0, "width": 1080.0, "height": 1920.0}
+        pen = {"x": (0.0, 15200.0), "y": (0.0, 9500.0)}
+        left = module.map_pen_to_output((0, 4750), pen, output)
+        right = module.map_pen_to_output((15200, 4750), pen, output)
+        height = module.map_pen_to_output((7600, 0), pen, output)
+        bottom = module.map_pen_to_output((7600, 9500), pen, output)
+        # Horizontally the tablet fills the width...
+        self.assertAlmostEqual(left[0], 0.0, delta=2.0)
+        self.assertAlmostEqual(right[0], 1080.0, delta=2.0)
+        # ...and vertically it is centred in a band, not stretched full height.
+        # Vertically it occupies a centred band, so the gap above equals the
+        # gap below and the band is shorter than the output.
+        band = bottom[1] - height[1]
+        self.assertLess(band, 1920.0)
+        self.assertAlmostEqual(height[1], 1920.0 - bottom[1], delta=2.0)
+
+    def test_inverse_mapping_round_trips(self):
+        bounding = {"x": 0.0, "y": 0.0, "width": 2786.0, "height": 1920.0}
+        pen = {"x": (0.0, 15200.0), "y": (0.0, 9500.0)}
+        for logical in [(1165.0, 0.0), (2701.0, 959.0), (1933.0, 480.0)]:
+            raw = module.absolute_for_logical(logical, bounding, pen)
+            self.assertIsNotNone(raw)
+            rx, ry = raw
+            self.assertGreaterEqual(rx, 0)
+            self.assertLessEqual(rx, 15200)
+            self.assertGreaterEqual(ry, 0)
+            self.assertLessEqual(ry, 9500)
+
+    def test_inverse_mapping_rejects_degenerate_input(self):
+        pen = {"x": (0.0, 0.0), "y": (0.0, 9500.0)}
+        self.assertIsNone(
+            module.absolute_for_logical((1.0, 1.0), {"x": 0, "y": 0, "width": 10, "height": 10}, pen)
+        )
+        self.assertIsNone(module.absolute_for_logical(None, None, {"x": (0, 1), "y": (0, 1)}))
+
+
+class WheelSinkTests(unittest.TestCase):
+    """The sink must degrade to whole notches when niri IPC is unavailable."""
+
+    class FakePointer:
+        def __init__(self):
+            self.events = []
+
+        def write(self, etype, code, value):
+            self.events.append((etype, code, value))
+
+        def syn(self):
+            self.events.append(("syn",))
+
+    class FakeMirror:
+        def __init__(self):
+            self.events = []
+
+        def write(self, etype, code, value):
+            self.events.append((etype, code, value))
+
+        def syn(self):
+            self.events.append(("syn",))
+
+    def test_falls_back_to_whole_notches_without_ipc(self):
+        sink = module.WheelSink(None, None, {"x": (0.0, 100.0), "y": (0.0, 100.0)})
+        self.assertFalse(sink.smooth)
+        mirror = self.FakeMirror()
+        # Two half-notches should produce exactly one whole notch.
+        sink.emit(mirror, module.REL_WHEEL_HI_RES, 60)
+        self.assertEqual(mirror.events, [])
+        sink.emit(mirror, module.REL_WHEEL_HI_RES, 60)
+        self.assertEqual(mirror.events, [(module.EV_REL, module.REL_WHEEL, 1)])
+
+    def test_fallback_keeps_the_sign(self):
+        sink = module.WheelSink(None, None, {"x": (0.0, 100.0), "y": (0.0, 100.0)})
+        mirror = self.FakeMirror()
+        sink.emit(mirror, module.REL_WHEEL_HI_RES, -120)
+        self.assertEqual(mirror.events, [(module.EV_REL, module.REL_WHEEL, -1)])
+
+    def test_smooth_path_forwards_fractional_units(self):
+        sink = module.WheelSink(None, self.FakePointer(), {"x": (0.0, 100.0), "y": (0.0, 100.0)})
+        # Force the smooth path without needing live IPC.
+        sink.bounding = {"x": 0.0, "y": 0.0, "width": 100.0, "height": 100.0}
+        sink.output = {"name": "T", "x": 0.0, "y": 0.0, "width": 100.0, "height": 100.0}
+        sink._refresh_outputs = lambda: None
+        mirror = self.FakeMirror()
+        sink.emit(mirror, module.REL_WHEEL_HI_RES, 12)
+        self.assertEqual(
+            sink.pointer.events,
+            [(module.EV_REL, module.REL_WHEEL_HI_RES, 12), ("syn",)],
+        )
+
+    def test_position_at_is_a_noop_without_ipc(self):
+        sink = module.WheelSink(None, None, {"x": (0.0, 100.0), "y": (0.0, 100.0)})
+        self.assertIsNone(sink.position_at((50.0, 50.0)))

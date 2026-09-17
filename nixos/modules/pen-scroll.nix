@@ -22,6 +22,10 @@
 let
   cfg = config.features.penScroll;
 
+  # UID of the account the daemon runs as, resolved from the user database so
+  # XDG_RUNTIME_DIR points at the right /run/user/<uid>.
+  uid = config.users.users.${cfg.user}.uid;
+
   # 源码在仓库 scripts/pen-scroll.py。
   # 必须用 writePython3Bin（而非 writePython3）：后者产出单个可执行文件，
   # 无法安装进 profile；Bin 变体产出标准 $out/bin/ 目录。两者都在构建期做
@@ -97,8 +101,12 @@ in
         User = cfg.user;
         # 关键：由 PID 1 设置附加组，绕开用户会话/linger 的陈旧组快照。
         SupplementaryGroups = [ "input" "uinput" ];
-
+        # 平滑滚动走"高分辨率滚轮"通道，需要向 niri 询问焦点输出的几何
+        # （虚拟指针无法像数位板那样自动跟随焦点输出）。系统服务不继承
+        # 用户会话环境，这里显式给出运行时目录，脚本据此发现 niri 的 IPC
+        # socket（socket 名内嵌 niri 的 PID，不能写死）。
         Environment = [
+          "XDG_RUNTIME_DIR=/run/user/${toString uid}"
           "PEN_SCROLL_NATURAL=${if cfg.natural then "1" else "0"}"
           "PEN_SCROLL_HORIZONTAL=${if cfg.horizontal then "1" else "0"}"
           "PEN_SCROLL_BARREL=${cfg.barrelButton}"

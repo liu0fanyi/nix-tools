@@ -95,6 +95,16 @@ scroll"）：起始延迟 4.3mm→1.6mm，而同样划 45mm 前后都是 12 格�
 死区同时改为按分辨率换算的 **1.5mm**（原为抽象 20 单位），仅用于吸收点击抖动。
 pen-scroll 测试 36 项通过，toplevel 构建通过。
 
+2026-09-17 平滑滚动重构：用户反馈"还是不够顺滑，达不到用笔画线的效果"。
+定位到根本限制——**数位板通道的滚轮轴是整数**（libinput 的 tablet_process_relative
+只处理 REL_WHEEL，明确忽略 REL_WHEEL_HI_RES），因此只能整格跳。
+改为**指针通道 + REL_WHEEL_HI_RES（v120）**，实测三证：libinput 输出连续值
+`vert -0.75/-6.0*`；GTK4 客户端收到 `dy=-0.0250`（1/40 格）；应用层确实消费细粒度。
+发现 libinput 的 ACC_V120_THRESHOLD=60 会丢弃起手小步，故起手先发一整格预热。
+又因虚拟指针无法跟随焦点输出（niri 的 libinput 设备不报告输出，绝对指针会被映射到
+双屏并集），增加 niri IPC 查询焦点输出几何并反解坐标；IPC 不可用时自动回退数位板通道。
+测试 48 项通过（含坐标映射往返、包围盒、回退、预热），toplevel 与生成的 unit 均验证通过。
+
 2026-09-16 pen-scroll：确认 niri 仅转发设备真实上报的数位板滚轮轴（smithay
 `wp_tool.wheel`），libinput 只对 libwacom 标注带滚轮的笔产生该轴，Chromium
 `WaylandTabletTool::Wheel()` 明确未实现，故必须软件翻译。已求值 hardware.uinput、

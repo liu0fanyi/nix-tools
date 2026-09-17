@@ -31,6 +31,7 @@ unit tested without a tablet or /dev/uinput.
 
 from __future__ import annotations
 
+import glob
 import os
 import signal
 import stat
@@ -49,7 +50,13 @@ ABS_Y = 0x01
 ABS_PRESSURE = 0x18
 REL_HWHEEL = 0x06
 REL_WHEEL = 0x08
+# High-resolution wheel axes. Values are "v120" units: 120 == one logical
+# notch. Sending these lets a client scroll by fractions of a notch, which the
+# integer-only low-resolution axes cannot express.
+REL_WHEEL_HI_RES = 0x0B
+REL_HWHEEL_HI_RES = 0x0C
 BTN_TOOL_PEN = 0x140
+BTN_LEFT = 0x110
 BTN_TOUCH = 0x14A
 BTN_STYLUS = 0x14B
 BTN_STYLUS2 = 0x14C
@@ -60,6 +67,9 @@ KEY_RELEASE = 0
 MODE_IDLE = "idle"
 MODE_ARMED = "armed"
 MODE_SCROLLING = "scrolling"
+
+# One logical wheel notch in v120 units; the kernel/libinput convention.
+V120_PER_NOTCH = 120
 
 # Physical pen travel per wheel notch when the axis resolution is known.
 # 4 mm keeps a full-height stroke on the CTL-472 (about 95 mm of active area)
@@ -142,39 +152,42 @@ class PenScrollEngine:
         self.accumulated = 0.0
 
     # -- helpers ---------------------------------------------------------
+    @property
+    def _axis_code(self) -> int:
+        """Hi-res wheel axis matching the configured direction."""
+        return REL_HWHEEL_HI_RES if self.horizontal else REL_WHEEL_HI_RES
+
     def _distance_from_anchor(self) -> float:
         dx = self.position[ABS_X] - self.anchor[0]
         dy = self.position[ABS_Y] - self.anchor[1]
         return (dx * dx + dy * dy) ** 0.5
 
     def _begin_scroll(self):
-        """Engage the gesture, emitting the first notch immediately.
+        """Engage the gesture and prime libinput's wheel accumulator.
 
-        Wheel events are discrete, so without this the user had to drag a
-        whole notch (4 mm) before anything moved -- reported as "I have to
-        move a long way before it starts scrolling". libinput describes the
-        intended feel for the equivalent gesture as: a threshold must be met
-        to engage, but once engaged any movement scrolls. Emitting one notch
-        on engage makes the response immediate while leaving the ongoing rate
-        unchanged.
+        libinput ignores wheel deltas until ``ACC_V120_THRESHOLD`` (60) has
+        accumulated, then switches to forwarding each delta as it arrives;
+        below that a small delta would simply be discarded. So the gesture
+        opens with one full notch, which both satisfies the threshold and
+        gives the immediate response the user asked for. Every later step then
+        arrives smoothly.
 
-        Returns the initial ``(axis, ticks)`` pair, or an empty list.
+        Returns the initial ``(axis_code, v120)`` pair, or an empty list.
         """
         self.mode = MODE_SCROLLING
         self.gestured = True
         self.accumulated = 0.0
         self.last = (self.position[ABS_X], self.position[ABS_Y])
+        self.primed = True
 
         travelled = self.position[ABS_X if self.horizontal else ABS_Y]
         origin = self.anchor[0 if self.horizontal else 1]
         offset = travelled - origin
-        if offset == 0:
-            return []
-        # Match _ticks_for's sign convention (natural = dragging down scrolls
+        # Match _v120_for's sign convention (natural = dragging down scrolls
         # towards earlier content).
         sign = 1.0 if self.natural else -1.0
-        tick = 1 if sign * offset > 0 else -1
-        return [(REL_HWHEEL if self.horizontal else REL_WHEEL, tick)]
+        v120 = V120_PER_NOTCH if sign * offset > 0 else -V120_PER_NOTCH
+        return [(self._axis_code, v120)]
 
     def _should_begin_scroll(self) -> bool:
         """Whether an armed barrel press has now become a scroll gesture.
@@ -214,17 +227,23 @@ class PenScrollEngine:
         self.anchor = (self.position[ABS_X], self.position[ABS_Y])
         self.last = (self.position[ABS_X], self.position[ABS_Y])
 
-    def _ticks_for(self, delta: float) -> int:
+    def _v120_for(self, delta: float) -> int:
+        """Convert pen travel into v120 wheel units.
+
+        Unlike a wheel notch, v120 is fine-grained (120 per notch), so the
+        caller can drive smooth per-pixel scrolling instead of jumping a whole
+        notch at a time. Fractional units are accumulated so no travel is lost.
+        """
         if self.units_per_tick <= 0:
             return 0
         # Natural scrolling: dragging the pen down pulls the content down,
-        # which is a scroll towards earlier content (positive REL_WHEEL).
+        # which is a scroll towards earlier content (positive wheel value).
         sign = 1.0 if self.natural else -1.0
-        self.accumulated += sign * delta
-        ticks = int(self.accumulated / self.units_per_tick)
-        if ticks != 0:
-            self.accumulated -= ticks * self.units_per_tick
-        return ticks
+        self.accumulated += sign * delta * (V120_PER_NOTCH / self.units_per_tick)
+        whole = int(self.accumulated)
+        if whole != 0:
+            self.accumulated -= whole
+        return whole
 
     def _intercepting_tip(self) -> bool:
         return self.mode != MODE_IDLE or self.suppress_until_lift
@@ -242,10 +261,9 @@ class PenScrollEngine:
                 dx = self.position[ABS_X] - self.last[0]
                 dy = self.position[ABS_Y] - self.last[1]
                 self.last = (self.position[ABS_X], self.position[ABS_Y])
-                ticks = self._ticks_for(dx if self.horizontal else dy)
-                if ticks != 0:
-                    axis = REL_HWHEEL if self.horizontal else REL_WHEEL
-                    scroll.append((axis, ticks))
+                v120 = self._v120_for(dx if self.horizontal else dy)
+                if v120 != 0:
+                    scroll.append((self._axis_code, v120))
             elif self._should_begin_scroll():
                 scroll.extend(self._begin_scroll())
             return forward, scroll
@@ -579,6 +597,287 @@ def deadzone_units_for(device, requested: float) -> float:
     return DEFAULT_DEADZONE_PIXELS
 
 
+# ---------------------------------------------------------------------------
+# niri IPC: the absolute pointer needs to know which output to target.
+#
+# A virtual tablet can follow the focused output (input.tablet.map-to-*), but a
+# virtual *pointer* cannot: niri's libinput devices never report an output, so
+# an absolute pointer falls back to the union of all outputs. On a two-monitor
+# setup that stretches the tablet over both screens, so the wheel would land on
+# whichever window happens to be under that stretched position. Asking niri for
+# the focused output and mapping the pen into that output's geometry keeps the
+# scroll on the intended screen.
+# ---------------------------------------------------------------------------
+
+NIRI_SOCKET_ENV = "NIRI_SOCKET"
+
+
+def niri_socket_path():
+    """Locate niri's IPC socket, or None.
+
+    Prefers $NIRI_SOCKET. As a system service the daemon does not inherit the
+    user's session environment, and the socket name embeds niri's PID, so it
+    is discovered under the runtime directory instead of being hardcoded.
+    """
+    path = os.environ.get(NIRI_SOCKET_ENV)
+    if path and os.path.exists(path):
+        return path
+
+    runtime = os.environ.get("XDG_RUNTIME_DIR") or f"/run/user/{os.getuid()}"
+    try:
+        candidates = sorted(glob.glob(os.path.join(runtime, "niri.*.sock")))
+    except OSError:  # pragma: no cover - glob rarely raises
+        return None
+    return candidates[0] if candidates else None
+
+
+def niri_request(method: str, timeout: float = 1.0):
+    """Send one niri IPC request and return the decoded JSON reply.
+
+    ``method`` is the request name, e.g. "FocusedOutput". Returns None when
+    niri is unreachable so callers can fall back to the tablet-only path.
+    """
+    import json
+    import socket
+
+    path = niri_socket_path()
+    if not path:
+        return None
+    try:
+        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
+            sock.settimeout(timeout)
+            sock.connect(path)
+            # niri reads one newline-terminated JSON value per request; without
+            # the newline it waits forever for the rest of the request.
+            sock.sendall(json.dumps(method).encode() + b"\n")
+            chunks = []
+            while True:
+                chunk = sock.recv(65536)
+                if not chunk:
+                    break
+                chunks.append(chunk)
+                try:
+                    return json.loads(b"".join(chunks))
+                except ValueError:
+                    continue
+    except (OSError, ValueError):
+        return None
+    return None
+
+
+def niri_reply_payload(reply, method: str | None = None):
+    """Unwrap niri's {"Ok": {Method: value}} envelope.
+
+    niri replies with ``{"Ok": {"<Method>": <value>}}`` on success and
+    ``{"Err": ...}`` on failure. Returns the inner value, or None when the
+    reply is an error or an unexpected shape.
+    """
+    if not isinstance(reply, dict):
+        return None
+    if "Err" in reply:
+        return None
+    inner = reply.get("Ok")
+    if not isinstance(inner, dict):
+        return None
+    if method is not None:
+        return inner.get(method)
+    # Exactly one key in practice; return its value.
+    if len(inner) == 1:
+        return next(iter(inner.values()))
+    return inner
+
+
+def focused_output_logical():
+    """Logical geometry plus name of the focused output, or None.
+
+    The inner value looks like {"name": ..., "logical": {"x","y","width",
+    "height","scale","transform"}}.
+    """
+    payload = niri_reply_payload(niri_request("FocusedOutput"), "FocusedOutput")
+    if not isinstance(payload, dict):
+        return None
+    logical = payload.get("logical")
+    if not isinstance(logical, dict):
+        return None
+    try:
+        return {
+            "name": payload.get("name") or "?",
+            "x": float(logical["x"]),
+            "y": float(logical["y"]),
+            "width": float(logical["width"]),
+            "height": float(logical["height"]),
+            "transform": logical.get("transform") or "Normal",
+        }
+    except (KeyError, TypeError, ValueError):
+        return None
+
+
+def map_pen_to_output(position, pen_range, output):
+    """Map a raw pen position into an output's logical coordinate space.
+
+    ``position`` is a raw (x, y) in tablet units; ``pen_range`` is
+    ``{"x": (min, max), "y": (min, max)}``; ``output`` is a
+    focused_output_logical() dict. Returns logical (x, y) in niri's global
+    space, or None when the inputs are unusable.
+
+    The tablet's aspect ratio is preserved (niri does the same for a mapped
+    output), and the result is clamped inside the output.
+    """
+    if not output:
+        return None
+    x_min, x_max = pen_range.get("x", (0.0, 1.0))
+    y_min, y_max = pen_range.get("y", (0.0, 1.0))
+    width = x_max - x_min
+    height = y_max - y_min
+    if width <= 0 or height <= 0:
+        return None
+
+    px, py = position
+    nx = min(max((px - x_min) / width, 0.0), 1.0)
+    ny = min(max((py - y_min) / height, 0.0), 1.0)
+
+    # A rotated output's logical box is already swapped; the pen's own axes
+    # follow the physical tablet, so compare against the logical box as-is.
+    out_w = output["width"]
+    out_h = output["height"]
+    if out_w <= 0 or out_h <= 0:
+        return None
+
+    # Fit the tablet inside the output preserving aspect ratio, centred.
+    tablet_ratio = width / height
+    output_ratio = out_w / out_h
+    if tablet_ratio > output_ratio:
+        use_w = out_w
+        use_h = out_w / tablet_ratio
+    else:
+        use_h = out_h
+        use_w = out_h * tablet_ratio
+    off_x = (out_w - use_w) / 2.0
+    off_y = (out_h - use_h) / 2.0
+
+    logical_x = output["x"] + off_x + nx * use_w
+    logical_y = output["y"] + off_y + ny * use_h
+
+    # Keep the pointer strictly inside the output.
+    logical_x = min(max(logical_x, output["x"]), output["x"] + out_w - 1)
+    logical_y = min(max(logical_y, output["y"]), output["y"] + out_h - 1)
+    return (logical_x, logical_y)
+
+
+def bounding_rect_from_outputs(reply):
+    """Union of all outputs' logical rectangles, or None.
+
+    ``reply`` is niri's "Outputs" response (possibly still enveloped):
+    {name: {..., "logical": {...}}}.
+    """
+    payload = niri_reply_payload(reply, "Outputs")
+    if payload is None:
+        payload = niri_reply_payload(reply)
+    if payload is None:
+        payload = reply
+    if not isinstance(payload, dict):
+        return None
+    xs = []
+    ys = []
+    for output in payload.values():
+        logical = (output or {}).get("logical")
+        if not isinstance(logical, dict):
+            continue
+        try:
+            x = float(logical["x"])
+            y = float(logical["y"])
+            w = float(logical["width"])
+            h = float(logical["height"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        xs.append((x, x + w))
+        ys.append((y, y + h))
+    if not xs or not ys:
+        return None
+    return {
+        "x": min(a for a, _ in xs),
+        "y": min(a for a, _ in ys),
+        "width": max(b for _, b in xs) - min(a for a, _ in xs),
+        "height": max(b for _, b in ys) - min(a for a, _ in ys),
+    }
+
+
+def absolute_for_logical(logical, bounding, pen_range):
+    """Inverse of niri's absolute-pointer mapping.
+
+    niri maps an absolute pointer with no known output over the union of all
+    outputs, scaling each axis linearly:
+        logical = bound_loc + (raw - raw_min) * bound_size / raw_range
+    This inverts that so the pointer lands on ``logical``.
+    """
+    if not logical or not bounding:
+        return None
+    x_min, x_max = pen_range.get("x", (0.0, 1.0))
+    y_min, y_max = pen_range.get("y", (0.0, 1.0))
+    x_range = x_max - x_min
+    y_range = y_max - y_min
+    if x_range <= 0 or y_range <= 0:
+        return None
+    if bounding["width"] <= 0 or bounding["height"] <= 0:
+        return None
+
+    lx, ly = logical
+    raw_x = (lx - bounding["x"]) * x_range / bounding["width"] + x_min
+    raw_y = (ly - bounding["y"]) * y_range / bounding["height"] + y_min
+    # Keep the raw values inside the device's declared range.
+    raw_x = min(max(raw_x, x_min), x_max)
+    raw_y = min(max(raw_y, y_min), y_max)
+    return (int(round(raw_x)), int(round(raw_y)))
+
+
+def pen_axis_range(device):
+    """The pen's ABS_X/ABS_Y (min, max) pairs."""
+    try:
+        x = device.absinfo(ABS_X)
+        y = device.absinfo(ABS_Y)
+    except OSError:
+        return None
+    return {"x": (float(x.min), float(x.max)), "y": (float(y.min), float(y.max))}
+
+
+def make_absolute_pointer(device, name: str):
+    """Virtual absolute pointer used to deliver hi-res wheel events.
+
+    Absolute so the wheel lands under the pen rather than wherever the real
+    mouse was left, and declaring the hi-res wheel axes so libinput preserves
+    the fractional deltas the engine produces.
+    """
+    from evdev import UInput, ecodes
+
+    def axis(code):
+        info = device.absinfo(code)
+        return (
+            code,
+            (info.value, info.min, info.max, info.fuzz, info.flat, info.resolution),
+        )
+
+    info = device.info
+    return UInput(
+        {
+            ecodes.EV_ABS: [axis(ecodes.ABS_X), axis(ecodes.ABS_Y)],
+            ecodes.EV_KEY: [ecodes.BTN_LEFT],
+            ecodes.EV_REL: [
+                ecodes.REL_WHEEL,
+                ecodes.REL_HWHEEL,
+                ecodes.REL_WHEEL_HI_RES,
+                ecodes.REL_HWHEEL_HI_RES,
+            ],
+        },
+        name=name,
+        phys=VIRTUAL_PHYS,
+        vendor=info.vendor,
+        product=info.product,
+        version=info.version,
+        bustype=info.bustype,
+        input_props=[ecodes.INPUT_PROP_POINTER],
+    )
+
+
 class _Stop(Exception):
     pass
 
@@ -591,42 +890,145 @@ def _install_signal_handlers() -> None:
         signal.signal(signum, handler)
 
 
+class WheelSink:
+    """Delivers wheel events via a hi-res absolute pointer when possible.
+
+    The pointer channel is required for smooth scrolling: the tablet tool's
+    wheel axis is integer-only, so it can only ever jump a whole notch. If the
+    pointer cannot be positioned (no niri IPC, so we cannot tell which output
+    to target), fall back to the tablet channel with whole notches, which is
+    exactly the previous behaviour.
+    """
+
+    def __init__(self, pen_device, pointer, pen_range, out=sys.stdout):
+        self.pointer = pointer
+        self.pen_range = pen_range
+        self.out = out
+        self.bounding = None
+        self.output = None
+        self._refresh_outputs()
+        # Fractional remainder carried when falling back to whole notches.
+        self._fallback_remainder = 0
+
+    def _refresh_outputs(self):
+        self.output = focused_output_logical()
+        self.bounding = bounding_rect_from_outputs(niri_request("Outputs"))
+
+    @property
+    def smooth(self) -> bool:
+        return self.pointer is not None and self.bounding is not None
+
+    def position_at(self, raw_position) -> None:
+        """Place the pointer under the pen before scrolling.
+
+        Called once when the gesture engages. Doing it once (rather than every
+        frame) keeps the cursor from visibly chasing the pen while scrolling.
+        """
+        if not self.smooth:
+            return
+        self._refresh_outputs()
+        logical = map_pen_to_output(raw_position, self.pen_range, self.output)
+        absolute = absolute_for_logical(logical, self.bounding, self.pen_range)
+        if absolute is None:
+            return
+        self.pointer.write(EV_ABS, ABS_X, absolute[0])
+        self.pointer.write(EV_ABS, ABS_Y, absolute[1])
+        self.pointer.syn()
+
+    def emit(self, mirror, code: int, v120: int) -> None:
+        """Send one wheel delta on the best available channel."""
+        if self.smooth:
+            self.pointer.write(EV_REL, code, v120)
+            self.pointer.syn()
+            return
+        # Fallback: the tablet axis only understands whole notches.
+        if code not in (REL_WHEEL_HI_RES, REL_HWHEEL_HI_RES):
+            mirror.write(EV_REL, code, v120)
+            return
+        self._fallback_remainder += v120
+        notches = int(self._fallback_remainder / V120_PER_NOTCH)
+        if notches == 0:
+            return
+        self._fallback_remainder -= notches * V120_PER_NOTCH
+        axis = REL_WHEEL if code == REL_WHEEL_HI_RES else REL_HWHEEL
+        mirror.write(EV_REL, axis, notches)
+
+    def syn(self, mirror) -> None:
+        if not self.smooth:
+            mirror.syn()
+
+    def describe(self) -> str:
+        if self.smooth:
+            name = (self.output or {}).get("name", "?")
+            return f"hi-res pointer, target output {name}"
+        return "tablet wheel (no niri IPC; whole notches)"
+
+
 def run(device, engine: PenScrollEngine, out=sys.stdout) -> int:
     """Grab the pen and pump events until it disappears or we are stopped."""
     from evdev import ecodes
 
     engine.units_per_tick = units_per_tick_for(device, engine.units_per_tick)
     engine.deadzone_pixels = deadzone_units_for(device, engine.deadzone_pixels)
-    # Build the virtual pen *before* grabbing: if this raises (typically
+    # Build the virtual devices *before* grabbing: if this raises (typically
     # /dev/uinput permissions), the physical pen was never grabbed, so the
     # failure cannot strand the user without a working stylus.
     mirror = build_mirror(device, f"{device.name} (pen-scroll)")
 
+    pen_range = pen_axis_range(device)
+    pointer = None
+    if pen_range is not None:
+        try:
+            pointer = make_absolute_pointer(device, "pen-scroll wheel")
+        except Exception as error:  # noqa: BLE001 - fall back, never crash
+            print(
+                f"pen-scroll: hi-res pointer unavailable ({error}); "
+                "falling back to whole notches",
+                file=sys.stderr,
+                flush=True,
+            )
+    sink = WheelSink(device, pointer, pen_range, out=out)
+
     print(
         f"pen-scroll: grabbing {device.path} ({device.name}); "
         f"{engine.units_per_tick:.1f} units per wheel notch, "
-        f"{engine.deadzone_pixels:.0f} units deadzone",
+        f"{engine.deadzone_pixels:.0f} units deadzone; {sink.describe()}",
         file=out,
         flush=True,
     )
     device.grab()
     pending_scroll = []
+    # Tracks whether the pointer has been aimed for the current gesture, so it
+    # is placed once per stroke instead of on every frame (which would make the
+    # cursor visibly chase the pen).
+    aimed = False
     try:
         for event in device.read_loop():
             forward, scroll = engine.handle(
                 event.type, event.code, event.value
             )
+            in_gesture = engine.mode == MODE_SCROLLING
+            if in_gesture and not aimed:
+                # First delta of a gesture: aim the pointer at the pen, then
+                # prime libinput's accumulator with the leading whole notch.
+                aimed = True
+                sink.position_at(
+                    (engine.position[ABS_X], engine.position[ABS_Y])
+                )
+            elif not in_gesture:
+                # Gesture ended (tip lifted, or barrel released): the next
+                # stroke aims the pointer again.
+                aimed = False
             pending_scroll.extend(scroll)
 
             for etype, code, value in forward:
                 mirror.write(etype, code, value)
 
             if event.type == ecodes.EV_SYN:
-                # Wheel ticks ride in the same frame as the pen motion that
-                # produced them, so the compositor sees one coherent report.
                 for code, value in pending_scroll:
-                    mirror.write(ecodes.EV_REL, code, value)
+                    sink.emit(mirror, code, value)
                 pending_scroll.clear()
+                sink.syn(mirror)
                 mirror.syn()
 
             if event.type == ecodes.EV_KEY and (
@@ -641,6 +1043,8 @@ def run(device, engine: PenScrollEngine, out=sys.stdout) -> int:
             device.ungrab()
         except OSError:
             pass
+        if pointer is not None:
+            pointer.close()
         mirror.close()
     return 0
 
