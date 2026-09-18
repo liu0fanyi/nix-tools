@@ -24,20 +24,22 @@ Wacom One (CTL-472) 的笔没有滚轮/触摸环，Linux Wayland 也没有 Windo
 ## 实现
 
 - `scripts/pen-scroll.py`：守护进程。
-  - 独占抓取（`EVIOCGRAB`）真实笔设备，再用 uinput 镜像出一个虚拟笔。
-  - 虚拟笔在克隆真实能力之外**额外声明 `REL_WHEEL` / `REL_HWHEEL`**，这样
-    niri 才把滚轮转发给笔尖所在表面——滚动不需要移动鼠标指针，也不会打到别处。
+  - 独占抓取（`EVIOCGRAB`）真实笔设备，再用 uinput 镜像出**两个**虚拟设备：
+    **虚拟笔**（应用平时看到的，供透传与回退滚动）与**绝对指针**（承载平滑滚轮）。
+  - 滚轮走**指针通道的高分辨率滚轮**（`REL_WHEEL_HI_RES`）以获得连续跟手；
+    平滑滚动时指针会被放到笔尖处，因为滚轮按指针位置路由。详见下文"平滑滚动"。
   - 普通书写/悬停/笔尖点击原样透传；只有在"按住侧键后越过死区拖动"时才拦截。
   - 拦截期间吞掉压力与 `BTN_TOUCH`，避免同一次拖动又去选中文本或画线。
   - 侧键快速点一下（未越死区）会补发为真正的侧键点击，右键菜单不受影响。
   - 已经在画的过程中才按下侧键 → 全程透传，绝不打断笔迹。
   - 平板拔出后自动等待重连；`SIGTERM`/`SIGINT` 干净退出并 ungrab。
-- 手势状态机 `PenScrollEngine` 不依赖 evdev，可脱离设备单元测试。
-- 驱动它的 NixOS/HM 声明：
+- 手势状态机 `PenScrollEngine` 与坐标映射不依赖 evdev，可脱离设备单元测试。
+- 驱动它的 NixOS 声明：
   - `nixos/hosts/liu-bigpc/default.nix`：`hardware.uinput.enable`，并把 `liou`
     加入 `uinput` 组（`/dev/uinput` 为 0660 root:uinput）。
-  - `home-manager/nix_modules/pen-scroll.nix`：`systemd.user.services.pen-scroll`，
-    仅 `liu-bigpc` 默认启用；源码经 `pkgs.writers.writePython3Bin` 打包并做 flake8 校验。
+  - `nixos/modules/pen-scroll.nix`：`systemd.services.pen-scroll`（**系统**服务），
+    由 `nixos/hosts/liu-bigpc/default.nix` 通过 `features.penScroll.enable` 启用；
+    源码经 `pkgs.writers.writePython3Bin` 打包并做 flake8 校验。
 
 > **打包陷阱（2026-09-16 实测）**：必须用 `writePython3Bin`，不能用 `writePython3`。
 > 后者产出的是**单个可执行文件**，放进 `home.packages` 会在构建 home-manager
@@ -64,6 +66,7 @@ Wacom One (CTL-472) 的笔没有滚轮/触摸环，Linux Wayland 也没有 Windo
 | `natural` | `true` | 向下拖动 = 内容向下（自然滚动） |
 | `horizontal` | `false` | 改为 `REL_HWHEEL` 横向滚动 |
 | `barrelButton` | `lower` | `lower` = 下方侧键(BTN_STYLUS)，`upper` = 上方侧键(BTN_STYLUS2) |
+| `user` | `liou` | 守护进程运行身份；其 UID 用于定位 `/run/user/<uid>` 以访问 niri IPC |
 
 **滚动速度**：默认每 **4mm** 笔尖行程 = 一个滚轮刻度（由 ABS_X resolution 自动换算，
 CTL-472 上是 400 单位）。本机有效区约 95mm，故一次全幅划动约 24 个刻度、

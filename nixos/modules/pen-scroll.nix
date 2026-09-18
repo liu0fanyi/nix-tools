@@ -91,8 +91,9 @@ in
   config = lib.mkIf cfg.enable {
     systemd.services.pen-scroll = {
       description = "Pen barrel-button scroll gesture (evdev -> uinput)";
-      # 图形会话存在与否都不影响：守护进程只依赖 evdev/uinput，能独立于
-      # niri 启动，且比图形会话更早可用。
+      # 随系统启动即可：守护进程等待设备出现，不依赖图形会话。
+      # 平滑滚动需要 niri 的 IPC（见下方 XDG_RUNTIME_DIR），但即使 niri
+      # 尚未就绪也只是回退到整格滚动，不会启动失败。
       wantedBy = [ "multi-user.target" ];
 
       serviceConfig = {

@@ -1,4 +1,4 @@
-"""Turn "barrel button held + pen drag" into mouse-wheel scrolling.
+"""Turn "barrel button held + pen drag" into smooth mouse-wheel scrolling.
 
 Why this exists
 ---------------
@@ -10,23 +10,33 @@ only map-to-output / calibration options. Nothing in the configuration can
 turn pen motion into scrolling, so the translation has to live in software --
 which is exactly what Windows Ink does internally.
 
-This daemon sits below the compositor and mirrors the pen onto a virtual one:
+How it works
+------------
+The physical pen is grabbed and mirrored onto two virtual devices:
 
-    pen evdev --(grab)--> virtual pen  (identical, plus a scroll wheel axis)
+    pen evdev --(grab)--> virtual pen     what applications normally see
+                     \\--> absolute pointer that carries the wheel
 
-Holding the barrel button and dragging past a small deadzone starts a scroll
-gesture: pen motion becomes wheel ticks and tip contact is withheld, so the
-drag cannot also select text or paint. A quick barrel tap (never leaving the
-deadzone) is replayed as a real barrel click. Pressing the barrel button while
-already drawing is passed straight through, so normal drawing is untouched.
+Gesture: hold the barrel button, put the tip on the tablet, and drag past a
+small deadzone. The deadzone is measured from where the tip landed, so
+hovering the pen across the surface only moves the cursor and never scrolls.
+Tip contact is withheld during a gesture so the drag cannot also select text
+or paint; a quick barrel tap is replayed as a real click, and a barrel press
+during an existing stroke passes straight through.
 
-Emitting the wheel on the *tablet tool* rather than on a synthetic mouse
-matters: niri forwards ``zwp_tablet_tool_v2.wheel`` to the surface the pen is
-over, so the scroll lands on the window under the pen tip. Clients that ignore
-the tablet wheel (Chromium/Electron) will not scroll; Firefox/GTK do.
+Wheel events go through the *pointer* channel as high-resolution wheel deltas
+(``REL_WHEEL_HI_RES``, v120 units). This is what makes scrolling smooth: the
+tablet tool's own wheel axis is integer-only, so it can only ever jump a whole
+notch. The cost is that the pointer has to be placed under the pen, because a
+wheel event is routed by the pointer's position -- and, since niri's libinput
+devices never report an output, the daemon asks niri over IPC for the focused
+output and maps the pen into it using exactly niri's own algorithm.
 
-The gesture state machine (PenScrollEngine) imports no evdev API, so it can be
-unit tested without a tablet or /dev/uinput.
+If the pointer or niri's IPC is unavailable the daemon falls back to whole
+notches on the tablet channel, which still works but is not smooth.
+
+The gesture state machine (PenScrollEngine) and the coordinate mapping import
+no evdev API, so they can be unit tested without a tablet or /dev/uinput.
 """
 
 from __future__ import annotations
@@ -373,9 +383,9 @@ VIRTUAL_PHYS = "pen-scroll-virtual"
 def mirror_capabilities(capabilities, wheel_codes=(REL_WHEEL, REL_HWHEEL)):
     """Return the uinput capability map for the virtual pen.
 
-    Clones what the real pen reports and adds the scroll wheel, which is what
-    niri needs in order to forward ``zwp_tablet_tool_v2.wheel`` to the surface
-    under the pen tip. SYN is always filtered (uinput synthesises it).
+    Clones what the real pen reports and adds the coarse wheel axis used by
+    the fallback path (smooth scrolling uses the pointer instead). SYN is
+    always filtered, since uinput synthesises it.
     """
     events = {
         etype: list(codes)
@@ -524,11 +534,12 @@ def retryable_errors():
 
 
 def build_mirror(device, name: str):
-    """Virtual pen cloning the real capabilities, plus a scroll wheel axis.
+    """Virtual pen cloning the real capabilities (plus a coarse wheel axis).
 
-    niri only accepts REL_WHEEL on a tablet tool, and forwards it to the
-    surface the pen is over, so this is how a scroll reaches the right window
-    without moving the mouse pointer.
+    This is what applications see for normal pen use. The wheel axis is only
+    used by the fallback path: smooth scrolling goes through the pointer, but
+    if that is unavailable the daemon emits whole notches here, where niri
+    forwards them to the surface the pen is over.
     """
     from evdev import UInput
 
@@ -941,11 +952,10 @@ class WheelSink:
     exactly the previous behaviour.
     """
 
-    def __init__(self, pen_device, pointer, pen_range, out=sys.stdout, tablet_size=None):
+    def __init__(self, pointer, pen_range, tablet_size=None):
         self.pointer = pointer
         self.pen_range = pen_range
         self.tablet_size = tablet_size
-        self.out = out
         self.bounding = None
         self.output = None
         self._refresh_outputs()
@@ -1032,7 +1042,7 @@ def run(device, engine: PenScrollEngine, out=sys.stdout) -> int:
                 flush=True,
             )
     sink = WheelSink(
-        device, pointer, pen_range, out=out, tablet_size=pen_physical_size(device)
+        pointer, pen_range, tablet_size=pen_physical_size(device)
     )
 
     print(

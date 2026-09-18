@@ -753,7 +753,7 @@ class WheelSinkTests(unittest.TestCase):
             self.events.append(("syn",))
 
     def test_falls_back_to_whole_notches_without_ipc(self):
-        sink = module.WheelSink(None, None, {"x": (0.0, 100.0), "y": (0.0, 100.0)})
+        sink = module.WheelSink(None, {"x": (0.0, 100.0), "y": (0.0, 100.0)})
         self.assertFalse(sink.smooth)
         mirror = self.FakeMirror()
         # Two half-notches should produce exactly one whole notch.
@@ -763,13 +763,13 @@ class WheelSinkTests(unittest.TestCase):
         self.assertEqual(mirror.events, [(module.EV_REL, module.REL_WHEEL, 1)])
 
     def test_fallback_keeps_the_sign(self):
-        sink = module.WheelSink(None, None, {"x": (0.0, 100.0), "y": (0.0, 100.0)})
+        sink = module.WheelSink(None, {"x": (0.0, 100.0), "y": (0.0, 100.0)})
         mirror = self.FakeMirror()
         sink.emit(mirror, module.REL_WHEEL_HI_RES, -120)
         self.assertEqual(mirror.events, [(module.EV_REL, module.REL_WHEEL, -1)])
 
     def test_smooth_path_forwards_fractional_units(self):
-        sink = module.WheelSink(None, self.FakePointer(), {"x": (0.0, 100.0), "y": (0.0, 100.0)})
+        sink = module.WheelSink(self.FakePointer(), {"x": (0.0, 100.0), "y": (0.0, 100.0)})
         # Force the smooth path without needing live IPC.
         sink.bounding = {"x": 0.0, "y": 0.0, "width": 100.0, "height": 100.0}
         sink.output = {"name": "T", "x": 0.0, "y": 0.0, "width": 100.0, "height": 100.0}
@@ -782,5 +782,5 @@ class WheelSinkTests(unittest.TestCase):
         )
 
     def test_position_at_is_a_noop_without_ipc(self):
-        sink = module.WheelSink(None, None, {"x": (0.0, 100.0), "y": (0.0, 100.0)})
+        sink = module.WheelSink(None, {"x": (0.0, 100.0), "y": (0.0, 100.0)})
         self.assertIsNone(sink.position_at((50.0, 50.0)))
