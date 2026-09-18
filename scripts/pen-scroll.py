@@ -712,16 +712,25 @@ def focused_output_logical():
         return None
 
 
-def map_pen_to_output(position, pen_range, output):
+def map_pen_to_output(position, pen_range, output, tablet_size=None):
     """Map a raw pen position into an output's logical coordinate space.
 
-    ``position`` is a raw (x, y) in tablet units; ``pen_range`` is
-    ``{"x": (min, max), "y": (min, max)}``; ``output`` is a
-    focused_output_logical() dict. Returns logical (x, y) in niri's global
-    space, or None when the inputs are unusable.
+    Mirrors niri's own tablet mapping, so the pointer lands exactly where niri
+    draws the pen cursor. Getting this wrong is visible: niri preserves the
+    aspect ratio by *cropping* (cover), not by letterboxing, so a fit-style
+    mapping puts the pointer tens of logical pixels away from the pen tip.
 
-    The tablet's aspect ratio is preserved (niri does the same for a mapped
-    output), and the result is clamped inside the output.
+    niri's algorithm (compute_tablet_position):
+        normalise by the tablet range
+        project into the output's (possibly rotated) coordinate space
+        divide by the output size
+        scale by ratio = tablet_aspect / output_aspect, on x when > 1 else on y
+        multiply back by the output size, then clamp
+
+    ``position`` is a raw (x, y) in tablet units; ``pen_range`` is
+    ``{"x": (min, max), "y": (min, max)}``; ``tablet_size`` is the pen's
+    (width, height) in millimetres for the aspect ratio. Returns logical
+    (x, y) in niri's global space, or None when the inputs are unusable.
     """
     if not output:
         return None
@@ -732,36 +741,48 @@ def map_pen_to_output(position, pen_range, output):
     if width <= 0 or height <= 0:
         return None
 
-    px, py = position
-    nx = min(max((px - x_min) / width, 0.0), 1.0)
-    ny = min(max((py - y_min) / height, 0.0), 1.0)
-
-    # A rotated output's logical box is already swapped; the pen's own axes
-    # follow the physical tablet, so compare against the logical box as-is.
     out_w = output["width"]
     out_h = output["height"]
     if out_w <= 0 or out_h <= 0:
         return None
 
-    # Fit the tablet inside the output preserving aspect ratio, centred.
-    tablet_ratio = width / height
-    output_ratio = out_w / out_h
-    if tablet_ratio > output_ratio:
-        use_w = out_w
-        use_h = out_w / tablet_ratio
-    else:
-        use_h = out_h
-        use_w = out_h * tablet_ratio
-    off_x = (out_w - use_w) / 2.0
-    off_y = (out_h - use_h) / 2.0
+    px, py = position
+    nx = (px - x_min) / width
+    ny = (py - y_min) / height
 
-    logical_x = output["x"] + off_x + nx * use_w
-    logical_y = output["y"] + off_y + ny * use_h
+    transform = output.get("transform", "Normal")
+    rotated = transform in ("90", "270", "Flipped90", "Flipped270")
+    # Space the pen is mapped into once the output transform is undone
+    # (niri: transform.invert().transform_size(target.size)).
+    space_w, space_h = (out_h, out_w) if rotated else (out_w, out_h)
 
-    # Keep the pointer strictly inside the output.
-    logical_x = min(max(logical_x, output["x"]), output["x"] + out_w - 1)
-    logical_y = min(max(logical_y, output["y"]), output["y"] + out_h - 1)
-    return (logical_x, logical_y)
+    tx, ty = nx * space_w, ny * space_h
+    if transform == "90":
+        tx, ty = space_h - ty, tx
+    elif transform == "270":
+        tx, ty = ty, space_w - tx
+    elif transform in ("180", "Flipped180"):
+        tx, ty = space_w - tx, space_h - ty
+    elif transform == "Flipped":
+        tx, ty = space_w - tx, ty
+
+    fx, fy = tx / out_w, ty / out_h
+
+    # niri keeps the aspect ratio by cropping to fill the output.
+    if tablet_size and tablet_size[0] > 0 and tablet_size[1] > 0:
+        ratio = (tablet_size[0] / tablet_size[1]) / (space_w / space_h)
+        if ratio > 1.0:
+            fx *= ratio
+        else:
+            fy /= ratio
+
+    lx, ly = fx * out_w, fy * out_h
+
+    scale = output.get("scale") or 1.0
+    edge = 1.0 / scale if scale > 0 else 1.0
+    lx = min(max(lx, 0.0), out_w - edge)
+    ly = min(max(ly, 0.0), out_h - edge)
+    return (lx + output["x"], ly + output["y"])
 
 
 def bounding_rect_from_outputs(reply):
@@ -840,6 +861,26 @@ def pen_axis_range(device):
     return {"x": (float(x.min), float(x.max)), "y": (float(y.min), float(y.max))}
 
 
+def pen_physical_size(device):
+    """The pen's active area in millimetres, or None.
+
+    niri uses the same figure (from the kernel's axis resolution) for the
+    aspect-ratio correction, so it has to match to place the pointer exactly.
+    """
+    try:
+        x = device.absinfo(ABS_X)
+        y = device.absinfo(ABS_Y)
+    except OSError:
+        return None
+    if not x.resolution or not y.resolution:
+        return None
+    width = (x.max - x.min) / x.resolution
+    height = (y.max - y.min) / y.resolution
+    if width <= 0 or height <= 0:
+        return None
+    return (width, height)
+
+
 def make_absolute_pointer(device, name: str):
     """Virtual absolute pointer used to deliver hi-res wheel events.
 
@@ -900,9 +941,10 @@ class WheelSink:
     exactly the previous behaviour.
     """
 
-    def __init__(self, pen_device, pointer, pen_range, out=sys.stdout):
+    def __init__(self, pen_device, pointer, pen_range, out=sys.stdout, tablet_size=None):
         self.pointer = pointer
         self.pen_range = pen_range
+        self.tablet_size = tablet_size
         self.out = out
         self.bounding = None
         self.output = None
@@ -927,7 +969,9 @@ class WheelSink:
         if not self.smooth:
             return
         self._refresh_outputs()
-        logical = map_pen_to_output(raw_position, self.pen_range, self.output)
+        logical = map_pen_to_output(
+            raw_position, self.pen_range, self.output, self.tablet_size
+        )
         absolute = absolute_for_logical(logical, self.bounding, self.pen_range)
         if absolute is None:
             return
@@ -987,7 +1031,9 @@ def run(device, engine: PenScrollEngine, out=sys.stdout) -> int:
                 file=sys.stderr,
                 flush=True,
             )
-    sink = WheelSink(device, pointer, pen_range, out=out)
+    sink = WheelSink(
+        device, pointer, pen_range, out=out, tablet_size=pen_physical_size(device)
+    )
 
     print(
         f"pen-scroll: grabbing {device.path} ({device.name}); "

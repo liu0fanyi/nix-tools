@@ -642,23 +642,72 @@ class NiriMappingTests(unittest.TestCase):
             self.assertGreaterEqual(y, output["y"])
             self.assertLessEqual(y, output["y"] + output["height"])
 
-    def test_mapping_preserves_aspect_ratio(self):
-        # A wide tablet into a tall output must letterbox, not stretch.
-        output = {"name": "P", "x": 0.0, "y": 0.0, "width": 1080.0, "height": 1920.0}
+    def test_mapping_matches_niri_cover_cropping(self):
+        """Must replicate niri exactly, or the pointer lands off the pen tip.
+
+        niri keeps the aspect ratio by cropping (cover). Using letterboxing
+        instead put the pointer tens of pixels away, which the user saw as the
+        mouse jumping away from the pen during a scroll.
+        """
         pen = {"x": (0.0, 15200.0), "y": (0.0, 9500.0)}
-        left = module.map_pen_to_output((0, 4750), pen, output)
-        right = module.map_pen_to_output((15200, 4750), pen, output)
-        height = module.map_pen_to_output((7600, 0), pen, output)
-        bottom = module.map_pen_to_output((7600, 9500), pen, output)
-        # Horizontally the tablet fills the width...
-        self.assertAlmostEqual(left[0], 0.0, delta=2.0)
-        self.assertAlmostEqual(right[0], 1080.0, delta=2.0)
-        # ...and vertically it is centred in a band, not stretched full height.
-        # Vertically it occupies a centred band, so the gap above equals the
-        # gap below and the band is shorter than the output.
-        band = bottom[1] - height[1]
-        self.assertLess(band, 1920.0)
-        self.assertAlmostEqual(height[1], 1920.0 - bottom[1], delta=2.0)
+        size = (152.0, 95.0)
+        output = {
+            "name": "D",
+            "x": 1080.0,
+            "y": 0.0,
+            "width": 1706.0,
+            "height": 960.0,
+            "scale": 1.5,
+            "transform": "Normal",
+        }
+
+        def niri_reference(raw):
+            nx = raw[0] / 15200.0
+            ny = raw[1] / 9500.0
+            w, h = output["width"], output["height"]
+            tx, ty = nx * w, ny * h
+            fx, fy = tx / w, ty / h
+            ratio = (size[0] / size[1]) / (w / h)
+            if ratio > 1.0:
+                fx *= ratio
+            else:
+                fy /= ratio
+            lx, ly = fx * w, fy * h
+            edge = 1.0 / output["scale"]
+            lx = min(max(lx, 0.0), w - edge)
+            ly = min(max(ly, 0.0), h - edge)
+            return (lx + output["x"], ly + output["y"])
+
+        for raw in [(0, 0), (15200, 0), (0, 9500), (15200, 9500), (7600, 4750)]:
+            got = module.map_pen_to_output(raw, pen, output, size)
+            want = niri_reference(raw)
+            self.assertAlmostEqual(got[0], want[0], places=6)
+            self.assertAlmostEqual(got[1], want[1], places=6)
+
+    def test_mapping_handles_a_rotated_output(self):
+        """A 90-degree output must map through the same transform niri uses."""
+        pen = {"x": (0.0, 15200.0), "y": (0.0, 9500.0)}
+        size = (152.0, 95.0)
+        output = {
+            "name": "P",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 1080.0,
+            "height": 1920.0,
+            "scale": 1.0,
+            "transform": "90",
+        }
+        # Corners must stay inside the output (the crop means they clamp).
+        for raw in [(0, 0), (15200, 0), (0, 9500), (15200, 9500)]:
+            x, y = module.map_pen_to_output(raw, pen, output, size)
+            self.assertGreaterEqual(x, 0.0)
+            self.assertLessEqual(x, 1080.0)
+            self.assertGreaterEqual(y, 0.0)
+            self.assertLessEqual(y, 1920.0)
+        # The centre is transformation-independent.
+        cx, cy = module.map_pen_to_output((7600, 4750), pen, output, size)
+        self.assertAlmostEqual(cx, 540.0, delta=1.0)
+        self.assertAlmostEqual(cy, 1066.7, delta=1.0)
 
     def test_inverse_mapping_round_trips(self):
         bounding = {"x": 0.0, "y": 0.0, "width": 2786.0, "height": 1920.0}

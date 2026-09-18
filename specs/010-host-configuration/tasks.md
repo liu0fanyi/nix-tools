@@ -105,6 +105,13 @@ pen-scroll 测试 36 项通过，toplevel 构建通过。
 双屏并集），增加 niri IPC 查询焦点输出几何并反解坐标；IPC 不可用时自动回退数位板通道。
 测试 48 项通过（含坐标映射往返、包围盒、回退、预热），toplevel 与生成的 unit 均验证通过。
 
+2026-09-17 指针偏移修正：用户反馈"划动时鼠标指针不在原位，结束才恢复"。
+根因为坐标映射算法不一致——第一版用**留黑边(letterbox)**，而 **niri 用裁剪填满(cover)**，
+非中心位置最大相差约 107 逻辑像素，指针因此落在偏离笔尖处。
+已按 niri 的 compute_tablet_position 逐步复刻（含 transform 与 ratio 裁剪分支），
+用 niri-ipc 真实双屏几何对照最大偏差 **0.000000 px**（Dell Normal 与 Philips 旋转 90°
+均通过）。测试增至 49 项。
+
 2026-09-16 pen-scroll：确认 niri 仅转发设备真实上报的数位板滚轮轴（smithay
 `wp_tool.wheel`），libinput 只对 libwacom 标注带滚轮的笔产生该轴，Chromium
 `WaylandTabletTool::Wheel()` 明确未实现，故必须软件翻译。已求值 hardware.uinput、
