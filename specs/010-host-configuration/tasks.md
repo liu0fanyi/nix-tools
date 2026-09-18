@@ -34,6 +34,8 @@ makoctl 参数，报 invalid option。补充 -- 后，用独立测试通知151�
 - [x] T011 用户 rerun 后实机验收：侧键+**笔尖接触**划动滚动、悬空划动不滚动、
   不选中文本、侧键单击仍是点击、绘画与笔尖拖动选中行为不变（见 docs/pen-scroll.md）。
    2026-09-17 用户确认可用；首轮曾出现悬空也滚动，修正接触判定后通过。
+   后续追加验收：平滑滚动（v120 高分辨率滚轮）与指针落点（复刻 niri 映射后
+   偏差 0.000000 px）均已由用户确认"不乱动、很丝滑"。
 
 2026-09-16 首次 switch 失败：`writePython3` 产出单文件，`home-manager-path` 的
 buildEnv 拒绝合并（"is a file and can't be merged into an environment"）。
