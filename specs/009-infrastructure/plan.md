@@ -20,3 +20,5 @@ PC 本地维护和构建；NUC 仅镜像。文档整理不授权系统切换、�
 ## 写作机公共资源发布
 
 用户授权发布字库词库；新增专用静态发布入口 publish-writer-resources.py，固定写 /root/nix-tools/dufs_data/releases/focus-writer/resources/，先不可变包/版本清单/许可证，经公网长度和SHA校验后再CAS激活当前清单。默认预演，无删除、不重启服务、不触及其他产品。复用现有固件发布器的固定目录、symlink拒绝、flock和原子落盘方式。输入仅为固件stage-public-resources.py校验的公开WRP产物，无正文、配置、源码和私钥。回下载失败不激活指针；旧包保留。Constitution Check：PC为构建/发布源，云端只校验写静态文件，无共享依赖/外部参考新增。
+
+正式CI受限通道：firmware-receive.py与既有publish-firmware.py部署至独立libexec目录，独立SSH公钥restrict+forced command，禁止交互/转发/任意路径。仅统一产品单条有界事务允许写，旧catalog条目可读并保留。客户端先公开镜像回查，再CAS提交catalog；主机公钥固定。本次不改其他上传key或服务容器，不向阿里云传私钥。用户已指定继续正式CI发行，先负向测试与可审阅实现再配置。
