@@ -17,7 +17,7 @@ import base64, fcntl, hashlib, json, os, re, sys, tempfile
 from pathlib import Path
 ROOT = Path('/root/nix-tools/dufs_data/releases/esp32')
 BASE = 'https://wttliou.top/releases/esp32'
-PRODUCTS = {'esp32_mp3_player', 'esp32_recorder_bean', 'esp32_multi_timer'}
+PRODUCTS = {'esp32_device_bean', 'esp32_mp3_player', 'esp32_recorder_bean', 'esp32_multi_timer'}
 KEY = '64c8080e1e460e980f069ea161d5e2f439b2e6c55a2fd89bbee2ae6a5b52a9fc'
 def digest(data): return hashlib.sha256(data).hexdigest()
 def validate(entry):

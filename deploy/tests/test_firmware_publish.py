@@ -69,3 +69,21 @@ class PublishTests(unittest.TestCase):
         with patch.object(p,'remote',side_effect=remote),patch.object(p,'download',return_value=b'bad'):
             with self.assertRaises(ValueError):p.publish([package],True)
         self.assertEqual(calls,['read','assets'])
+
+    def test_unified_release_preserves_legacy_catalog_and_is_immutable(self):
+        old = self.entry.copy()
+        self.call(operation='assets', assets=[self.asset()])
+        before = self.call(operation='read')
+        self.call(operation='catalog', entries=[old], expected=before['sha256'])
+        self.entry = old | dict(product='esp32_device_bean', version='0.1.11',
+            url=p.BASE+'/esp32_device_bean/0.1.11/application.bin')
+        before = self.call(operation='read')
+        self.call(operation='assets', assets=[self.asset()])
+        self.assertEqual(self.call(operation='read'), before)
+        self.call(operation='catalog', entries=[self.entry], expected=before['sha256'])
+        after = self.call(operation='read')
+        self.assertEqual(json.loads(after['catalog'])['releases'], [old, self.entry])
+        with self.assertRaises(AssertionError):
+            self.ns['merge'](after['catalog'], [self.entry | dict(sha256='0'*64)])
+        with self.assertRaises(AssertionError):
+            self.ns['validate'](self.entry | dict(product='unrelated_product'))
