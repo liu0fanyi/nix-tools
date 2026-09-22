@@ -1,5 +1,34 @@
 # 任务
 
+- [x] T015 安装 FreeCAD，保留 Blender，验证 liu-bigpc 完整系统/HM 构建及桌面入口。
+- [ ] T016 用户 switch 后验收 FreeCAD 启动、建模与保存；不代用户激活。
+
+2026-09-20 FreeCAD：官方 AppImage 1.1.3 固定 SHA-256，Nix 封装构建通过；
+临时 XDG 目录下 `freecad freecadcmd --version --safe-mode` 返回 1.1.3，退出 0。
+桌面入口为 FreeCAD，命令为 freecad，使用官方 SVG 图标；Blender 保留。
+完整 toplevel `j8vv5nwlmfa9zfgwcijqkv42gzahws64` 与 HM generation
+`64gswn69klvhhidmz5nxzlfbj08wncnc` 构建通过。未 switch、未实测图形建模。
+本次不新增服务、组、内核模块或 udev 规则，对应验证项不适用。
+
+- [x] T012 声明 KiCad 与官方嘉立创 EDA 专业版 3.2.203 的独立包和 Home Manager 模块。
+- [x] T013 EDA：校验官方包哈希/入口，构建两个应用、liu-bigpc toplevel 和 home-manager-generation。
+- [x] T014 EDA：用户手动 switch 后验证启动器、界面缩放、中文输入及工程保存；不代用户激活。
+
+2026-09-23 EDA 缩放：针对用户实测反馈默认 XWayland 下界面与字体过小（96 DPI 1.0x 渲染）的问题，
+在 `home-manager/packages/lceda-pro.nix` 增加 scaleFactor 参数与 launcher 包装脚本，
+动态注入 `--force-device-scale-factor`；并在 `nix_modules/eda.nix` 中将 `features.niri.primaryOutputScale`
+（liu-bigpc 为 1.5）传入。用户手动 switch 后实机验证界面与字体放大生效，大小恢复正常。
+
+2026-09-20 EDA：KiCad 10.0.6 构建及临时 XDG 目录下 `kicad-cli version` 通过。
+嘉立创 3.2.203 官网 ZIP SHA-256 已验证；使用 libarchive + C.UTF-8 处理上游中文
+EULA 文件名编码不一致，保留许可证，不执行上游 chmod 777/root 安装脚本。
+官方 Electron 36.3.1 Node 模式启动成功，12 秒 headless 冒烟测试加载 SQLite，
+未传 --no-sandbox，最终由 timeout 停止（124，非正常退出）；出现 fontconfig
+兼容警告，未做真实界面验收。图标、desktop 入口与命令均已检查。
+完整 toplevel `7avxa1pr11j87jf4pb54wd88aihkbm64` 与 HM generation
+`bkj630dbsf392fmf3s2241i0nbfpzpw3` 构建成功，HOME_MANAGER_BACKUP_EXT=hm-backup。
+未 switch；本任务不新增服务、组、内核模块或 udev 规则，对应验证项不适用。
+
 - [x] T001 收敛主机配置与密钥维护约束。
 - [ ] T002 下次主机变更时分别核对构建、激活与桌面验收，不沿用旧快照作为现状。
 - [x] T003 liu-bigpc 启用 BlueZ/Blueman，Waybar 条件增加蓝牙状态与管理入口，不改其他主机。
@@ -119,4 +148,3 @@ pen-scroll 测试 36 项通过，toplevel 构建通过。
 `WaylandTabletTool::Wheel()` 明确未实现，故必须软件翻译。已求值 hardware.uinput、
 uinput 组、systemd 单元与包构建；未执行 switch，未由 Agent 代改本机系统，
 T011 保持待用户验收。
-

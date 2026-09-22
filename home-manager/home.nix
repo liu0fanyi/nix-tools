@@ -136,6 +136,8 @@ in
       # Blender 3D 建模/渲染/导出（dsh-blender 等插件依赖 blender 可执行文件；
       # 版本跟随 flake 锁定的 nixpkgs，当前为 5.2.x）。
       blender
+      # 参数化设备外壳、结构件与 STEP 导出；与 Blender 的自由造型互补。
+      (callPackage ./packages/freecad-bin.nix { })
       # PJSIP 命令行软电话；便于脚本化验证注册、保持/恢复和多路通话。
       pjsip
       # 鼠标光标主题和 Zen Browser 由 Home Manager 统一提供给各 Linux 主机。
@@ -802,6 +804,21 @@ in
       extra:
         edit_cmd: xdg-open "%s"
         open_dir_cmd: xdg-open "%s"
+    '';
+  };
+
+  # clashtui 的 core_override_config.yaml：选中 profile 时 clashtui 会把它
+  # 深合并进 mihomo 的 config.yaml（LocalProfile::merge，顶层键覆盖），因此
+  # 这里的 mixed-port 必须与 mihomo 实际监听端口一致。
+  #
+  # 该文件若缺失，clashtui 会用内置默认值 BasicInfo::DEFAULT 重新生成，其中
+  # mixed-port 是 7890，与本机 7897 不符；而防火墙只放行 7897，验收脚本
+  # （scripts/verify-homebox.sh）与 restore-secrets.sh 也都按 7897 工作。
+  # 声明式固定后可避免 clashtui 把它写成 7890 而冲掉 mihomo 的端口。
+  xdg.configFile."clashtui/mihomo/core_override_config.yaml" = lib.mkIf isNixOS {
+    text = ''
+      external-controller: 127.0.0.1:9090
+      mixed-port: 7897
     '';
   };
 

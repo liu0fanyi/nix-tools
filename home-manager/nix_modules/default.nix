@@ -1,6 +1,7 @@
 { inputs, ... }:
 {
   imports = [
+    ./eda.nix
     ./helix.nix
     ./alacritty.nix
     ./sakura.nix

@@ -68,6 +68,13 @@
     modesetting.enable = true;
     open = true;
     nvidiaSettings = true;
+    powerManagement = {
+      enable = true;
+      # 在 595 open 驱动下，开启内核挂起通知器与显存保护（NVreg_PreserveVideoMemoryAllocations=1
+      # 与 NVreg_UseKernelSuspendNotifiers=1），从驱动层保证睡眠前备份显存、唤醒后恢复，
+      # 消除丢失显存导致的 Xid 13 与 DRM Flip event timeout 黑屏死锁。
+      kernelSuspendNotifier = true;
+    };
   };
 
   # uv（home-manager programs.uv）下载的 python-build-standalone 解释器和
@@ -87,19 +94,11 @@
     ];
   };
 
-  # 挂起策略：只启用 s2idle，不启用 deep/hibernate。
-  #
-  # 历史：上一代从 deep S3 恢复后立刻报 NVIDIA Xid 13，niri/LocalSend 黑屏，
-  # 因此当时把四种睡眠全部禁用。现在改为保守地放开最浅的 s2idle（freeze）：
-  # 内存持续供电、不写盘、不碰 NVIDIA 显存换出，恢复路径最短，最不容易挂。
-  # deep(S3) 与 hibernate 仍保持禁用，等 s2idle 实测稳定后再单独评估。
-  #
-  # SuspendState=freeze 直接向 /sys/power/state 写 `freeze`（systemd 261 官方
-  # 支持，见 systemd-sleep.conf(5) 的示例），等价于 s2idle，且明确绕开
-  # mem_sleep 里被优先选中的 deep —— 这台机器 /sys/power/mem_sleep 是
-  # "s2idle [deep]"，不指定就会走那条已知会黑屏的 S3 路径。
-  # 这里不用 mem_sleep_default= 内核参数：freeze 由 systemd 在运行期写入，
-  # 可本机验证，不依赖内核参数名。
+  # 挂起策略：启用系统挂起，使用 s2idle (freeze) 代替 S3 deep。
+  # 原因：Turing TU106 (GTX 1650) 在 S3 deep 唤醒时 PCIe 掉电会导致 GSP 固件失联
+  # 与 DRM plane fence 信号量初始化失败（Error code: -11）；而 s2idle 保持 PCIe 总线供电，
+  # 显存完整自刷新，唤醒即时且稳定。
+  # 保持 hibernate / hybrid-sleep 禁用。
   systemd.sleep.settings.Sleep = {
     AllowSuspend = "yes";
     AllowHibernation = "no";

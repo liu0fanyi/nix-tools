@@ -17,29 +17,26 @@
   ...
 }:
 let
-  mihomoConfigDir = "/home/${username}/.config/clashtui/mihomo";
+  clashtuiDataDir = "/home/${username}/.config/clashtui";
+  mihomoConfigDir = "${clashtuiDataDir}/mihomo";
   # clashtui 以 liou 运行、mihomo 以 root 运行；让两者通过 users 组共享
   # 运行时文件。这个修复在每次 mihomo 启动前执行，因此首次打开 clashtui
   # 不需要再手动点击 “Fix now”。
+  #
+  # clashtui 的 check_file_permissions() 会递归扫描 config_dir 下的所有文件与
+  # 目录，要求目录带 setgid 位、且所有条目都属于该用户的主组并组可写。
+  # 因此这里必须递归处理，不能只修 mihomo/ 和 providers/ 两层。
   mihomoPermissionRepair = pkgs.writeShellScript "clashtui-mihomo-permissions" ''
     set -eu
 
     config_dir="${mihomoConfigDir}"
-    providers_dir="$config_dir/providers"
 
     ${pkgs.coreutils}/bin/install -d -o ${username} -g users -m 2770 "$config_dir"
-    ${pkgs.coreutils}/bin/chown "${username}:users" "$config_dir"
-    ${pkgs.coreutils}/bin/chmod 2770 "$config_dir"
-
-    if [ -d "$providers_dir" ]; then
-      ${pkgs.coreutils}/bin/chown :users "$providers_dir"
-      ${pkgs.coreutils}/bin/chmod 2770 "$providers_dir"
-    fi
-
-    while IFS= read -r -d "" file; do
-      ${pkgs.coreutils}/bin/chown :users "$file"
-      ${pkgs.coreutils}/bin/chmod g+rw "$file"
-    done < <(${pkgs.findutils}/bin/find "$config_dir" -maxdepth 2 -type f -print0)
+    ${pkgs.coreutils}/bin/chown -R "${username}:users" "$config_dir"
+    ${pkgs.findutils}/bin/find "$config_dir" -type d -exec ${pkgs.coreutils}/bin/chmod 2770 {} +
+    # GeoData / providers / cache.db 等由 root 的 mihomo 写入，重新下载后
+    # 属主与权限会漂移，所以每次启动都重新归一化。
+    ${pkgs.findutils}/bin/find "$config_dir" -type f -exec ${pkgs.coreutils}/bin/chmod g+rw {} +
   '';
   avahiStalePidCleanup = pkgs.writeShellScript "avahi-stale-pid-cleanup" ''
     set -eu
@@ -382,11 +379,28 @@ in
 
   # 用户服务开机自启（podman 用户 socket 等）：
   # loginctl enable-linger 的声明式等价（创建 linger 标记文件）
+  #
+  # clashtui 的数据目录必须由这里声明式创建。clashtui 只在「first run」——
+  # 即 config.yaml 不存在时——才 mkdir 它自己的 profiles/templates 目录；
+  # 而 ~/.config/clashtui/config.yaml 由 home-manager 声明式生成（见
+  # home-manager/home.nix），装机后立即存在，因此 first run 分支永远不会执行，
+  # 这些目录也就永远不会被创建。缺目录的直接后果：
+  #   * File 页（快捷键 2）的 Profile / Template 两个面板全空；
+  #   * Template 面板调用 get_all_templates() 时裸 read_dir 一个不存在的
+  #     目录，弹出 "No such file or directory (os error 2)"。
+  # 目录名与 clashtui v0.3.1 的 src/config.rs 模块文档一致。
   systemd.tmpfiles.rules = [
     "f /var/lib/systemd/linger/${username} 0644 root root -"
-    "d /home/${username}/.config/clashtui 0750 ${username} users -"
-    "d /home/${username}/.config/clashtui/mihomo 2770 ${username} users -"
-    "d /home/${username}/.config/clashtui/mihomo/providers 2770 ${username} users -"
+    "d ${clashtuiDataDir} 0750 ${username} users -"
+    "d ${mihomoConfigDir} 2770 ${username} users -"
+    "d ${mihomoConfigDir}/providers 2770 ${username} users -"
+    "d ${mihomoConfigDir}/profiles 2770 ${username} users -"
+    "d ${mihomoConfigDir}/templates 2770 ${username} users -"
+    "d ${clashtuiDataDir}/sing-box 2770 ${username} users -"
+    "d ${clashtuiDataDir}/sing-box/config 2770 ${username} users -"
+    "d ${clashtuiDataDir}/sing-box/profiles 2770 ${username} users -"
+    "d ${clashtuiDataDir}/sing-box/templates 2770 ${username} users -"
+    "d ${clashtuiDataDir}/sing-box/proxy-providers 2770 ${username} users -"
   ];
 
   # ==========================================================================

@@ -2,6 +2,10 @@
 
 ## 需求与验收
 
+- 三维建模：Home Manager 提供 FreeCAD 用于设备外壳及参数化结构设计，保留已有 Blender 用于手办造型；不默认安装 AI 插件，不接管用户工程。
+
+- EDA 桌面工具：Home Manager 同时提供 KiCad 与嘉立创 EDA 专业版；后者固定官网 Linux x64 包版本与 SHA-256，保留官方图标，启动命令为 `lceda-pro`。为解决 XWayland 环境下 2K 屏字体过小问题，启动脚本需联动 Niri 主屏缩放（`primaryOutputScale`）注入 `--force-device-scale-factor`。不运行上游 root 安装脚本，不代用户 switch；完整系统及 HM 构建与图形验收分别记录。
+
 - Home Manager standalone 不依赖 NixOS system profile；rerun 使用 flake 锁定 CLI，部署与自检使用同一显式目标；不因普通 switch 自动刷新依赖。
 - 主机硬件与角色分别配置，合盖策略可选，外接显示器默认忽略；休眠 swap 容量需覆盖内存。
 - Niri 外接竖屏按真实 EDID 规则恢复；Rime-Ice 固定词库，Lua/OpenCC/用户词典可用，逗号句号翻页且不重复启动输入法。
@@ -60,4 +64,3 @@ niri 仅转发设备真实上报的数位板滚轮轴；Chromium 明确未实现
   **2026-09-17 已由用户实机验收**：平滑滚动与指针落点均确认正常。
 
 操作说明见 docs/pen-scroll.md，索引见 README。
-

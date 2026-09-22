@@ -54,6 +54,72 @@ let
     fi
   '';
 
+  # 智能系统挂起守卫：检测是否有活跃的 Agent、构建任务或阻止锁；
+  # 若有活跃工作或 Agent 运行中，立即取消休眠，保证屏幕熄灭节能的同时，后台任务不受任何中断。
+  safeSuspendScript = pkgs.writeShellScriptBin "safe-idle-suspend" ''
+    set -eu
+
+    check_busy() {
+      # 1. Antigravity IDE / Agent（只要主进程或任一组件存活，即视为处于工作会话，严禁休眠打断）
+      if ${pkgs.procps}/bin/pgrep -f "antigravity" >/dev/null 2>&1; then
+        echo "Antigravity Agent/IDE 正在运行"
+        return 0
+      fi
+
+      # 2. 其它 Agent 与 CLI 工具进程
+      for tool in "dsh" "specify" "claude" "aider" "open-interpreter" "codex"; do
+        if ${pkgs.procps}/bin/pgrep -f "$tool" >/dev/null 2>&1; then
+          echo "Agent 工具 $tool 运行中"
+          return 0
+        fi
+      done
+
+      # 3. 常见编译构建与部署任务
+      for build_cmd in "cargo" "rustc" "buildah" "nix-build" "podman" "podman-remote" "just" "devenv"; do
+        if ${pkgs.procps}/bin/pgrep -x "$build_cmd" >/dev/null 2>&1; then
+          echo "构建/部署任务 $build_cmd 进行中"
+          return 0
+        fi
+      done
+
+      # nix-daemon 活跃构建子进程
+      local nd_pids
+      nd_pids=$(${pkgs.procps}/bin/pgrep -x "nix-daemon" 2>/dev/null || true)
+      if [ -n "$nd_pids" ]; then
+        for pid in $nd_pids; do
+          local workers
+          workers=$(${pkgs.procps}/bin/pgrep -P "$pid" 2>/dev/null || true)
+          if [ -n "$workers" ]; then
+            echo "nix-daemon 正在构建 (工作进程 PID: $workers)"
+            return 0
+          fi
+        done
+      fi
+
+      # 4. 手动免休眠标记文件（Waybar 按钮切换）
+      if [ -f "$HOME/.config/no-suspend" ]; then
+        echo "存在手动免休眠标记 (~/.config/no-suspend)"
+        return 0
+      fi
+
+      # 5. systemd-inhibit 阻止锁
+      if ${pkgs.systemd}/bin/systemd-inhibit --list --no-legend 2>/dev/null | grep -E "block.*sleep|sleep.*block" >/dev/null 2>&1; then
+        echo "系统存在活跃的 sleep 阻止锁 (systemd-inhibit)"
+        return 0
+      fi
+
+      return 1
+    }
+
+    if reason=$(check_busy); then
+      ${pkgs.util-linux}/bin/logger -t safe-idle-suspend "检测到活跃任务或 Agent ($reason)，取消系统休眠，保持屏幕熄灭节能。"
+      exit 0
+    fi
+
+    ${pkgs.util-linux}/bin/logger -t safe-idle-suspend "系统空闲且无后台任务与 Agent，执行安全挂起。"
+    ${pkgs.systemd}/bin/systemctl suspend
+  '';
+
   # Wrapper script to run niri-session with necessary environment variables
   niri-session-wrapped = pkgs.writeShellScriptBin "niri-session-wrapped" ''
     export GBM_BACKENDS_PATH="${pkgs.mesa}/lib/gbm"
@@ -123,6 +189,11 @@ let
           transform "90"
           position x=0 y=0
       }
+
+      // NVIDIA 显卡从睡眠恢复时，强制重新初始化所有显示连接器，避免黑屏/掉信号
+      debug {
+          force-disable-connectors-on-resume
+      }
     ''
     + ''
       // ===== homebox 追加（参考官方 wiki 与社区配置）=====
@@ -146,19 +217,18 @@ let
       spawn-at-startup "swaybg" "-c" "#1e1e2e"
       // 剪贴板历史（cliphist，配合 fuzzel 可搜索历史）
       spawn-sh-at-startup "wl-paste --watch cliphist store"
-      // 空闲自动锁屏 / 熄屏 / 挂起。
+      // 空闲自动锁屏、DPMS 熄屏与智能挂起守卫。
       //
-      // 熄屏必须用 niri 自己的 DPMS 动作，不能用 wlopm：niri 不实现
-      // wlr-output-power-management-v1，`wlopm --off` 会以
-      // "Wayland server does not support wlr-output-power-management-v1"
-      // 静默失败——这正是此前"到点只锁屏、屏幕永不熄灭"的原因。
-      // niri msg action power-off-monitors / power-on-monitors 实测有效。
-      //
-      // 挂起用 s2idle/freeze（主机配置里 systemd.sleep 的 SuspendState=freeze）：
-      // 内存持续供电、不写盘、不换出 NVIDIA 显存，恢复路径最短，最不容易挂。
-      // deep(S3) 历史上曾在恢复后立刻报 Xid 13 黑屏，故不采用。
-      // 顺序：10 分钟锁屏+熄屏 → 再 20 分钟（共 30 分钟）挂起。
-      spawn-sh-at-startup "swayidle -w before-sleep 'swaylock -f' after-resume 'niri msg action power-on-monitors' timeout 600 'swaylock -f; niri msg action power-off-monitors' timeout 1800 'swaylock -f; systemctl suspend'"
+      // 1. 10 分钟（600秒）：锁屏（swaylock -f）并由 niri 关闭显示器 DPMS 输出。
+      //    有输入时 resume 触发 niri power-on-monitors 恢复显示。
+      // 2. 60 分钟（3600秒）：执行 safe-idle-suspend 守卫：
+      //    - 若检测到 Agent 活跃（Antigravity、dsh、claude 等）、构建部署任务或阻止锁，
+      //      立即取消挂起，屏幕保持熄灭节能但主机全速工作；
+      //    - 只有当无任何 Agent 与任务、且系统真正空闲时，才安全调用 systemctl suspend；
+      // 3. 休眠唤醒与显示恢复联动：
+      //    - swayidle 配置 after-resume 钩子：当系统唤醒时立即通知 niri 重新点亮屏幕；
+      //    - 配合 niri 的 force-disable-connectors-on-resume 与 s2idle 供电，彻底杜绝唤醒黑屏与死锁。
+      spawn-sh-at-startup "swayidle -w timeout 600 'swaylock -f; niri msg action power-off-monitors' resume 'niri msg action power-on-monitors' timeout 3600 '${safeSuspendScript}/bin/safe-idle-suspend' after-resume 'niri msg action power-on-monitors' before-sleep 'swaylock -f'"
     '';
 in
 {
@@ -185,6 +255,7 @@ in
       lib.optionals isNixOS [
         fanScript
         makoDndScript
+        safeSuspendScript
         # Wayland 图形化显示器布局、缩放与旋转工具（Niri 支持其输出协议）。
         pkgs.wdisplays
         # Niri starts this on demand and exports DISPLAY for X11-only apps
@@ -221,7 +292,17 @@ in
           "spacing": 8,
           "modules-left": ["niri/workspaces"],
           "modules-center": ["clock"],
-          "modules-right": ["custom/mako-dnd", "${if isNuc then "custom/cpu-temperature" else "temperature"}", "custom/fan", "mpris", "pulseaudio", ${lib.optionalString isLiuBigpc ''"bluetooth", ''}"network", "cpu", "memory", "battery", "tray"],
+          "modules-right": ["idle_inhibitor", "custom/mako-dnd", "${if isNuc then "custom/cpu-temperature" else "temperature"}", "custom/fan", "mpris", "pulseaudio", ${lib.optionalString isLiuBigpc ''"bluetooth", ''}"network", "cpu", "memory", "battery", "tray"],
+          "idle_inhibitor": {
+            "format": "{icon}",
+            "format-icons": {
+              "activated": "󰅶",
+              "deactivated": "󰾪"
+            },
+            "tooltip": true,
+            "tooltip-format-activated": "防休眠已激活 (系统保持清醒)",
+            "tooltip-format-deactivated": "防休眠已关闭 (遵循空闲策略)"
+          },
           "custom/cpu-temperature": {
             "exec": "${cpuTemperature}",
             "return-type": "json",
@@ -354,9 +435,10 @@ in
           color: #ebdbb2;
           background: #3c3836;
         }
-        #clock, #tray, #cpu, #memory, #temperature, #custom-fan, #custom-mako-dnd, #mpris, #network, #battery, #pulseaudio, #bluetooth {
+        #clock, #tray, #cpu, #memory, #temperature, #custom-fan, #custom-mako-dnd, #idle_inhibitor, #mpris, #network, #battery, #pulseaudio, #bluetooth {
           padding: 0 8px;
         }
+        #idle_inhibitor.activated { color: #fabd2f; }
         #custom-fan.unavailable { padding: 0; }
         #custom-mako-dnd.enabled { color: #b8bb26; }
         #custom-mako-dnd.dnd { color: #fb4934; }

@@ -5,6 +5,8 @@ DUFS Plus.
 
 ## Home Manager
 
+KiCad 与嘉立创 EDA 专业版的启动、升级和验收见 [EDA 桌面工具](docs/eda-desktop.md)。
+
 SSD201 本机发现端口与限制见 [防火墙说明](docs/ssd201-discovery-firewall.md)。
 
 数位笔（Wacom One CTL-472）"按住笔杆侧键 + 划动 = 滚轮"手势的原因、实现与
