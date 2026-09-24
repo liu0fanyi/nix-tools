@@ -682,7 +682,7 @@ http://:{ports["lan"]} {{
 
     @tag_sync {{
         remote_ip {lan_cidrs}
-        path /tag-api/v1/sync/* /tag-api/v1/locations /tag-api/v1/locations/* /tag-api/v1/proxy/*
+        path /tag-api/v1/sync/* /tag-api/v1/locations /tag-api/v1/locations/* /tag-api/v1/proxy/* /tag-api/listing /tag-api/items /tag-api/v1/inspect
     }}
     handle @tag_sync {{
         uri strip_prefix /tag-api
@@ -864,7 +864,7 @@ https://{domains["public"]}:{ports["main_origin"]}, https://{domains["origin"]}:
 
     @tag_sync {{
         remote_ip 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8 127.0.0.0/8 ::1
-        path /tag-api/v1/sync/* /tag-api/v1/locations /tag-api/v1/locations/* /tag-api/v1/proxy/*
+        path /tag-api/v1/sync/* /tag-api/v1/locations /tag-api/v1/locations/* /tag-api/v1/proxy/* /tag-api/listing /tag-api/items /tag-api/v1/inspect
     }}
     handle @tag_sync {{
         uri strip_prefix /tag-api
