@@ -680,6 +680,15 @@ http://:{ports["lan"]} {{
         respond "Unknown device API" 404
     }}
 
+    @tag_sync {{
+        remote_ip {lan_cidrs}
+        path /tag-api/v1/sync/* /tag-api/v1/locations
+    }}
+    handle @tag_sync {{
+        uri strip_prefix /tag-api
+        reverse_proxy tag-server:8081
+    }}
+
     @lan remote_ip {lan_cidrs}
     handle @lan {{
         @not_options not method OPTIONS
@@ -852,6 +861,15 @@ https://{domains["public"]}:{ports["main_origin"]}, https://{domains["origin"]}:
 
     @public_device_api path /device-api /device-api/*
     respond @public_device_api "Not found" 404
+
+    @tag_sync {{
+        remote_ip 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8 127.0.0.0/8 ::1
+        path /tag-api/v1/sync/* /tag-api/v1/locations
+    }}
+    handle @tag_sync {{
+        uri strip_prefix /tag-api
+        reverse_proxy tag-server:8081
+    }}
 
 {auth_block}
     handle /tag-api/v1/device-enrollments* {{
