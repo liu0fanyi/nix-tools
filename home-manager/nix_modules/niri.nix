@@ -54,6 +54,17 @@ let
     fi
   '';
 
+  # 设备豆 Wi-Fi 音箱状态感知与推流切换脚本
+  deviceBeanScript = pkgs.writeShellScriptBin "waybar-device-bean" ''
+    export PATH="${lib.makeBinPath [ pkgs.iproute2 pkgs.iputils pkgs.libnotify pkgs.pipewire pkgs.wireplumber pkgs.procps pkgs.python3 ]}:$PATH"
+    if [ -f /data/project/esp32-device-bean/scripts/waybar-device-bean.py ]; then
+      exec ${pkgs.python3}/bin/python3 /data/project/esp32-device-bean/scripts/waybar-device-bean.py "$@"
+    else
+      printf '{"text":"","class":"offline"}\n'
+      exit 0
+    fi
+  '';
+
   # 智能系统挂起守卫：检测是否有活跃的 Agent、构建任务或阻止锁；
   # 若有活跃工作或 Agent 运行中，立即取消休眠，保证屏幕熄灭节能的同时，后台任务不受任何中断。
   safeSuspendScript = pkgs.writeShellScriptBin "safe-idle-suspend" ''
@@ -292,7 +303,7 @@ in
           "spacing": 8,
           "modules-left": ["niri/workspaces"],
           "modules-center": ["clock"],
-          "modules-right": ["idle_inhibitor", "custom/mako-dnd", "${if isNuc then "custom/cpu-temperature" else "temperature"}", "custom/fan", "mpris", "pulseaudio", ${lib.optionalString isLiuBigpc ''"bluetooth", ''}"network", "cpu", "memory", "battery", "tray"],
+          "modules-right": ["idle_inhibitor", "custom/mako-dnd", "${if isNuc then "custom/cpu-temperature" else "temperature"}", "custom/fan", "mpris", "pulseaudio", ${lib.optionalString isLiuBigpc ''"custom/device-bean", ''}${lib.optionalString isLiuBigpc ''"bluetooth", ''}"network", "cpu", "memory", "battery", "tray"],
           "idle_inhibitor": {
             "format": "{icon}",
             "format-icons": {
@@ -351,6 +362,14 @@ in
             "interval": 5,
             "signal": 8,
             "on-click": "${makoDndScript}/bin/mako-dnd toggle"
+          },
+          "custom/device-bean": {
+            "exec": "${deviceBeanScript}/bin/waybar-device-bean status",
+            "return-type": "json",
+            "format": "{}",
+            "interval": 3,
+            "signal": 9,
+            "on-click": "${deviceBeanScript}/bin/waybar-device-bean toggle"
           },
           "mpris": {
             "format": "{player_icon} {dynamic}",
@@ -435,13 +454,16 @@ in
           color: #ebdbb2;
           background: #3c3836;
         }
-        #clock, #tray, #cpu, #memory, #temperature, #custom-fan, #custom-mako-dnd, #idle_inhibitor, #mpris, #network, #battery, #pulseaudio, #bluetooth {
+        #clock, #tray, #cpu, #memory, #temperature, #custom-fan, #custom-mako-dnd, #custom-device-bean, #idle_inhibitor, #mpris, #network, #battery, #pulseaudio, #bluetooth {
           padding: 0 8px;
         }
         #idle_inhibitor.activated { color: #fabd2f; }
         #custom-fan.unavailable { padding: 0; }
         #custom-mako-dnd.enabled { color: #b8bb26; }
         #custom-mako-dnd.dnd { color: #fb4934; }
+        #custom-device-bean.offline { color: #928374; }
+        #custom-device-bean.ready { color: #83a598; }
+        #custom-device-bean.streaming { color: #b8bb26; }
         #battery.charging { color: #b8bb26; }
         #battery.warning { color: #fb4934; }
         #pulseaudio.muted { color: #fb4934; }
