@@ -16,6 +16,8 @@ Home Manager 的 `nix_modules/eda.nix` 同时安装：
   `KiCad`，终端运行 `kicad`；自动化入口为 `kicad-cli`。
 - **LCEDA Pro（嘉立创 EDA 专业版）**：官网 Linux x64 3.2.203，固定 SHA-256。
   启动器搜索 `LCEDA Pro`，终端运行 `lceda-pro`。
+- **嘉立创下单助手**：官网 Linux x64 5.0.69，固定 SHA-256。
+  启动器搜索 `嘉立创下单助手`，终端运行 `jlc-assistant`。
 
 嘉立创包定义位于 `home-manager/packages/lceda-pro.nix`，保留上游 Electron 与
 原生模块，使用 FHS 兼容运行环境，不执行需要 root 的上游安装脚本，不关闭沙箱。
@@ -24,6 +26,13 @@ Home Manager 的 `nix_modules/eda.nix` 同时安装：
 程序位于只读 Nix store；工程与用户设置仍由应用保存在用户可写目录，未用 HM 接管。
 首次激活如有提示，请按官网流程获取免费激活文件。不要在应用内覆盖升级 store 文件；
 升级时修改包版本与下载哈希，再重新构建/切换。
+
+下单助手包定义位于 `home-manager/packages/jlc-assistant.nix`，沿用 FHS 兼容运行环境
+和 Niri 主屏缩放设置。官方安装脚本会修改 `/opt` 和 `/usr/share` 并放宽文件权限；
+本配置仅提取程序文件、图标并生成桌面入口，明确给 Electron 主程序及辅助程序
+`chrome_crashpad_handler`、`chrome-sandbox` 设置执行权限。官网 ZIP 未保留 Unix 执行位，
+缺少辅助程序权限时会在启动时报告 `posix_spawn: Permission denied (13)`。
+登录和下单由用户在应用内完成。
 
 用户在完整构建验证通过后，于普通终端执行：
 
@@ -35,4 +44,5 @@ Agent 不代为执行 switch。首次桌面验收需分别检查窗口、中文�
 保存测试工程，以及 KiCad 3D 视图。构建通过不等于上述图形功能已实测。
 
 官方来源：[下载页](https://lceda.cn/page/download)、
-[客户端说明](https://prodocs.lceda.cn/cn/faq/client/)。
+[客户端说明](https://prodocs.lceda.cn/cn/faq/client/)、
+[下单助手下载页](https://download1.sz-jlc.com/download/jlc-order-assistant.html)。

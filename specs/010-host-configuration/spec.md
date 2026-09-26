@@ -6,6 +6,10 @@
 
 - EDA 桌面工具：Home Manager 同时提供 KiCad 与嘉立创 EDA 专业版；后者固定官网 Linux x64 包版本与 SHA-256，保留官方图标，启动命令为 `lceda-pro`。为解决 XWayland 环境下 2K 屏字体过小问题，启动脚本需联动 Niri 主屏缩放（`primaryOutputScale`）注入 `--force-device-scale-factor`。不运行上游 root 安装脚本，不代用户 switch；完整系统及 HM 构建与图形验收分别记录。
 
+- 嘉立创下单助手：仅在 liu-bigpc 的 Home Manager 中安装官方 Linux x64 版，固定版本及哈希，提供 `jlc-assistant` 命令与桌面入口；FHS 运行环境须保留 Electron 原生辅助程序的可执行权限，并沿用主屏缩放。以用户实际打开登录窗口为桌面验收，不将登录或下单视为已验证。
+- 百度网盘：仅在 liu-bigpc 安装官方 Linux x64 客户端，固定 DEB 版本及哈希，通过独立 FHS 环境提供 `baidunetdisk` 命令与桌面入口；旧版 GTK 依赖从单独锁定的 nixpkgs 输入取得。构建、激活、登录及文件传输分别验收。
+- 通知行为：普通 Mako 通知维持 5 秒超时；ChatGPT 与 Antigravity 通知保持可见，直到用户关闭。Blueman 操作菜单执行成功后关闭原通知，避免重复触发过期操作。
+
 - Home Manager standalone 不依赖 NixOS system profile；rerun 使用 flake 锁定 CLI，部署与自检使用同一显式目标；不因普通 switch 自动刷新依赖。
 - 主机硬件与角色分别配置，合盖策略可选，外接显示器默认忽略；休眠 swap 容量需覆盖内存。
 - Niri 外接竖屏按真实 EDID 规则恢复；Rime-Ice 固定词库，Lua/OpenCC/用户词典可用，逗号句号翻页且不重复启动输入法。

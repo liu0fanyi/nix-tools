@@ -2,6 +2,7 @@
 {
   imports = [
     ./eda.nix
+    ./baidunetdisk.nix
     ./helix.nix
     ./alacritty.nix
     ./sakura.nix

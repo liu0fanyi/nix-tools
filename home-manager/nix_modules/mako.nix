@@ -1,13 +1,13 @@
 # mako 通知守护进程配置（与 niri.nix 的 spawn-at-startup "mako" 配合）。
 #
-# 普通通知自动消失；需要用户决定的蓝牙请求保留操作入口。
+# 普通通知自动消失；Codex、Antigravity 和需要用户决定的蓝牙请求例外。
 #
 # 背景：clipboard-sync 的 notify_accept_ok 用 notify-rust 且不设 timeout，
 # notify-rust 默认 Timeout::Never → D-Bus expire_timeout=-1（永不超时），
 # mako 对 -1 会一直显示直到被 dismiss；其他 daemon 也可能发 -1。
 #
 # 方案：ignore-timeout = true 让 mako 忽略应用声明的超时，
-# 普通通知按 default-timeout（5 秒）消失，蓝牙交互请求例外。
+# 普通通知按 default-timeout（5 秒）消失，Codex、Antigravity 和蓝牙交互请求例外。
 #
 # 仅在 NixOS（homebox）启用：非 NixOS（nuc）走 standalone home-manager，
 # 其 niri 不启用（niri.nix 的 features.niri.enable = full.enable && isNixOS），
@@ -16,7 +16,12 @@
 let
   bluetoothActions = pkgs.writeShellScript "mako-bluetooth-actions" ''
     export PATH=${lib.makeBinPath [ pkgs.jq pkgs.coreutils ]}:"$PATH"
-    exec ${pkgs.mako}/bin/makoctl menu -n "$1" -- ${pkgs.fuzzel}/bin/fuzzel --dmenu --prompt='蓝牙操作： '
+    # makoctl menu invokes the selected action but leaves the notification visible.
+    # Blueman handles that action only once; a second click on the stale prompt
+    # raises ValueError while removing it from _service_notifications.
+    if ${pkgs.mako}/bin/makoctl menu -n "$1" -- ${pkgs.fuzzel}/bin/fuzzel --dmenu --prompt='蓝牙操作： '; then
+      ${pkgs.mako}/bin/makoctl dismiss -n "$1" --no-history
+    fi
   '';
 in
 {
@@ -43,6 +48,15 @@ in
         anchor = "top-right";
         # 最新通知排最前
         sort = "-time";
+
+        # 实际通知历史里的 app-name：Codex 桌面端为 ChatGPT，Antigravity 为 Antigravity。
+        # 保持 ignore-timeout=true，以免应用自己声明的超时覆盖常驻设置。
+        "app-name=ChatGPT" = {
+          default-timeout = 0;
+        };
+        "app-name=Antigravity" = {
+          default-timeout = 0;
+        };
 
         # Mako 不绘制 action buttons；点击通知弹出该通知自己的动作菜单。
         # 不直接确认、不默认信任；Esc 可取消菜单，右键仍只关闭通知。

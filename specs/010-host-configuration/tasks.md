@@ -1,5 +1,21 @@
 # 任务
 
+## 2026-09-27 桌面应用与通知整理
+
+- [x] T017 封装嘉立创下单助手 5.0.69，提供桌面入口、主屏缩放和可执行的 Electron helper；用户已确认修复版能打开登录窗口。
+- [ ] T018 用户登录后验收下单助手的实际业务流程；此前启动验证未覆盖登录。
+- [x] T019 封装百度网盘 8.7.0 官方 DEB，使用独立锁定的 GTK2 依赖并仅向 liu-bigpc 提供。
+- [ ] T020 用户激活后验收百度网盘启动、登录与文件传输。
+- [x] T021 调整 Mako：ChatGPT/Antigravity 通知常驻，Blueman 操作成功后关闭旧提示。
+- [ ] T022 用户激活后实测两类常驻通知与 Blueman 操作菜单。
+- [x] T023 验证本次 liu-bigpc toplevel、HM generation、相关包和生成配置，记录结果并同步规格镜像。
+
+本次仅提交声明式配置和规格，不执行本机系统 switch。
+完整 toplevel `yayldwkq5jnwn34cypk56d6nan74wql8` 与 HM generation
+`kaqwjilkfsxsrvfbyb0jklj97jyzjnqs` 构建通过；Mako 求值含普通通知 5000ms、
+ChatGPT/Antigravity 0ms 和 Blueman 60000ms。`just test` 通过：deploy 44 项，
+scripts 74 项（跳过 4 项）。构建不代表百度网盘和通知交互已经桌面验收。
+
 - [x] T015 安装 FreeCAD，保留 Blender，验证 liu-bigpc 完整系统/HM 构建及桌面入口。
 - [ ] T016 用户 switch 后验收 FreeCAD 启动、建模与保存；不代用户激活。
 
