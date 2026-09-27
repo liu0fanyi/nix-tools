@@ -18,6 +18,7 @@ aliases = []
 [features]
 authelia = true
 dufs_write = true
+tag_peer_sync = true
 readonly = true
 terminal = true
 ddns = true

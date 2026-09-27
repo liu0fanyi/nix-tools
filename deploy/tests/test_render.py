@@ -291,6 +291,9 @@ class RenderTests(unittest.TestCase):
         )
         self.assertIn("runtime-secrets/writing-git:/root/.ssh:ro", instance)
         readonly_service = instance.split("  tag-server-readonly:", 1)[1]
+        private_service = instance.split("  tag-server:", 1)[1].split("  authelia:", 1)[0]
+        self.assertNotIn("--disable-sync", private_service)
+        self.assertIn("--disable-sync", readonly_service)
         self.assertNotIn("writing-git:/root/.ssh", readonly_service)
         self.assertTrue((output / "ttyd-compose.service").is_file())
         terminal_unit = (output / "ttyd-compose.service").read_text(
@@ -397,6 +400,7 @@ class RenderTests(unittest.TestCase):
         self.assertIn('"/root/nix-tools/dufs_data:/workspace:ro"', instance)
         self.assertIn('"/root/nix-tools/tag-db:/data"', instance)
         self.assertIn("--metadata-dir /data/metadata", instance)
+        self.assertIn("--disable-sync", instance)
         self.assertIn('"engine": "docker"', manifest)
 
 

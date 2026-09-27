@@ -82,7 +82,7 @@ def validate(config: dict[str, Any]) -> None:
         raise ConfigError("[domains].aliases must be an array of hostnames")
 
     features = table(config, "features")
-    for key in ("authelia", "dufs_write", "readonly", "terminal", "ddns"):
+    for key in ("authelia", "dufs_write", "readonly", "terminal", "ddns", "tag_peer_sync"):
         if not isinstance(features.get(key), bool):
             raise ConfigError(f"[features].{key} must be true or false")
     if profile in {"vps-direct", "aliyun-edgeone-http"} and features["ddns"]:
@@ -1054,7 +1054,7 @@ def render_instance_compose(
         "          . /run/secrets/tag-server.env",
         "          set +a",
         "        fi",
-        f"        exec /app/tag-server --database /data/tag_all.db --workspace /workspace --metadata-dir /data/metadata --addr 0.0.0.0:8081{cors_args}",
+        f"        exec /app/tag-server --database /data/tag_all.db --workspace /workspace --metadata-dir /data/metadata --addr 0.0.0.0:8081{' --disable-sync' if not features['tag_peer_sync'] else ''}{cors_args}",
         "    volumes:",
         yaml_list(tag_volumes, 6),
     ]
@@ -1107,7 +1107,7 @@ def render_instance_compose(
                 "          . /run/secrets/tag-server.env",
                 "          set +a",
                 "        fi",
-                f"        exec /app/tag-server --database /data/tag_all.db --workspace /workspace --metadata-dir /data/metadata --addr 0.0.0.0:8081{cors_args}",
+                f"        exec /app/tag-server --database /data/tag_all.db --workspace /workspace --metadata-dir /data/metadata --addr 0.0.0.0:8081 --disable-sync{cors_args}",
                 "    volumes:",
                 yaml_list(readonly_tag_volumes, 6),
             ]

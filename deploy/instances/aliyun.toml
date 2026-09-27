@@ -18,6 +18,7 @@ aliases = ["www.wttliou.top"]
 [features]
 authelia = false
 dufs_write = false
+tag_peer_sync = false
 readonly = false
 terminal = false
 ddns = false
