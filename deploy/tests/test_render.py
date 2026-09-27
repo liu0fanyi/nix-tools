@@ -109,6 +109,15 @@ class RenderTests(unittest.TestCase):
         caddy = (output / "Caddyfile").read_text(encoding="utf-8")
         files = (output / "compose-files.txt").read_text(encoding="utf-8")
         self.assertIn("home.wttliou.top:5009", caddy)
+        private_https = caddy.split("https://nas.wttliou.top:5009", 1)[1]
+        self.assertEqual(caddy.count("\n    @tag_peer_identity {"), 1)
+        self.assertIn("@tag_peer_identity {", private_https)
+        self.assertIn("remote_ip 192.168.0.0/16", private_https)
+        self.assertIn(
+            "path /tag-api/v1/peers/identity /tag-api/v1/peers/challenge",
+            private_https,
+        )
+        self.assertNotIn("/tag-api/v1/peers/approvals", caddy)
         self.assertIn("http://:5008", caddy)
         self.assertIn("https://work.wttliou.top:5443", caddy)
         self.assertIn("compose.ddns.yaml", files)
@@ -327,6 +336,24 @@ class RenderTests(unittest.TestCase):
         self.assertIn(str(output / "compose.yaml"), files)
         self.assertNotIn(str(DEPLOY_DIR / "compose.yaml"), files)
 
+    def test_peer_discovery_is_opt_in_private_host_network_only(self) -> None:
+        config, output, temp = self.prepare("home-ipv6-cdn")
+        self.addCleanup(temp.cleanup)
+        text = config.read_text(encoding="utf-8").replace(
+            "tag_peer_sync = true",
+            "tag_peer_sync = true\ntag_peer_discovery = true",
+        )
+        text += "\n[peer_discovery]\nnode_id = \"nuc\"\nadvertise_url = \"https://nas.wttliou.top:5009\"\nadvertise_ip = \"192.168.1.12\"\ninterface = \"wlp0s20f3\"\n"
+        config.write_text(text, encoding="utf-8")
+        render.render(config, output)
+        instance = (output / "compose.instance.yaml").read_text(encoding="utf-8")
+        self.assertIn("  tag-peer-discovery:", instance)
+        self.assertIn("    network_mode: host", instance)
+        self.assertIn("/app/tag-peer-discovery", instance)
+        self.assertIn("wlp0s20f3", instance)
+        self.assertIn("/home/liou/dufs-lan/.dufs_plus_state:/data", instance)
+        self.assertNotIn("tag-peer-discovery-readonly", instance)
+
     def test_cors_origins_are_explicit_and_shell_quoted(self) -> None:
         config, output, temp = self.prepare("home-ipv6-cdn")
         self.addCleanup(temp.cleanup)
@@ -386,6 +413,7 @@ class RenderTests(unittest.TestCase):
         self.assertIn("X-Forwarded-Proto http", caddy)
         self.assertIn('@public_device_api path /device-api /device-api/*', caddy)
         self.assertNotIn("authelia", caddy)
+        self.assertNotIn("@tag_peer_identity", caddy)
         self.assertIn("compose.aliyun-edgeone-http.yaml", files)
         self.assertNotIn("compose.authelia.yaml", files)
         self.assertNotIn("compose.ddns.yaml", files)

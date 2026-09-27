@@ -85,6 +85,15 @@ def validate(config: dict[str, Any]) -> None:
     for key in ("authelia", "dufs_write", "readonly", "terminal", "ddns", "tag_peer_sync"):
         if not isinstance(features.get(key), bool):
             raise ConfigError(f"[features].{key} must be true or false")
+    peer_discovery_enabled = features.get("tag_peer_discovery", False)
+    if not isinstance(peer_discovery_enabled, bool):
+        raise ConfigError("[features].tag_peer_discovery must be true or false")
+    if peer_discovery_enabled:
+        if profile != "home-ipv6-cdn" or not features["tag_peer_sync"]:
+            raise ConfigError("peer discovery requires a syncing private home instance")
+        discovery = table(config, "peer_discovery")
+        for key in ("node_id", "advertise_url", "advertise_ip", "interface"):
+            required_string(discovery, key, "peer_discovery")
     if profile in {"vps-direct", "aliyun-edgeone-http"} and features["ddns"]:
         raise ConfigError(f"{profile} requires [features].ddns = false")
     if profile == "aliyun-edgeone-http" and any(
@@ -862,6 +871,15 @@ https://{domains["public"]}:{ports["main_origin"]}, https://{domains["origin"]}:
     @public_device_api path /device-api /device-api/*
     respond @public_device_api "Not found" 404
 
+    @tag_peer_identity {{
+        remote_ip {lan_cidrs}
+        path /tag-api/v1/peers/identity /tag-api/v1/peers/challenge
+    }}
+    handle @tag_peer_identity {{
+        uri strip_prefix /tag-api
+        reverse_proxy tag-server:8081
+    }}
+
     @tag_sync {{
         remote_ip 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8 127.0.0.0/8 ::1
         path /tag-api/v1/sync/* /tag-api/v1/locations /tag-api/v1/locations/* /tag-api/v1/proxy/* /tag-api/listing /tag-api/items /tag-api/v1/inspect
@@ -1058,6 +1076,31 @@ def render_instance_compose(
         "    volumes:",
         yaml_list(tag_volumes, 6),
     ]
+
+    if features.get("tag_peer_discovery", False):
+        discovery = table(config, "peer_discovery")
+        lines.extend([
+            "  tag-peer-discovery:",
+            "    image: ${TAG_SERVER_IMAGE}",
+            "    entrypoint: [\"/app/tag-peer-discovery\"]",
+            "    command:",
+            "      - --node-id",
+            f"      - {json.dumps(discovery['node_id'])}",
+            "      - --metadata-dir",
+            "      - /data/metadata",
+            "      - --advertise-url",
+            f"      - {json.dumps(discovery['advertise_url'])}",
+            "      - --advertise-ip",
+            f"      - {json.dumps(discovery['advertise_ip'])}",
+            "      - --interface",
+            f"      - {json.dumps(discovery['interface'])}",
+            "    network_mode: host",
+            "    restart: unless-stopped",
+            "    depends_on:",
+            "      - tag-server",
+            "    volumes:",
+            yaml_list([f"{tag_data}:/data"], 6),
+        ])
 
     if features["authelia"]:
         lines.extend(

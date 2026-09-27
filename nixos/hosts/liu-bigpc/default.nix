@@ -45,6 +45,8 @@
     iptables -w -A nixos-fw -s 192.168.1.0/24 -p tcp --dport 22000 -j nixos-fw-accept
     iptables -w -A nixos-fw -s 192.168.1.0/24 -p udp --dport 22000 -j nixos-fw-accept
     iptables -w -A nixos-fw -s 192.168.1.0/24 -p udp --dport 21027 -j nixos-fw-accept
+    # Tag-all peer HTTPS, limited to this PC and the trusted LAN.
+    iptables -w -A nixos-fw -i eno1 -s 192.168.1.0/24 -d 192.168.1.100/32 -p tcp --dport 5009 -j nixos-fw-accept
   '';
 
   # Preserve the state version of the existing installation. This does not
