@@ -2,6 +2,8 @@
 
 ## 需求与验收
 
+- Tag Browser：`liu-bigpc` 从私有产品仓库锁定独立发行 flake，并在系统应用列表安装候选版；安装前检查精确浏览器输出在 Cachix 中存在。浏览器用户配置与服务端保持独立，NUC、homebox 不安装该桌面包。验证包括锁定版本、缓存命中、完整 NixOS toplevel、Home Manager generation、桌面入口；当前用户的系统激活及真实 GUI 操作由用户执行和验收。
+
 - 三维建模：Home Manager 提供 FreeCAD 用于设备外壳及参数化结构设计，保留已有 Blender 用于手办造型；不默认安装 AI 插件，不接管用户工程。
 
 - EDA 桌面工具：Home Manager 同时提供 KiCad 与嘉立创 EDA 专业版；后者固定官网 Linux x64 包版本与 SHA-256，保留官方图标，启动命令为 `lceda-pro`。为解决 XWayland 环境下 2K 屏字体过小问题，启动脚本需联动 Niri 主屏缩放（`primaryOutputScale`）注入 `--force-device-scale-factor`。不运行上游 root 安装脚本，不代用户 switch；完整系统及 HM 构建与图形验收分别记录。

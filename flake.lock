@@ -258,6 +258,22 @@
         "type": "github"
       }
     },
+    "nixpkgs_3": {
+      "locked": {
+        "lastModified": 1790055231,
+        "narHash": "sha256-QpXotokGh5eeMG1Njiuh27oP0rK6t5+cMp7ymXSs7mc=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "b6c98e9e6633ee64753b594ff4a5febf0367fc00",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "b6c98e9e6633ee64753b594ff4a5febf0367fc00",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "antigravity-nix": "antigravity-nix",
@@ -270,6 +286,7 @@
         "nix-gl": "nix-gl",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-gtkmm2": "nixpkgs-gtkmm2",
+        "tag-browser-src": "tag-browser-src",
         "zen-browser": "zen-browser"
       }
     },
@@ -316,6 +333,27 @@
         "owner": "nix-systems",
         "repo": "default",
         "type": "github"
+      }
+    },
+    "tag-browser-src": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_3"
+      },
+      "locked": {
+        "exportIgnore": true,
+        "lastModified": 1790604113,
+        "narHash": "sha256-YDQ2fl2bDmkUeN2d+aBPMvEDVS5fhhAk04IC2ztG1Ac=",
+        "ref": "stable",
+        "rev": "8407033ce5bca3286792a7182552eb506182df23",
+        "revCount": 4,
+        "type": "git",
+        "url": "ssh://git@github.com/liu0fanyi/tag-browser.git"
+      },
+      "original": {
+        "exportIgnore": true,
+        "ref": "stable",
+        "type": "git",
+        "url": "ssh://git@github.com/liu0fanyi/tag-browser.git"
       }
     },
     "zen-browser": {

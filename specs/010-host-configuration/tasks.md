@@ -1,5 +1,21 @@
 # 任务
 
+## Tag Browser 私有候选版系统安装
+
+- [x] 将 Tag Browser 独立 flake 的私有 `stable` 提交锁入 `flake.lock`，仅 `liu-bigpc` 引用其浏览器包。
+- [x] `rerun.nu` 在该主机切换前核对 Cachix 精确输出，支持首次使用 `fetch-closure`；系统配置也声明该特性。
+- [x] 验证浏览器缓存路径、完整 NixOS toplevel、Home Manager generation 与 `.desktop` 入口，并同步规格镜像。
+- [ ] 用户在普通终端执行 `nu rerun.nu liou --host liu-bigpc` 后验收桌面启动、既有配置导入及 PC/NUC 工作区。Agent 不代执行系统 switch。
+
+候选版 `v0.1.0-nix.1` 固定 Tag Browser 提交 `8407033`、缓存输出
+`qk0ib615vv19769l9faphk4mazl530da`。Cachix `path-info --refresh` 与
+`nix copy --refresh --no-recursive` 均成功；完整 `liu-bigpc` toplevel
+`vrh4rlm991kn08zfc6ivq6q7wjs1pyw2`、Home Manager generation
+`dcaa7vlyc27dy6wdknk026jglscq8k1a` 构建通过。系统产物的
+`sw/bin/tag-browser` 指向缓存包，`share/applications/tag-browser.desktop`
+含桌面入口。配置求值含 `fetch-closure`，Home Manager 激活环境含
+`HOME_MANAGER_BACKUP_EXT=hm-backup`。未执行 switch 或真实 GUI 验收。
+
 ## 2026-09-27 桌面应用与通知整理
 
 - [x] T017 封装嘉立创下单助手 5.0.69，提供桌面入口、主屏缩放和可执行的 Electron helper；用户已确认修复版能打开登录窗口。

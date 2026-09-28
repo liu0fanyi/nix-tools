@@ -56,6 +56,11 @@
       # 产生不同 NAR hash。
       url = "git+ssh://git@github.com/liu0fanyi/clipboard-sync.git?ref=master&exportIgnore=1";
     };
+    # Tag Browser releases are built by its own CI and stored in Cachix.
+    # Pin the private product flake; only liu-bigpc installs its desktop app.
+    tag-browser-src = {
+      url = "git+ssh://git@github.com/liu0fanyi/tag-browser.git?ref=stable&exportIgnore=1";
+    };
   };
 
   outputs =
@@ -142,8 +147,13 @@
       packages.${system} = {
         home-manager = home-manager.packages.${system}.home-manager;
         clipboard-sync = clipboardSyncPackage;
+        tag-browser = inputs.tag-browser-src.packages.${system}.default;
         default = clipboardSyncPackage;
       };
+
+      # Cache preflight reads the immutable published browser output, not the
+      # small symlinkJoin package that installs it into the system profile.
+      tag-browser-binary-path = inputs.tag-browser-src.lib.${system}.binaryPath;
 
       homeConfigurations = {
         "liou" = mkHomeConfig "liou" [ ];

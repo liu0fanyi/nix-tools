@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }:
+{ lib, pkgs, inputs, ... }:
 
 {
   imports = [
@@ -22,7 +22,10 @@
   environment.systemPackages = [
     pkgs.unar
     pkgs.wineWow64Packages.stable
+    inputs.tag-browser-src.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
+
+  nix.settings.experimental-features = lib.mkAfter [ "fetch-closure" ];
 
   # 数位笔"侧键+划动=滚轮"手势需要 uinput 才能合成带滚轮的虚拟笔设备。
   # hardware.uinput 提供 /dev/uinput（0660 root:uinput）与 uinput 组。

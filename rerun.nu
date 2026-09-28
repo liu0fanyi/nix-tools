@@ -127,6 +127,32 @@ def main [
     }
     print $"(ansi green)✓ clipboard-sync 已命中 Cachix: ($clipboard_path)(ansi reset)"
 
+    if ($use_nixos and $resolved_host == "liu-bigpc") {
+        # The private Tag Browser flake resolves its fixed Cachix output with
+        # fetchClosure. Enable this for the first switch as well as later ones.
+        $env.NIX_CONFIG = (($env.NIX_CONFIG? | default "") + "\nextra-experimental-features = fetch-closure\n")
+        let browser_cache = "https://liu0fanyi-nix.cachix.org"
+        let browser_attr = $"($env.PWD)#tag-browser-binary-path"
+        print $"(ansi cyan)Checking Tag Browser binary cache...(ansi reset)"
+        let browser_eval = (nix eval --raw $browser_attr | complete)
+        if $browser_eval.exit_code != 0 {
+            error make { msg: $"无法求值 Tag Browser store path：\n($browser_eval.stderr | str trim)" }
+        }
+        let browser_path = ($browser_eval.stdout | str trim)
+        if ($browser_path | is-empty) {
+            error make { msg: "Tag Browser store path 为空，停止部署" }
+        }
+        let browser_check = (nix path-info --refresh --store $browser_cache $browser_path | complete)
+        if $browser_check.exit_code != 0 {
+            error make { msg: $"Cachix 尚未发布 Tag Browser：($browser_path)\n($browser_check.stderr | str trim)" }
+        }
+        let browser_copy = (nix copy --refresh --no-recursive --from $browser_cache $browser_path | complete)
+        if $browser_copy.exit_code != 0 {
+            error make { msg: $"从 Cachix 预取 Tag Browser 失败：\n($browser_copy.stderr | str trim)" }
+        }
+        print $"(ansi green)✓ Tag Browser 已命中 Cachix: ($browser_path)(ansi reset)"
+    }
+
     if $use_nixos {
         let action = if $boot { "boot" } else { "switch" }
         print $"(ansi green)NixOS system ($action): flake#($resolved_host)(ansi reset)"
