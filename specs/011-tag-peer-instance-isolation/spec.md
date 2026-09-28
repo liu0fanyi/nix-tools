@@ -13,7 +13,7 @@ NUC 5006 私人实例保留既有 peer 同步。NUC 5008 只读实例及阿里�
 
 ## NUC 网页配对管理入口
 
-私人 NUC 的 `http://nuc.local:5006/tag-api/peer-manager` 继续受 LAN IP 范围和 Caddy Basic 登录保护。页面只显示待处理申请，不包含管理令牌。Caddy 容器只读挂载同一私人实例的 `tag-peer-admin.env`，启动时加载环境变量，仅在 `/tag-api/v1/peers/web/*` 路由向后端注入 `X-Tag-Admin-Token`；入站申请和签名回执在私人 HTTPS 5009 上仅放行明确的两个路径，仍要求 LAN 来源，且不注入管理员凭据。只读实例、阿里云和其他页面不接收此令牌。写操作由后端额外检查 `X-Tag-Pairing-Intent: 1`。
+私人 NUC 的 `http://nuc.local:5006/tag-api/peer-manager` 继续受 LAN IP 范围和 Caddy Basic 登录保护。页面只显示待处理申请，不包含管理令牌。Caddy 容器只读挂载同一私人实例的 `tag-peer-admin.env`，启动时加载环境变量，仅在 `/tag-api/v1/peers/web/*` 路由向后端注入 `X-Tag-Admin-Token`；入站申请和签名回执在私人 HTTPS 5009 上仅放行明确的两个路径，仍要求 LAN 来源，且不注入管理员凭据。只读实例、阿里云和其他页面不接收此令牌。写操作由后端额外检查 `X-Tag-Pairing-Intent: 1`。 反向代理仅使用 `header_up X-Tag-Admin-Token ...` 覆盖客户端同名请求头；不得再为同一请求头同时配置删除操作，否则 Caddy 会在设置后将其删除并导致后端 401。
 
 渲染测试检查路由、secret 挂载和只读实例隔离；生产验收须打开 NUC 网页并实际读取待处理申请。
 

@@ -363,6 +363,7 @@ class RenderTests(unittest.TestCase):
         caddy = (output / "Caddyfile").read_text(encoding="utf-8")
         self.assertIn("@tag_peer_web path /tag-api/v1/peers/web/*", caddy)
         self.assertIn("header_up X-Tag-Admin-Token {env.TAG_PEER_ADMIN_TOKEN}", caddy)
+        self.assertNotIn("header_up -X-Tag-Admin-Token", caddy)
         self.assertIn('"liu-bigpc.local:192.168.1.100"', instance)
         readonly = instance.split("  tag-server-readonly:", 1)[1]
         self.assertNotIn("--config /etc/tag-server/tag-server.toml", readonly)

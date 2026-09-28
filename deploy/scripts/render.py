@@ -729,7 +729,6 @@ http://:{ports["lan"]} {{
         handle @tag_peer_web {{
             uri strip_prefix /tag-api
             reverse_proxy tag-server:8081 {{
-                header_up -X-Tag-Admin-Token
                 header_up X-Tag-Admin-Token {{env.TAG_PEER_ADMIN_TOKEN}}
             }}
         }}
