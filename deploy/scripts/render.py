@@ -1400,7 +1400,8 @@ def render(config_path: Path, output: Path) -> None:
             f"trusted_ca_files = {json.dumps(roots)}\n"
             "[discovery]\n"
             f"enabled = {str(discovery_enabled).lower()}\n"
-            "external_agent = true\n",
+            "external_agent = true\n"
+            + (f"advertise_url = {json.dumps(discovery['advertise_url'])}\n" if discovery_enabled else ""),
             encoding="utf-8",
         )
         peer_config.chmod(0o600)

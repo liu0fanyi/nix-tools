@@ -2,6 +2,8 @@
 
 ## 范围
 
+私人 NUC 的生成配置须把 mDNS 公布的 `https://nuc.local:5009` 同时写入 tag-server 的 `discovery.advertise_url`，供配对申请回联；仅配置发现 companion 不足以发起申请。
+
 NUC 5006 私人实例保留既有 peer 同步。NUC 5008 只读实例及阿里云只读实例启动 tag-server 时必须传入 `--disable-sync`，由后端拒绝同步导出、导入、主动同步和通知接口。私人主实例由独立的 `[features].tag_peer_sync` 布尔值控制，不从文件写权限、镜像 profile 或主机名推断。只读附加实例固定禁用同步。Tag Server 的功能契约见 `/data/project/tag-all/specs/016-private-peer-discovery/`。
 
 ## 验收

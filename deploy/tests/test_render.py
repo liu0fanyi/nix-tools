@@ -385,6 +385,7 @@ class RenderTests(unittest.TestCase):
         peer_config = (output / "tag-server.toml").read_text(encoding="utf-8")
         self.assertIn("[pairing]\nenabled = true", peer_config)
         self.assertIn("[discovery]\nenabled = true", peer_config)
+        self.assertIn('advertise_url = "https://nuc.local:5009"', peer_config)
         instance = (output / "compose.instance.yaml").read_text(encoding="utf-8")
         self.assertIn("  tag-peer-discovery:", instance)
         self.assertIn("https://nuc.local:5009", instance)
