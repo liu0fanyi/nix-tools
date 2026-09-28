@@ -16,6 +16,13 @@
 含桌面入口。配置求值含 `fetch-closure`，Home Manager 激活环境含
 `HOME_MANAGER_BACKUP_EXT=hm-backup`。未执行 switch 或真实 GUI 验收。
 
+候选版 `v0.1.0-nix.2` 固定 Tag Browser 提交 `95a9b08`，缓存输出
+`cwlrzrvysycidl7x4mfkr57655h4n8sh`；发行 CI 与本机构建的 store path 一致，
+Cachix narinfo 返回 HTTP 200。更新锁定输入后，完整 `liu-bigpc` toplevel
+`qvakvibsz0ccqj73rjy5y0hpg76r1ria` 与 Home Manager generation
+`dcaa7vlyc27dy6wdknk026jglscq8k1a` 构建通过；系统产物的浏览器命令与
+`.desktop` 均解析至该缓存输出。未执行系统 switch；PC/NUC 直连工作区待实际窗口验收。
+
 ## 2026-09-27 桌面应用与通知整理
 
 - [x] T017 封装嘉立创下单助手 5.0.69，提供桌面入口、主屏缩放和可执行的 Electron helper；用户已确认修复版能打开登录窗口。
