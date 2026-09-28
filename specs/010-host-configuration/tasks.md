@@ -23,6 +23,14 @@ Cachix narinfo 返回 HTTP 200。更新锁定输入后，完整 `liu-bigpc` topl
 `dcaa7vlyc27dy6wdknk026jglscq8k1a` 构建通过；系统产物的浏览器命令与
 `.desktop` 均解析至该缓存输出。未执行系统 switch；PC/NUC 直连工作区待实际窗口验收。
 
+候选版 `v0.1.0-nix.3` 固定 Tag Browser 提交 `ca59bb2`，Cachix 输出
+`jvaran6c056qvkywvg95zhkj4qvkyib8`；发行 CI 与本机构建路径一致，
+Cachix narinfo 返回 HTTP 200。完整 `liu-bigpc` toplevel
+`d640zmy849jnivg1picni1i6ww4lwzam` 构建通过，Home Manager generation
+`dcaa7vlyc27dy6wdknk026jglscq8k1a` 已包含；系统浏览器命令与 `.desktop`
+都解析到新缓存输出。已退出的旧浏览器进程不再阻止启动新版；未执行系统 switch，
+真实 GUI 直连 NUC 与 Markdown 粘贴仍待用户验收。
+
 ## 2026-09-27 桌面应用与通知整理
 
 - [x] T017 封装嘉立创下单助手 5.0.69，提供桌面入口、主屏缩放和可执行的 Electron helper；用户已确认修复版能打开登录窗口。
