@@ -363,7 +363,8 @@ handle {{
 """.strip()
 
 
-def auth_routes(public_host: str) -> str:
+def auth_routes(public_host: str, peer_identity_exempt: bool = False) -> str:
+    peer_paths = " /tag-api/v1/peers/identity /tag-api/v1/peers/challenge" if peer_identity_exempt else ""
     return f"""
 handle /authelia/* {{
     reverse_proxy authelia:9091 {{
@@ -376,7 +377,7 @@ handle /authelia/* {{
 
 @not_options {{
     not method OPTIONS
-    not path /authelia/* /device-api /device-api/*
+    not path /authelia/* /device-api /device-api/*{peer_paths}
 }}
 forward_auth @not_options authelia:9091 {{
     uri /authelia/api/authz/forward-auth?authelia_url=https://{public_host}/authelia/
@@ -525,6 +526,7 @@ https://{domains["readonly_origin"]}:5443, https://{domains["readonly_public"]}:
 }}
 """
 
+    auth = auth_routes(domains["public"], peer_identity_exempt=True) if features["authelia"] else ""
     auth_block = f"{textwrap.indent(auth, '    ')}\n\n" if auth else ""
     return (
         global_options
@@ -889,13 +891,16 @@ https://{domains["public"]}:{ports["main_origin"]}, https://{domains["origin"]}:
     @public_device_api path /device-api /device-api/*
     respond @public_device_api "Not found" 404
 
-    @tag_peer_identity {{
-        remote_ip {lan_cidrs}
-        path /tag-api/v1/peers/identity /tag-api/v1/peers/challenge
-    }}
-    handle @tag_peer_identity {{
-        uri strip_prefix /tag-api
-        reverse_proxy tag-server:8081
+    @tag_peer_endpoint path /tag-api/v1/peers/identity /tag-api/v1/peers/challenge
+    handle @tag_peer_endpoint {{
+        route {{
+            @tag_peer_lan remote_ip {lan_cidrs}
+            handle @tag_peer_lan {{
+                uri strip_prefix /tag-api
+                reverse_proxy tag-server:8081
+            }}
+            respond "Not found" 404
+        }}
     }}
 
     @tag_sync {{

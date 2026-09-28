@@ -5,8 +5,8 @@
 - [x] 本机按标准入口运行 private 镜像 tester 与 NUC 部署预演；镜像传输摘要和入口 smoke 验证通过。
 - [x] NUC 5006/5008 已应用配置并验收：私人同步导出 200、只读同步导出 403、只读位置读取 200。
 - [ ] 阿里云 public 镜像构建、部署预演与只读实例验收；本次只部署 NUC。
-- [x] NUC 私人 HTTPS 5009 的 LAN 身份与挑战精确路由已加入渲染器，home/阿里云渲染测试通过；尚未部署，功能契约仍以 tag-all 016 为准。
-- [x] NUC 私人 mDNS companion 的渲染已加显式 `tag_peer_discovery` 开关，默认关闭；home/阿里云与开启场景渲染测试通过，尚未发布或启用。
-- [x] liu-bigpc 的 5009 仅 eno1/LAN 防火墙规则已完成 Nix 求值、完整 toplevel 与 Home Manager generation 构建；按本仓规则未由 Agent 执行系统切换，NUC 到 PC 5009 仍不可达。
-- [ ] 2026-09-28 用户两次执行 liu-bigpc switch 均因 Avahi 旧 PID 文件不可删除而返回 4。目录属 avahi，原清理钩子继承服务单元裁剪的能力，root 缺少 CAP_DAC_OVERRIDE；`ReadWritePaths` 已被实测证伪并撤回。现仅将验证旧 PID 的 ExecStartPre 加 `+` 前缀，使其不受主进程能力边界限制；待用户再次 switch 并验收 Avahi、5009 防火墙。
-- [ ] 私人 NUC 5009 身份/挑战路由、宿主网络 mDNS companion 与独立 `tag-peer-admin.env` 已完成渲染和 47 项部署测试；PC 私人后端身份接口 200、NUC 到 PC 5009 TCP 可达，NUC private 镜像已通过 tester 并发布。NUC 新实例配置尚待 infra 发布与双端配对验收，签名同步保持关闭。
+- [x] NUC 私人 HTTPS 5009 的 LAN 身份与挑战精确路由已部署；Caddy 认证匹配器对这两个端点作精确排除，LAN 外访问仍由路由返回 404。PC 使用 NUC CA 验证身份接口 200；功能契约以 tag-all 016 为准。
+- [x] NUC 私人 mDNS companion 已显式启用，阿里云和只读实例未启用；PC/NUC 上 `avahi-browse` 均能看见两个服务。候选缓存的周期刷新修复和长期稳定性验证归 tag-all 016。
+- [x] 用户完成 liu-bigpc 系统切换；Avahi 处于 active，`eno1` 上 5009 仅允许 LAN，NUC 到 PC 5009 TCP/TLS 可达。旧 PID 清理钩子修复已生效。
+- [x] NUC 私人实例使用独立 `tag-peer-admin.env`、PC CA 和 HTTPS 主机名校验；PC/NUC 私人节点分别批准了对方指纹，读取持久批准记录成功。旧同步继续，`sync.require_signatures` 保持关闭。
+- [x] 公共 DUFS 镜像的旧认证文件过期时，仅对公共镜像拉取重试匿名访问；NUC infra 备份、传输、激活和 smoke 已通过。

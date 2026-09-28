@@ -92,7 +92,13 @@ print(digests[manifest[0]["Config"]])
         names = ('caddy', 'dufs') if self.target == 'aliyun' else ('caddy', 'dufs', 'readonly_gateway', 'authelia', 'ddns_go')
         for name in names:
             image = self.config['images'][name]
-            self.run([*self.podman(), 'pull', '--authfile', ROOT / 'deploy/public-registry-auth.json', image])
+            try:
+                self.run([*self.podman(), 'pull', '--authfile', ROOT / 'deploy/public-registry-auth.json', image])
+            except subprocess.CalledProcessError:
+                # These are public runtime images. An expired Docker Hub login
+                # must not block an anonymous pull; transfer still checks IDs.
+                print(f'Authenticated pull failed for {image}; retrying anonymously', flush=True)
+                self.run([*self.podman(), 'pull', image])
             self.transfer(image)
 
     def build_frontend(self, source):

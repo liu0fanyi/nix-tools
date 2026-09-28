@@ -113,9 +113,10 @@ class RenderTests(unittest.TestCase):
         files = (output / "compose-files.txt").read_text(encoding="utf-8")
         self.assertIn("home.wttliou.top:5009", caddy)
         private_https = caddy.split("https://nas.wttliou.top:5009", 1)[1]
-        self.assertEqual(caddy.count("\n    @tag_peer_identity {"), 1)
-        self.assertIn("@tag_peer_identity {", private_https)
-        self.assertIn("remote_ip 192.168.0.0/16", private_https)
+        self.assertEqual(caddy.count("\n    @tag_peer_endpoint path"), 1)
+        self.assertIn("handle @tag_peer_endpoint {", private_https)
+        self.assertIn("@tag_peer_lan remote_ip 192.168.0.0/16", private_https)
+        self.assertIn("not path /authelia/* /device-api /device-api/* /tag-api/v1/peers/identity /tag-api/v1/peers/challenge", private_https)
         self.assertIn(
             "path /tag-api/v1/peers/identity /tag-api/v1/peers/challenge",
             private_https,

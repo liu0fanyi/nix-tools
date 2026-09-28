@@ -85,6 +85,15 @@ class ReleaseTests(unittest.TestCase):
         self.assertNotIn('build-dist.sh', output.getvalue())
         self.assertIn('/frontend/apps/devices/', output.getvalue())
 
+    def test_public_runtime_image_retries_anonymous_pull_and_keeps_transfer(self):
+        release = Release('aliyun')
+        with patch.object(release, 'run', side_effect=[subprocess.CalledProcessError(125, 'pull'), '', '']) as run, \
+             patch.object(release, 'transfer') as transfer:
+            release.runtime_images()
+        self.assertIn('--authfile', run.call_args_list[0].args[0])
+        self.assertNotIn('--authfile', run.call_args_list[1].args[0])
+        self.assertEqual(transfer.call_count, 2)
+
     def test_backup_failure_never_activates(self):
         release = Release('nuc')
         with patch.object(release, 'build_tag', return_value='image'), \
