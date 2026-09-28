@@ -116,9 +116,9 @@ class RenderTests(unittest.TestCase):
         self.assertEqual(caddy.count("\n    @tag_peer_endpoint path"), 1)
         self.assertIn("handle @tag_peer_endpoint {", private_https)
         self.assertIn("@tag_peer_lan remote_ip 192.168.0.0/16", private_https)
-        self.assertIn("not path /authelia/* /device-api /device-api/* /tag-api/v1/peers/identity /tag-api/v1/peers/challenge", private_https)
+        self.assertIn("not path /authelia/* /device-api /device-api/* /tag-api/v1/peers/identity /tag-api/v1/peers/challenge /tag-api/v1/peers/requests/incoming /tag-api/v1/peers/requests/accepted", private_https)
         self.assertIn(
-            "path /tag-api/v1/peers/identity /tag-api/v1/peers/challenge",
+            "path /tag-api/v1/peers/identity /tag-api/v1/peers/challenge /tag-api/v1/peers/requests/incoming /tag-api/v1/peers/requests/accepted",
             private_https,
         )
         self.assertNotIn("/tag-api/v1/peers/approvals", caddy)
@@ -357,6 +357,11 @@ class RenderTests(unittest.TestCase):
         self.assertIn("--config /etc/tag-server/tag-server.toml", instance)
         self.assertIn("/etc/tag-server/tag-server.toml:ro", instance)
         self.assertIn("/run/secrets/tag-peer-admin.env:ro", instance)
+        self.assertEqual(instance.count("/run/secrets/tag-peer-admin.env:ro"), 2)
+        self.assertIn("exec caddy run --config /etc/caddy/Caddyfile --adapter caddyfile", instance)
+        caddy = (output / "Caddyfile").read_text(encoding="utf-8")
+        self.assertIn("@tag_peer_web path /tag-api/v1/peers/web/*", caddy)
+        self.assertIn("header_up X-Tag-Admin-Token {env.TAG_PEER_ADMIN_TOKEN}", caddy)
         self.assertIn('"liu-bigpc.local:192.168.1.100"', instance)
         readonly = instance.split("  tag-server-readonly:", 1)[1]
         self.assertNotIn("--config /etc/tag-server/tag-server.toml", readonly)
@@ -397,6 +402,7 @@ class RenderTests(unittest.TestCase):
         self.assertIn("  tag-peer-discovery:", instance)
         self.assertIn("    network_mode: host", instance)
         self.assertIn("/app/tag-peer-discovery", instance)
+        self.assertNotIn("exec caddy run --config /etc/caddy/Caddyfile", instance)
         self.assertIn("wlp0s20f3", instance)
         self.assertIn("/home/liou/dufs-lan/.dufs_plus_state:/data", instance)
         self.assertNotIn("tag-peer-discovery-readonly", instance)

@@ -364,7 +364,7 @@ handle {{
 
 
 def auth_routes(public_host: str, peer_identity_exempt: bool = False) -> str:
-    peer_paths = " /tag-api/v1/peers/identity /tag-api/v1/peers/challenge" if peer_identity_exempt else ""
+    peer_paths = " /tag-api/v1/peers/identity /tag-api/v1/peers/challenge /tag-api/v1/peers/requests/incoming /tag-api/v1/peers/requests/accepted" if peer_identity_exempt else ""
     return f"""
 handle /authelia/* {{
     reverse_proxy authelia:9091 {{
@@ -725,6 +725,15 @@ http://:{ports["lan"]} {{
             {username} {password_hash}
         }}
 
+        @tag_peer_web path /tag-api/v1/peers/web/*
+        handle @tag_peer_web {{
+            uri strip_prefix /tag-api
+            reverse_proxy tag-server:8081 {{
+                header_up -X-Tag-Admin-Token
+                header_up X-Tag-Admin-Token {{env.TAG_PEER_ADMIN_TOKEN}}
+            }}
+        }}
+
         handle /tag-api/device-sessions {{
             uri strip_prefix /tag-api
             reverse_proxy tag-server:8081 {{
@@ -891,7 +900,7 @@ https://{domains["public"]}:{ports["main_origin"]}, https://{domains["origin"]}:
     @public_device_api path /device-api /device-api/*
     respond @public_device_api "Not found" 404
 
-    @tag_peer_endpoint path /tag-api/v1/peers/identity /tag-api/v1/peers/challenge
+    @tag_peer_endpoint path /tag-api/v1/peers/identity /tag-api/v1/peers/challenge /tag-api/v1/peers/requests/incoming /tag-api/v1/peers/requests/accepted
     handle @tag_peer_endpoint {{
         route {{
             @tag_peer_lan remote_ip {lan_cidrs}
@@ -1054,6 +1063,10 @@ def render_instance_compose(
     if peer_control_enabled:
         tag_volumes.append(f"{generated_dir / 'tag-server.toml'}:/etc/tag-server/tag-server.toml:ro")
         tag_volumes.append(f"{secret_dir / 'tag-peer-admin.env'}:/run/secrets/tag-peer-admin.env:ro")
+    if features.get("tag_peer_pairing", False):
+        # The LAN Basic-authenticated web management route injects this secret
+        # only into its upstream request; browser JavaScript never receives it.
+        caddy_volumes.append(f"{secret_dir / 'tag-peer-admin.env'}:/run/secrets/tag-peer-admin.env:ro")
 
     tag_secret = secret_dir / "tag-server.env"
     if is_file(tag_secret):
@@ -1084,6 +1097,19 @@ def render_instance_compose(
     lines = [
         "services:",
         "  caddy:",
+        *(
+            [
+                '    entrypoint: ["/bin/sh", "-ec"]',
+                "    command:",
+                "      - |",
+                "        set -a",
+                "        . /run/secrets/tag-peer-admin.env",
+                "        set +a",
+                "        exec caddy run --config /etc/caddy/Caddyfile --adapter caddyfile",
+            ]
+            if features.get("tag_peer_pairing", False)
+            else []
+        ),
         "    volumes:",
         yaml_list(caddy_volumes, 6),
         "  dufs:",

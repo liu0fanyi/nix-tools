@@ -10,3 +10,5 @@
 - [x] 用户完成 liu-bigpc 系统切换；Avahi 处于 active，`eno1` 上 5009 仅允许 LAN，NUC 到 PC 5009 TCP/TLS 可达。旧 PID 清理钩子修复已生效。
 - [x] NUC 私人实例使用独立 `tag-peer-admin.env`、PC CA 和 HTTPS 主机名校验；PC/NUC 私人节点分别批准了对方指纹，读取持久批准记录成功。旧同步继续，`sync.require_signatures` 保持关闭。
 - [x] 公共 DUFS 镜像的旧认证文件过期时，仅对公共镜像拉取重试匿名访问；NUC infra 备份、传输、激活和 smoke 已通过。
+- [x] 为 NUC 网页配对管理页添加 Basic 认证后的专用反向代理与服务端令牌注入；签名申请和回执端点仅在 LAN 私人 HTTPS 入口开放，渲染测试通过。
+- [ ] 部署并实测 NUC 网页显示待处理申请、点击同意后双方完成配对；核对只读入口仍拒绝。

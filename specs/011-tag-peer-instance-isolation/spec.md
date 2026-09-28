@@ -10,3 +10,9 @@ NUC 5006 私人实例保留既有 peer 同步。NUC 5008 只读实例及阿里�
 - 本机渲染 `aliyun` 配置：唯一的只读 `tag-server` 命令有该参数。
 - Tag Server 禁用同步时，`/v1/sync/*` 与 `/tag-api/v1/sync/*` 返回 403，普通位置读取仍可用。
 - 生产验收需分别核对 NUC 5006、5008 与阿里云实例；仅渲染测试通过不能宣称已部署。
+
+## NUC 网页配对管理入口
+
+私人 NUC 的 `http://nuc.local:5006/tag-api/peer-manager` 继续受 LAN IP 范围和 Caddy Basic 登录保护。页面只显示待处理申请，不包含管理令牌。Caddy 容器只读挂载同一私人实例的 `tag-peer-admin.env`，启动时加载环境变量，仅在 `/tag-api/v1/peers/web/*` 路由向后端注入 `X-Tag-Admin-Token`；入站申请和签名回执在私人 HTTPS 5009 上仅放行明确的两个路径，仍要求 LAN 来源，且不注入管理员凭据。只读实例、阿里云和其他页面不接收此令牌。写操作由后端额外检查 `X-Tag-Pairing-Intent: 1`。
+
+渲染测试检查路由、secret 挂载和只读实例隔离；生产验收须打开 NUC 网页并实际读取待处理申请。
