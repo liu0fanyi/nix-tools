@@ -85,6 +85,24 @@ def validate(config: dict[str, Any]) -> None:
     for key in ("authelia", "dufs_write", "readonly", "terminal", "ddns", "tag_peer_sync"):
         if not isinstance(features.get(key), bool):
             raise ConfigError(f"[features].{key} must be true or false")
+    peer_pairing_enabled = features.get("tag_peer_pairing", False)
+    if not isinstance(peer_pairing_enabled, bool):
+        raise ConfigError("[features].tag_peer_pairing must be true or false")
+    if peer_pairing_enabled:
+        if profile != "home-ipv6-cdn" or not features["tag_peer_sync"]:
+            raise ConfigError("peer pairing requires a syncing private home instance")
+        pairing = table(config, "peer_pairing")
+        required_string(pairing, "node_id", "peer_pairing")
+        ca_file = required_string(pairing, "trusted_ca_file", "peer_pairing")
+        if not Path(ca_file).is_absolute():
+            raise ConfigError("[peer_pairing].trusted_ca_file must be absolute")
+        peer_host = required_string(pairing, "peer_host", "peer_pairing")
+        if not HOST_RE.fullmatch(peer_host):
+            raise ConfigError("[peer_pairing].peer_host must be a hostname")
+        try:
+            ipaddress.IPv4Address(required_string(pairing, "peer_ip", "peer_pairing"))
+        except ValueError as error:
+            raise ConfigError("[peer_pairing].peer_ip must be an IPv4 address") from error
     peer_discovery_enabled = features.get("tag_peer_discovery", False)
     if not isinstance(peer_discovery_enabled, bool):
         raise ConfigError("[features].tag_peer_discovery must be true or false")
@@ -1027,6 +1045,10 @@ def render_instance_compose(
         tag_volumes.append(f"{paths['media']}:/workspace/media{source_mode}")
     if paths.get("whisper_models"):
         tag_volumes.append(f"{paths['whisper_models']}:/models:ro")
+    peer_control_enabled = features.get("tag_peer_pairing", False) or features.get("tag_peer_discovery", False)
+    if peer_control_enabled:
+        tag_volumes.append(f"{generated_dir / 'tag-server.toml'}:/etc/tag-server/tag-server.toml:ro")
+        tag_volumes.append(f"{secret_dir / 'tag-peer-admin.env'}:/run/secrets/tag-peer-admin.env:ro")
 
     tag_secret = secret_dir / "tag-server.env"
     if is_file(tag_secret):
@@ -1072,10 +1094,17 @@ def render_instance_compose(
         "          . /run/secrets/tag-server.env",
         "          set +a",
         "        fi",
-        f"        exec /app/tag-server --database /data/tag_all.db --workspace /workspace --metadata-dir /data/metadata --addr 0.0.0.0:8081{' --disable-sync' if not features['tag_peer_sync'] else ''}{cors_args}",
+        *( ["        set -a", "        . /run/secrets/tag-peer-admin.env", "        set +a"] if peer_control_enabled else [] ),
+        f"        exec /app/tag-server --database /data/tag_all.db --workspace /workspace --metadata-dir /data/metadata --addr 0.0.0.0:8081{' --config /etc/tag-server/tag-server.toml' if peer_control_enabled else ''}{' --disable-sync' if not features['tag_peer_sync'] else ''}{cors_args}",
         "    volumes:",
         yaml_list(tag_volumes, 6),
     ]
+    if features.get("tag_peer_pairing", False):
+        pairing = table(config, "peer_pairing")
+        lines.extend([
+            "    extra_hosts:",
+            f"      - {json.dumps(pairing['peer_host'] + ':' + pairing['peer_ip'])}",
+        ])
 
     if features.get("tag_peer_discovery", False):
         discovery = table(config, "peer_discovery")
@@ -1292,6 +1321,14 @@ def render(config_path: Path, output: Path) -> None:
             "missing runtime secrets; unlock and provision the configured secret source:\n  "
             + "\n  ".join(missing)
         )
+    if features.get("tag_peer_pairing", False) or features.get("tag_peer_discovery", False):
+        peer_secret = secret_dir / "tag-peer-admin.env"
+        if not is_file(peer_secret) or not any(
+            line.startswith("TAG_PEER_ADMIN_TOKEN=")
+            and len(line.partition("=")[2].strip().strip("\"'")) >= 32
+            for line in peer_secret.read_text(encoding="utf-8").splitlines()
+        ):
+            raise ConfigError("private peer control requires TAG_PEER_ADMIN_TOKEN in tag-peer-admin.env")
 
     output.mkdir(parents=True, exist_ok=True)
     output.chmod(0o700)
@@ -1313,6 +1350,30 @@ def render(config_path: Path, output: Path) -> None:
         authelia_config = authelia_dir / "configuration.yml"
         authelia_config.write_text(render_authelia(config), encoding="utf-8")
         authelia_config.chmod(0o600)
+
+    if features.get("tag_peer_pairing", False) or features.get("tag_peer_discovery", False):
+        pairing_enabled = features.get("tag_peer_pairing", False)
+        discovery_enabled = features.get("tag_peer_discovery", False)
+        pairing = table(config, "peer_pairing") if pairing_enabled else {}
+        discovery = table(config, "peer_discovery") if discovery_enabled else {}
+        node_id = pairing.get("node_id", discovery.get("node_id"))
+        if pairing_enabled and discovery_enabled and pairing["node_id"] != discovery["node_id"]:
+            raise ConfigError("peer pairing and discovery node IDs must match")
+        roots = [pairing["trusted_ca_file"]] if pairing_enabled else []
+        peer_config = output / "tag-server.toml"
+        peer_config.write_text(
+            "[node]\n"
+            f"id = {json.dumps(node_id)}\n"
+            "[sync]\nrequire_signatures = false\n"
+            "[pairing]\n"
+            f"enabled = {str(pairing_enabled).lower()}\n"
+            f"trusted_ca_files = {json.dumps(roots)}\n"
+            "[discovery]\n"
+            f"enabled = {str(discovery_enabled).lower()}\n"
+            "external_agent = true\n",
+            encoding="utf-8",
+        )
+        peer_config.chmod(0o600)
 
     instance_compose = output / "compose.instance.yaml"
     instance_compose.write_text(

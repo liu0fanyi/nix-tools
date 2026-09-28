@@ -13,6 +13,7 @@
 - `dufs-readonly.yaml`
 - `caddy_lan_basic_auth`
 - 可选：`tag-server.env`
+- 私人节点启用配对或发现时：`tag-peer-admin.env`（仅挂载给私人 tag-server，不给只读实例）
 
 目录权限应为 `0700`，文件权限应为 `0600`。`manage.py preflight` 会在启动前
 自动移除当前用户所拥有普通文件的 group/world 权限，然后再次检查；符号链接或

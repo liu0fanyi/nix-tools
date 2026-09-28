@@ -61,6 +61,7 @@ class RenderTests(unittest.TestCase):
             "authelia_storage_key": "storage-secret-long-enough-for-test",
             "authelia_users_database.yml": "---\nusers: {}\n",
             "dufs-readonly.yaml": "serve-path: /data\n",
+            "tag-peer-admin.env": "TAG_PEER_ADMIN_TOKEN=" + "a" * 64 + "\n",
             "caddy_lan_basic_auth": (
                 "admin $2a$14$jQ8iy6ybRwnQVDxCFAxEO."
                 "VoyPMR7GZVbYgyjcimvUMU1lePXP7NK\n"
@@ -82,6 +83,8 @@ class RenderTests(unittest.TestCase):
                 'profile = "home-ipv6-cdn"', 'profile = "vps-direct"'
             ).replace("ddns = true", "ddns = false").replace(
                 "terminal = true", "terminal = false"
+            ).replace("tag_peer_pairing = true", "tag_peer_pairing = false").replace(
+                "tag_peer_discovery = true", "tag_peer_discovery = false"
             )
         config = root / "instance.toml"
         config.write_text(text, encoding="utf-8")
@@ -336,15 +339,58 @@ class RenderTests(unittest.TestCase):
         self.assertIn(str(output / "compose.yaml"), files)
         self.assertNotIn(str(DEPLOY_DIR / "compose.yaml"), files)
 
+    def test_private_peer_pairing_requires_token_and_keeps_readonly_disabled(self) -> None:
+        config, output, temp = self.prepare("home-ipv6-cdn")
+        self.addCleanup(temp.cleanup)
+        text = config.read_text(encoding="utf-8").replace(
+            "tag_peer_discovery = true", "tag_peer_discovery = false"
+        )
+        config.write_text(text, encoding="utf-8")
+        secret = config.parent / "secrets" / "tag-peer-admin.env"
+        secret.unlink()
+        with self.assertRaisesRegex(render.ConfigError, "TAG_PEER_ADMIN_TOKEN"):
+            render.render(config, output)
+        secret.write_text("TAG_PEER_ADMIN_TOKEN=" + "a" * 64 + "\n", encoding="utf-8")
+        render.render(config, output)
+        instance = (output / "compose.instance.yaml").read_text(encoding="utf-8")
+        self.assertIn("--config /etc/tag-server/tag-server.toml", instance)
+        self.assertIn("/etc/tag-server/tag-server.toml:ro", instance)
+        self.assertIn("/run/secrets/tag-peer-admin.env:ro", instance)
+        self.assertIn('"liu-bigpc.local:192.168.1.100"', instance)
+        readonly = instance.split("  tag-server-readonly:", 1)[1]
+        self.assertNotIn("--config /etc/tag-server/tag-server.toml", readonly)
+        self.assertNotIn("tag-peer-admin.env", readonly)
+        peer_config = (output / "tag-server.toml").read_text(encoding="utf-8")
+        self.assertIn('id = "nuc"', peer_config)
+        self.assertIn("require_signatures = false", peer_config)
+        self.assertIn('trusted_ca_files = ["/data/metadata/certs/pc-root.crt"]', peer_config)
+        self.assertIn("enabled = false", peer_config)
+
+    def test_private_pairing_and_discovery_share_one_node_identity(self) -> None:
+        config, output, temp = self.prepare("home-ipv6-cdn")
+        self.addCleanup(temp.cleanup)
+        text = config.read_text(encoding="utf-8")
+        config.write_text(text, encoding="utf-8")
+        secret = config.parent / "secrets" / "tag-peer-admin.env"
+        secret.write_text("TAG_PEER_ADMIN_TOKEN=" + "c" * 64 + "\n", encoding="utf-8")
+        render.render(config, output)
+        peer_config = (output / "tag-server.toml").read_text(encoding="utf-8")
+        self.assertIn("[pairing]\nenabled = true", peer_config)
+        self.assertIn("[discovery]\nenabled = true", peer_config)
+        instance = (output / "compose.instance.yaml").read_text(encoding="utf-8")
+        self.assertIn("  tag-peer-discovery:", instance)
+        self.assertIn("    network_mode: host", instance)
+        self.assertNotIn("tag-peer-admin.env", instance.split("  tag-server-readonly:", 1)[1])
+
     def test_peer_discovery_is_opt_in_private_host_network_only(self) -> None:
         config, output, temp = self.prepare("home-ipv6-cdn")
         self.addCleanup(temp.cleanup)
         text = config.read_text(encoding="utf-8").replace(
-            "tag_peer_sync = true",
-            "tag_peer_sync = true\ntag_peer_discovery = true",
+            "tag_peer_pairing = true", "tag_peer_pairing = false"
         )
-        text += "\n[peer_discovery]\nnode_id = \"nuc\"\nadvertise_url = \"https://nas.wttliou.top:5009\"\nadvertise_ip = \"192.168.1.12\"\ninterface = \"wlp0s20f3\"\n"
         config.write_text(text, encoding="utf-8")
+        secret = config.parent / "secrets" / "tag-peer-admin.env"
+        secret.write_text("TAG_PEER_ADMIN_TOKEN=" + "b" * 64 + "\n", encoding="utf-8")
         render.render(config, output)
         instance = (output / "compose.instance.yaml").read_text(encoding="utf-8")
         self.assertIn("  tag-peer-discovery:", instance)

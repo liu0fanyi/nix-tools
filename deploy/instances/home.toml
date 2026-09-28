@@ -19,9 +19,24 @@ aliases = []
 authelia = true
 dufs_write = true
 tag_peer_sync = true
+# Private instance only. Signed sync remains off during mutual enrollment.
+tag_peer_pairing = true
+tag_peer_discovery = true
 readonly = true
 terminal = true
 ddns = true
+
+[peer_pairing]
+node_id = "nuc"
+trusted_ca_file = "/data/metadata/certs/pc-root.crt"
+peer_host = "liu-bigpc.local"
+peer_ip = "192.168.1.100"
+
+[peer_discovery]
+node_id = "nuc"
+advertise_url = "https://nas.wttliou.top:5009"
+advertise_ip = "192.168.1.12"
+interface = "wlp0s20f3"
 
 [paths]
 host_home = "/home/liou"
