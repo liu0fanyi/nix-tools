@@ -11,4 +11,5 @@
 - [x] NUC 私人实例使用独立 `tag-peer-admin.env`、PC CA 和 HTTPS 主机名校验；PC/NUC 私人节点分别批准了对方指纹，读取持久批准记录成功。旧同步继续，`sync.require_signatures` 保持关闭。
 - [x] 公共 DUFS 镜像的旧认证文件过期时，仅对公共镜像拉取重试匿名访问；NUC infra 备份、传输、激活和 smoke 已通过。
 - [x] 为 NUC 网页配对管理页添加 Basic 认证后的专用反向代理与服务端令牌注入；签名申请和回执端点仅在 LAN 私人 HTTPS 入口开放，渲染测试通过。
-- [ ] 部署并实测 NUC 网页显示待处理申请、点击同意后双方完成配对；核对只读入口仍拒绝。
+- [x] NUC infra 按统一发布入口完成备份、传输、预检、Caddy 重建与 smoke；未登录访问 `/tag-api/peer-manager` 和 `/tag-api/v1/peers/web/requests` 均返回 401。
+- [ ] 在真实网页窗口显示新的待处理申请、点击同意后核对双方配对；只读入口拒绝管理操作仍需现场验收。
