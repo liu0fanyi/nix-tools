@@ -34,7 +34,7 @@ peer_ip = "192.168.1.100"
 
 [peer_discovery]
 node_id = "nuc"
-advertise_url = "https://nas.wttliou.top:5009"
+advertise_url = "https://nuc.local:5009"
 advertise_ip = "192.168.1.12"
 interface = "wlp0s20f3"
 

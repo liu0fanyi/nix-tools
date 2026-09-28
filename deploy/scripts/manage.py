@@ -582,6 +582,7 @@ def main() -> int:
             "dufs",
             "tag-server",
             "tag-server-readonly",
+            "tag-peer-discovery",
             "readonly-gateway",
             "authelia",
             "dufs-readonly",

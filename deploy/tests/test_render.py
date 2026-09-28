@@ -112,6 +112,7 @@ class RenderTests(unittest.TestCase):
         caddy = (output / "Caddyfile").read_text(encoding="utf-8")
         files = (output / "compose-files.txt").read_text(encoding="utf-8")
         self.assertIn("home.wttliou.top:5009", caddy)
+        self.assertIn("https://nuc.local:5009", caddy)
         private_https = caddy.split("https://nas.wttliou.top:5009", 1)[1]
         self.assertEqual(caddy.count("\n    @tag_peer_endpoint path"), 1)
         self.assertIn("handle @tag_peer_endpoint {", private_https)
@@ -385,6 +386,7 @@ class RenderTests(unittest.TestCase):
         self.assertIn("[discovery]\nenabled = true", peer_config)
         instance = (output / "compose.instance.yaml").read_text(encoding="utf-8")
         self.assertIn("  tag-peer-discovery:", instance)
+        self.assertIn("https://nuc.local:5009", instance)
         self.assertIn("    network_mode: host", instance)
         self.assertNotIn("tag-peer-admin.env", instance.split("  tag-server-readonly:", 1)[1])
 

@@ -770,7 +770,7 @@ http://:{ports["lan"]} {{
     }}
 }}
 
-https://{domains["public"]}:{ports["main_origin"]}, https://{domains["origin"]}:{ports["main_origin"]}, https://localhost:{ports["main_origin"]}, https://127.0.0.1:{ports["main_origin"]} {{
+https://nuc.local:{ports["main_origin"]}, https://{domains["public"]}:{ports["main_origin"]}, https://{domains["origin"]}:{ports["main_origin"]}, https://localhost:{ports["main_origin"]}, https://127.0.0.1:{ports["main_origin"]} {{
     tls internal
     @origin_host host {domains["origin"]}
     redir @origin_host https://{domains["public"]}{{uri}} permanent
