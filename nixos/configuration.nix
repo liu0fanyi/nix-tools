@@ -193,12 +193,12 @@ in
   # avahi-daemon 偶尔会正常退出却留下 /run 下的 PID 文件，随后由 socket
   # 激活重启时会反复报 "Failed to create PID file: File exists"，最终触发
   # start-limit-hit 并导致 nuc.local 等 mDNS 名称无法解析。
-  systemd.services.avahi-daemon.serviceConfig = {
-    ExecStartPre = [ avahiStalePidCleanup ];
-    # ProtectSystem=strict also makes /run read-only inside the service.
-    # The cleanup hook and Avahi both need this one runtime directory writable.
-    ReadWritePaths = [ "/run/avahi-daemon" ];
-  };
+  # NixOS owns /run/avahi-daemon as avahi. The service capability bound drops
+  # CAP_DAC_OVERRIDE, so its root ExecStartPre cannot unlink avahi-owned files.
+  # Run only the validated stale-PID cleanup outside the service sandbox.
+  systemd.services.avahi-daemon.serviceConfig.ExecStartPre = [
+    "+${avahiStalePidCleanup}"
+  ];
 
   # SSH 加固（官方模板仅 enable=true）
   services.openssh.settings = {
