@@ -5,7 +5,8 @@
 - [x] 将 Tag Browser 独立 flake 的私有 `stable` 提交锁入 `flake.lock`，仅 `liu-bigpc` 引用其浏览器包。
 - [x] `rerun.nu` 在该主机切换前核对 Cachix 精确输出，支持首次使用 `fetch-closure`；系统配置也声明该特性。
 - [x] 验证浏览器缓存路径、完整 NixOS toplevel、Home Manager generation 与 `.desktop` 入口，并同步规格镜像。
-- [ ] 用户在普通终端激活 `nix.6` 后核对设置弹层发行标签，并继续验收尚未覆盖的桌面操作与升级回退。先前安装版的 NUC 工作区切换已由用户确认；Agent 不代执行系统 switch。
+- [x] 用户在普通终端激活 `nix.6` 后确认设置弹层显示对应发行标签；系统启动路径解析到 `rkr6vns479n3ar7zf8568j11qa5rsm5v`。Agent 未代执行系统 switch。
+- [ ] 继续验收尚未覆盖的桌面文件操作、阅读器、媒体与升级回退；先前安装版的 NUC 工作区切换已由用户确认。
 
 候选版 `v0.1.0-nix.1` 固定 Tag Browser 提交 `8407033`、缓存输出
 `qk0ib615vv19769l9faphk4mazl530da`。Cachix `path-info --refresh` 与
@@ -54,7 +55,8 @@ Cachix narinfo HTTP 200；完整 `liu-bigpc` toplevel
 路径一致，Cachix narinfo HTTP 200。完整 `liu-bigpc` toplevel
 `cqgy0xnpk3fb7w51r8d2sc20b9xkvckf` 构建通过，Home Manager generation
 `dcaa7vlyc27dy6wdknk026jglscq8k1a` 已包含；系统命令与桌面入口均解析到
-新包。Agent 未执行系统 switch，设置弹层的实际窗口显示仍待用户激活后核对。
+新包。Agent 未执行系统 switch；用户随后完成激活并确认设置弹层的
+`v0.1.0-nix.6` 标签，当前系统的浏览器命令也解析到同一缓存包。
 
 ## 2026-09-27 桌面应用与通知整理
 
