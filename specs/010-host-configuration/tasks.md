@@ -7,7 +7,7 @@
 - [x] 验证浏览器缓存路径、完整 NixOS toplevel、Home Manager generation 与 `.desktop` 入口，并同步规格镜像。
 - [x] 用户在普通终端激活 `nix.6` 后确认设置弹层显示对应发行标签；系统启动路径解析到 `rkr6vns479n3ar7zf8568j11qa5rsm5v`。Agent 未代执行系统 switch。
 - [ ] 继续验收尚未覆盖的桌面文件操作、阅读器、媒体与升级回退；先前安装版的 NUC 工作区切换已由用户确认。
-- [ ] `v0.1.0-nix.7` 已锁定到 `248afd1`，Cachix 精确输出 `hrgw8llhmvg81sh1dn0iqi69y05kfs7b`；完整系统与 Home Manager 构建通过，桌面入口指向新包。等待用户在普通终端执行 PC 系统切换并按 [手动测试用例](/data/project/tag-browser/specs/009-shared-tag-core/manual-test-cases.md) 验证真实窗口。
+- [x] `v0.1.0-nix.7` 锁定到 `248afd1`，Cachix 精确输出 `hrgw8llhmvg81sh1dn0iqi69y05kfs7b`；完整系统与 Home Manager 构建通过。用户在普通终端完成系统切换；系统命令与桌面入口均指向新包。旧窗口仍显示 `nix.6`，关闭后用户确认新窗口显示 `nix.7`。文件操作等真实窗口验收仍按 [手动测试用例](/data/project/tag-browser/specs/009-shared-tag-core/manual-test-cases.md) 执行。
 
 候选版 `v0.1.0-nix.1` 固定 Tag Browser 提交 `8407033`、缓存输出
 `qk0ib615vv19769l9faphk4mazl530da`。Cachix `path-info --refresh` 与
