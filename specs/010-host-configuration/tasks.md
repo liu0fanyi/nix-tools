@@ -40,6 +40,14 @@ Cachix narinfo 返回 HTTP 200。完整 `liu-bigpc` toplevel
 均解析到新缓存输出。未执行 switch；真实 NUC 切换、语音提示和 Markdown 粘贴
 待用户在新版图形会话验收。
 
+候选版 `v0.1.0-nix.5` 固定 Tag Browser 提交 `a532532`，Cachix 输出
+`7yhknjdwfngaanjf8amwpqs4vvs6nqj5`；401 登录弹层已提供「登录并切换」
+和就地反馈，输入凭据用于待切换工作区的验证与保存。发行 CI 与本机输出一致，
+Cachix narinfo HTTP 200；完整 `liu-bigpc` toplevel
+`677h7ivj5jidhah1d8zqzqh8138371j6` 构建通过，Home Manager generation
+`dcaa7vlyc27dy6wdknk026jglscq8k1a`，浏览器命令与 `.desktop` 均解析到新包。
+未执行 switch；PC/NUC 实际切换和图片粘贴待用户图形会话验收。
+
 ## 2026-09-27 桌面应用与通知整理
 
 - [x] T017 封装嘉立创下单助手 5.0.69，提供桌面入口、主屏缩放和可执行的 Electron helper；用户已确认修复版能打开登录窗口。
