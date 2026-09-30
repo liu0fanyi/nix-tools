@@ -118,6 +118,10 @@ class RenderTests(unittest.TestCase):
         self.assertIn("handle @tag_peer_endpoint {", private_https)
         self.assertIn("@tag_peer_lan remote_ip 192.168.0.0/16", private_https)
         self.assertIn("not path /authelia/* /device-api /device-api/* /tag-api/v1/peers/identity /tag-api/v1/peers/challenge /tag-api/v1/peers/requests/incoming /tag-api/v1/peers/requests/accepted", private_https)
+        self.assertIn("/tag-api/v1/proxy/* /tag-api/listing /tag-api/items /tag-api/v1/inspect", private_https)
+        self.assertIn("handle @tag_sync_endpoint {", private_https)
+        self.assertIn("@tag_sync_lan remote_ip 192.168.0.0/16", private_https)
+        self.assertIn('respond "Not found" 404', private_https)
         self.assertIn(
             "path /tag-api/v1/peers/identity /tag-api/v1/peers/challenge /tag-api/v1/peers/requests/incoming /tag-api/v1/peers/requests/accepted",
             private_https,

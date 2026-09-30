@@ -365,6 +365,9 @@ handle {{
 
 def auth_routes(public_host: str, peer_identity_exempt: bool = False) -> str:
     peer_paths = " /tag-api/v1/peers/identity /tag-api/v1/peers/challenge /tag-api/v1/peers/requests/incoming /tag-api/v1/peers/requests/accepted" if peer_identity_exempt else ""
+    # Peer read/proxy requests have no interactive Authelia session. The private
+    # HTTPS site handles these exact paths separately and rejects non-LAN callers.
+    peer_paths += " /tag-api/v1/sync/* /tag-api/v1/locations /tag-api/v1/locations/* /tag-api/v1/proxy/* /tag-api/listing /tag-api/items /tag-api/v1/inspect" if peer_identity_exempt else ""
     return f"""
 handle /authelia/* {{
     reverse_proxy authelia:9091 {{
@@ -911,13 +914,16 @@ https://nuc.local:{ports["main_origin"]}, https://{domains["public"]}:{ports["ma
         }}
     }}
 
-    @tag_sync {{
-        remote_ip 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8 127.0.0.0/8 ::1
-        path /tag-api/v1/sync/* /tag-api/v1/locations /tag-api/v1/locations/* /tag-api/v1/proxy/* /tag-api/listing /tag-api/items /tag-api/v1/inspect
-    }}
-    handle @tag_sync {{
-        uri strip_prefix /tag-api
-        reverse_proxy tag-server:8081
+    @tag_sync_endpoint path /tag-api/v1/sync/* /tag-api/v1/locations /tag-api/v1/locations/* /tag-api/v1/proxy/* /tag-api/listing /tag-api/items /tag-api/v1/inspect
+    handle @tag_sync_endpoint {{
+        route {{
+            @tag_sync_lan remote_ip {lan_cidrs}
+            handle @tag_sync_lan {{
+                uri strip_prefix /tag-api
+                reverse_proxy tag-server:8081
+            }}
+            respond "Not found" 404
+        }}
     }}
 
 {auth_block}

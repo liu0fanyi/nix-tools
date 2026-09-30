@@ -22,3 +22,5 @@ NUC 5006 私人实例保留既有 peer 同步。NUC 5008 只读实例及阿里�
 ## 私人节点地址
 
 NUC 在 mDNS 中公布 `https://nuc.local:5009`，Caddy 的内部 CA 证书覆盖 `nuc.local`。PC/NUC 的私人 peer 流量直接走局域网，不使用 EdgeOne 域名作为发现地址。现有 `nas.wttliou.top:5009` 仍保留入口供过渡，但 PC 的受信记录在身份与证书核验后改成 `nuc.local`。HTTPS 保留，用于加密和校验节点身份；新增节点首次配对的 CA 引导由 tag-all 016 继续设计。
+
+私人 HTTPS 5009 上供节点读取的 `/tag-api/v1/locations*`、`/tag-api/v1/proxy/*`、`/tag-api/listing` 等路径不走浏览器 Authelia 会话；Caddy 必须对整组精确路径施加 LAN 来源限制，非 LAN 返回 404。`/tag-api/peer-manager` 及网页管理接口仍要求登录。节点读取及同步的配对身份授权由 tag-all 016 继续完成，LAN 来源限制本身不代表节点已获授权。
