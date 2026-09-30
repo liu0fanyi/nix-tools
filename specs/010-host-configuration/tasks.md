@@ -11,6 +11,8 @@
 
 - [x] `v0.1.0-nix.8` 已锁定私有正式 `stable` 提交 `06a9ecd`，Cachix 精确输出 `398kazfrbzxxha1z3wf5vi8rfasyii91` 与私有 Release 附件一致；完整 `liu-bigpc` toplevel `f8q5sf77lyikv73yc6rylx4nhbpvms3w` 构建通过，其中系统浏览器入口解析至该输出，启动脚本显示 `v0.1.0-nix.8`。Home Manager generation `dcaa7vlyc27dy6wdknk026jglscq8k1a` 已核对。Agent 未执行系统 switch；用户实际窗口版本和 M14/M17–M19 人工验收仍待完成。
 
+- [x] `v0.1.0-nix.10` 已锁定私有正式 `stable` 提交 `e674258`，Cachix 精确输出 `/nix/store/05dxqxf29kvdv7x558lqibfh0byy4yj9-tag-browser-0.1.0` 与私有 Release 附件一致；完整 `liu-bigpc` toplevel `/nix/store/l01rw3di3ppwylxpbh4rs5649ss8z3pf-nixos-system-liu-bigpc-26.11.20260922.b6c98e9` 构建通过，系统浏览器入口解析至新缓存输出，Home Manager generation 为 `/nix/store/jm06d763dcrscivd16rv286xy16ri8ps-home-manager-generation`。用户系统激活和真实窗口验收尚未执行。
+
 候选版 `v0.1.0-nix.1` 固定 Tag Browser 提交 `8407033`、缓存输出
 `qk0ib615vv19769l9faphk4mazl530da`。Cachix `path-info --refresh` 与
 `nix copy --refresh --no-recursive` 均成功；完整 `liu-bigpc` toplevel
