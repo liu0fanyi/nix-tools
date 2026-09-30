@@ -9,6 +9,8 @@
 - [ ] 继续验收尚未覆盖的桌面文件操作、阅读器、媒体与升级回退；先前安装版的 NUC 工作区切换已由用户确认。
 - [x] `v0.1.0-nix.7` 锁定到 `248afd1`，Cachix 精确输出 `hrgw8llhmvg81sh1dn0iqi69y05kfs7b`；完整系统与 Home Manager 构建通过。用户在普通终端完成系统切换；系统命令与桌面入口均指向新包。旧窗口仍显示 `nix.6`，关闭后用户确认新窗口显示 `nix.7`。文件操作等真实窗口验收仍按 [手动测试用例](/data/project/tag-browser/specs/009-shared-tag-core/manual-test-cases.md) 执行。
 
+- [x] `v0.1.0-nix.8` 已锁定私有正式 `stable` 提交 `06a9ecd`，Cachix 精确输出 `398kazfrbzxxha1z3wf5vi8rfasyii91` 与私有 Release 附件一致；完整 `liu-bigpc` toplevel `f8q5sf77lyikv73yc6rylx4nhbpvms3w` 构建通过，其中系统浏览器入口解析至该输出，启动脚本显示 `v0.1.0-nix.8`。Home Manager generation `dcaa7vlyc27dy6wdknk026jglscq8k1a` 已核对。Agent 未执行系统 switch；用户实际窗口版本和 M14/M17–M19 人工验收仍待完成。
+
 候选版 `v0.1.0-nix.1` 固定 Tag Browser 提交 `8407033`、缓存输出
 `qk0ib615vv19769l9faphk4mazl530da`。Cachix `path-info --refresh` 与
 `nix copy --refresh --no-recursive` 均成功；完整 `liu-bigpc` toplevel
