@@ -228,7 +228,7 @@ T011 保持待用户验收。
 
 ## 2026-09-30 PC 私人节点恢复
 
-- [x] 核对 Tag Browser nix.8 空列表：本机 `127.0.0.1:5006` 无响应，NUC 接口正常；PC 的五个 `dufs-plus-pc` rootless Podman 容器在 01:01 用户管理器退出时停止，07:17 登录后未自动恢复。浏览器运行逻辑未变。
+- [x] 核对 Tag Browser nix.8 空列表：本机 `127.0.0.1:5006` 无响应，NUC 接口正常；01:01:10 系统收到用户管理器中的 `shutdown` 进程（PID 2293411）发起的整机关机请求；随后用户管理器终止、五个 `dufs-plus-pc` rootless Podman 容器收到停止信号。07:17 再次开机后容器未自动恢复。日志未显示单独停止容器，也不能确定是谁或什么程序启动了 `shutdown`。浏览器运行逻辑未变。
 - [x] 启动原有五个容器，确认本机 locations 为 2、tags 为 44，相关 API 返回 HTTP 200；未重建容器或修改持久化数据。
 - [x] 为 liu-bigpc 配置 Home Manager 用户 oneshot 服务：用户管理器启动时，仅恢复 compose 标签为 `dufs-plus-pc`、重启策略为 `unless-stopped` 且处于 exited 状态的原有容器。
 - [ ] 用户手动 switch 后验证服务已安装，并在下次用户管理器重启后确认 PC 节点自动恢复、Tag Browser 标签及工作区正常显示；Agent 不执行工作站 switch。
