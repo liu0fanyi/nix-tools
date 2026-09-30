@@ -10,6 +10,33 @@
 
   networking.hostName = "liu-bigpc";
 
+  # Rootless Podman compose containers stop with the user manager. Restore only
+  # this host's existing private PC node after login; do not recreate volumes,
+  # touch NUC containers, or start unrelated rootless projects.
+  home-manager.users.liou.systemd.user.services.pc-private-node-restore = {
+    Unit = {
+      Description = "Restore PC private tag node containers";
+      After = [ "podman.socket" ];
+      Wants = [ "podman.socket" ];
+    };
+    Service = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${pkgs.writeShellScript "restore-pc-private-node" ''
+        set -euo pipefail
+        ${pkgs.podman}/bin/podman ps -a \
+          --filter status=exited \
+          --filter should-start-on-boot=true \
+          --filter label=io.podman.compose.project=dufs-plus-pc \
+          --format '{{.ID}}' |
+          ${pkgs.findutils}/bin/xargs -r ${pkgs.podman}/bin/podman start
+      ''}";
+      Restart = "on-failure";
+      RestartSec = "15s";
+    };
+    Install.WantedBy = [ "default.target" ];
+  };
+
   # USB Bluetooth adapter: kernel btusb is already detected; enable BlueZ
   # and the graphical pairing manager without enabling discoverability.
   hardware.bluetooth = {
