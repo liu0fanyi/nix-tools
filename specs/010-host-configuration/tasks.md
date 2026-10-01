@@ -238,3 +238,5 @@ T011 保持待用户验收。
 - [x] 启动原有五个容器，确认本机 locations 为 2、tags 为 44，相关 API 返回 HTTP 200；未重建容器或修改持久化数据。
 - [x] 为 liu-bigpc 配置 Home Manager 用户 oneshot 服务：用户管理器启动时，仅恢复 compose 标签为 `dufs-plus-pc`、重启策略为 `unless-stopped` 且处于 exited 状态的原有容器。
 - [ ] 用户手动 switch 后验证服务已安装，并在下次用户管理器重启后确认 PC 节点自动恢复、Tag Browser 标签及工作区正常显示；Agent 不执行工作站 switch。
+
+- [x] `v0.1.0-nix.15` 已锁定私有 stable `d4fa799ed68cce54f010e4d29040dcf05039bddf`：统一两行头部、列表区域已打开组及真实窗口宽度恢复；Node 40 项、Firefox 361 项通过。私有 Release、CI 36828143469 与本机输出 `/nix/store/yhgcdfw8b0zh39xd4gzf57bsqa4j773n-tag-browser-0.1.0` 一致且 Cachix 命中。完整系统 `/nix/store/pr5dlhxzn7p4xl0hmxh03qbp8myvm6ng-nixos-system-liu-bigpc-26.11.20260922.b6c98e9`、Home Manager `/nix/store/zl7xn3ddcbnl2hiflxxz7vgj8a6bncvc-home-manager-generation` 构建通过，系统命令/桌面入口/激活 ExecStart/hm-backup 均核对。保留工作树原有 AGENTS、依赖和 gnumeric 改动；只提交浏览器输入及发行状态。用户手动切换和试用待完成。
