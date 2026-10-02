@@ -150,10 +150,19 @@ let
     '';
   };
 
+  screenRecordAudio = pkgs.writeShellApplication {
+    name = "screen-record-audio";
+    runtimeInputs = with pkgs; [ python3 pulseaudio fuzzel libnotify systemd ];
+    text = ''
+      exec python3 ${../../scripts/screen-record-audio.py} "$@"
+    '';
+  };
+
   screenRecordFinished = pkgs.writeShellApplication {
     name = "screen-record-finished";
     runtimeInputs = with pkgs; [ coreutils libnotify python3 systemd ];
     text = ''
+      ${screenRecordAudio}/bin/screen-record-audio cleanup || true
       if [[ "$SERVICE_RESULT" == success && -s "$SCREEN_RECORD_FILE" ]]; then
         uri=$(python3 -c 'import pathlib, sys; print(pathlib.Path(sys.argv[1]).as_uri(), end="")' "$SCREEN_RECORD_FILE")
         # Wayland 剪贴板需要存活的 owner。独立单元避免录屏单元收尾时杀掉 wl-copy。
@@ -172,6 +181,15 @@ let
       else
         notify-send --replace-id="$SCREEN_RECORD_NOTIFICATION" --urgency=critical \
           "录屏失败或中断" "文件可能不完整。用 journalctl --user -u nix-tools-screen-record 查看原因。" || true
+      fi
+      if [[ "$SERVICE_RESULT" == success && -s "$SCREEN_RECORD_FILE" && "$SCREEN_RECORD_EDIT" == 1 ]]; then
+        if ! systemd-run --user --quiet --collect --service-type=exec \
+          --setenv="WAYLAND_DISPLAY=$WAYLAND_DISPLAY" \
+          --setenv="XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR" \
+          --setenv="DISPLAY=''${DISPLAY:-}" \
+          ${pkgs.avidemux}/bin/avidemux --load "$SCREEN_RECORD_FILE"; then
+          notify-send "无法打开录屏编辑器" "$SCREEN_RECORD_FILE" || true
+        fi
       fi
     '';
   };
@@ -192,7 +210,21 @@ let
           ;;
         deactivating) exit 0 ;;
       esac
+      edit=0
+      case "''${1:-}" in
+        "") ;;
+        --edit) edit=1 ;;
+        *) exit 2 ;;
+      esac
       region=$(slurp) || exit 0
+      audio_source=$(${screenRecordAudio}/bin/screen-record-audio prepare) || exit 1
+      # 启动失败也清理；成功后由录屏单元 ExecStopPost 负责收尾。
+      trap '${screenRecordAudio}/bin/screen-record-audio cleanup || true' EXIT
+      audio_options=()
+      if [[ -n "$audio_source" ]]; then
+        audio_options=("--audio=$audio_source" --audio-backend=pulse \
+          --audio-codec aac --audio-codec-param b=128000 --sample-rate 48000)
+      fi
       directory="$HOME/Videos/Screencasts"
       mkdir -p "$directory"
       file="$directory/Recording-$(date +%Y-%m-%d_%H-%M-%S-%N).mp4"
@@ -206,16 +238,21 @@ let
         --setenv="DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus" \
         --setenv="SCREEN_RECORD_FILE=$file" \
         --setenv="SCREEN_RECORD_NOTIFICATION=$notification" \
+        --setenv="SCREEN_RECORD_EDIT=$edit" \
+        --setenv="DISPLAY=''${DISPLAY:-}" \
         ${pkgs.systemd}/bin/systemd-inhibit --what=idle:sleep --mode=block \
         --why="快捷键录屏" \
         ${pkgs.wf-recorder}/bin/wf-recorder --geometry "$region" --file "$file" \
-        --framerate 30 --codec libx264 --pixel-format yuv420p \
-        --codec-param preset=ultrafast --codec-param crf=23 \
-        --filter "pad=ceil(iw/2)*2:ceil(ih/2)*2"; then
+        --framerate 24 --codec libx264 --pixel-format yuv420p \
+        --codec-param preset=veryfast --codec-param crf=24 \
+        --codec-param maxrate=4000000 --codec-param bufsize=8000000 \
+        --codec-param g=48 \
+        --filter "pad=ceil(iw/2)*2:ceil(ih/2)*2" "''${audio_options[@]}"; then
         notify-send --replace-id="$notification" --urgency=critical \
           "无法启动录屏" "用 journalctl --user -u nix-tools-screen-record 查看原因。" || true
         exit 1
       fi
+      trap - EXIT
     '';
   };
 
@@ -253,6 +290,7 @@ let
                 // Fn+I 上报 Print；Shift+Fn+I 框选后打开 Satty。
                 Shift+Print hotkey-overlay-title="截图后编辑 (Satty)" { spawn "${screenshotEdit}/bin/screenshot-edit"; }
                 Ctrl+Shift+Print cooldown-ms=1000 hotkey-overlay-title="开始/停止录屏" { spawn "${screenRecordToggle}/bin/screen-record-toggle"; }
+                Alt+Shift+Print cooldown-ms=1000 hotkey-overlay-title="录屏后编辑" { spawn "${screenRecordToggle}/bin/screen-record-toggle" "--edit"; }
             ''}
           ''
           ""
@@ -366,7 +404,7 @@ in
         # such as the official Linux WeChat client.
         pkgs.xwayland-satellite
       ]
-      ++ lib.optionals isLiuBigpc [ pkgs.satty screenshotEdit pkgs.wf-recorder screenRecordToggle ]
+      ++ lib.optionals isLiuBigpc [ pkgs.satty screenshotEdit pkgs.wf-recorder screenRecordToggle screenRecordAudio pkgs.avidemux ]
       ++ lib.optionals (!isNixOS) [
         niriPackage
         niri-session-wrapped
@@ -397,7 +435,7 @@ in
           "spacing": 8,
           "modules-left": ["niri/workspaces"],
           "modules-center": ["clock"],
-          "modules-right": ["idle_inhibitor", "custom/mako-dnd", "${if isNuc then "custom/cpu-temperature" else "temperature"}", "custom/fan", "mpris", "pulseaudio", ${lib.optionalString isLiuBigpc ''"custom/device-bean", ''}${lib.optionalString isLiuBigpc ''"bluetooth", ''}"network", "cpu", "memory", "battery", "tray"],
+          "modules-right": ["idle_inhibitor", ${lib.optionalString isLiuBigpc ''"custom/screen-record", ''}"custom/mako-dnd", "${if isNuc then "custom/cpu-temperature" else "temperature"}", "custom/fan", "mpris", "pulseaudio", ${lib.optionalString isLiuBigpc ''"custom/device-bean", ''}${lib.optionalString isLiuBigpc ''"bluetooth", ''}"network", "cpu", "memory", "battery", "tray"],
           "idle_inhibitor": {
             "format": "{icon}",
             "format-icons": {
@@ -449,6 +487,16 @@ in
             "interval": 5,
             "format": "{}"
           },
+          ${lib.optionalString isLiuBigpc ''
+          "custom/screen-record": {
+            "exec": "${screenRecordAudio}/bin/screen-record-audio status",
+            "return-type": "json",
+            "format": "{}",
+            "interval": 2,
+            "on-click": "${screenRecordAudio}/bin/screen-record-audio choose",
+            "on-click-right": "${screenRecordToggle}/bin/screen-record-toggle"
+          },
+          ''}
           "custom/mako-dnd": {
             "exec": "${makoDndScript}/bin/mako-dnd status",
             "return-type": "json",
@@ -548,9 +596,11 @@ in
           color: #ebdbb2;
           background: #3c3836;
         }
-        #clock, #tray, #cpu, #memory, #temperature, #custom-fan, #custom-mako-dnd, #custom-device-bean, #idle_inhibitor, #mpris, #network, #battery, #pulseaudio, #bluetooth {
+        #clock, #tray, #cpu, #memory, #temperature, #custom-fan, #custom-mako-dnd, #custom-device-bean, #custom-screen-record, #idle_inhibitor, #mpris, #network, #battery, #pulseaudio, #bluetooth {
           padding: 0 8px;
         }
+        #custom-screen-record.idle { color: #83a598; }
+        #custom-screen-record.recording { color: #fb4934; }
         #idle_inhibitor.activated { color: #fabd2f; }
         #custom-fan.unavailable { padding: 0; }
         #custom-mako-dnd.enabled { color: #b8bb26; }

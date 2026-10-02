@@ -51,7 +51,8 @@ Ctrl+Shift+Print 通过 flock 串行切换，slurp 取消即退出。录屏运�
 环境；再次触发用 systemctl stop，只向该单元发 SIGINT 并等待文件正常收尾。
 ExecStopPost 替换开始通知，按 SERVICE_RESULT 与文件存在性区分保存/失败。
 录制期间 systemd-inhibit 阻止 idle/sleep，结束释放；单元结束自动回收，无常驻服务。
-MP4 使用 libx264/yuv420p、30fps、ultrafast/crf23；FFmpeg pad 修正奇数尺寸。
+MP4 使用 libx264/yuv420p、24fps、veryfast/crf24、maxrate=4000000、bufsize=8000000、
+g=48；FFmpeg pad 修正奇数尺寸。音频 pulse backend、AAC b=128000、48kHz。
 
 继续遵守上述宪法检查；仅更新 PC 配置和合法资料镜像，不替用户 switch。
 验证完整系统/HM、KDL、脚本检查及不捕获桌面的录屏控制测试；真实画面与性能待用户验收。
@@ -64,3 +65,19 @@ ExecStopPost 成功且文件非空时，以 Python Path.as_uri 编码路径（�
 不让剪贴板 owner 随录屏服务收尾被杀掉。剪贴板被替换时 owner 自动退出并回收
 单元。失败分支不复制，复制失败保留视频并明确通知。命令构造与错误分支采用
 隔离 mock 验证，不覆盖用户当前剪贴板；真实应用粘贴待用户验收。
+
+### 声音菜单与轻量剪辑
+
+screen-record-audio 包装 scripts/screen-record-audio.py；Waybar 每2秒显示录屏/音源状态，
+左键 fuzzel 选择来源并写入 XDG_STATE_HOME，右键调用原录屏切换入口。与录屏入口共享
+flock，录制期间拒绝选择。系统声音取默认 sink 的 monitor；麦克风仅选择非 monitor
+输入，优先默认输入。both 创建独立 module-null-sink 与两个 module-loopback，
+逐次记录模块 ID、名称和精确 sink 参数，失败与结束时逆序清理；音频服务重启后
+不得因 ID 复用误删其他模块。不设置默认设备、不把麦克风连接真实扬声器。
+
+Alt+Shift+Print 传 --edit，在录屏单元保存 SCREEN_RECORD_EDIT；成功收尾后另启
+transient 单元运行锁定 nixpkgs 的 Avidemux --load，避免编辑器随录屏单元结束。
+Copy 模式支持关键帧剪切，另存 MP4；不监控编辑器输出、不自动替换原文件剪贴板。
+Python 隔离回归覆盖音源、混音部分失败及模块所有权；脚本控制检查不捕获桌面或
+真实音频，不修改用户剪贴板。软件包、完整系统/HM、KDL/Waybar 配置与合成编码验证
+和用户桌面验收分开记录。依赖沿用锁定 nixpkgs，无新增外部参考仓库或系统 switch。
