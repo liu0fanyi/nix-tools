@@ -259,3 +259,6 @@ T011 保持待用户验收。
 
 
 - [x] 私有 `v0.1.0-nix.24` 已发行并锁定 Tag Browser `7f50e65e1c60d090ec550a9c3de9b459282bffee`：多窗口节点/认证隔离、正常关窗恢复及菜单、目录待办恢复与按标签页隐藏完成。Node 67 项、Firefox 643 项检查通过；最终 Nix 二进制 5/5 快速正常关窗/重启场景通过。CI 37008161500、本机、Release 与签名 Cachix 精确输出 `/nix/store/5ybm3k8ddc36xc1mzzq8b4fx3ysvlxsb-tag-browser-0.1.0` 一致，归档 SHA256 `061ca63477f8bb6c61cdbd636cd65130eee2f41129a14d9310193d31744b8af3` 与 GitHub 上传摘要一致。完整系统 `/nix/store/25d4plwx2cz5yzysqc3vvr0chsc3hipx-nixos-system-liu-bigpc-26.11.20260922.b6c98e9` 与 Home Manager `/nix/store/q15phfx28v6slnc9li55qbl6wfr25f90-home-manager-generation` 构建通过，系统命令/桌面入口/激活 generation 核对。只提交浏览器输入和发行状态，保留原有 AGENTS、其他锁定依赖及 home-manager 改动；构建不表示系统已切换。用户在普通终端运行 `nu rerun.nu liou --host liu-bigpc`，随后按 Tag Browser 012 固定三组收尾检查，Agent 不执行 switch。
+
+
+- [x] 私有 `v0.1.0-nix.25` 已发行，Tag Browser 锁定 `5206662d05b931b6ff3b0a222e36a5fc2f60b044`：顶部/底部工具栏图标、悬停提示、可访问名称与 32px 点击范围。67 项 Node、713 项 Firefox 检查通过；CI 37016820898、本机、Release 精确输出 `/nix/store/axrq2cjzqlnb4117gyqrs2bkwjgv0b3l-tag-browser-0.1.0` 一致，Cachix 命中和签名信任通过。完整系统 `/nix/store/41wsrqqz1jra4llzy5r9asa6j657vn9z-nixos-system-liu-bigpc-26.11.20260922.b6c98e9`、Home Manager `/nix/store/q15phfx28v6slnc9li55qbl6wfr25f90-home-manager-generation` 构建通过，系统浏览器命令与激活目标核对。保留既有 AGENTS、其他锁定节点与 home-manager 改动，仅更新浏览器输入。Agent 不执行 switch，用户在普通终端运行 `nu rerun.nu liou --host liu-bigpc` 并确认 app nix.25。
