@@ -150,6 +150,63 @@ let
     '';
   };
 
+  screenRecordFinished = pkgs.writeShellApplication {
+    name = "screen-record-finished";
+    runtimeInputs = with pkgs; [ libnotify ];
+    text = ''
+      if [[ "$SERVICE_RESULT" == success && -s "$SCREEN_RECORD_FILE" ]]; then
+        notify-send --replace-id="$SCREEN_RECORD_NOTIFICATION" --expire-time=5000 \
+          "录屏已保存" "$SCREEN_RECORD_FILE" || true
+      else
+        notify-send --replace-id="$SCREEN_RECORD_NOTIFICATION" --urgency=critical \
+          "录屏失败或中断" "文件可能不完整。用 journalctl --user -u nix-tools-screen-record 查看原因。" || true
+      fi
+    '';
+  };
+
+  screenRecordToggle = pkgs.writeShellApplication {
+    name = "screen-record-toggle";
+    runtimeInputs = with pkgs; [ coreutils slurp systemd libnotify util-linux ];
+    text = ''
+      # 只控制自己的 transient unit；不按进程名终止其他录屏。
+      exec 9>"$XDG_RUNTIME_DIR/screen-record-toggle.lock"
+      flock -n 9 || exit 0
+      unit=nix-tools-screen-record.service
+      state=$(systemctl --user show "$unit" --property=ActiveState --value 2>/dev/null) || state=inactive
+      case "$state" in
+        active|activating|reloading)
+          systemctl --user stop "$unit"
+          exit 0
+          ;;
+        deactivating) exit 0 ;;
+      esac
+      region=$(slurp) || exit 0
+      directory="$HOME/Videos/Screencasts"
+      mkdir -p "$directory"
+      file="$directory/Recording-$(date +%Y-%m-%d_%H-%M-%S-%N).mp4"
+      notification=$(notify-send --print-id --expire-time=0 "正在录屏" \
+        "再次按 Ctrl+Shift+Fn+I 停止；保存为 $file") || notification=0
+      if ! systemd-run --user --quiet --collect --unit="$unit" \
+        --service-type=exec --property=KillSignal=SIGINT --property=TimeoutStopSec=30s \
+        --property="ExecStopPost=${screenRecordFinished}/bin/screen-record-finished" \
+        --setenv="WAYLAND_DISPLAY=$WAYLAND_DISPLAY" \
+        --setenv="XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR" \
+        --setenv="DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus" \
+        --setenv="SCREEN_RECORD_FILE=$file" \
+        --setenv="SCREEN_RECORD_NOTIFICATION=$notification" \
+        ${pkgs.systemd}/bin/systemd-inhibit --what=idle:sleep --mode=block \
+        --why="快捷键录屏" \
+        ${pkgs.wf-recorder}/bin/wf-recorder --geometry "$region" --file "$file" \
+        --framerate 30 --codec libx264 --pixel-format yuv420p \
+        --codec-param preset=ultrafast --codec-param crf=23 \
+        --filter "pad=ceil(iw/2)*2:ceil(ih/2)*2"; then
+        notify-send --replace-id="$notification" --urgency=critical \
+          "无法启动录屏" "用 journalctl --user -u nix-tools-screen-record 查看原因。" || true
+        exit 1
+      fi
+    '';
+  };
+
   # Wrapper script to run niri-session with necessary environment variables
   niri-session-wrapped = pkgs.writeShellScriptBin "niri-session-wrapped" ''
     export GBM_BACKENDS_PATH="${pkgs.mesa}/lib/gbm"
@@ -183,6 +240,7 @@ let
             ${lib.optionalString isLiuBigpc ''
                 // Fn+I 上报 Print；Shift+Fn+I 框选后打开 Satty。
                 Shift+Print hotkey-overlay-title="截图后编辑 (Satty)" { spawn "${screenshotEdit}/bin/screenshot-edit"; }
+                Ctrl+Shift+Print cooldown-ms=1000 hotkey-overlay-title="开始/停止录屏" { spawn "${screenRecordToggle}/bin/screen-record-toggle"; }
             ''}
           ''
           ""
@@ -296,7 +354,7 @@ in
         # such as the official Linux WeChat client.
         pkgs.xwayland-satellite
       ]
-      ++ lib.optionals isLiuBigpc [ pkgs.satty screenshotEdit ]
+      ++ lib.optionals isLiuBigpc [ pkgs.satty screenshotEdit pkgs.wf-recorder screenRecordToggle ]
       ++ lib.optionals (!isNixOS) [
         niriPackage
         niri-session-wrapped

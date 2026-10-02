@@ -42,3 +42,16 @@ slurp 选区、grim 截图，再以临时 PNG 打开 Satty；复制使用 wl-cop
 宪法检查：仅 PC 权威仓库配置；未引入外部参考源码或文档原件，依赖沿用
 锁定 nixpkgs；说明放 docs、需求放 specs；不部署、不执行系统 switch。
 验证必须覆盖 liu-bigpc 完整 toplevel、Home Manager generation 和生成 KDL。
+
+## 快捷键录屏方案
+
+仅 liu-bigpc 在 Niri 模块安装锁定 nixpkgs 的 wf-recorder 与 screen-record-toggle。
+Ctrl+Shift+Print 通过 flock 串行切换，slurp 取消即退出。录屏运行于专属临时
+`nix-tools-screen-record.service`，systemd-run 显式传递 Wayland、运行目录和通知/文件
+环境；再次触发用 systemctl stop，只向该单元发 SIGINT 并等待文件正常收尾。
+ExecStopPost 替换开始通知，按 SERVICE_RESULT 与文件存在性区分保存/失败。
+录制期间 systemd-inhibit 阻止 idle/sleep，结束释放；单元结束自动回收，无常驻服务。
+MP4 使用 libx264/yuv420p、30fps、ultrafast/crf23；FFmpeg pad 修正奇数尺寸。
+
+继续遵守上述宪法检查；仅更新 PC 配置和合法资料镜像，不替用户 switch。
+验证完整系统/HM、KDL、脚本检查及不捕获桌面的录屏控制测试；真实画面与性能待用户验收。

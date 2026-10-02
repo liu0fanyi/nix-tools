@@ -271,3 +271,9 @@ T011 保持待用户验收。
 - [x] 仅 liu-bigpc 加入 Satty，保留原截图键，增加 Shift+Print 框选后编辑。
 - [x] 验证完整 toplevel、Home Manager generation、生成 KDL 与脚本依赖；Satty 0.22.0 来自缓存，脚本 ShellCheck 和 Niri validate 通过，安装命令及 HM 激活目标一致。
 - [ ] 用户手动 switch 后实测 Shift+Fn+I、标注复制/保存及取消行为。
+
+## wf-recorder 快捷键录屏
+
+- [x] 仅 liu-bigpc 添加 wf-recorder 和 Ctrl+Shift+Print 开始/停止框选录屏，保留截图快捷键。
+- [x] wf-recorder 0.6.0：完整系统/HM、KDL 和 ShellCheck 通过；9 项不捕获桌面的控制检查通过，合成视频确认奇数尺寸补齐后 H.264/yuv420p 编码有效，命令及 HM 激活目标核对；真实画面/性能留待用户验收。
+- [ ] 用户 switch 后验证 Ctrl+Shift+Fn+I、取消、通知、MP4 播放及 CPU 占用。

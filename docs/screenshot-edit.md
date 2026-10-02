@@ -1,4 +1,4 @@
-# 截图后编辑（liu-bigpc / Niri）
+# 截图编辑与快捷键录屏（liu-bigpc / Niri）
 
 原有 `Fn+I` 截图保留。配置接收的是 `Print`，Fn 组合由键盘固件转换；
 新增 `Shift+Fn+I`（`Shift+Print`）框选截图后打开 Satty。若键盘未将
@@ -18,3 +18,17 @@ Shift+Fn+I 上报为 Shift+Print，需实测键盘事件再调整，不能改掉
 [主机配置](../specs/010-host-configuration/spec.md)。用户在普通终端执行
 `cd /home/liou/nix-tools && nu rerun.nu liou --host liu-bigpc` 后实测；
 Agent 只构建验证，不代为切换系统。
+
+## 快捷键录屏
+
+- `Ctrl+Shift+Fn+I`（Ctrl+Shift+Print）：在单个显示器内框选区域后开始；再次按同一组合停止。
+- 选区时 Esc 取消；录屏时显示常驻通知，停止后通知给出保存位置。
+- 文件保存在 `~/Videos/Screencasts/Recording-*.mp4`；默认无声、30fps、H.264。
+- 录屏期间阻止自动空闲/睡眠；没有登录自启动，结束后释放资源。
+- 可在终端运行 `screen-record-toggle`，其效果与快捷键一致。
+- 失败通知表示文件可能不完整；查看
+  `journalctl --user -u nix-tools-screen-record.service` 排查。
+- 只停止本入口启动的录屏；自行运行的 wf-recorder 不受影响。
+
+Kooha 提供声音来源、格式、帧率、指针与延迟等图形设置；本配置仅安装 wf-recorder，
+不安装 Kooha。软件编码实际 CPU 占用和画面播放效果须 switch 后实测。
