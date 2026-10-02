@@ -265,3 +265,9 @@ T011 保持待用户验收。
 
 
 - [x] 私有 `v0.1.0-nix.26` 已发行并锁定 `8a2327abe02ebc6b0c94678ffd234d1676139760`：继承 nix.25 工具栏图标，新增 Ctrl+T/切页/关页活动行定位及地址栏左侧原生后退/前进。67 项 Node、724 项 Firefox 检查通过，CI 37020228750 成功，PC/Release/签名 Cachix 精确输出 `/nix/store/8hkindcisj8rm57l0ph60kvqb587sd18-tag-browser-0.1.0` 一致。归档 SHA256 `58681f6ce776c96a094bbec1b466621fe5a109c515da36dc51aa50f8530f15cc` 与上传摘要一致，包内模块/路径边界/临时配置启动/版本核对通过。完整系统 `/nix/store/jch484cbsjqkqplnjfwkb1izqy8alnfv-nixos-system-liu-bigpc-26.11.20260922.b6c98e9`、Home Manager `/nix/store/q15phfx28v6slnc9li55qbl6wfr25f90-home-manager-generation` 构建成功，系统命令、桌面入口及激活目标一致。仅提交浏览器输入与状态；既有 AGENTS、其他依赖及 home-manager 工作树改动保持。Agent 不执行 switch；用户运行 `nu rerun.nu liou --host liu-bigpc`，正常关闭旧窗口后重开并确认 nix.26。
+
+## Satty 截图标注
+
+- [x] 仅 liu-bigpc 加入 Satty，保留原截图键，增加 Shift+Print 框选后编辑。
+- [x] 验证完整 toplevel、Home Manager generation、生成 KDL 与脚本依赖；Satty 0.22.0 来自缓存，脚本 ShellCheck 和 Niri validate 通过，安装命令及 HM 激活目标一致。
+- [ ] 用户手动 switch 后实测 Shift+Fn+I、标注复制/保存及取消行为。

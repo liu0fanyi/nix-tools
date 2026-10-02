@@ -71,3 +71,12 @@ niri 仅转发设备真实上报的数位板滚轮轴；Chromium 明确未实现
   **2026-09-17 已由用户实机验收**：平滑滚动与指针落点均确认正常。
 
 操作说明见 docs/pen-scroll.md，索引见 README。
+
+### liu-bigpc 截图标注
+
+- 保留原 Print（用户键盘 Fn+I）、Ctrl+Print 和 Alt+Print 截图行为。新增 Shift+Print
+  （Shift+Fn+I）框选截图后直接打开 Satty，支持标注、复制及按需保存到
+  `~/Pictures/Screenshots/`。Fn 组合由键盘上报，实际组合须桌面验收。
+- 仅 liu-bigpc 安装 Satty 与截图编辑入口；无需后台常驻；取消选区不打开编辑器，
+  临时原图在编辑器退出后清理。不得因取消编辑自动保存标注图。
+- 系统切换与真实桌面快捷键验收由用户执行。录屏本次只调研，不增加录屏配置。

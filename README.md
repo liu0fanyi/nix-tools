@@ -5,6 +5,8 @@ DUFS Plus.
 
 ## Home Manager
 
+Niri 的 `Shift+Fn+I` 截图标注用法见 [Satty 截图编辑](docs/screenshot-edit.md)。
+
 KiCad 与嘉立创 EDA 专业版的启动、升级和验收见 [EDA 桌面工具](docs/eda-desktop.md)。
 
 SSD201 本机发现端口与限制见 [防火墙说明](docs/ssd201-discovery-firewall.md)。

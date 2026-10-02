@@ -131,6 +131,25 @@ let
     ${pkgs.systemd}/bin/systemctl suspend
   '';
 
+  screenshotEdit = pkgs.writeShellApplication {
+    name = "screenshot-edit";
+    runtimeInputs = with pkgs; [ coreutils grim slurp satty wl-clipboard util-linux ];
+    text = ''
+      # 防止重复快捷键同时启动多个选区/编辑器。
+      exec 9>"$XDG_RUNTIME_DIR/screenshot-edit.lock"
+      flock -n 9 || exit 0
+      region=$(slurp) || exit 0
+      image=$(mktemp --suffix=.png)
+      trap 'rm -f "$image"' EXIT
+      grim -g "$region" "$image"
+      directory="$HOME/Pictures/Screenshots"
+      mkdir -p "$directory"
+      satty --filename "$image" \
+        --copy-command wl-copy \
+        --output-filename "$directory/Edited-$(date +%Y-%m-%d_%H-%M-%S-%N).png"
+    '';
+  };
+
   # Wrapper script to run niri-session with necessary environment variables
   niri-session-wrapped = pkgs.writeShellScriptBin "niri-session-wrapped" ''
     export GBM_BACKENDS_PATH="${pkgs.mesa}/lib/gbm"
@@ -161,6 +180,10 @@ let
                 Mod+N { spawn "networkmanager_dmenu" "--dmenu" "fuzzel"; }
                 // 一键切换 Mako 勿扰模式，并清除当前可见通知。
                 Mod+Shift+N { spawn "mako-dnd" "toggle"; }
+            ${lib.optionalString isLiuBigpc ''
+                // Fn+I 上报 Print；Shift+Fn+I 框选后打开 Satty。
+                Shift+Print hotkey-overlay-title="截图后编辑 (Satty)" { spawn "${screenshotEdit}/bin/screenshot-edit"; }
+            ''}
           ''
           ""
           ""
@@ -273,6 +296,7 @@ in
         # such as the official Linux WeChat client.
         pkgs.xwayland-satellite
       ]
+      ++ lib.optionals isLiuBigpc [ pkgs.satty screenshotEdit ]
       ++ lib.optionals (!isNixOS) [
         niriPackage
         niri-session-wrapped

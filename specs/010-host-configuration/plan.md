@@ -30,3 +30,15 @@ Mako 对 app-name=blueman actionable 设置独立超时和格式；点击通过 
 调用 fuzzel，使用固定程序路径并携带 jq 依赖。普通通知及勿扰模式保留原行为。
 
 PC 本地维护和构建；NUC 仅镜像。文档整理不授权系统切换、应用发布、密钥轮换或实机操作。
+
+## 截图标注方案
+
+在 Niri Home Manager 模块中仅为 liu-bigpc 安装锁定 nixpkgs 的 Satty。
+`Shift+Print` 调用 writeShellApplication 封装的 `screenshot-edit`，使用现有
+slurp 选区、grim 截图，再以临时 PNG 打开 Satty；复制使用 wl-copy，保存路径
+使用带纳秒时间戳的 `~/Pictures/Screenshots/Edited-*.png`。flock 防止重复启动，
+取消选区直接退出，EXIT trap 清理临时图片。其他截图绑定不变。
+
+宪法检查：仅 PC 权威仓库配置；未引入外部参考源码或文档原件，依赖沿用
+锁定 nixpkgs；说明放 docs、需求放 specs；不部署、不执行系统 switch。
+验证必须覆盖 liu-bigpc 完整 toplevel、Home Manager generation 和生成 KDL。
