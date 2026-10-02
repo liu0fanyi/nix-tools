@@ -262,3 +262,6 @@ T011 保持待用户验收。
 
 
 - [x] 私有 `v0.1.0-nix.25` 已发行，Tag Browser 锁定 `5206662d05b931b6ff3b0a222e36a5fc2f60b044`：顶部/底部工具栏图标、悬停提示、可访问名称与 32px 点击范围。67 项 Node、713 项 Firefox 检查通过；CI 37016820898、本机、Release 精确输出 `/nix/store/axrq2cjzqlnb4117gyqrs2bkwjgv0b3l-tag-browser-0.1.0` 一致，Cachix 命中和签名信任通过。完整系统 `/nix/store/41wsrqqz1jra4llzy5r9asa6j657vn9z-nixos-system-liu-bigpc-26.11.20260922.b6c98e9`、Home Manager `/nix/store/q15phfx28v6slnc9li55qbl6wfr25f90-home-manager-generation` 构建通过，系统浏览器命令与激活目标核对。保留既有 AGENTS、其他锁定节点与 home-manager 改动，仅更新浏览器输入。Agent 不执行 switch，用户在普通终端运行 `nu rerun.nu liou --host liu-bigpc` 并确认 app nix.25。
+
+
+- [x] 私有 `v0.1.0-nix.26` 已发行并锁定 `8a2327abe02ebc6b0c94678ffd234d1676139760`：继承 nix.25 工具栏图标，新增 Ctrl+T/切页/关页活动行定位及地址栏左侧原生后退/前进。67 项 Node、724 项 Firefox 检查通过，CI 37020228750 成功，PC/Release/签名 Cachix 精确输出 `/nix/store/8hkindcisj8rm57l0ph60kvqb587sd18-tag-browser-0.1.0` 一致。归档 SHA256 `58681f6ce776c96a094bbec1b466621fe5a109c515da36dc51aa50f8530f15cc` 与上传摘要一致，包内模块/路径边界/临时配置启动/版本核对通过。完整系统 `/nix/store/jch484cbsjqkqplnjfwkb1izqy8alnfv-nixos-system-liu-bigpc-26.11.20260922.b6c98e9`、Home Manager `/nix/store/q15phfx28v6slnc9li55qbl6wfr25f90-home-manager-generation` 构建成功，系统命令、桌面入口及激活目标一致。仅提交浏览器输入与状态；既有 AGENTS、其他依赖及 home-manager 工作树改动保持。Agent 不执行 switch；用户运行 `nu rerun.nu liou --host liu-bigpc`，正常关闭旧窗口后重开并确认 nix.26。
