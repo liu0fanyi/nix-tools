@@ -81,3 +81,13 @@ Copy 模式支持关键帧剪切，另存 MP4；不监控编辑器输出、不�
 Python 隔离回归覆盖音源、混音部分失败及模块所有权；脚本控制检查不捕获桌面或
 真实音频，不修改用户剪贴板。软件包、完整系统/HM、KDL/Waybar 配置与合成编码验证
 和用户桌面验收分开记录。依赖沿用锁定 nixpkgs，无新增外部参考仓库或系统 switch。
+
+### Avidemux 蓝屏预览修复
+
+实机截图为 Lavcodec / VDPAU，用户 config3 为 videodevice=4 且 vdpau/libva 解码关闭；
+锁定 2.8.1 的 GUI_render.h 确认4为VDPAU、0为原生渲染（Qt GUI显示Qt）。
+screen-record-edit 在启动前合并 videodevice=0、关闭硬件解码；其他偏好保留，
+变更前复制带纳秒时间戳备份，再以同目录临时文件原子替换。ExecStopPost 调用
+该入口，已有视频可用同一命令重开。不直接写当前用户配置或终止其编辑器；
+用临时HOME与独立Xvfb检查视频副本加载、实际预览画面，再验证完整系统/HM和脚本构建。
+offscreen插件无法提供VDPAU初始化所需的X显示，故使用独立虚拟显示；不连接或截取用户桌面。

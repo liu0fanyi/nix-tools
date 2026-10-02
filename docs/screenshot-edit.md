@@ -76,3 +76,15 @@ Previous/Next keyframe 按钮定位，当前录屏每约2秒一个关键帧。�
 自动剪贴板仍指向原始录屏，编辑后的文件需要另行拖入目标应用或复制文件。
 文件 URI 不是视频二进制；dufs-plus 当前 Markdown 粘贴入口只上传图片，
 尚不能通过此方式自动上传视频，可先手动上传视频再引用。
+
+### Avidemux 有声音但预览蓝屏
+
+录屏编辑入口使用 `screen-record-edit`，启动前合并 Avidemux 配置中的 Qt 软件预览
+（videodevice=0）与软件解码设置，绕开 VDPAU 显示兼容问题。其他偏好保留，首次
+修改前备份为 `~/.avidemux6/config3.before-software-preview-*`；不会改动视频文件。
+已打开的窗口需要关闭后重开。可运行 `screen-record-edit --load /绝对路径/视频.mp4`
+重新编辑已有录屏。
+
+当前窗口也可在“编辑 → 首选项 → 显示”把视频显示改成 Qt，在硬件加速页关闭
+VDPAU/LibVA 解码，关闭编辑器后重开视频。左上角不再显示 VDPAU；锁定版本实测显示 Lavcodec / RGB。
+关闭硬件解码并不等于关闭 VDPAU 显示，两项需要分别检查。
