@@ -277,3 +277,9 @@ T011 保持待用户验收。
 - [x] 仅 liu-bigpc 添加 wf-recorder 和 Ctrl+Shift+Print 开始/停止框选录屏，保留截图快捷键。
 - [x] wf-recorder 0.6.0：完整系统/HM、KDL 和 ShellCheck 通过；9 项不捕获桌面的控制检查通过，合成视频确认奇数尺寸补齐后 H.264/yuv420p 编码有效，命令及 HM 激活目标核对；真实画面/性能留待用户验收。
 - [ ] 用户 switch 后验证 Ctrl+Shift+Fn+I、取消、通知、MP4 播放及 CPU 占用。
+
+## 录屏后复制文件
+
+- [x] 正常停止后自动复制文件 URI，独立剪贴板生命周期，失败保留原文件并通知。
+- [x] 完整系统/HM、Niri validate 和 ShellCheck 通过；隔离检查覆盖 URI 特殊字符/MIME、独立剪贴板 owner、复制成功与失败通知、失败/空录屏不复制；未修改当前剪贴板。
+- [ ] 用户 switch 后验证视频在目标聊天应用 Ctrl+V 附件粘贴。

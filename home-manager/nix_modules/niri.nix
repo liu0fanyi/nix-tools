@@ -152,11 +152,23 @@ let
 
   screenRecordFinished = pkgs.writeShellApplication {
     name = "screen-record-finished";
-    runtimeInputs = with pkgs; [ libnotify ];
+    runtimeInputs = with pkgs; [ coreutils libnotify python3 systemd ];
     text = ''
       if [[ "$SERVICE_RESULT" == success && -s "$SCREEN_RECORD_FILE" ]]; then
-        notify-send --replace-id="$SCREEN_RECORD_NOTIFICATION" --expire-time=5000 \
-          "录屏已保存" "$SCREEN_RECORD_FILE" || true
+        uri=$(python3 -c 'import pathlib, sys; print(pathlib.Path(sys.argv[1]).as_uri(), end="")' "$SCREEN_RECORD_FILE")
+        # Wayland 剪贴板需要存活的 owner。独立单元避免录屏单元收尾时杀掉 wl-copy。
+        # wl-copy 默认 fork；Type=forking 等待取得剪贴板后才报告启动成功。
+        if systemd-run --user --quiet --collect --service-type=forking \
+          --unit="nix-tools-recording-clipboard-$(date +%s%N)" \
+          --setenv="WAYLAND_DISPLAY=$WAYLAND_DISPLAY" \
+          --setenv="XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR" \
+          ${pkgs.wl-clipboard}/bin/wl-copy --type text/uri-list "$uri"$'\r\n'; then
+          notify-send --replace-id="$SCREEN_RECORD_NOTIFICATION" --expire-time=5000 \
+            "录屏已保存并复制" "支持文件粘贴的应用中按 Ctrl+V。$SCREEN_RECORD_FILE" || true
+        else
+          notify-send --replace-id="$SCREEN_RECORD_NOTIFICATION" --expire-time=5000 \
+            "录屏已保存，复制失败" "$SCREEN_RECORD_FILE" || true
+        fi
       else
         notify-send --replace-id="$SCREEN_RECORD_NOTIFICATION" --urgency=critical \
           "录屏失败或中断" "文件可能不完整。用 journalctl --user -u nix-tools-screen-record 查看原因。" || true

@@ -55,3 +55,12 @@ MP4 使用 libx264/yuv420p、30fps、ultrafast/crf23；FFmpeg pad 修正奇数�
 
 继续遵守上述宪法检查；仅更新 PC 配置和合法资料镜像，不替用户 switch。
 验证完整系统/HM、KDL、脚本检查及不捕获桌面的录屏控制测试；真实画面与性能待用户验收。
+
+### 录屏后文件剪贴板
+
+ExecStopPost 成功且文件非空时，以 Python Path.as_uri 编码路径（含空格、中文和
+特殊字符），通过 wl-copy 的 text/uri-list 提供文件 URI。wl-copy 单独运行在
+唯一命名的 transient user service 中，Type=forking 等待默认 daemon 初始化；
+不让剪贴板 owner 随录屏服务收尾被杀掉。剪贴板被替换时 owner 自动退出并回收
+单元。失败分支不复制，复制失败保留视频并明确通知。命令构造与错误分支采用
+隔离 mock 验证，不覆盖用户当前剪贴板；真实应用粘贴待用户验收。
