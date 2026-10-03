@@ -305,3 +305,5 @@ T011 保持待用户验收。
   独立Xvfb加载9.166秒录屏副本正常退出，帧缓冲截图目视确认画面和Lavcodec/RGB。
   仅写临时HOME，未修改用户当前偏好、未切换系统、未捕获用户桌面。
 - [ ] 用户手动switch后关闭旧编辑器并重开视频，验证当前Niri会话中的预览和剪辑。
+
+- [x] v0.1.0-nix.27 已锁定私人 stable f55bed647022a53edc9547bbfa9510196ab64bf7：紧凑原生后退/刷新/前进。CI 37097191342、本机、Release/Cachix 精确输出 /nix/store/kkqb2kyqxvqwqq3vsjssn8xwx8cfwpak-tag-browser-0.1.0 一致，缓存命中与预取通过。完整系统 /nix/store/6brxrs87p668iad3xkyvwk6afr6xg2xh-nixos-system-liu-bigpc-26.11.20260922.b6c98e9 和 Home Manager /nix/store/ibkqmbdcw1b27a751zz1qbidwsa1ics2-home-manager-generation 构建通过。保留工作树既有 AGENTS、home.nix 和其他依赖更新，只提交浏览器锁输入与本条发行状态；未执行用户系统 switch。NUC 前端图片粘贴新鲜位置校验已部署，实际剪贴板待用户验收，详情以 dufs-plus 009 为准。
