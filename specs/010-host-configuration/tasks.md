@@ -322,3 +322,12 @@ T011 保持待用户验收。
 Mod+S与Mod+Shift+S正确映射普通/--edit录屏，旧录屏组合已移除。
 Niri validate、完整liu-bigpc系统与Home Manager构建通过；没有录用户桌面、没有switch。
 原Alt+Shift+Fn+I具体实机冲突源尚未确认，不把避开旧组合视为已确认输入法或固件故障。
+
+## HHKB右手Fn区录屏
+- [x] 将录屏改为Fn+O（Scroll_Lock）/Shift+Fn+O，保留Fn+I截图与Shift+Fn+I编辑，释放Cmd+S组合；规格手册同步。
+- [x] 验证最终绑定唯一性、动作和旧组合移除、Niri validate、完整系统/HM；镜像并提交推送。
+- [ ] 用户应用配置后验证HHKB实际Fn+O/Shift+Fn+O识别及录屏收尾编辑。
+
+Fn+O验收：最终126个绑定无重复；Scroll_Lock/Shift+Scroll_Lock正确映射
+普通/--edit录屏；Print家族截图和XF86AudioRaiseVolume保留，所有旧录屏组合移除。
+Niri validate、完整系统及HM构建通过。实际HHKB按键仍待用户应用配置验证；未执行switch。

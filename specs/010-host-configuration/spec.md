@@ -83,14 +83,14 @@ niri 仅转发设备真实上报的数位板滚轮轴；Chromium 明确未实现
 
 ### liu-bigpc 快捷键录屏
 
-- 安装 wf-recorder；Mod+S（用户键盘 Cmd+S）首次框选并录屏，
+- 安装 wf-recorder；Scroll_Lock（用户键盘 Fn+O）首次框选并录屏，
   再次按下正常结束、保存 MP4 到 `~/Videos/Screencasts/`。原截图绑定保持。
 - 默认只录系统声音；Waybar 左键菜单选择系统、麦克风、系统+麦克风或无声，
   右键开始/停止。录制期间禁止更换声音来源；没有非 monitor 输入时明确拒绝麦克风录音。
   混音只连接到专用虚拟输出，不将麦克风送入真实扬声器，不改变默认音频设备。
 - 原选区分辨率、24fps、H.264 veryfast/CRF24，VBV 4Mbps/8Mb，关键帧间隔48帧；
   声音 AAC 128kbps/48kHz。奇数尺寸补齐为偶数；体积与清晰度、CPU 占用待实机验证。
-- Mod+Shift+S（Cmd+Shift+S）启动录完编辑的独立流程，成功结束后打开 Screen Cut；
+- Shift+Scroll_Lock（Shift+Fn+O）启动录完编辑的独立流程，成功结束后打开 Screen Cut；
   支持剪头尾与删除中间片段。普通入口不打开编辑器，失败/空视频不打开。
   Screen Cut支持h/l与v/d剪辑、Ctrl+S另存/明确选择后的备份覆盖、Ctrl+C复制编辑结果。
   自动结束录屏时的剪贴板仍指向原录屏，编辑后Ctrl+C更新。
@@ -110,7 +110,7 @@ niri 仅转发设备真实上报的数位板滚轮轴；Chromium 明确未实现
 
 ### 截图/录屏快捷键统一
 - Fn+I截图、Shift+Fn+I截图后编辑，保留Ctrl+Fn+I整屏、Alt+Fn+I窗口截图。
-- Cmd+S开始/停止普通录屏；Cmd+Shift+S录屏后编辑。Shift统一表示带编辑。
+- Fn+O开始/停止普通录屏；Shift+Fn+O录屏后编辑。Shift统一表示带编辑。
 - 撤销旧Ctrl+Shift+Print与Alt+Shift+Print录屏入口，不占用现有窗口/工作区快捷键。
 - 两个录屏组合均停止同一录屏服务；编辑模式以开始时为准。
 - 构建/校验最终生成KDL，无重复绑定；真实键盘冲突与按键识别在用户switch后验收。
