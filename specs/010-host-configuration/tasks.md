@@ -368,3 +368,10 @@ HM 3kzmsikh4r3xzqq9kmy3gc2mhnylma0x构建通过，home-path命令及desktop Exec
 - [x] nu-check和独立真实缓存检查段通过；完整系统h39k8qir3jxgczimp8l2hraqj38wmfj6与HM xdjymz1d21s68z0082c2p9cw8b8g6cr1构建通过，安装产物保持一致。镜像与提交推送；未执行switch。
 
 - [x] 私有 nix.28 已锁定 Tag Browser d090045a1233ccc5e4f783738acdee813c4e51b3，修复原生导航按钮悬停多余背景。67 项 Node、750 项 Firefox、最终包 5 个多窗口恢复场景及隔离包装器版本启动通过；CI 37123646286 成功，PC/Release/Cachix 精确输出 /nix/store/4c7w0fp52hlwbrp7mnj2bdy3ivdzhrrj-tag-browser-0.1.0 一致，缓存签名导入与验证通过。完整系统 /nix/store/a0ji9jsl8zjlgqbhcdvi43khlp9a1sr9-nixos-system-liu-bigpc-26.11.20260922.b6c98e9 和 Home Manager /nix/store/xdjymz1d21s68z0082c2p9cw8b8g6cr1-home-manager-generation 构建通过，实际系统浏览器路径和激活备份设置核对。只更新浏览器锁节点，保留 AGENTS、home.nix 与其他输入的既有修改；Agent 不执行 switch。用户普通终端执行 nu rerun.nu liou --host liu-bigpc，正常关闭旧窗口再重开确认 nix.28。
+
+
+## 当前 Tag Browser nix.29 发布
+
+- [x] 锁定私人 stable 66a0b28ff8119fca593f96e734d2b1dc2c209425，默认启用 Firefox 原生兼容 token，修复 Bilibili 浏览器过低跳转。67 项 Node、778 项 Firefox 检查、最终包 5 个多窗口恢复场景通过；CI 37131641915 成功，PC/Release/Cachix 精确输出 /nix/store/krx6h0rdgq803r76pz5zrdsvx38yb5vw-tag-browser-0.1.0 一致，缓存命中和签名验证通过。
+- [x] 完整系统 /nix/store/lx962ngr6y98vx7sdkzx8zhqcizpa4il-nixos-system-liu-bigpc-26.11.20260922.b6c98e9 与 Home Manager /nix/store/xdjymz1d21s68z0082c2p9cw8b8g6cr1-home-manager-generation 构建通过，系统浏览器及桌面入口核对。仅更新浏览器锁节点与本段状态，保留既有 AGENTS、home.nix、其他锁节点修改；未执行 switch。
+- [ ] 用户在普通终端运行 `nu rerun.nu liou --host liu-bigpc`，正常关闭旧窗口后重新打开，确认 app nix.29 并访问 Bilibili 首页和实际视频。
