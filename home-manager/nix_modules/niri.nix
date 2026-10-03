@@ -295,10 +295,10 @@ let
                 // 一键切换 Mako 勿扰模式，并清除当前可见通知。
                 Mod+Shift+N { spawn "mako-dnd" "toggle"; }
             ${lib.optionalString isLiuBigpc ''
-                // Fn+I 上报 Print；Shift+Fn+I 框选后打开 Satty。
+                // 截图沿用 Fn+I (Print)，录屏用 Mod+S；Shift统一表示结束后编辑。
                 Shift+Print hotkey-overlay-title="截图后编辑 (Satty)" { spawn "${screenshotEdit}/bin/screenshot-edit"; }
-                Ctrl+Shift+Print cooldown-ms=1000 hotkey-overlay-title="开始/停止录屏" { spawn "${screenRecordToggle}/bin/screen-record-toggle"; }
-                Alt+Shift+Print cooldown-ms=1000 hotkey-overlay-title="录屏后编辑" { spawn "${screenRecordToggle}/bin/screen-record-toggle" "--edit"; }
+                Mod+S cooldown-ms=1000 hotkey-overlay-title="开始/停止录屏" { spawn "${screenRecordToggle}/bin/screen-record-toggle"; }
+                Mod+Shift+S cooldown-ms=1000 hotkey-overlay-title="录屏后编辑" { spawn "${screenRecordToggle}/bin/screen-record-toggle" "--edit"; }
             ''}
           ''
           ""

@@ -312,3 +312,13 @@ T011 保持待用户验收。
 - [x] 固定packages/screen-cut.nix Cachix输出并安装到Niri home.packages；rerun支持首次fetch-closure。
 - [x] 用Screen Cut替换录屏编辑接线，成功且--edit才打开刚录制文件，普通/失败/空文件不打开。
 - [x] 验证完整liu-bigpc toplevel、Home Manager generation、desktop/KDL/ShellCheck与隔离收尾行为；用户switch待执行。
+
+## 截图/录屏快捷键统一
+- [x] 检查现有键位，改录屏为Cmd+S/Cmd+Shift+S，截图保留Fn+I/Shift+Fn+I；手册与规格同步。
+- [x] 校验最终KDL的快捷键唯一性和动作、Niri validate、完整系统/HM构建；镜像与提交。
+- [ ] 用户应用配置后验证实际键盘截图、录屏与录完自动编辑。
+
+验收：最终126个Niri绑定无重复；Print/Shift+Print/Ctrl+Print/Alt+Print保留，
+Mod+S与Mod+Shift+S正确映射普通/--edit录屏，旧录屏组合已移除。
+Niri validate、完整liu-bigpc系统与Home Manager构建通过；没有录用户桌面、没有switch。
+原Alt+Shift+Fn+I具体实机冲突源尚未确认，不把避开旧组合视为已确认输入法或固件故障。

@@ -46,7 +46,7 @@ slurp 选区、grim 截图，再以临时 PNG 打开 Satty；复制使用 wl-cop
 ## 快捷键录屏方案
 
 仅 liu-bigpc 在 Niri 模块安装锁定 nixpkgs 的 wf-recorder 与 screen-record-toggle。
-Ctrl+Shift+Print 通过 flock 串行切换，slurp 取消即退出。录屏运行于专属临时
+Mod+S 通过 flock 串行切换，slurp 取消即退出。录屏运行于专属临时
 `nix-tools-screen-record.service`，systemd-run 显式传递 Wayland、运行目录和通知/文件
 环境；再次触发用 systemctl stop，只向该单元发 SIGINT 并等待文件正常收尾。
 ExecStopPost 替换开始通知，按 SERVICE_RESULT 与文件存在性区分保存/失败。
@@ -75,7 +75,7 @@ flock，录制期间拒绝选择。系统声音取默认 sink 的 monitor；麦�
 逐次记录模块 ID、名称和精确 sink 参数，失败与结束时逆序清理；音频服务重启后
 不得因 ID 复用误删其他模块。不设置默认设备、不把麦克风连接真实扬声器。
 
-Alt+Shift+Print 传 --edit，在录屏单元保存 SCREEN_RECORD_EDIT；成功收尾后另启
+Mod+Shift+S 传 --edit，在录屏单元保存 SCREEN_RECORD_EDIT；成功收尾后另启
 transient 单元运行锁定 nixpkgs 的 Avidemux --load，避免编辑器随录屏单元结束。
 Copy 模式支持关键帧剪切，另存 MP4；不监控编辑器输出、不自动替换原文件剪贴板。
 Python 隔离回归覆盖音源、混音部分失败及模块所有权；脚本控制检查不捕获桌面或
@@ -99,3 +99,8 @@ rerun首次运行也启用fetch-closure，NixOS/非NixOS配置持久声明支持
 已有录屏收尾服务在成功+非空+--edit时直接传路径给screen-record-edit→screen-cut；
 普通录屏及失败不打开，无新自启动、无源码路径、无额外profile安装。
 完整toplevel、Home Manager generation、KDL、ShellCheck与隔离收尾行为验证后用户switch。
+
+## 快捷键统一修订
+截图继续用Print及Shift+Print；普通/编辑录屏改Mod+S/Mod+Shift+S，避免Alt/Shift/Fn组合。
+预先扫描官方模板与自定义绑定确认未占用，保留原Ctrl+Print/Alt+Print截图语义。
+生成最终KDL后检查唯一性与Niri validate；完整系统和HM构建，不改变录制/编辑脚本。
