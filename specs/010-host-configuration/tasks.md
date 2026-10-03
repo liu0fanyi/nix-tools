@@ -366,3 +366,5 @@ HM 3kzmsikh4r3xzqq9kmy3gc2mhnylma0x构建通过，home-path命令及desktop Exec
 ## Screen Cut缓存提示
 - [x] rerun在liu-bigpc切换前求值screen-cut-binary-path，核对并预取Cachix精确bundle，显示检查/命中信息；错误阻止切换。pin仍仅来自packages/screen-cut.nix。
 - [x] nu-check和独立真实缓存检查段通过；完整系统h39k8qir3jxgczimp8l2hraqj38wmfj6与HM xdjymz1d21s68z0082c2p9cw8b8g6cr1构建通过，安装产物保持一致。镜像与提交推送；未执行switch。
+
+- [x] 私有 nix.28 已锁定 Tag Browser d090045a1233ccc5e4f783738acdee813c4e51b3，修复原生导航按钮悬停多余背景。67 项 Node、750 项 Firefox、最终包 5 个多窗口恢复场景及隔离包装器版本启动通过；CI 37123646286 成功，PC/Release/Cachix 精确输出 /nix/store/4c7w0fp52hlwbrp7mnj2bdy3ivdzhrrj-tag-browser-0.1.0 一致，缓存签名导入与验证通过。完整系统 /nix/store/a0ji9jsl8zjlgqbhcdvi43khlp9a1sr9-nixos-system-liu-bigpc-26.11.20260922.b6c98e9 和 Home Manager /nix/store/xdjymz1d21s68z0082c2p9cw8b8g6cr1-home-manager-generation 构建通过，实际系统浏览器路径和激活备份设置核对。只更新浏览器锁节点，保留 AGENTS、home.nix 与其他输入的既有修改；Agent 不执行 switch。用户普通终端执行 nu rerun.nu liou --host liu-bigpc，正常关闭旧窗口再重开确认 nix.28。
