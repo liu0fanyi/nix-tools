@@ -60,31 +60,17 @@ Waybar 的摄像图标显示当前录屏声音，录制时变红并显示圆点�
 
 ## 录屏后剪辑
 
-`Alt+Shift+Fn+I`（Alt+Shift+Print）框选并开始，第二次按键停止后打开 Avidemux；
-普通 `Ctrl+Shift+Fn+I` 保持直接保存。停止键或 Waybar 右键均结束当前流程，
-是否打开编辑器由开始时使用的入口决定。终端入口为 `screen-record-toggle --edit`。
+### Screen Cut菜单与录屏后自动编辑
 
-1. 在 Avidemux 选择 Video Output = Copy、Audio Output = Copy，Output Format = MP4 Muxer。
-2. 用 A/B 标记选区：剪头尾时选中要保留的片段直接保存；删除中段时选中要删的
-   片段按 Delete，再保存剩余部分。
-3. Ctrl+S 另存为新的 `.mp4`，保留原录屏便于重新剪辑。
+在普通终端执行：
+```bash
+cd /home/liou/nix-tools
+nu rerun.nu liou --host liu-bigpc
+```
 
-Copy 模式不重新编码，速度快、画质不损失，但剪切起点须落在关键帧；使用
-Previous/Next keyframe 按钮定位，当前录屏每约2秒一个关键帧。需要逐帧精确剪切时
-改用重新编码模式，会增加处理时间并可能改变画质。
+Cmd+D搜索Screen Cut，按o选视频；Alt+Shift+Fn+I开始框选录屏，结束后自动打开刚录制视频。
+Ctrl+Shift+Fn+I保留普通录屏、不打开编辑器。h/l定位、v选区、d删除，Ctrl+S保存，
+Ctrl+C导出并复制编辑结果。复制仍是文件URI，dufs-plus视频粘贴未增加。
 
-自动剪贴板仍指向原始录屏，编辑后的文件需要另行拖入目标应用或复制文件。
-文件 URI 不是视频二进制；dufs-plus 当前 Markdown 粘贴入口只上传图片，
-尚不能通过此方式自动上传视频，可先手动上传视频再引用。
-
-### Avidemux 有声音但预览蓝屏
-
-录屏编辑入口使用 `screen-record-edit`，启动前合并 Avidemux 配置中的 Qt 软件预览
-（videodevice=0）与软件解码设置，绕开 VDPAU 显示兼容问题。其他偏好保留，首次
-修改前备份为 `~/.avidemux6/config3.before-software-preview-*`；不会改动视频文件。
-已打开的窗口需要关闭后重开。可运行 `screen-record-edit --load /绝对路径/视频.mp4`
-重新编辑已有录屏。
-
-当前窗口也可在“编辑 → 首选项 → 显示”把视频显示改成 Qt，在硬件加速页关闭
-VDPAU/LibVA 解码，关闭编辑器后重开视频。左上角不再显示 VDPAU；锁定版本实测显示 Lavcodec / RGB。
-关闭硬件解码并不等于关闭 VDPAU 显示，两项需要分别检查。
+安装引用固定Cachix版本，不依赖开发机源码路径；其他x86_64 Linux Niri宿主也通过rerun安装。
+系统切换后才可用，Agent只构建验证、不执行switch。

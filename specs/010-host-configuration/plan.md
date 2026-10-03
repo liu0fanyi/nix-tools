@@ -91,3 +91,11 @@ screen-record-edit 在启动前合并 videodevice=0、关闭硬件解码；其�
 该入口，已有视频可用同一命令重开。不直接写当前用户配置或终止其编辑器；
 用临时HOME与独立Xvfb检查视频副本加载、实际预览画面，再验证完整系统/HM和脚本构建。
 offscreen插件无法提供VDPAU初始化所需的X显示，故使用独立虚拟显示；不连接或截取用户桌面。
+
+## Screen Cut声明式安装与录屏接线
+packages/screen-cut.nix固定公开Cachix desktop bundle，通过fetchClosure读取签名可信的运行闭包，
+小symlinkJoin安装到x86_64 Linux Niri的home.packages，菜单由desktop文件自动索引。
+rerun首次运行也启用fetch-closure，NixOS/非NixOS配置持久声明支持。
+已有录屏收尾服务在成功+非空+--edit时直接传路径给screen-record-edit→screen-cut；
+普通录屏及失败不打开，无新自启动、无源码路径、无额外profile安装。
+完整toplevel、Home Manager generation、KDL、ShellCheck与隔离收尾行为验证后用户switch。

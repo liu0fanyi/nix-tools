@@ -89,6 +89,9 @@ def main [
         error make { msg: "--install-bootloader 仅适用于 NixOS system 部署" }
     }
 
+    # Desktop binaries pinned in Cachix (including Screen Cut) use fetchClosure.
+    $env.NIX_CONFIG = (($env.NIX_CONFIG? | default "") + "\nextra-experimental-features = fetch-closure\n")
+
     # clipboard-sync 是本仓库中由独立 CI 发布到 Cachix 的自有包。
     # 部署前直接查询并预取精确的 store path：如果 CI 尚未上传，立即终止，
     # 避免 nixos-rebuild / home-manager 静默回退到本机编译 Rust 项目。

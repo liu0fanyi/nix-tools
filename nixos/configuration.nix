@@ -268,6 +268,7 @@ in
     experimental-features = [
       "nix-command"
       "flakes"
+      "fetch-closure"
     ];
     trusted-users = [
       "root"

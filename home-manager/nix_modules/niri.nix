@@ -158,41 +158,11 @@ let
     '';
   };
 
+  screenCut = import ../../packages/screen-cut.nix { inherit pkgs; };
   screenRecordEdit = pkgs.writeShellApplication {
     name = "screen-record-edit";
-    runtimeInputs = with pkgs; [ python3 ];
     text = ''
-      # VDPAU can initialize successfully yet show only a blue preview on Niri.
-      # Merge only preview/decode preferences; preserve the user's other settings.
-      python3 - <<'PYTHON'
-      import json
-      import os
-      from pathlib import Path
-      import shutil
-      import tempfile
-      import time
-
-      path = Path.home() / ".avidemux6/config3"
-      config = json.loads(path.read_text()) if path.exists() else {"version": {"apiVersion": 1}}
-      original = json.dumps(config, sort_keys=True)
-      config["videodevice"] = 0  # Avidemux 2.8.1 RENDER_GTK, native Qt renderer in Qt GUI.
-      features = config.setdefault("features", {})
-      for key in ("vdpau", "libva", "dxva2", "videotoolbox"):
-          features[key] = False
-      if json.dumps(config, sort_keys=True) != original:
-          path.parent.mkdir(parents=True, exist_ok=True)
-          if path.exists():
-              shutil.copy2(path, path.with_name("config3.before-software-preview-" + str(time.time_ns())))
-          fd, name = tempfile.mkstemp(prefix="config3-", dir=path.parent)
-          try:
-              with os.fdopen(fd, "w") as output:
-                  json.dump(config, output, ensure_ascii=False, indent=2)
-                  output.write("\n")
-              os.replace(name, path)
-          finally:
-              Path(name).unlink(missing_ok=True)
-      PYTHON
-      exec ${pkgs.avidemux}/bin/avidemux "$@"
+      exec ${screenCut}/bin/screen-cut "$@"
     '';
   };
 
@@ -225,7 +195,7 @@ let
           --setenv="WAYLAND_DISPLAY=$WAYLAND_DISPLAY" \
           --setenv="XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR" \
           --setenv="DISPLAY=''${DISPLAY:-}" \
-          ${screenRecordEdit}/bin/screen-record-edit --load "$SCREEN_RECORD_FILE"; then
+          ${screenRecordEdit}/bin/screen-record-edit "$SCREEN_RECORD_FILE"; then
           notify-send "无法打开录屏编辑器" "$SCREEN_RECORD_FILE" || true
         fi
       fi
@@ -442,7 +412,8 @@ in
         # such as the official Linux WeChat client.
         pkgs.xwayland-satellite
       ]
-      ++ lib.optionals isLiuBigpc [ pkgs.satty screenshotEdit pkgs.wf-recorder screenRecordToggle screenRecordAudio screenRecordEdit pkgs.avidemux ]
+      ++ lib.optionals isLiuBigpc [ pkgs.satty screenshotEdit pkgs.wf-recorder screenRecordToggle screenRecordAudio screenRecordEdit ]
+      ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [ screenCut ]
       ++ lib.optionals (!isNixOS) [
         niriPackage
         niri-session-wrapped
