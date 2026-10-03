@@ -154,6 +154,7 @@
       # Cache preflight reads the immutable published browser output, not the
       # small symlinkJoin package that installs it into the system profile.
       tag-browser-binary-path = inputs.tag-browser-src.lib.${system}.binaryPath;
+      screen-cut-binary-path = (import ./packages/screen-cut.nix { inherit pkgs; }).binaryPath;
 
       homeConfigurations = {
         "liou" = mkHomeConfig "liou" [ ];

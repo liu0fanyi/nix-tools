@@ -154,6 +154,27 @@ def main [
             error make { msg: $"从 Cachix 预取 Tag Browser 失败：\n($browser_copy.stderr | str trim)" }
         }
         print $"(ansi green)✓ Tag Browser 已命中 Cachix: ($browser_path)(ansi reset)"
+
+        let screen_cut_cache = "https://liu0fanyi-nix.cachix.org"
+        let screen_cut_attr = $"($env.PWD)#screen-cut-binary-path"
+        print $"(ansi cyan)Checking Screen Cut binary cache...(ansi reset)"
+        let screen_cut_eval = (nix eval --raw $screen_cut_attr | complete)
+        if $screen_cut_eval.exit_code != 0 {
+            error make { msg: $"无法求值 Screen Cut store path：\n($screen_cut_eval.stderr | str trim)" }
+        }
+        let screen_cut_path = ($screen_cut_eval.stdout | str trim)
+        if ($screen_cut_path | is-empty) {
+            error make { msg: "Screen Cut store path 为空，停止部署" }
+        }
+        let screen_cut_check = (nix path-info --refresh --store $screen_cut_cache $screen_cut_path | complete)
+        if $screen_cut_check.exit_code != 0 {
+            error make { msg: $"Cachix 尚未发布 Screen Cut：($screen_cut_path)\n($screen_cut_check.stderr | str trim)" }
+        }
+        let screen_cut_copy = (nix copy --refresh --no-recursive --from $screen_cut_cache $screen_cut_path | complete)
+        if $screen_cut_copy.exit_code != 0 {
+            error make { msg: $"从 Cachix 预取 Screen Cut 失败：\n($screen_cut_copy.stderr | str trim)" }
+        }
+        print $"(ansi green)✓ Screen Cut 已命中 Cachix: ($screen_cut_path)(ansi reset)"
     }
 
     if $use_nixos {

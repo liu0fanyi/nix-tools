@@ -9,6 +9,8 @@ let
 in pkgs.symlinkJoin {
   name = "screen-cut-0.1.0";
   paths = [ cached ];
+  # Cache preflight must check the published bundle, not this local wrapper.
+  passthru.binaryPath = cached;
   meta = {
     description = "Vim-style recording editor";
     mainProgram = "screen-cut";

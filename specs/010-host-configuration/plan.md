@@ -120,3 +120,7 @@ rerun首次运行也启用fetch-closure，NixOS/非NixOS配置持久声明支持
 沿用fetchClosure，固定008 desktop bundle；核对签名、匿名归档、完整liu-bigpc系统/HM和实际命令/desktop目标。
 41项单元测试、隔离GUI合成声音和mock输入验证；不自动采集用户麦克风。真实麦克风及输入延迟由用户验收。
 Constitution Check通过：PC构建、目录分层、无新增外部参考、镜像白名单、保留既有工作树改动；不切换系统。
+
+### Screen Cut缓存提示方案
+packages/screen-cut.nix通过passthru公开原缓存bundle，flake输出screen-cut-binary-path，rerun复用Tag Browser所在主机分支核对/预取并显示命中。
+不重复硬编码pin、不把本地symlinkJoin当作已上传包；只读运行独立检查段和完整系统/HM构建，不执行switch。

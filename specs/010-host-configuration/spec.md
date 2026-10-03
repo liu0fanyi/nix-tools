@@ -128,3 +128,6 @@ niri 仅转发设备真实上报的数位板滚轮轴；Chromium 明确未实现
 ### Screen Cut配乐与旁白
 - 固定缓存包升级到产品008：音频文件/麦克风、叠加/替换、音量/移动/裁剪和统一试听导出；旁白作为普通音频片段。
 - 功能权威规格在screen-cut/specs/008-audio-voiceover/；只修改包pin与010规格，不改录屏快捷键或dufs-plus，不代用户switch。
+
+### Screen Cut缓存检查提示
+- liu-bigpc的rerun在系统切换前显示Screen Cut缓存检查及命中信息；求值唯一包pin、核对Cachix精确输出并预取，任一步失败明确报错并停止切换。

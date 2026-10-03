@@ -362,3 +362,7 @@ HM 3kzmsikh4r3xzqq9kmy3gc2mhnylma0x构建通过，home-path命令及desktop Exec
 
 仅提交Screen Cut pin与010规格；保留既有AGENTS、flake.lock、home.nix改动，完整构建包含当前工作树。
 录屏快捷键、其他产品不变；自动化不采集真实输入，Agent未执行switch。
+
+## Screen Cut缓存提示
+- [x] rerun在liu-bigpc切换前求值screen-cut-binary-path，核对并预取Cachix精确bundle，显示检查/命中信息；错误阻止切换。pin仍仅来自packages/screen-cut.nix。
+- [x] nu-check和独立真实缓存检查段通过；完整系统h39k8qir3jxgczimp8l2hraqj38wmfj6与HM xdjymz1d21s68z0082c2p9cw8b8g6cr1构建通过，安装产物保持一致。镜像与提交推送；未执行switch。
