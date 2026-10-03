@@ -109,3 +109,9 @@ rerun首次运行也启用fetch-closure，NixOS/非NixOS配置持久声明支持
 沿用packages/screen-cut.nix fetchClosure，仅更新经发布验证的desktop bundle；
 核对完整liu-bigpc toplevel、HM generation与desktop实际程序目标。录屏快捷键和启动脚本不变。
 上级目录来源分层与本仓constitution检查通过，无新增外部参考、无系统切换。
+
+### Screen Cut切点与字幕升级
+沿用公开Cachix fetchClosure，固定006/007发布的desktop bundle，验证缓存签名、
+完整liu-bigpc系统/HM和实际命令/desktop目标。上级规则和本仓宪法检查通过；
+无新增外部参考，不改快捷键、不切换系统。已有AGENTS、flake.lock和home.nix改动保留，
+构建包含当前工作树，提交只包含本次包pin与010规格。

@@ -340,3 +340,16 @@ Niri validate、完整系统及HM构建通过。实际HHKB按键仍待用户应�
 
 本次只提交Screen Cut pin与010对应规格；保留既有AGENTS、其他依赖锁和home.nix变更。
 构建包含这些工作树已有变更，不代用户执行switch；录屏快捷键与dufs-plus未改。
+
+## Screen Cut切点与手动字幕更新
+- [x] 发布并核验006/007运行包、缓存签名及归档摘要，更新固定包pin。
+- [x] 验证完整liu-bigpc系统/HM和命令/desktop目标，镜像与提交推送。
+- [ ] 用户rerun后验收切点循环、中文IME、字幕保存与复制。
+
+产品权威规格为screen-cut 006/007；用户系统尚未切换。
+
+当前006/007发行：bundle sxr1p0xkxa474c07c0xz6y3lm0m6253w，程序8hl15snq8k9xv7hl8vhj1ngwhp0qizc4；
+三输出可信签名、匿名bundle归档长度与SHA256通过。完整系统p9sdw6fwdn8c5bl43xbnzk9j7l75sgmw、
+HM 3kzmsikh4r3xzqq9kmy3gc2mhnylma0x构建通过，home-path命令及desktop Exec均指向新版。
+产品35单元测试、clippy、旧GUI回归、发行包媒体/字幕/循环与独立Wayland复制通过。
+本次只提交pin和010规格，保留AGENTS/flake.lock/home.nix已有变更；未执行switch。
