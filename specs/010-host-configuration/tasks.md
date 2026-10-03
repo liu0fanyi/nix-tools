@@ -331,3 +331,12 @@ Niri validate、完整liu-bigpc系统与Home Manager构建通过；没有录用�
 Fn+O验收：最终126个绑定无重复；Scroll_Lock/Shift+Scroll_Lock正确映射
 普通/--edit录屏；Print家族截图和XF86AudioRaiseVolume保留，所有旧录屏组合移除。
 Niri validate、完整系统及HM构建通过。实际HHKB按键仍待用户应用配置验证；未执行switch。
+
+## Screen Cut波形与恢复缓存更新
+- [x] 发布与核验新版desktop bundle gdybxp8862gwmy6c5qfc70wzm0p072j2；程序pir9q22hmk7vgi00cny9yvc158z4w2ar，三个新增路径签名、bundle归档SHA256通过。
+- [x] packages/screen-cut.nix更新固定缓存输出；完整liu-bigpc toplevel mbgs58ij78k7xp9a6mpxr8d4qk9i3kkp、HM 4m2l11gvcvd7y4x8mc3s2a8md5sxzz22构建通过，home-path命令与desktop Exec均指向新版程序。
+- [x] 产品27单元测试、合成媒体/软件预览、隔离Xvfb重启后undo/redo与zoom、独立Wayland视频复制回归通过；权威规格为screen-cut 005。
+- [ ] 用户普通终端rerun后关闭旧窗口，验收波形、缩放和相同视频恢复。
+
+本次只提交Screen Cut pin与010对应规格；保留既有AGENTS、其他依赖锁和home.nix变更。
+构建包含这些工作树已有变更，不代用户执行switch；录屏快捷键与dufs-plus未改。

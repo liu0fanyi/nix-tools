@@ -114,3 +114,8 @@ niri 仅转发设备真实上报的数位板滚轮轴；Chromium 明确未实现
 - 撤销旧Ctrl+Shift+Print与Alt+Shift+Print录屏入口，不占用现有窗口/工作区快捷键。
 - 两个录屏组合均停止同一录屏服务；编辑模式以开始时为准。
 - 构建/校验最终生成KDL，无重复绑定；真实键盘冲突与按键识别在用户switch后验收。
+
+### Screen Cut波形与恢复更新
+- 声明式安装包更新为含音频波形、时间轴缩放及用户状态目录自动恢复的版本；
+  删除历史支持u撤销、Ctrl+r重做，关闭重开后仍有效。产品权威规格在
+  /data/project/screen-cut/specs/005-waveform-recovery/；不改dufs-plus、不代用户switch。

@@ -104,3 +104,8 @@ rerun首次运行也启用fetch-closure，NixOS/非NixOS配置持久声明支持
 截图继续用Print及Shift+Print；普通/编辑录屏改Scroll_Lock/Shift+Scroll_Lock，无需Cmd或Alt组合。
 预先扫描官方模板与自定义绑定确认未占用，保留原Ctrl+Print/Alt+Print截图语义。
 生成最终KDL后检查唯一性与Niri validate；完整系统和HM构建，不改变录制/编辑脚本。
+
+### Screen Cut波形与恢复缓存更新
+沿用packages/screen-cut.nix fetchClosure，仅更新经发布验证的desktop bundle；
+核对完整liu-bigpc toplevel、HM generation与desktop实际程序目标。录屏快捷键和启动脚本不变。
+上级目录来源分层与本仓constitution检查通过，无新增外部参考、无系统切换。
