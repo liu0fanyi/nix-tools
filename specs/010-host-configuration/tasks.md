@@ -353,3 +353,12 @@ Niri validate、完整系统及HM构建通过。实际HHKB按键仍待用户应�
 HM 3kzmsikh4r3xzqq9kmy3gc2mhnylma0x构建通过，home-path命令及desktop Exec均指向新版。
 产品35单元测试、clippy、旧GUI回归、发行包媒体/字幕/循环与独立Wayland复制通过。
 本次只提交pin和010规格，保留AGENTS/flake.lock/home.nix已有变更；未执行switch。
+
+## Screen Cut配乐与麦克风旁白更新
+- [x] 发布008运行包，固定bundle arrsa3p4q795xkw02503wrz9xyr4wmq4；程序syk31fg5kxddwg3vmmlp5rrrbz4bvdyg、desktop bxk4vxp8cajacpzfpq1rh2bh2lgny5ps，三输出可信签名及匿名bundle长度/SHA256通过。
+- [x] 完整liu-bigpc系统h39k8qir3jxgczimp8l2hraqj38wmfj6、HM xdjymz1d21s68z0082c2p9cw8b8g6cr1构建通过，home-path命令及desktop Exec均指向新版；镜像与提交推送。
+- [x] 产品41单元测试、clippy、旧GUI回归、正式程序配音/mock麦克风及wrapper媒体/字幕/循环、独立Wayland复制通过。
+- [ ] 用户rerun后关闭旧窗口，实测麦克风旁白、叠加/替换、输入延迟与保存/复制，按产品008 quickstart。
+
+仅提交Screen Cut pin与010规格；保留既有AGENTS、flake.lock、home.nix改动，完整构建包含当前工作树。
+录屏快捷键、其他产品不变；自动化不采集真实输入，Agent未执行switch。

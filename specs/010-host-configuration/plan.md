@@ -115,3 +115,8 @@ rerun首次运行也启用fetch-closure，NixOS/非NixOS配置持久声明支持
 完整liu-bigpc系统/HM和实际命令/desktop目标。上级规则和本仓宪法检查通过；
 无新增外部参考，不改快捷键、不切换系统。已有AGENTS、flake.lock和home.nix改动保留，
 构建包含当前工作树，提交只包含本次包pin与010规格。
+
+### Screen Cut配音升级
+沿用fetchClosure，固定008 desktop bundle；核对签名、匿名归档、完整liu-bigpc系统/HM和实际命令/desktop目标。
+41项单元测试、隔离GUI合成声音和mock输入验证；不自动采集用户麦克风。真实麦克风及输入延迟由用户验收。
+Constitution Check通过：PC构建、目录分层、无新增外部参考、镜像白名单、保留既有工作树改动；不切换系统。
