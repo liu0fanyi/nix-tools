@@ -376,22 +376,14 @@ HM 3kzmsikh4r3xzqq9kmy3gc2mhnylma0x构建通过，home-path命令及desktop Exec
 - [x] 完整系统 /nix/store/lx962ngr6y98vx7sdkzx8zhqcizpa4il-nixos-system-liu-bigpc-26.11.20260922.b6c98e9 与 Home Manager /nix/store/xdjymz1d21s68z0082c2p9cw8b8g6cr1-home-manager-generation 构建通过，系统浏览器及桌面入口核对。仅更新浏览器锁节点与本段状态，保留既有 AGENTS、home.nix、其他锁节点修改；未执行 switch。
 - [ ] 用户在普通终端运行 `nu rerun.nu liou --host liu-bigpc`，正常关闭旧窗口后重新打开，确认 app nix.29 并访问 Bilibili 首页和实际视频。
 
-## Screen Mark独立截图编辑器
-- [x] 声明式固定bundle 460sk2kq38z0dz58ac92ck71lfp94xlr并安装Screen Mark菜单/图标；三输出签名及匿名归档长度/SHA256核对。rerun独立检查段显示缓存命中。
-- [x] Shift+Fn+I改用Screen Mark；生成脚本ShellCheck及6类mock流程(取消/空选区/截图失败/成功/编辑器失败/并发锁)通过，原图不变且临时输入清理。
-- [x] 完整系统 saibsb2i01i80slzz71i91gmcjwigmcx、HM 1zm0csk7zazsn3l3a5f4ipldw3yw6b02，Niri validate、唯一Shift+Print、实际程序与desktop Exec核对；文档镜像与提交推送。产品8单元测试、正式GUI及Wayland PNG生命周期通过。
-- [ ] 用户rerun后实测Shift+Fn+I、局部橡皮、中文IME及目标网页图片粘贴；产品权威规格为screen-mark 001。
+## Screen Mark 截图编辑器与共享绘画核心
 
-本次仅提交Screen Mark包/缓存提示/截图接线/使用说明与010规格；保留AGENTS、flake.lock、home.nix已有改动。未执行switch，不改视频编辑器。
+- [x] 声明式安装固定Cachix包、菜单图标及rerun独立缓存命中提示。
+- [x] Shift+Fn+I接入Screen Mark，截图脚本隔离回归、Niri配置及唯一快捷键核对通过。
+- [x] 当前共享核心版的可信缓存/运行依赖、完整liu-bigpc系统/HM、实际二进制和desktop入口核对通过；规格镜像与提交推送。
+- [x] 用户确认当前绘画可用及平滑手感：“可以了，挺好用的”；产品003已完成。
+- [ ] 截图键、中文IME、目标网页图片粘贴等实机专项按screen-mark 001追踪。
+- [ ] 压力笔宽、悬停/抬笔/移出、翻转橡皮等实机专项按screen-mark 002追踪。
 
-## Screen Mark数位板与绘制性能发行
-- [x] pin更新至已上传Cachix最终bundle c0n5h4c9y5xihxj0ppfs2w8ixdcba1kl；bundle/core/desktop可信签名通过。产品9单元/clippy、正式私有GUI/原生tablet-v2/PNG生命周期通过，180笔更新RSS约增加1.3MiB。
-- [x] 完整系统1rqqrylqric3hsrig3y7ggh2kf54qvs5/HM 684kxymrs2jf6yvg737x1lxld4pl7nzm、菜单和截图入口、Niri validate及6类mock、独立rerun缓存段核对通过；自有资料镜像及提交推送。压力晚到和多笔隔离通过，最终180连续更新RSS约+1.5MiB。
-- [ ] 用户rerun后真实数位板压感、翻转橡皮与快速绘制手感验收；产品权威规格screen-mark 002。
-
-## Screen Mark共享绘画核心发行
-- [x] 更新缓存pin，验证可信签名/运行闭包、rerun独立检查及完整liu-bigpc/HM构建。
-- [x] 同步说明与独立提交，保留AGENTS/flake.lock/home.nix已有改动。
-- [ ] 用户rerun后数位笔平滑手感验收；权威规格screen-mark 003。
-
-发行验收：bundle/core/desktop可信签名通过，119运行路径分别由官方Nix缓存115与应用Cachix4提供且签名可验证；rerun独立段已显示新版缓存命中。完整系统 lahspi114jfmsi4ql1680ib9b2myxmj0、HM f53v6ykijc5mgzai557vqbd8b7c6l4k9构建通过，实际菜单/二进制与唯一Shift+Print指向本次core 0i6739bmprmv7hbnqhsfnq4830xsnrfy。产品17核心+9单元/Clippy、正式GUI/tablet-v2回归通过；不执行switch，真实数位板手感待用户验收。
+产品功能权威规格在/data/project/screen-mark/specs/，本仓仅管理安装与接线。当前发行pin以packages/screen-mark.nix为准；共享库17测试、本产品9测试/Clippy和正式GUI/tablet-v2回归通过，运行闭包由官方Nix缓存与应用Cachix提供且签名可信。
+当前手感已由用户确认；专项检查不因总体反馈自动勾选。Agent不执行switch，保留既有AGENTS、flake.lock、home.nix改动。

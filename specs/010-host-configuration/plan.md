@@ -129,7 +129,5 @@ packages/screen-cut.nix通过passthru公开原缓存bundle，flake输出screen-c
 packages/screen-mark.nix固定已构建desktop bundle，flake导出唯一binaryPath，rerun当前liu-bigpc分支核对/预取并打印命中。Niri screenshot-edit保留flock/slurp/grim/trap，传PNG和另存目标给screen-mark；运行依赖声明，原截图/录屏动作不改。
 Constitution Check：独立产品规格、PC构建、无外部参考，缓存只运行闭包；预演白名单镜像，完整系统/HM/Niri与ShellCheck及模拟截图流程检查，用户switch。
 
-Screen Mark002使用自有GPUI依赖补丁和共享压感栅格缓存，最终bundle c0n5h4c9y5xihxj0ppfs2w8ixdcba1kl（core 42rs655nwaikgpqfrqzgcc850lbcxn86）；只更新packages/screen-mark.nix固定引用，保留原菜单/快捷键/rerun。正式私有tablet-v2、GUI/clipboard/180连续更新内存和可信缓存通过；随后核对完整liu-bigpc/HM产物及自有镜像。
-
 ### Screen Mark共享核心发行
 Screen Mark的源码Nix输入锁定canvas-kit e5237aa70e628f585418cca19b4e91196880f0a9，系统仅fetchClosure读取成品bundle j1cvwiafizx98f8qzwj2n6szalsqldm8（core 0i6739bmprmv7hbnqhsfnq4830xsnrfy）。不把源码依赖加入宿主flake、不上传共享仓源码，原截屏/录屏入口不改；核对运行闭包签名、rerun独立预检和完整host/HM构建，不执行switch。
