@@ -175,6 +175,27 @@ def main [
             error make { msg: $"从 Cachix 预取 Screen Cut 失败：\n($screen_cut_copy.stderr | str trim)" }
         }
         print $"(ansi green)✓ Screen Cut 已命中 Cachix: ($screen_cut_path)(ansi reset)"
+
+        let screen_mark_cache = "https://liu0fanyi-nix.cachix.org"
+        let screen_mark_attr = $"($env.PWD)#screen-mark-binary-path"
+        print $"(ansi cyan)Checking Screen Mark binary cache...(ansi reset)"
+        let screen_mark_eval = (nix eval --raw $screen_mark_attr | complete)
+        if $screen_mark_eval.exit_code != 0 {
+            error make { msg: $"无法求值 Screen Mark store path：\n($screen_mark_eval.stderr | str trim)" }
+        }
+        let screen_mark_path = ($screen_mark_eval.stdout | str trim)
+        if ($screen_mark_path | is-empty) {
+            error make { msg: "Screen Mark store path 为空，停止部署" }
+        }
+        let screen_mark_check = (nix path-info --refresh --store $screen_mark_cache $screen_mark_path | complete)
+        if $screen_mark_check.exit_code != 0 {
+            error make { msg: $"Cachix 尚未发布 Screen Mark：($screen_mark_path)\n($screen_mark_check.stderr | str trim)" }
+        }
+        let screen_mark_copy = (nix copy --refresh --no-recursive --from $screen_mark_cache $screen_mark_path | complete)
+        if $screen_mark_copy.exit_code != 0 {
+            error make { msg: $"从 Cachix 预取 Screen Mark 失败：\n($screen_mark_copy.stderr | str trim)" }
+        }
+        print $"(ansi green)✓ Screen Mark 已命中 Cachix: ($screen_mark_path)(ansi reset)"
     }
 
     if $use_nixos {

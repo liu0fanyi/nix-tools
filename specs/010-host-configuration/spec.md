@@ -131,3 +131,7 @@ niri 仅转发设备真实上报的数位板滚轮轴；Chromium 明确未实现
 
 ### Screen Cut缓存检查提示
 - liu-bigpc的rerun在系统切换前显示Screen Cut缓存检查及命中信息；求值唯一包pin、核对Cachix精确输出并预取，任一步失败明确报错并停止切换。
+
+### Screen Mark独立截图编辑器
+- liu-bigpc声明式安装Screen Mark固定缓存包，提供Cmd+D入口与rerun缓存命中提示。
+- Shift+Print(Shift+Fn+I)截图编辑改用Screen Mark，框选取消不打开、临时图直到编辑器退出再清理；原截图与视频快捷键不改。功能权威规格在/data/project/screen-mark/specs/001-screenshot-editor/。

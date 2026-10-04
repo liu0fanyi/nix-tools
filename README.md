@@ -5,7 +5,7 @@ DUFS Plus.
 
 ## Home Manager
 
-Niri 的 `Shift+Fn+I` 截图标注、`Ctrl+Shift+Fn+I` 录屏、`Alt+Shift+Fn+I` 录完剪辑及 Waybar 声音菜单见 [截图与录屏](docs/screenshot-edit.md)。
+Niri 的 `Shift+Fn+I` 截图标注（Screen Mark）、`Fn+O` 录屏、`Shift+Fn+O` 录完剪辑及 Waybar 声音菜单见 [截图与录屏](docs/screenshot-edit.md)。
 
 KiCad 与嘉立创 EDA 专业版的启动、升级和验收见 [EDA 桌面工具](docs/eda-desktop.md)。
 

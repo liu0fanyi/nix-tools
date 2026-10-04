@@ -131,22 +131,24 @@ let
     ${pkgs.systemd}/bin/systemctl suspend
   '';
 
+  screenMark = import ../../packages/screen-mark.nix { inherit pkgs; };
+
   screenshotEdit = pkgs.writeShellApplication {
     name = "screenshot-edit";
-    runtimeInputs = with pkgs; [ coreutils grim slurp satty wl-clipboard util-linux ];
+    runtimeInputs = with pkgs; [ coreutils grim slurp screenMark util-linux ];
     text = ''
       # 防止重复快捷键同时启动多个选区/编辑器。
       exec 9>"$XDG_RUNTIME_DIR/screenshot-edit.lock"
       flock -n 9 || exit 0
       region=$(slurp) || exit 0
+      [[ -n "$region" ]] || exit 0
       image=$(mktemp --suffix=.png)
       trap 'rm -f "$image"' EXIT
       grim -g "$region" "$image"
       directory="$HOME/Pictures/Screenshots"
       mkdir -p "$directory"
-      satty --filename "$image" \
-        --copy-command wl-copy \
-        --output-filename "$directory/Edited-$(date +%Y-%m-%d_%H-%M-%S-%N).png"
+      screen-mark "$image" \
+        --output "$directory/Edited-$(date +%Y-%m-%d_%H-%M-%S-%N).png"
     '';
   };
 
@@ -296,7 +298,7 @@ let
                 Mod+Shift+N { spawn "mako-dnd" "toggle"; }
             ${lib.optionalString isLiuBigpc ''
                 // 截图沿用 Fn+I (Print)，录屏用 Fn+O (Scroll_Lock)；Shift统一表示结束后编辑。
-                Shift+Print hotkey-overlay-title="截图后编辑 (Satty)" { spawn "${screenshotEdit}/bin/screenshot-edit"; }
+                Shift+Print hotkey-overlay-title="截图后编辑 (Screen Mark)" { spawn "${screenshotEdit}/bin/screenshot-edit"; }
                 Scroll_Lock cooldown-ms=1000 hotkey-overlay-title="开始/停止录屏" { spawn "${screenRecordToggle}/bin/screen-record-toggle"; }
                 Shift+Scroll_Lock cooldown-ms=1000 hotkey-overlay-title="录屏后编辑" { spawn "${screenRecordToggle}/bin/screen-record-toggle" "--edit"; }
             ''}
@@ -412,7 +414,7 @@ in
         # such as the official Linux WeChat client.
         pkgs.xwayland-satellite
       ]
-      ++ lib.optionals isLiuBigpc [ pkgs.satty screenshotEdit pkgs.wf-recorder screenRecordToggle screenRecordAudio screenRecordEdit ]
+      ++ lib.optionals isLiuBigpc [ pkgs.satty screenMark screenshotEdit pkgs.wf-recorder screenRecordToggle screenRecordAudio screenRecordEdit ]
       ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [ screenCut ]
       ++ lib.optionals (!isNixOS) [
         niriPackage

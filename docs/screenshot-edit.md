@@ -1,14 +1,14 @@
 # 截图编辑与快捷键录屏（liu-bigpc / Niri）
 
 原有 `Fn+I` 截图保留。配置接收的是 `Print`，Fn 组合由键盘固件转换；
-新增 `Shift+Fn+I`（`Shift+Print`）框选截图后打开 Satty。若键盘未将
+新增 `Shift+Fn+I`（`Shift+Print`）框选截图后打开 Screen Mark。若键盘未将
 Shift+Fn+I 上报为 Shift+Print，需实测键盘事件再调整，不能改掉原截图习惯。
 
 
 | 操作 | 快捷键 |
 | --- | --- |
 | 框选截图 | Fn+I |
-| 框选截图后编辑（Satty） | Shift+Fn+I |
+| 框选截图后编辑（Screen Mark） | Shift+Fn+I |
 | 开始/停止框选录屏 | Fn+O |
 | 录屏后自动编辑（Screen Cut） | Shift+Fn+O |
 | 截取整个屏幕 | Ctrl+Fn+I |
@@ -19,14 +19,17 @@ Shift统一表示带编辑；录屏两种组合都能停止正在录制的视频
 旧Cmd+S/Cmd+Shift+S录屏绑定也已撤销。
 
 1. 按 Shift+Fn+I，拖动选择区域；Esc 取消选区。
-2. 在 Satty 工具栏选择箭头、文字、画框、模糊或裁剪。
-3. Ctrl+C 复制编辑结果，然后在目标应用 Ctrl+V 粘贴。文字编辑时先完成输入
-   再复制图片，避免复制选中文字。
-4. Ctrl+S 保存到 `~/Pictures/Screenshots/Edited-*.png`；Esc 退出，
-   不自动保存。临时原图在退出后清理。
+2. 工具栏直接显示名称和键位：B画笔、E局部橡皮、A箭头、Shift+R/Shift+O画框、T文字、S实色遮挡。
+3. E擦过哪里就擦掉那部分新增标注，露出原截图；Ctrl+Z撤销，Ctrl+Shift+Z/Ctrl+Y重做。
+   V选择标注后可移动、改色/粗细，Delete整条删除；箭头选中后拖蓝色端点调整方向/长度。
+4. R/O框选复制范围，C裁剪、Enter应用、Esc取消。Ctrl+C复制PNG，无选区时复制整图，
+   有选区时复制该范围；文字输入先Enter确认，关窗后图片剪贴板仍可粘贴。
+5. Ctrl+S另存到 `~/Pictures/Screenshots/Edited-*.png`，拒绝覆盖已有文件。
+   Ctrl+Q或关窗退出；未保存修改需Enter确认放弃或Esc取消。临时原图退出后清理。
 
-可从应用菜单单独打开 Satty，也可运行 `satty --filename /绝对路径/截图.png`。
-编辑器按需启动，无后台服务。连续触发快捷键不会打开多个选区或编辑器。
+Cmd+D菜单搜索Screen Mark，Ctrl+O打开PNG，Ctrl+V导入剪贴板PNG；工具栏可见，不用寻找隐藏橡皮。
+工具仅按需启动，连续触发不会打开多个选区/编辑器。产品规格在
+`/data/project/screen-mark/specs/001-screenshot-editor/`；默认打开合成测试图，实际截图由快捷键传入。
 
 配置由 `/home/liou/nix-tools/home-manager/nix_modules/niri.nix` 管理，规格见
 [主机配置](../specs/010-host-configuration/spec.md)。用户在普通终端执行

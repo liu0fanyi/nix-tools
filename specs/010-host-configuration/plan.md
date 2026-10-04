@@ -124,3 +124,7 @@ Constitution Check通过：PC构建、目录分层、无新增外部参考、镜
 ### Screen Cut缓存提示方案
 packages/screen-cut.nix通过passthru公开原缓存bundle，flake输出screen-cut-binary-path，rerun复用Tag Browser所在主机分支核对/预取并显示命中。
 不重复硬编码pin、不把本地symlinkJoin当作已上传包；只读运行独立检查段和完整系统/HM构建，不执行switch。
+
+### Screen Mark接线方案
+packages/screen-mark.nix固定已构建desktop bundle，flake导出唯一binaryPath，rerun当前liu-bigpc分支核对/预取并打印命中。Niri screenshot-edit保留flock/slurp/grim/trap，传PNG和另存目标给screen-mark；运行依赖声明，原截图/录屏动作不改。
+Constitution Check：独立产品规格、PC构建、无外部参考，缓存只运行闭包；预演白名单镜像，完整系统/HM/Niri与ShellCheck及模拟截图流程检查，用户switch。

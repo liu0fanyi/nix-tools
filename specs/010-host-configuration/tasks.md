@@ -375,3 +375,11 @@ HM 3kzmsikh4r3xzqq9kmy3gc2mhnylma0x构建通过，home-path命令及desktop Exec
 - [x] 锁定私人 stable 66a0b28ff8119fca593f96e734d2b1dc2c209425，默认启用 Firefox 原生兼容 token，修复 Bilibili 浏览器过低跳转。67 项 Node、778 项 Firefox 检查、最终包 5 个多窗口恢复场景通过；CI 37131641915 成功，PC/Release/Cachix 精确输出 /nix/store/krx6h0rdgq803r76pz5zrdsvx38yb5vw-tag-browser-0.1.0 一致，缓存命中和签名验证通过。
 - [x] 完整系统 /nix/store/lx962ngr6y98vx7sdkzx8zhqcizpa4il-nixos-system-liu-bigpc-26.11.20260922.b6c98e9 与 Home Manager /nix/store/xdjymz1d21s68z0082c2p9cw8b8g6cr1-home-manager-generation 构建通过，系统浏览器及桌面入口核对。仅更新浏览器锁节点与本段状态，保留既有 AGENTS、home.nix、其他锁节点修改；未执行 switch。
 - [ ] 用户在普通终端运行 `nu rerun.nu liou --host liu-bigpc`，正常关闭旧窗口后重新打开，确认 app nix.29 并访问 Bilibili 首页和实际视频。
+
+## Screen Mark独立截图编辑器
+- [x] 声明式固定bundle 460sk2kq38z0dz58ac92ck71lfp94xlr并安装Screen Mark菜单/图标；三输出签名及匿名归档长度/SHA256核对。rerun独立检查段显示缓存命中。
+- [x] Shift+Fn+I改用Screen Mark；生成脚本ShellCheck及6类mock流程(取消/空选区/截图失败/成功/编辑器失败/并发锁)通过，原图不变且临时输入清理。
+- [x] 完整系统 saibsb2i01i80slzz71i91gmcjwigmcx、HM 1zm0csk7zazsn3l3a5f4ipldw3yw6b02，Niri validate、唯一Shift+Print、实际程序与desktop Exec核对；文档镜像与提交推送。产品8单元测试、正式GUI及Wayland PNG生命周期通过。
+- [ ] 用户rerun后实测Shift+Fn+I、局部橡皮、中文IME及目标网页图片粘贴；产品权威规格为screen-mark 001。
+
+本次仅提交Screen Mark包/缓存提示/截图接线/使用说明与010规格；保留AGENTS、flake.lock、home.nix已有改动。未执行switch，不改视频编辑器。
