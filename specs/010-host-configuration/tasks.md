@@ -388,3 +388,10 @@ HM 3kzmsikh4r3xzqq9kmy3gc2mhnylma0x构建通过，home-path命令及desktop Exec
 - [x] pin更新至已上传Cachix最终bundle c0n5h4c9y5xihxj0ppfs2w8ixdcba1kl；bundle/core/desktop可信签名通过。产品9单元/clippy、正式私有GUI/原生tablet-v2/PNG生命周期通过，180笔更新RSS约增加1.3MiB。
 - [x] 完整系统1rqqrylqric3hsrig3y7ggh2kf54qvs5/HM 684kxymrs2jf6yvg737x1lxld4pl7nzm、菜单和截图入口、Niri validate及6类mock、独立rerun缓存段核对通过；自有资料镜像及提交推送。压力晚到和多笔隔离通过，最终180连续更新RSS约+1.5MiB。
 - [ ] 用户rerun后真实数位板压感、翻转橡皮与快速绘制手感验收；产品权威规格screen-mark 002。
+
+## Screen Mark共享绘画核心发行
+- [x] 更新缓存pin，验证可信签名/运行闭包、rerun独立检查及完整liu-bigpc/HM构建。
+- [x] 同步说明与独立提交，保留AGENTS/flake.lock/home.nix已有改动。
+- [ ] 用户rerun后数位笔平滑手感验收；权威规格screen-mark 003。
+
+发行验收：bundle/core/desktop可信签名通过，119运行路径分别由官方Nix缓存115与应用Cachix4提供且签名可验证；rerun独立段已显示新版缓存命中。完整系统 lahspi114jfmsi4ql1680ib9b2myxmj0、HM f53v6ykijc5mgzai557vqbd8b7c6l4k9构建通过，实际菜单/二进制与唯一Shift+Print指向本次core 0i6739bmprmv7hbnqhsfnq4830xsnrfy。产品17核心+9单元/Clippy、正式GUI/tablet-v2回归通过；不执行switch，真实数位板手感待用户验收。

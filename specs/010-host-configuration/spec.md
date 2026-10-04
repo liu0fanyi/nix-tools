@@ -137,3 +137,5 @@ niri 仅转发设备真实上报的数位板滚轮轴；Chromium 明确未实现
 - Shift+Print(Shift+Fn+I)截图编辑改用Screen Mark，框选取消不打开、临时图直到编辑器退出再清理；原截图与视频快捷键不改。功能权威规格在/data/project/screen-mark/specs/001-screenshot-editor/。
 
 Screen Mark数位板发行：固定已发布Cachix bundle c0n5h4c9y5xihxj0ppfs2w8ixdcba1kl；原生Wayland笔尖/压力/翻转橡皮和绘制缓存/纹理回收由独立产品screen-mark规格002管理。本仓只维护安装pin、入口与发行验收，不复制产品规格；rerun缓存提示继续求值同一pin，不代用户switch。
+
+Screen Mark共享核心发行：安装固定Cachix bundle j1cvwiafizx98f8qzwj2n6szalsqldm8，数位笔平滑由screen-mark 003管理；其他系统安装成品无需Bevy checkout或私有Git认证。保持原菜单/截图接线与rerun缓存提示。
