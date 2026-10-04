@@ -118,6 +118,8 @@ in
       # 不再额外装 ffmpeg_4：zen 的 ffmpeg 由 zenBrowser 包装层注入搜索路径，
       # 单个旧版本装进 profile 既不被 zen 读取，也让命令行版本与库版本不一致。
       ffmpeg
+      # YouTube 等站点视频下载；nixpkgs 包自带 Deno、EJS 与 FFmpeg 支持。
+      yt-dlp
       devenv
       # 轻量级 Word 文档查看与编辑器（支持 .docx）。
       abiword

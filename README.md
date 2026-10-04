@@ -5,6 +5,8 @@ DUFS Plus.
 
 ## Home Manager
 
+YouTube 视频与音频下载使用 `yt-dlp`，命令和更新方式见 [视频下载](docs/video-download.md)。
+
 Niri 的 `Shift+Fn+I` 截图标注（Screen Mark）、`Fn+O` 录屏、`Shift+Fn+O` 录完剪辑及 Waybar 声音菜单见 [截图与录屏](docs/screenshot-edit.md)。
 
 KiCad 与嘉立创 EDA 专业版的启动、升级和验收见 [EDA 桌面工具](docs/eda-desktop.md)。

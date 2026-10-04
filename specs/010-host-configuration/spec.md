@@ -137,3 +137,9 @@ niri 仅转发设备真实上报的数位板滚轮轴；Chromium 明确未实现
 - Shift+Print(Shift+Fn+I)截图编辑改用Screen Mark，框选取消不打开、临时图直到编辑器退出再清理；原截图与视频快捷键不改。功能权威规格在/data/project/screen-mark/specs/001-screenshot-editor/。
 
 Screen Mark数位板与共享核心由产品002/003管理。本仓安装固定缓存包，唯一pin在packages/screen-mark.nix；保持菜单、截图接线与rerun缓存提示。其他系统安装成品无需Bevy checkout或私有Git认证。用户已确认当前绘画可用与平滑手感；专项实机检查按产品任务追踪。
+
+### YouTube 视频下载
+
+- Home Manager 声明式安装锁定 nixpkgs 的 `yt-dlp`，支持视频下载及音频提取；包须包含 FFmpeg、Deno 与 yt-dlp-ejs 依赖。
+- 命令、输出路径与更新方式放在 docs；不自动下载视频，不读取浏览器 cookies，不代用户执行系统 switch。
+- 验证 liu-bigpc 完整系统、Home Manager generation、实际命令与运行依赖；真实 YouTube 网络下载单独验收。

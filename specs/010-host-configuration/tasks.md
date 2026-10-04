@@ -393,3 +393,12 @@ HM 3kzmsikh4r3xzqq9kmy3gc2mhnylma0x构建通过，home-path命令及desktop Exec
 - [x] 固定 product stable 74c8d27676bc39fcbfd94844b77c3c3eb32e00b9；本机、Release、Cachix 输出 /nix/store/bnx9dp6xpf6y0iakx3mgx9ai5cy6cvzv-tag-browser-0.1.0 一致，缓存受信任签名通过。71 项 Node 和 783 项 Firefox 检查通过，多窗口标签刷新、重复名称反馈已发行；dufs-plus 列表定位修复独立部署 NUC。
 - [x] 完整 liu-bigpc toplevel 与 Home Manager generation 构建通过；系统浏览器命令解析到新包。只更新 tag-browser-src 输入，保留既有 antigravity-nix、chatgpt-deb、codex-cli-nix 锁定和 AGENTS/home.nix 改动；不执行 switch。
 - [ ] 用户在普通终端激活后关闭旧浏览器，确认 nix.30，验收两窗口标签可见与实际 PDF 定位。产品验收权威源仍为 tag-browser 010、dufs-plus 001；本仓只管理安装。
+
+## YouTube 视频下载工具
+
+- [x] 声明式添加 yt-dlp，核对锁定包默认包含 FFmpeg、Deno 与 yt-dlp-ejs，补充使用说明及 README 入口。
+- [x] 构建 liu-bigpc 完整 toplevel 和 Home Manager generation，验证安装命令及依赖。
+- [x] 同步规格与文档镜像，独立提交推送本次变更。
+- [ ] 用户在普通终端执行系统切换，并以实际 YouTube 视频验收下载。
+
+视频下载工具验证：完整系统 `/nix/store/8js00nzbxdj4hdkk8cy7hs3d3f19l2qy-nixos-system-liu-bigpc-26.11.20260922.b6c98e9` 与 Home Manager `/nix/store/ga0drr27wpxgk8pm2carlpn0ihx9462f-home-manager-generation` 构建通过；安装入口的 yt-dlp 版本为 2026.08.19，运行依赖与激活单元核对。构建包含既有工作树配置；本次只提交 yt-dlp 相关变更，未执行 switch 或真实视频下载。
