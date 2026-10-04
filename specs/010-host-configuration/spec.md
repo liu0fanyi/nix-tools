@@ -135,3 +135,5 @@ niri 仅转发设备真实上报的数位板滚轮轴；Chromium 明确未实现
 ### Screen Mark独立截图编辑器
 - liu-bigpc声明式安装Screen Mark固定缓存包，提供Cmd+D入口与rerun缓存命中提示。
 - Shift+Print(Shift+Fn+I)截图编辑改用Screen Mark，框选取消不打开、临时图直到编辑器退出再清理；原截图与视频快捷键不改。功能权威规格在/data/project/screen-mark/specs/001-screenshot-editor/。
+
+Screen Mark数位板发行：固定已发布Cachix bundle c0n5h4c9y5xihxj0ppfs2w8ixdcba1kl；原生Wayland笔尖/压力/翻转橡皮和绘制缓存/纹理回收由独立产品screen-mark规格002管理。本仓只维护安装pin、入口与发行验收，不复制产品规格；rerun缓存提示继续求值同一pin，不代用户switch。

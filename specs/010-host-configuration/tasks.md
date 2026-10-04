@@ -383,3 +383,8 @@ HM 3kzmsikh4r3xzqq9kmy3gc2mhnylma0x构建通过，home-path命令及desktop Exec
 - [ ] 用户rerun后实测Shift+Fn+I、局部橡皮、中文IME及目标网页图片粘贴；产品权威规格为screen-mark 001。
 
 本次仅提交Screen Mark包/缓存提示/截图接线/使用说明与010规格；保留AGENTS、flake.lock、home.nix已有改动。未执行switch，不改视频编辑器。
+
+## Screen Mark数位板与绘制性能发行
+- [x] pin更新至已上传Cachix最终bundle c0n5h4c9y5xihxj0ppfs2w8ixdcba1kl；bundle/core/desktop可信签名通过。产品9单元/clippy、正式私有GUI/原生tablet-v2/PNG生命周期通过，180笔更新RSS约增加1.3MiB。
+- [x] 完整系统1rqqrylqric3hsrig3y7ggh2kf54qvs5/HM 684kxymrs2jf6yvg737x1lxld4pl7nzm、菜单和截图入口、Niri validate及6类mock、独立rerun缓存段核对通过；自有资料镜像及提交推送。压力晚到和多笔隔离通过，最终180连续更新RSS约+1.5MiB。
+- [ ] 用户rerun后真实数位板压感、翻转橡皮与快速绘制手感验收；产品权威规格screen-mark 002。
