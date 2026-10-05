@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+repo=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+runtime=$(nix build --impure --no-link --print-out-paths --file "$repo/packages/subtitle-ocr-runtime.nix")
+export PATH="$runtime/bin:$PATH"
+cache="${XDG_CACHE_HOME:-$HOME/.cache}/nix-tools/subtitle-ocr"
+mkdir -p "$cache"
+key=$(cat "$repo/scripts/subtitle-ocr-requirements.txt" <(printf '%s' "$runtime") | sha256sum | cut -c1-16)
+venv="$cache/env-$key"
+export UV_CACHE_DIR="$cache/uv"
+(
+  flock 9
+  if [[ ! -f "$venv/.ready" ]]; then
+    uv venv --allow-existing --python "$runtime/bin/python3.12" "$venv"
+    # All transitive packages are pinned. Headless OpenCV provides cv2; avoid Qt.
+    uv pip install --python "$venv/bin/python" --no-deps -r "$repo/scripts/subtitle-ocr-requirements.txt"
+    touch "$venv/.ready"
+  fi
+) 9>"$cache/setup.lock"
+exec "$runtime/bin/ocr-run" "$venv/bin/python" "$repo/scripts/video-subtitle-ocr.py" "$@"

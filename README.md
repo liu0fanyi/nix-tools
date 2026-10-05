@@ -5,7 +5,7 @@ DUFS Plus.
 
 ## Home Manager
 
-YouTube 视频与音频下载使用 `yt-dlp`，命令和更新方式见 [视频下载](docs/video-download.md)。
+视频与音频下载使用 `yt-dlp`，命令和更新方式见 [视频下载](docs/video-download.md)；画面字幕的本地批量提取与续跑见 [字幕 OCR](docs/subtitle-ocr.md)。
 
 Niri 的 `Shift+Fn+I` 截图标注（Screen Mark）、`Fn+O` 录屏、`Shift+Fn+O` 录完剪辑及 Waybar 声音菜单见 [截图与录屏](docs/screenshot-edit.md)。
 

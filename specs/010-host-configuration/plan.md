@@ -137,3 +137,9 @@ Screen Mark的源码Nix输入锁定canvas-kit e5237aa70e628f585418cca19b4e911968
 在 `home-manager/home.nix` 的 `home.packages` 添加 `pkgs.yt-dlp`。锁定 nixpkgs 包默认已启用 FFmpeg 与 JavaScript 支持，包含 Deno 和 yt-dlp-ejs，无需额外安装运行时或自写包装器。保留原有 FFmpeg。
 
 宪法检查：仅修改 PC 权威配置；需求与任务归入现有 010 规格，操作说明放 docs。没有引入外部参考仓库或文档原件，无新增 gitlink；依赖沿用固定的 flake.lock。保留既有工作树改动，不刷新锁定、不执行 switch；资料仅通过既有白名单镜像入口同步。
+
+## 本地字幕 OCR 方案
+
+`scripts/subtitle-ocr`构建独立Nix运行环境并初始化版本固定的用户缓存venv；核心Python脚本探测区域后以4fps裁剪识别、精确合并及不改数量的闪烁桥接，输出SRT、诊断报告、批次索引和分块检查点。监测模式处理落盘稳定的新视频；复用输入/参数签名一致的检查点，不覆盖非工具管理或外部编辑过的字幕。
+
+Constitution Check：仅PC工具和现有010规格；无外部Git参考、无新增gitlink，依赖是常规包管理且版本固定。docs是自编说明，规格仍在specs；NUC资料白名单只读预演后同步。独立runtime构建不涉及系统配置，无需switch或完整系统重建；用户既有工作树改动保留。
