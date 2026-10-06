@@ -43,6 +43,12 @@ class RecipeChecks(unittest.TestCase):
   self.assertEqual((output/'keep').read_text(),'keep')
   page,data=m.render_recipe(self.data,self.folder)
   self.assertEqual(len(data['recipeInstructions']),1);self.assertIn('6分钟',page)
+ def test_unstructured_quantity_keeps_source_words_in_both_exports(self):
+  self.data['ingredients'][0]['quantity']={'mode':'unspecified','min':None,'max':None,'unit':None,'original':'一斤二两'}
+  page,data=m.render_recipe(self.data,self.folder)
+  self.assertIn('用量待核对；原文：一斤二两',page)
+  self.assertTrue(any('一斤二两'in x for x in data['recipeIngredient']))
+  self.assertIsNone(self.data['ingredients'][0]['quantity']['min'])
  def test_rebuild_from_a_previous_output_retains_verifiable_history(self):
   first=Path(self.temp.name)/'first';second=Path(self.temp.name)/'second';dictionary=m.ROOT/'config/recipe/ingredients.json'
   m.build(self.folder.parent,first,dictionary);m.validate(first/'recipes'/'BV1RXaD6DELQ',self.schema)

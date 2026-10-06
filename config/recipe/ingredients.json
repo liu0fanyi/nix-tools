@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "revision": 3,
+  "revision": 4,
   "items": [
     {
       "id": "mushroom_group",
@@ -37,7 +37,9 @@
       "name": "冰糖",
       "kind": "ingredient",
       "aliases": [],
-      "parents": []
+      "parents": [
+        "sugar_group"
+      ]
     },
     {
       "id": "ingredient_003",
@@ -58,7 +60,9 @@
       "name": "土豆淀粉",
       "kind": "ingredient",
       "aliases": [],
-      "parents": []
+      "parents": [
+        "starch_group"
+      ]
     },
     {
       "id": "soybean_soy_sauce",
@@ -183,7 +187,9 @@
       "name": "水淀粉",
       "kind": "ingredient",
       "aliases": [],
-      "parents": []
+      "parents": [
+        "starch_group"
+      ]
     },
     {
       "id": "ingredient_028",
@@ -262,7 +268,9 @@
         "白糖（压制阶段）",
         "白糖（收汁阶段）"
       ],
-      "parents": []
+      "parents": [
+        "sugar_group"
+      ]
     },
     {
       "id": "ingredient_042",
@@ -416,7 +424,8 @@
       "kind": "ingredient",
       "aliases": [
         "酱油（压制阶段）",
-        "酱油（收汁阶段）"
+        "酱油（收汁阶段）",
+        "酱油（后段调汁用）"
       ],
       "parents": []
     },
@@ -493,6 +502,24 @@
       "kind": "ingredient",
       "aliases": [],
       "parents": []
+    },
+    {
+      "id": "sugar_group",
+      "name": "糖",
+      "kind": "group",
+      "aliases": [
+        "糖（压制阶段）"
+      ],
+      "parents": []
+    },
+    {
+      "id": "starch_group",
+      "name": "淀粉",
+      "kind": "group",
+      "aliases": [
+        "淀粉（勾芡用）"
+      ],
+      "parents": []
     }
   ],
   "ambiguities": [
@@ -525,6 +552,11 @@
       "name": "香料（未明确组成）",
       "candidate_ids": [],
       "reason": "原文未交代香料组成，不能补充具体品种。"
+    },
+    {
+      "name": "勾芡材料（未明确）",
+      "candidate_ids": [],
+      "reason": "原文只勾芡、往菜上淋，已实际看过候选图只见浅白芡液，不能确认淀粉来源或是否水淀粉；登记来源未明歧义，不归淀粉类。"
     }
   ],
   "history": [
@@ -577,6 +609,24 @@
         "水或清汤",
         "老抽或红烧王酱油",
         "香料（未明确组成）"
+      ]
+    },
+    {
+      "inventory_sha256": "bec3ddcc2a21fbf75fcdf525079718e5a27beaf1a5b81e3a3b56115410a08adb",
+      "review_sha256": "1c27e08c4d2dc870e8e725cd4733254878d2b16f5fd1b882dd44c92abc1fdbaf",
+      "reviewer": {
+        "kind": "ai",
+        "name": "codex-subagent-recipe_review_b"
+      },
+      "mapped_names": 73,
+      "unresolved_names": [
+        "勾芡材料（未明确）",
+        "大料",
+        "明油",
+        "水或清汤",
+        "汤水",
+        "老抽或红烧王酱油",
+        "香料（花椒、大料、辣椒、白芷）"
       ]
     }
   ]

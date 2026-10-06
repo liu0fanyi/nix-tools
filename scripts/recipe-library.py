@@ -19,7 +19,10 @@ def dump(p,data):p.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',
 def esc(s):return html.escape(str(s),quote=True)
 def clock(t):return f'{int(t)//60:02}:{int(t)%60:02}'
 def quantity(q):
- if q['mode']=='unspecified':return '未明确' if q['unit'] is None else q['original']
+ if q['mode']=='unspecified':
+  if q['unit'] is not None:return q['original']
+  original=q['original'].strip()
+  return '未明确'if original in ('','未明确','未知','不详')else '用量待核对；原文：'+original
  n=lambda x:f'{x:g}'
  value=n(q['min']) if q['min']==q['max'] else n(q['min'])+'–'+n(q['max'])
  return ('约' if q['mode']=='approximate' else '')+value+q['unit']

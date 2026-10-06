@@ -29,3 +29,7 @@ job状态queued/waiting_extract/waiting_review/waiting_repair/waiting_images/com
 ## 当前限制与验收
 
 配置与调用详见[模型手册](../../../docs/recipe-model.md)。默认不上传、不付费；只有显式execute且预算、上传范围与凭证配置齐备才调用模型。记录usage估算费用，每请求先持久预留；超时未知结果不盲目重试。无需聊天进程，但不创建常驻服务，不清理媒体。实际服务配置和十道菜独立质量验收仍待完成。P0验收至少覆盖恢复、过期/坏返回隔离、已有输出保护、配置变更复用、运行中只读进度及真实输入登记/导出；独立菜谱语义质量另验收。运行数据库与素材只留用户目录，远端镜像仅按specs/docs白名单。
+
+## 种子重组装兼容性
+
+历史recipe-input.json在组装阶段按内容摘要另存，当前输入保持唯一名称。同ID且全部字段相同的帧允许复用一次；同ID内容不同须失败，不覆盖。config/recipe/cache-compatibility.json仅固定已核验的组装修复对应controller和review-helper完整SHA256，非assemble阶段可沿用指定旧controller摘要；assemble总使用当前源码。任一源码摘要不匹配即停用兼容映射，输入/契约/模型绑定的校验不受此映射影响。

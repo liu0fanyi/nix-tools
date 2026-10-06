@@ -1,0 +1,7 @@
+{
+  "scope": "non-assemble",
+  "reason": "Assembly-only corrections: preserve historical seed input under its digest and deduplicate identical reused frame checkpoints; reject conflicting frame IDs. AI inputs, sampling and review logic are unchanged. Exact source hashes gate reuse.",
+  "controller_sha256": "002702acdab0c9eebaab234ee9d77a471b9b9c728f351808f084c234097ed60d",
+  "review_sha256": "381d9f57b9abee11438e9da7e155186aeb37ce4787e51ba539e6a7f124c98cdb",
+  "reusable_controller_sha256": "d18140dccd90a7ee602cf3e296e8b719ef878054ecedaf9adf264427f8411da6"
+}

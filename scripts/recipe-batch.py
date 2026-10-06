@@ -279,7 +279,15 @@ class Queue:
             self.log('model_binding_changed', binding=binding)
 
     def stage_key(self, job, name, inputs, model):
-        return sha({'job': job, 'stage': name, 'version': VERSION, 'controller_sha256': sha({'controller': digest(Path(__file__)), 'review': digest(ROOT / 'scripts/recipe-review.py')}), 'inputs': inputs, 'model_binding': self.model_binding if model else None})
+        controller = digest(Path(__file__))
+        review = digest(ROOT / 'scripts/recipe-review.py')
+        compatibility = ROOT / 'config/recipe/cache-compatibility.json'
+        if name != 'assemble' and compatibility.is_file():
+            pinned = load(compatibility)
+            # One audited assembly-only fix; any later controller/helper edit invalidates this pin.
+            if controller == pinned['controller_sha256'] and review == pinned['review_sha256']:
+                controller = pinned['reusable_controller_sha256']
+        return sha({'job': job, 'stage': name, 'version': VERSION, 'controller_sha256': sha({'controller': controller, 'review': review}), 'inputs': inputs, 'model_binding': self.model_binding if model else None})
 
     def stage(self, job, name, inputs, action, model=False):
         key = self.stage_key(job, name, inputs, model)
@@ -530,7 +538,9 @@ class Queue:
                 for p in (extracted / 'images').iterdir():
                     dst = draft / p.relative_to(extracted); dst.parent.mkdir(parents=True, exist_ok=True); shutil.copyfile(p, dst)
                 for p in list(extracted.glob('recipe-input*.json')) + list(extracted.glob('candidates-input-*.json')) + list(extracted.glob('stage-input-*.json')):
-                    shutil.copyfile(p, draft / p.name)
+                    # The new current input owns recipe-input.json; preserve the seed as history.
+                    name = 'recipe-input-' + digest(p) + '.json' if p.name == 'recipe-input.json' else p.name
+                    shutil.copyfile(p, draft / name)
             if (extracted / 'candidates.json').is_file():
                 previous = extracted / 'candidates.json'
                 shutil.copyfile(previous, draft / ('candidates-input-' + digest(previous) + '.json'))
@@ -541,6 +551,14 @@ class Queue:
                 for p in (directory / 'images').glob('*.jpg'):
                     dst = draft / 'images' / p.name; dst.parent.mkdir(exist_ok=True); shutil.copyfile(p, dst)
             final = copy.deepcopy(recipe)
+            # A reprocessed seed can reuse the exact same immutable frame checkpoint.
+            frames_by_id = {}
+            for frame in final['frames']:
+                previous = frames_by_id.get(frame['id'])
+                if previous is not None and previous != frame:
+                    raise ValueError('conflicting reused frame ID: ' + frame['id'])
+                frames_by_id[frame['id']] = frame
+            final['frames'] = list(frames_by_id.values())
             for directory in audit_history:
                 input_file = directory / 'payload.json'
                 shutil.copyfile(input_file, draft / ('stage-input-' + digest(input_file) + '.json'))

@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location('batch', ROOT / 'recipe-batch.py')
@@ -90,6 +91,69 @@ class BatchChecks(unittest.TestCase):
         self.assertEqual(self.srt.read_text(), '1\n00:00:00,000 --> 00:00:02,000\n豆腐翻炒\n')
         with self.assertRaisesRegex(ValueError, 'already exists'):
             self.queue.build(output, m.ROOT / 'config/recipe/ingredients.json')
+
+    def test_seed_reprocessing_preserves_old_input_and_builds_new_current_input(self):
+        folder = self.to_images(); self.send(folder, self.selection(folder)); self.queue.run()
+        seed_library = self.root / 'seed-library'; self.queue.build(seed_library, m.ROOT / 'config/recipe/ingredients.json')
+        seed = seed_library / 'recipes/BVTest123'; before = m.artifacts(seed)
+        entry = m.load(self.manifest)[0]; entry['seed'] = str(seed); manifest = self.root / 'with-seed.json'; m.write(manifest, [entry])
+        self.queue.add(manifest, self.config); self.queue.run(); folder = self.pending('review')
+        self.send(folder, {'stage':'review', 'fact_reviews':[{'fact_id':'fact_one','verdict':'needs_review','reason':'synthetic seeded review','evidence_ids':['ev_one']}], 'issues':[]})
+        self.queue.run(); folder = self.pending('select_step_one'); self.send(folder,self.selection(folder))
+        self.assertEqual(self.queue.run()['counts'], {'complete':1})
+        output = self.root / 'seed-reprocessed'; self.queue.build(output,m.ROOT/'config/recipe/ingredients.json')
+        rebuilt = output / 'recipes/BVTest123'; m.library_module().validate(rebuilt,m.load(m.CONTRACTS/'video-recipe.schema.json'))
+        self.assertTrue((rebuilt/('recipe-input-'+m.digest(seed/'recipe-input.json')+'.json')).exists())
+        self.assertEqual(m.artifacts(seed),before)
+
+    def test_seed_reprocessing_rejects_conflicting_frame_id(self):
+        folder = self.to_images(); self.send(folder, self.selection(folder)); self.queue.run()
+        seed_library = self.root / 'seed-library'; self.queue.build(seed_library, m.ROOT / 'config/recipe/ingredients.json')
+        seed = seed_library / 'recipes/BVTest123'; before = m.artifacts(seed)
+        original_frames = m.load(seed / 'recipe.internal.json')['frames']
+        original_prefix = original_frames[0]['id'].split('_')[1]
+        entry = m.load(self.manifest)[0]; entry['seed'] = str(seed)
+        manifest = self.root / 'with-seed.json'; m.write(manifest, [entry])
+        config = {**self.config, 'width': 192}
+        real_key = self.queue.stage_key
+
+        def colliding_frame_prefix(job, name, inputs, model):
+            key = real_key(job, name, inputs, model)
+            # Simulate a truncated frame-ID collision between distinct checkpoints.
+            # Resampling still produces real images and truthful dimensions/digests.
+            return original_prefix + key[12:] if name == 'frames_step_one' else key
+
+        with mock.patch.object(self.queue, 'stage_key', side_effect=colliding_frame_prefix):
+            self.queue.add(manifest, config); self.queue.run(); folder = self.pending('review')
+            self.send(folder, {'stage': 'review', 'fact_reviews': [{'fact_id': 'fact_one', 'verdict': 'needs_review', 'reason': 'synthetic seeded review', 'evidence_ids': ['ev_one']}], 'issues': []})
+            self.queue.run(); folder = self.pending('select_step_one')
+            new_frames = m.load(folder / 'payload.json')['candidates']
+            self.assertEqual([f['id'] for f in new_frames], [f['id'] for f in original_frames])
+            self.assertNotEqual(new_frames[0]['width'], original_frames[0]['width'])
+            self.assertNotEqual(new_frames[0]['sha256'], original_frames[0]['sha256'])
+            for frame in new_frames:
+                self.assertEqual(m.digest(folder / frame['file']), frame['sha256'])
+            self.send(folder, self.selection(folder))
+            status = self.queue.run()
+        self.assertEqual(status['counts'], {'failed': 1})
+        self.assertIn('conflicting reused frame ID: ' + original_frames[0]['id'], status['jobs'][0]['error'])
+        with self.assertRaisesRegex(ValueError, 'no complete assembled inputs'):
+            self.queue.build(self.root / 'conflicting-library', m.ROOT / 'config/recipe/ingredients.json')
+        self.assertEqual(m.artifacts(seed), before)
+        m.library_module().validate(seed, m.load(m.CONTRACTS / 'video-recipe.schema.json'))
+
+    def test_assembly_only_compatibility_is_gated_by_exact_source_hashes(self):
+        pinned = m.load(m.ROOT/'config/recipe/cache-compatibility.json'); inputs={'test':True}
+        expected=m.sha({'job':'BVTest123','stage':'review','version':m.VERSION,'controller_sha256':m.sha({'controller':pinned['reusable_controller_sha256'],'review':pinned['review_sha256']}),'inputs':inputs,'model_binding':None})
+        self.assertEqual(self.queue.stage_key('BVTest123','review',inputs,True),expected)
+        current_assembly=self.queue.stage_key('BVTest123','assemble',inputs,False)
+        legacy_assembly=m.sha({'job':'BVTest123','stage':'assemble','version':m.VERSION,'controller_sha256':m.sha({'controller':pinned['reusable_controller_sha256'],'review':pinned['review_sha256']}),'inputs':inputs,'model_binding':None})
+        self.assertNotEqual(current_assembly,legacy_assembly)
+        real=m.digest
+        with mock.patch.object(m,'digest',side_effect=lambda p:'f'*64 if Path(p)==Path(m.__file__) else real(p)):
+            self.assertNotEqual(self.queue.stage_key('BVTest123','review',inputs,True),expected)
+        with mock.patch.object(m,'digest',side_effect=lambda p:'f'*64 if Path(p)==m.ROOT/'scripts/recipe-review.py' else real(p)):
+            self.assertNotEqual(self.queue.stage_key('BVTest123','review',inputs,True),expected)
 
     def test_reject_invented_quote_and_escalation_then_accept_corrected_result(self):
         self.queue.run(); folder = self.pending('extract'); draft = self.draft(folder)
