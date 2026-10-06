@@ -464,3 +464,13 @@ P1真实子代理验收：十道1814cue、166事实、157食材、54步；162张
 - [x] 输入改用自有 product-stable，固定 `88c3cab2d49322d0c2e198f57f7250d8ee1cf040`；旧 stable 不再承载现行产品开发。私有 Release/本机/Cachix 输出 `/nix/store/6xc0mnfz4piy09gffzl0grvycw3lbysa-tag-browser-0.1.0` 一致，归档 SHA256、缓存命中、预取及签名核验通过，CI 37457364836 成功。
 - [x] 完整系统 `/nix/store/92cw19q6frsal7gw5brgfhm8mhjp6ga5-nixos-system-liu-bigpc-26.11.20260922.b6c98e9` 与 Home Manager `/nix/store/ga0drr27wpxgk8pm2carlpn0ihx9462f-home-manager-generation` 构建通过；系统浏览器命令指向 nix.31，hm-backup 设置保持。只提交浏览器输入及本条安装状态，保留其他锁节点和 AGENTS/home.nix 改动。
 - [ ] 用户普通终端执行 `nu rerun.nu liou --host liu-bigpc`，正常关闭旧窗口后确认 nix.31；不由 Agent 执行 switch。真实 PDF 观察按 tag-all 019 P01–P03，产品实现已完成五条固定关卡，不扩大安装验收范围。
+
+### 串行生命周期与视频释放
+
+- [x] 实现大清单持久登记、串行下载/OCR/AI任务交换、保留视频数与磁盘空间门槛。
+- [x] 实现逐视频不可变接受归档与固定页面发布、目录索引、删除后独立重建。
+- [x] 实现显式删除预演与执行、缺图/开放疑点阻止释放、准确文件身份及隔离删除。
+- [x] 验证发布/删除各中断点续跑、源和页面被修改拒绝、符号链接/越界拒绝、完成不重复AI。
+- [x] 用真实十道已复核结果验证流程迁入与保留、不删除原视频；全清单登记与合成测试分别验收。
+
+生命周期验收：相关80项Python回归（含37项flow）及Node食材检索测试通过；正式Nix入口help、只读status及完成目录run --watch通过。合成4200条清单登记，单写者、失败容量、双磁盘空间、低频下载参数与已完成下载复用、OCR来源门槛、发布/隔离/unlink中断恢复、误删保护、版本复审、词典更新及任务交换闭环均验收；AI合法回复归档失败保持accepted并可重试，重复递送不重复推进。新下载使用模拟，不据此宣称线上全量可下。真实十道结果归档/发布与无视频控制器重建通过，310个原文件未变，实际视频删除0；十道均needs_review，仍保留原视频。私有报告位于Downloads/菜谱工具数据/串行流程-10道验证，不进入Git/NUC。外部模型调用0；30–50道与4000多条执行尚未完成。
