@@ -1,0 +1,34 @@
+{
+  "native_core_binary_sha256": "21a182a51a4719815793e51ab8481b7a9fb71977abf44b00eff1807d66687993",
+  "nixpkgs_locked": {
+    "lastModified": 1787814960,
+    "narHash": "sha256-PYZq1qzCJXC2zGI0mH07vrZBsw6DRBAOX0jN1pPtqOQ=",
+    "owner": "NixOS",
+    "repo": "nixpkgs",
+    "rev": "c27cdad491a991b11ed731760aa2ef8db0cb0410",
+    "type": "github"
+  },
+  "caddy_package": "/nix/store/9v0131sch36inqjr4qsl7swa9385xjmq-caddy-2.11.4",
+  "dufs_package": "/nix/store/x0l3895mr2zyacabd8qpbzm8dsqvlahb-dufs-0.46.0",
+  "frontend_index_sha256": "b4664b854f9f5146b1240d0f36b5ad94fdc0d3093e65f1f30bb886f553aadb4b",
+  "authenticated_gateway": true,
+  "anonymous_and_wrong_credentials_denied": true,
+  "anonymous_write_denied": true,
+  "file_upstream_private_unix_socket": true,
+  "no_credentials_in_store": true,
+  "tags_text_upload_listing_stream": true,
+  "sidebar_actual_methods": true,
+  "wasm_pdfjs_actual_http": true,
+  "synthetic_pdf_unchanged": true,
+  "deployed": false,
+  "full_firefox_ui_tested": false,
+  "real_pc_migration_tested": false,
+  "owned_fixture_cleanup": true,
+  "module_evaluation": {
+    "enabled_assertions": true,
+    "disabled_has_services": false,
+    "requires_core_and_files": true,
+    "space_unicode_percent_dollar_escaping": true,
+    "activated": false
+  }
+}

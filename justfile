@@ -1,6 +1,10 @@
 set positional-arguments
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
+# Owned loopback native core/file gateway only; no deployment or system activation.
+check-native-workspace tag_all dufs_plus tag_browser:
+    python3 scripts/check-native-workspace.py "$1" "$2" "$3"
+
 # 目标必须明确；infra 只更新基础设施，all 包括两个产品。
 deploy target component="infra" *args:
     python3 deploy/scripts/release-apps.py --target "$1" "$2" "${@:3}"
