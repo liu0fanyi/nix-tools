@@ -1,6 +1,6 @@
 # 菜谱批处理控制器
 
-入口：`scripts/recipe-batch`。独立Nix/Python环境复用菜谱构建器依赖；不需switch。当前实现登记、字幕准备、AI任务包导出/导入、候选抽帧、组装验收和固定导出；**没有自动模型调用或常驻服务**。模型返回要由执行者提供，单纯运行run不会生成新的AI菜谱。
+入口：`scripts/recipe-batch`。独立Nix/Python环境复用菜谱构建器依赖；不需switch。当前实现登记、字幕准备、AI任务包导出/导入、候选抽帧、组装验收和固定导出；可选Responses模型接入见[模型配置手册](recipe-model.md)。单纯运行run不会发起模型请求；model-run默认预览，显式execute且配置凭证、上传范围及预算后才调用。当前不创建常驻服务。
 
 规则见[批处理契约](../specs/010-host-configuration/contracts/video-recipe-batch.md)，当前进度见[任务清单](../specs/010-host-configuration/tasks.md#视频菜谱工具当前状态)。
 
@@ -30,7 +30,7 @@ scripts/recipe-batch --queue "$Q" run
 scripts/recipe-batch --queue "$Q" status --summary
 ```
 
-`run --job BV号`只推进一个视频。status使用SQLite只读连接，运行时也可查看；不加summary返回任务和错误详情，tasks包含历史配置留下的阶段记录。状态为queued、waiting_extract、waiting_review、waiting_images、complete或failed；complete仅表示阶段组装完毕，菜谱自身仍可能needs_review。run有失败任务时退出码1，其余视频继续处理。
+`run --job BV号`只推进一个视频。status使用SQLite只读连接，运行时也可查看；不加summary返回任务和错误详情，tasks包含历史配置留下的阶段记录。状态为queued、waiting_extract、waiting_review、waiting_repair、waiting_images、complete或failed；complete仅表示阶段组装完毕，菜谱自身仍可能needs_review。run有失败任务时退出码1，其余视频继续处理。
 
 试验十道菜已登记在上述Q；清单、只读保护记录及“任务包-最终”在queue上一级；较早任务包仅保留作历史，当前导出以最终包为准。目前等待独立语义审阅，尚未导入新的AI审阅结论。
 
@@ -62,7 +62,7 @@ scripts/recipe-batch --queue "$Q" run
 scripts/recipe-batch --queue "$Q" export /path/to/next-packets
 ```
 
-正文必须满足完整Schema及引用、原文、覆盖、身份和选图校验。独立审阅覆盖每个事实；选图评价提供的每个候选，只选matches+usable，缺图写原因。坏返回保存在rejected，不能覆盖已接受结果；同一合法结果重复导入会跳过。过期配置的包不接受。导入事实审阅不会自动解决既有食材用量疑点；v1审阅Schema只有fact_reviews，食材独立核对和视觉观察修复仍需后续阶段。
+正文必须满足完整Schema及引用、原文、覆盖、身份和选图校验。独立审阅覆盖每个事实、食材和既有疑点；选图评价提供的每个候选，只选matches+usable，缺图写原因。坏返回保存在rejected，不能覆盖已接受结果；同一合法结果重复导入会跳过。过期配置的包不接受。v1.1审阅要求ingredient_reviews、issue_reviews与repair_requests完整返回；只有明确证据判定才能解决疑点，未知用量保留。视觉observations转换为实际帧证据并再次独立审阅；白名单修复后必须复审，每个文本/视觉阶段最多两次修复。
 
 ## 调整参数与失败恢复
 
@@ -90,4 +90,4 @@ scripts/recipe-batch --queue "$Q" build /path/to/new-library
 
 合成测试覆盖完整导出、错误/过期响应拒绝、候选及原文保护、抽帧参数调整后的文本复用、单写者与运行中只读查询、阶段发布后中断恢复、重建历史摘要；合成图的匹配结论不作为菜谱质量证明。十道菜真实材料验证限于登记、字幕/种子校验、任务包导出和重复续跑。
 
-队列SQLite用于本地执行状态，网页检索仍使用JSON。queue、events、响应、字幕和图片属于用户运行数据，不进入Git或NUC规格镜像。后续模型接入、费用/上传控制和30–50视频质量试验另列P1/P2。
+队列SQLite用于本地执行状态，网页检索仍使用JSON。queue、events、响应、字幕和图片属于用户运行数据，不进入Git或NUC规格镜像。模型适配器及费用/上传控制已提供；真实服务配置、十道菜独立质量复核和30–50视频试验仍列P1/P2。

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Review, image selection and repair outputs v1",
+  "title": "Review, image selection and repair outputs v1.1 (legacy reviews readable)",
   "oneOf": [
     {
       "type": "object",
@@ -49,6 +49,99 @@
           "type": "array",
           "items": {
             "$ref": "video-recipe.schema.json#/$defs/issue"
+          }
+        },
+        "ingredient_reviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "verdict": {
+                "enum": [
+                  "supported",
+                  "needs_review"
+                ]
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              },
+              "evidence_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_-]*$"
+                }
+              },
+              "ingredient_id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_-]*$"
+              }
+            },
+            "required": [
+              "ingredient_id",
+              "verdict",
+              "reason",
+              "evidence_ids"
+            ]
+          }
+        },
+        "issue_reviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "issue_id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_-]*$"
+              },
+              "resolution": {
+                "enum": [
+                  "open",
+                  "resolved"
+                ]
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              },
+              "evidence_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_-]*$"
+                }
+              }
+            },
+            "required": [
+              "issue_id",
+              "resolution",
+              "reason",
+              "evidence_ids"
+            ]
+          }
+        },
+        "repair_requests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "target_id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_-]*$"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "target_id",
+              "reason"
+            ]
           }
         }
       },
@@ -159,7 +252,8 @@
                   "evidence_windows",
                   "image_goal",
                   "selected_frame_id",
-                  "no_image_reason"
+                  "no_image_reason",
+                  "ingredient_ids"
                 ]
               },
               "value": {},

@@ -119,6 +119,9 @@ def validate(folder,schema):
   if run['stage']=='select_images':
    snapshots=[folder/'candidates.json',folder/('candidates-input-'+run['input_sha256']+'.json')]
    if not any(p.is_file() and not p.is_symlink() and digest(p)==run['input_sha256'] for p in snapshots):raise ValueError('image input digest mismatch')
+  if run['stage'] in ['review','repair'] and run['prompt_version']=='1.1.0':
+   snapshot=folder/('stage-input-'+run['input_sha256']+'.json')
+   if not snapshot.is_file() or snapshot.is_symlink() or digest(snapshot)!=run['input_sha256']:raise ValueError('review/repair input digest mismatch')
   if run['stage']=='render':
    snapshots=[folder/'recipe-input.json',folder/('recipe-input-'+run['input_sha256']+'.json')]
    if not any(p.is_file() and digest(p)==run['input_sha256'] for p in snapshots):raise ValueError('render input digest mismatch')
@@ -129,6 +132,12 @@ def validate(folder,schema):
  if {x['fact_id']for x in semantic['fact_reviews']}!={f['id']for f in facts} or len(semantic['fact_reviews'])!=len(facts):raise ValueError('semantic review does not cover all facts')
  for item in semantic['fact_reviews']:
   if not set(item['evidence_ids'])<=ev.keys():raise ValueError('semantic review has unknown evidence')
+ if 'ingredient_reviews' in semantic:
+  reviews=semantic['ingredient_reviews'];ingredients=tables['ingredients']
+  if len(reviews)!=len(ingredients) or {x['ingredient_id']for x in reviews}!=set(ingredients):raise ValueError('semantic review does not cover all ingredients')
+  for item in reviews:
+   if not set(item['evidence_ids'])<=ev.keys() or (item['verdict']=='supported'and not item['evidence_ids']):raise ValueError('invalid ingredient review evidence')
+   if item['verdict']!=ingredients[item['ingredient_id']]['review_status']:raise ValueError('ingredient review differs from recipe')
  selections=read(folder/'image-selection.json')
  if {x['step_id']for x in selections}!=set(stepids) or len(selections)!=len(stepids):raise ValueError('image selection does not cover all steps')
  for selection in selections:
@@ -189,8 +198,8 @@ def build(source,output,dictionary_path):
     if (folder/name).is_file():shutil.copy2(folder/name,dst/name)
    for f in d['frames']:
     (dst/f['file']).parent.mkdir(exist_ok=True);shutil.copy2(folder/f['file'],dst/f['file'])
-   for snapshot in list(folder.glob('recipe-input*.json'))+list(folder.glob('candidates-input-*.json')):
-    if snapshot.is_file() and not snapshot.is_symlink():shutil.copy2(snapshot,dst/(('candidates-input-' if snapshot.name.startswith('candidates-input-') else 'recipe-input-')+digest(snapshot)+'.json'))
+   for snapshot in list(folder.glob('recipe-input*.json'))+list(folder.glob('candidates-input-*.json'))+list(folder.glob('stage-input-*.json')):
+    if snapshot.is_file() and not snapshot.is_symlink():shutil.copy2(snapshot,dst/(('candidates-input-' if snapshot.name.startswith('candidates-input-') else 'stage-input-' if snapshot.name.startswith('stage-input-') else 'recipe-input-')+digest(snapshot)+'.json'))
    shutil.copy2(folder/'recipe.internal.json',dst/'recipe-input.json')
    d['runs'].append({'stage':'render','processor':'recipe-library.py','model':None,'prompt_version':'1.0.0','input_sha256':digest(folder/'recipe.internal.json')})
    dump(dst/'recipe.internal.json',d)

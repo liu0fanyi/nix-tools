@@ -1,0 +1,26 @@
+{
+  "protocol": "responses",
+  "endpoint": "https://api.openai.com/v1/responses",
+  "api_key_env": "RECIPE_API_KEY",
+  "models": {
+    "extract": "gpt-6.1-sol",
+    "review": "gpt-6.1-sol",
+    "vision": "gpt-6.1-sol",
+    "repair": "gpt-6.1-sol"
+  },
+  "vision_models": [
+    "gpt-6.1-sol"
+  ],
+  "reasoning_effort": "medium",
+  "allow_text": false,
+  "allow_images": false,
+  "max_input_tokens": 524288,
+  "max_output_tokens": 16384,
+  "image_token_ceiling": 16384,
+  "timeout_seconds": 180,
+  "max_attempts": 3,
+  "max_total_usd": 0,
+  "max_video_usd": 0,
+  "input_usd_per_million": 2,
+  "output_usd_per_million": 10
+}

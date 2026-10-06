@@ -168,4 +168,6 @@ Constitution Check：仅PC工具和现有010规格；无外部Git参考、无新
 
 Constitution Check：PC权威源，沿用010工具范围；自编资料在docs、需求与契约在specs，无新外部Git参考或gitlink。源媒体及私有处理数据不进入Git或NUC资料镜像，保护既有AGENTS/flake.lock/home.nix改动；不switch或部署。资料同步仅按既定todos/nix-tools白名单，先预演、再checksum核验。
 
-P0实现细则见[批处理契约](contracts/video-recipe-batch.md)。抽帧采用每窗口均匀代表、每步最多12张，偏离默认全窗口扫描；无自动扩窗/补帧。v1独立审阅只返回事实判定，食材用量核对与视觉观察修复须在P1补齐；本版不得由事实通过自动认证食材。
+P0实现细则见[批处理契约](contracts/video-recipe-batch.md)。抽帧采用每窗口均匀代表、每步最多12张，偏离默认全窗口扫描；无自动扩窗/补帧。P1已补齐食材/既有疑点完整审阅、视觉观察转帧证据、白名单修复及独立复审；文本/视觉各最多两次修复。Responses适配器默认预览，实际服务/凭证/上传范围/预算尚待配置，十道菜真实独立复核未执行。不得由事实通过自动认证食材。
+
+P1 Constitution Check：代码与配置样例在本机权威仓库，说明在docs、契约在specs；接口依据引用官方在线文档，无新增外部参考仓库或原始文件，gitlink规则不适用。私有媒体和模型响应留Downloads，不进入Git或NUC规格镜像。不修改系统、锁定、部署或下载状态。

@@ -47,6 +47,9 @@ class BatchChecks(unittest.TestCase):
         return {'task_id': packet['task_id'], 'input_sha256': packet['input_sha256'], 'processor': 'synthetic-test', 'model': None, 'result': result}
 
     def send(self, folder, result):
+        if result.get('stage') == 'review' and 'ingredient_reviews' not in result:
+            recipe = m.load(folder / 'payload.json')['recipe']
+            result = {**result, 'ingredient_reviews': [{'ingredient_id': i['id'], 'verdict': 'needs_review', 'reason': 'synthetic fixture only', 'evidence_ids': i['evidence_ids']} for i in recipe['ingredients']], 'issue_reviews': [{'issue_id': i['id'], 'resolution': 'open', 'reason': 'synthetic fixture only', 'evidence_ids': i['evidence_ids']} for i in recipe['issues']], 'repair_requests': []}
         response = self.envelope(folder, result)
         path = self.root / ('response-' + str(len(list(self.root.glob('response*')))) + '.json'); m.write(path, response)
         return self.queue.import_result(path)
