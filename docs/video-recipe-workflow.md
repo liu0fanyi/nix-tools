@@ -1,6 +1,6 @@
 # 视频菜谱规范的使用
 
-规范版本为1.0.0。已提供[字幕OCR](subtitle-ocr.md)、食材审阅及固定菜谱库构建工具；AI整理、独立语义审阅和选图的后台模型适配器尚未接入。
+规范版本为1.0.0。需求与实施进度以[spec](../specs/010-host-configuration/spec.md#视频菜谱工具需求与验收)、[plan](../specs/010-host-configuration/plan.md#视频菜谱工具实施方案)、[tasks](../specs/010-host-configuration/tasks.md#视频菜谱工具当前状态)为准。已提供[字幕OCR](subtitle-ocr.md)、食材审阅及固定菜谱库构建工具；AI整理、独立语义审阅和选图的后台模型适配器尚未接入。
 
 ## 入口
 

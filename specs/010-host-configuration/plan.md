@@ -144,26 +144,26 @@ Screen Mark的源码Nix输入锁定canvas-kit e5237aa70e628f585418cca19b4e911968
 
 Constitution Check：仅PC工具和现有010规格；无外部Git参考、无新增gitlink，依赖是常规包管理且版本固定。docs是自编说明，规格仍在specs；NUC资料白名单只读预演后同步。独立runtime构建不涉及系统配置，无需switch或完整系统重建；用户既有工作树改动保留。
 
-## 视频菜谱规范方案
+## 视频菜谱工具实施方案
 
-契约与提示词放010/contracts，自编手册放docs。内部结构使用JSON Schema Draft 2020-12，核对/选图/修复采用独立阶段Schema；本地完整契约与供应商受限Schema分开适配。唯一事实源由固定模板导出HTML及Schema.org Recipe，证据与疑点保留。JSON Schema不覆盖跨引用、文件和语义检查，V01–V10明确实现方验收边界。
+### 已实现的链路
 
-控制器将来独立运行，以阶段调用本地/云端模型，并保存检查点、配置指纹与实际用量；当前未配置模型后端。规范验证使用临时固定jsonschema 4.25.1，不增加系统依赖。真实局部例子的quote/时间/源字幕与图片摘要核对；拒绝未知字段、非法数量模式及缺失选图字段。完整视频处理与10菜式评估属于后续实现，未宣称完成。
+契约、内部/阶段JSON Schema和四阶段提示词位于010/contracts，自编手册位于docs，工具与固定模板位于scripts，权威食材词典位于config/recipe/ingredients.json。内部JSON是事实源；Schema及跨记录验收后固定导出HTML、Recipe JSON和食材索引。JSON合法不能代替语义与视觉核对。
 
-Constitution Check：PC权威源、沿用010工具规格；自编说明在docs，契约在specs，网页仅引用不引入上游副本。没有外部Git参考、新gitlink或浮动依赖；保护既有AGENTS、flake.lock、home.nix改动。只按既有sync-todos白名单预演、同步和校验，不启动下载、不删视频、不部署或switch。
+`recipe-library`使用独立Nix运行环境与固定验证依赖，接受已经整理好的内部菜谱；`recipe-ingredients.py`负责collect/prepare-review/apply/reindex/directory，共享JS实现别名、父类、可选配料及多词AND检索。目录内嵌索引，在file://下直接浏览，无fetch依赖。当前词典revision=3。
 
-## 十菜式菜谱库试验方案
+十份真实试稿的文本整理和选图由交互式AI完成，独立语义审阅为pending。试验采用每步3张代表帧及一次定点补帧，记录实际策略；没有执行默认1秒扫描或对全部未选候选逐张精细核验。用户数据留Downloads，输入准备与组装仍有/tmp中的试验专用脚本，尚非稳定批处理入口。
 
-控制/验收/渲染工具存scripts，模板存scripts下独立目录；用户菜谱数据和截图留Downloads，临时提取与模型试稿留/tmp。本轮直接由交互式AI按模板执行文本整理、再审阅与实际候选图选择，记录执行方式与未人工核验边界。实现Schema与跨记录验收、固定HTML/Recipe JSON和食材索引；目录内嵌索引，使用浏览器DOM过滤，无fetch避免file://跨域问题。搜索只根据实际食材清单建立，替代方案保留正文不入食材索引，不从视频标题误加食材，默认多个词AND。
+### 下一步：可续跑控制器
 
-Constitution Check：PC权威、现有010工具范围、specs/contracts与docs来源分层，无新增外部参考或gitlink，不刷新flake、不改HM、不部署/switch。镜像仍限todos/nix-tools，源视频只读。云端模型供应商及预算未配置，不调用付费API。
+1. 把试验中的来源登记、字幕准备、候选抽帧和阶段输入准备迁入可复用工具；先支持单视频及十道菜清单，源媒体只读，稳定ID去重，输出新版本。
+2. 实现持久任务状态、阶段检查点、状态查询/日志、失败重试和中断恢复。先支持模型任务包导出/结果导入，从而独立验证控制器；状态存储与网页搜索索引分开设计，是否采用SQLite由控制器并发和事务需求决定。
+3. 接入文本/视觉模型适配器，落实访问配置、上传范围、预算上限、超时/拒绝处理及实际用量记录。配置前不发起外部模型调用；控制器无需聊天常驻。
+4. 用独立审阅阶段复核现有十道菜，处理疑点、数字/用量及缺图，失败留needs_review；重跑只能更新受影响阶段，保留版本与审计记录。
+5. 通过恢复和质量验收后扩大到30–50个视频，再决定全库运行。每批重新审阅全库食材清单、同步词典与目录，报告质量、耗时和实际开销；达到质量门槛前不直接处理4000多条。
 
-## 全库食材词典审阅方案
+### 验收与存储边界
 
-沿用010规格，config/recipe/ingredients.json维护稳定ID/标准名/同义名/父类及歧义；scripts/recipe-ingredients.py用标准库汇总证据快照、准备全名清单与有限实例、验收AI提案并生成下一版本。recipe-ingredient-search.js共享浏览器和Node检索逻辑，固定directory模板内嵌更新索引，不依赖SQLite/网络fetch。AI审阅Schema/契约在contracts，手册在docs；真实inventory/review在Downloads，模型后端未接入。
+结构/输出保护测试用于程序验收，独立语义审阅和视觉核对用于内容验收，人工校对单独登记。控制器须验证强制中断后的续跑、不重复已完成调用、配置变化后的受影响阶段重算、预算耗尽后暂停及坏结果隔离。后台任务记录即使使用SQLite，静态网页仍可导出JSON索引；模拟4200项的检索性能不证明全库菜谱质量或手机性能。
 
-Constitution Check：PC权威、现有010工具范围、资料来源分层；无外部参考仓库或新gitlink、无付费调用、不改HM/锁定、不switch/部署，保护原媒体和既有工作树改动。同步仅用既定todos/nix-tools白名单，先预演再checksum校验。
-
-### 十道菜实际实现边界
-
-固定recipe-library入口复用独立Nix运行环境和版本固定验证依赖，跨记录及阶段Schema验收后导出离线HTML/Recipe JSON，调用同一食材索引模块与v2词典。14项回归、10个实际页面/53张展示图与导航/窄屏一致性通过。当前输入由交互式AI整理，独立语义审阅标pending、所有事实needs_review；代表帧抽样替代默认1秒策略，缺图显式记录，不宣称无人批量AI流水线完成。媒体摘要/来源/私有审阅与截图留Downloads，不进入Git或NUC资料镜像。
+Constitution Check：PC权威源，沿用010工具范围；自编资料在docs、需求与契约在specs，无新外部Git参考或gitlink。源媒体及私有处理数据不进入Git或NUC资料镜像，保护既有AGENTS/flake.lock/home.nix改动；不switch或部署。资料同步仅按既定todos/nix-tools白名单，先预演、再checksum核验。
