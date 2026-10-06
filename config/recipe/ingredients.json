@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "revision": 5,
+  "revision": 6,
   "items": [
     {
       "id": "mushroom_group",
@@ -82,7 +82,8 @@
       "name": "姜",
       "kind": "ingredient",
       "aliases": [
-        "姜（生坯变式）"
+        "姜（生坯变式）",
+        "姜末"
       ],
       "parents": []
     },
@@ -163,7 +164,9 @@
         "清水",
         "热水",
         "水（收汁阶段）",
-        "水（焯水及压制阶段）"
+        "水（焯水及压制阶段）",
+        "泡蛏子用水（可选）",
+        "清水（加汤用）"
       ],
       "parents": []
     },
@@ -234,7 +237,9 @@
       "id": "ingredient_033",
       "name": "熟豆油",
       "kind": "ingredient",
-      "aliases": [],
+      "aliases": [
+        "熟豆油（明油）"
+      ],
       "parents": [
         "ingredient_068"
       ]
@@ -333,7 +338,9 @@
       "id": "ingredient_047",
       "name": "米饭",
       "kind": "ingredient",
-      "aliases": [],
+      "aliases": [
+        "熟米饭"
+      ],
       "parents": []
     },
     {
@@ -365,7 +372,9 @@
       "id": "minced_meat_30pct_fat",
       "name": "肉末（三肥七瘦）",
       "kind": "ingredient",
-      "aliases": [],
+      "aliases": [
+        "三肥七瘦肉末"
+      ],
       "parents": []
     },
     {
@@ -414,7 +423,9 @@
       "id": "chopped_scallion",
       "name": "葱花",
       "kind": "ingredient",
-      "aliases": [],
+      "aliases": [
+        "葱末"
+      ],
       "parents": [
         "scallion_unspecified"
       ]
@@ -480,7 +491,9 @@
       "name": "食用油",
       "kind": "ingredient",
       "aliases": [
-        "食用油（品种与用量未明确）"
+        "食用油（品种与用量未明确）",
+        "吐沙用油（可选）",
+        "炒制用油"
       ],
       "parents": []
     },
@@ -555,7 +568,8 @@
       "name": "淀粉",
       "kind": "group",
       "aliases": [
-        "淀粉（勾芡用）"
+        "淀粉（勾芡用）",
+        "勾芡用淀粉"
       ],
       "parents": []
     },
@@ -727,6 +741,26 @@
       "parents": [
         "lurong_mushroom_group"
       ]
+    },
+    {
+      "id": "pointed_chili",
+      "name": "尖椒",
+      "kind": "ingredient",
+      "aliases": [
+        "尖椒（替代配菜）"
+      ],
+      "parents": [
+        "chili_group"
+      ]
+    },
+    {
+      "id": "garlic_scape",
+      "name": "蒜苔",
+      "kind": "ingredient",
+      "aliases": [
+        "蒜苔（替代配菜）"
+      ],
+      "parents": []
     }
   ],
   "ambiguities": [
@@ -779,6 +813,13 @@
       "candidate_ids": [],
       "name": "原汤",
       "reason": "cue227/233仅本菜原汤，来源属于该菜上下文，通用词不保证牛骨/肉汤/清汤；全库词典不能把各菜原汤统一固定原料。"
+    },
+    {
+      "candidate_ids": [
+        "ingredient_075"
+      ],
+      "name": "鸡蛋／蛋花（韭菜炒蛏子变体可加）",
+      "reason": "cue90至91列鸡蛋与蛋花可选变体，保留合写项及替代关系，不将两者合并为鸡蛋别名。"
     }
   ],
   "history": [
@@ -870,6 +911,18 @@
         "汤水",
         "老抽或红烧王酱油",
         "香料组合汇总参考（已分列，勿重复添加）"
+      ]
+    },
+    {
+      "inventory_sha256": "8575dc5a3e010bbd02f0dc5b5a7c5c04d9c178b33c572015c16992fa642286d9",
+      "mapped_names": 21,
+      "review_sha256": "e7e3a43600d1165e746015e920db82dffd69032f38905911b9aaf060fbf2b21c",
+      "reviewer": {
+        "kind": "ai",
+        "name": "/root/single_ingredients"
+      },
+      "unresolved_names": [
+        "鸡蛋／蛋花（韭菜炒蛏子变体可加）"
       ]
     }
   ]
