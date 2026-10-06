@@ -123,6 +123,19 @@ broker运行时持有单写者锁，不要另开CLI执行`import`、`next`或其
 
 ## 修订已归档的待核对菜谱
 
+需要新增食材、独立数字事实或纠正变式关系时，先让AI在完整`recipe.internal.json`副本中制作提案，保留来源、旧ID、旧证据/问题、帧与运行历史。不要直接编辑不可变归档。把实际执行者写入`--processor`，由准备入口转换为待审seed：
+
+```bash
+"$FLOW" --root "$FLOW_ROOT" prepare-revision --job BV17wYF6mE22 \
+  --proposal /实际/修订提案/recipe.internal.json \
+  --output "$FLOW_ROOT/修订seed-新目录" --processor 实际提案执行者
+"$FLOW" --root "$FLOW_ROOT" rework --job BV17wYF6mE22 \
+  --seed "$FLOW_ROOT/修订seed-新目录"
+"$FLOW" --root "$FLOW_ROOT" run --watch
+```
+
+准备入口校验所有字幕原文及引用，禁止修改来源、删除旧ID、改写旧证据/问题、伪造帧/运行历史或提升人工状态；新增和内容变更的食材、事实强制`needs_review`，不会采信提案的自认证。 新待审问题使用版本ID，旧问题的状态和解决说明保留；即使提案未改内容也必须独立复审。源、提案摘要与实际执行者进入不可变审计，准备回执明确不代表AI审阅。提案可以收窄步骤`evidence_windows`以围绕`image_goal`抽图；若旧选帧落到新窗外，则取消当前选择并保留待重选缺图问题。真实阶段仍需另一执行者独立全文复审及逐张视觉选图，旧版继续可读。未知量保留未知，不能为消除问题发明数字。
+
 保留原视频的已归档菜谱可通过`rework`建立新revision，重新进行独立语义复审及视觉选图。默认以当前验收归档为起点，也可传入已按相同视频、相同字幕来源准备的修订seed目录：
 
 ```bash

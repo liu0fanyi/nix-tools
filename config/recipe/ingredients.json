@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "revision": 4,
+  "revision": 5,
   "items": [
     {
       "id": "mushroom_group",
@@ -22,14 +22,18 @@
       "id": "chili_group",
       "name": "辣椒",
       "kind": "group",
-      "aliases": [],
+      "aliases": [
+        "辣椒（红烧版）"
+      ],
       "parents": []
     },
     {
       "id": "ingredient_001",
       "name": "五花肉",
       "kind": "ingredient",
-      "aliases": [],
+      "aliases": [
+        "五花肉（肉类变式）"
+      ],
       "parents": []
     },
     {
@@ -77,7 +81,9 @@
       "id": "ingredient_008",
       "name": "姜",
       "kind": "ingredient",
-      "aliases": [],
+      "aliases": [
+        "姜（生坯变式）"
+      ],
       "parents": []
     },
     {
@@ -144,7 +150,8 @@
       "kind": "ingredient",
       "aliases": [],
       "parents": [
-        "mushroom_group"
+        "mushroom_group",
+        "lurong_mushroom_group"
       ]
     },
     {
@@ -154,7 +161,9 @@
       "aliases": [
         "开水",
         "清水",
-        "热水"
+        "热水",
+        "水（收汁阶段）",
+        "水（焯水及压制阶段）"
       ],
       "parents": []
     },
@@ -162,7 +171,9 @@
       "id": "ingredient_018",
       "name": "排骨",
       "kind": "ingredient",
-      "aliases": [],
+      "aliases": [
+        "小排骨（替代汤底）"
+      ],
       "parents": []
     },
     {
@@ -195,7 +206,10 @@
       "id": "ingredient_028",
       "name": "海米",
       "kind": "ingredient",
-      "aliases": [],
+      "aliases": [
+        "中海米",
+        "干虾仁"
+      ],
       "parents": []
     },
     {
@@ -221,7 +235,9 @@
       "name": "熟豆油",
       "kind": "ingredient",
       "aliases": [],
-      "parents": []
+      "parents": [
+        "ingredient_068"
+      ]
     },
     {
       "id": "ingredient_034",
@@ -248,7 +264,9 @@
       "id": "light_soy_sauce",
       "name": "生抽",
       "kind": "ingredient",
-      "aliases": [],
+      "aliases": [
+        "生抽酱油"
+      ],
       "parents": [
         "soy_sauce"
       ]
@@ -276,7 +294,9 @@
       "id": "ingredient_042",
       "name": "白芷",
       "kind": "ingredient",
-      "aliases": [],
+      "aliases": [
+        "白芷（红烧版，指甲盖大小）"
+      ],
       "parents": []
     },
     {
@@ -305,7 +325,9 @@
       "name": "米醋",
       "kind": "ingredient",
       "aliases": [],
-      "parents": []
+      "parents": [
+        "ingredient_066"
+      ]
     },
     {
       "id": "ingredient_047",
@@ -318,7 +340,9 @@
       "id": "ingredient_048",
       "name": "糯米",
       "kind": "ingredient",
-      "aliases": [],
+      "aliases": [
+        "江米"
+      ],
       "parents": []
     },
     {
@@ -362,21 +386,28 @@
       "id": "ingredient_055",
       "name": "花椒",
       "kind": "ingredient",
-      "aliases": [],
+      "aliases": [
+        "花椒（红烧版）",
+        "花椒（酱制变式）"
+      ],
       "parents": []
     },
     {
       "id": "ingredient_056",
       "name": "花椒粉",
       "kind": "ingredient",
-      "aliases": [],
+      "aliases": [
+        "花椒面"
+      ],
       "parents": []
     },
     {
       "id": "scallion_unspecified",
       "name": "葱",
       "kind": "ingredient",
-      "aliases": [],
+      "aliases": [
+        "葱（生坯变式）"
+      ],
       "parents": []
     },
     {
@@ -425,7 +456,8 @@
       "aliases": [
         "酱油（压制阶段）",
         "酱油（收汁阶段）",
-        "酱油（后段调汁用）"
+        "酱油（后段调汁用）",
+        "酱油（生坯变式）"
       ],
       "parents": []
     },
@@ -447,7 +479,9 @@
       "id": "ingredient_068",
       "name": "食用油",
       "kind": "ingredient",
-      "aliases": [],
+      "aliases": [
+        "食用油（品种与用量未明确）"
+      ],
       "parents": []
     },
     {
@@ -471,7 +505,9 @@
       "name": "香油",
       "kind": "ingredient",
       "aliases": [],
-      "parents": []
+      "parents": [
+        "ingredient_068"
+      ]
     },
     {
       "id": "shiitake",
@@ -486,7 +522,9 @@
       "id": "ingredient_074",
       "name": "香菜",
       "kind": "ingredient",
-      "aliases": [],
+      "aliases": [
+        "香菜（天津版本另碟）"
+      ],
       "parents": []
     },
     {
@@ -520,54 +558,238 @@
         "淀粉（勾芡用）"
       ],
       "parents": []
+    },
+    {
+      "id": "northeast_soybean_paste",
+      "name": "东北大酱",
+      "kind": "ingredient",
+      "aliases": [
+        "东北大酱（酱制变式）"
+      ],
+      "parents": []
+    },
+    {
+      "id": "five_spice_powder",
+      "name": "五香粉",
+      "kind": "ingredient",
+      "aliases": [
+        "五香粉（花椒粉替代）"
+      ],
+      "parents": []
+    },
+    {
+      "id": "thirteen_spice",
+      "name": "十三香",
+      "kind": "ingredient",
+      "aliases": [
+        "十三香（花椒粉替代）"
+      ],
+      "parents": []
+    },
+    {
+      "id": "wogua",
+      "name": "倭瓜",
+      "kind": "ingredient",
+      "aliases": [
+        "倭瓜（垫底变式）"
+      ],
+      "parents": []
+    },
+    {
+      "id": "sweet_potato",
+      "name": "红薯",
+      "kind": "ingredient",
+      "aliases": [
+        "红薯（垫底变式）"
+      ],
+      "parents": []
+    },
+    {
+      "id": "beibei_squash",
+      "name": "贝贝瓜",
+      "kind": "ingredient",
+      "aliases": [
+        "贝贝瓜（垫底变式）"
+      ],
+      "parents": []
+    },
+    {
+      "id": "white_pepper_powder",
+      "name": "白胡椒粉",
+      "kind": "ingredient",
+      "aliases": [
+        "白胡椒粉（天津版本另碟）"
+      ],
+      "parents": [
+        "ingredient_053"
+      ]
+    },
+    {
+      "id": "dried_shrimp_skin",
+      "name": "虾皮",
+      "kind": "ingredient",
+      "aliases": [
+        "虾皮（海米替代）"
+      ],
+      "parents": []
+    },
+    {
+      "id": "meatball_unspecified",
+      "name": "肉丸",
+      "kind": "ingredient",
+      "aliases": [
+        "肉丸（替代汤底）"
+      ],
+      "parents": []
+    },
+    {
+      "id": "young_pig_ribs",
+      "name": "小猪排骨",
+      "kind": "ingredient",
+      "aliases": [
+        "小猪排骨（生坯变式）"
+      ],
+      "parents": [
+        "ingredient_018"
+      ]
+    },
+    {
+      "id": "chicken_shreds",
+      "name": "鸡丝",
+      "kind": "ingredient",
+      "aliases": [
+        "鸡丝（肉类变式）"
+      ],
+      "parents": []
+    },
+    {
+      "id": "meat_broth",
+      "name": "肉汤",
+      "kind": "ingredient",
+      "aliases": [
+        "肉汤（可选汤底）",
+        "肉汤（后段补汤可选）"
+      ],
+      "parents": []
+    },
+    {
+      "id": "bone_broth",
+      "name": "骨头汤",
+      "kind": "ingredient",
+      "aliases": [
+        "骨头汤（可选汤底）"
+      ],
+      "parents": []
+    },
+    {
+      "id": "lotus_leaf_group",
+      "name": "荷叶",
+      "kind": "group",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "fresh_lotus_leaf",
+      "name": "鲜荷叶",
+      "kind": "ingredient",
+      "aliases": [
+        "鲜荷叶（垫底变式）"
+      ],
+      "parents": [
+        "lotus_leaf_group"
+      ]
+    },
+    {
+      "id": "dried_lotus_leaf",
+      "name": "干荷叶",
+      "kind": "ingredient",
+      "aliases": [
+        "干荷叶（垫底变式）"
+      ],
+      "parents": [
+        "lotus_leaf_group"
+      ]
+    },
+    {
+      "id": "lurong_mushroom_group",
+      "name": "鹿茸菇",
+      "kind": "group",
+      "aliases": [],
+      "parents": [
+        "mushroom_group"
+      ]
+    },
+    {
+      "id": "fresh_lurong_mushroom",
+      "name": "鲜鹿茸菇",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": [
+        "lurong_mushroom_group"
+      ]
     }
   ],
   "ambiguities": [
     {
-      "name": "大料",
       "candidate_ids": [],
+      "name": "大料",
       "reason": "原文以整朵计数，但仅靠当前食材名称和字幕尚未核对具体香料，暂不自动改成八角。"
     },
     {
-      "name": "明油",
       "candidate_ids": [],
+      "name": "明油",
       "reason": "指最后淋油的操作用途，当前证据不能确定是哪种油。"
     },
     {
-      "name": "汤水",
       "candidate_ids": [],
+      "name": "汤水",
       "reason": "原文只说汤水，不能确定是清水还是某种汤。"
     },
     {
-      "name": "水或清汤",
       "candidate_ids": [],
+      "name": "水或清汤",
       "reason": "原文允许两个选项，不能合并成单一食材或把两个都当成实际使用。"
     },
     {
-      "name": "老抽或红烧王酱油",
       "candidate_ids": [],
+      "name": "老抽或红烧王酱油",
       "reason": "这是替代关系；未拆分主用与可替代项前，保留原名。"
     },
     {
-      "name": "香料（未明确组成）",
       "candidate_ids": [],
+      "name": "香料（未明确组成）",
       "reason": "原文未交代香料组成，不能补充具体品种。"
     },
     {
-      "name": "勾芡材料（未明确）",
       "candidate_ids": [],
+      "name": "勾芡材料（未明确）",
       "reason": "原文只勾芡、往菜上淋，已实际看过候选图只见浅白芡液，不能确认淀粉来源或是否水淀粉；登记来源未明歧义，不归淀粉类。"
+    },
+    {
+      "candidate_ids": [],
+      "name": "大料（红烧版）",
+      "reason": "画面文字明确大料但revision4大料歧义仍保留；阶段限定不消除全库香料身份边界，不只凭整朵/星形强添加八角别名。"
+    },
+    {
+      "candidate_ids": [],
+      "name": "大料（酱制变式）",
+      "reason": "cue109仅大料8克，和既有大料歧义一致保留；变式不证明具体品種，不与花椒或组合合并。"
+    },
+    {
+      "candidate_ids": [],
+      "name": "原汤",
+      "reason": "cue227/233仅本菜原汤，来源属于该菜上下文，通用词不保证牛骨/肉汤/清汤；全库词典不能把各菜原汤统一固定原料。"
     }
   ],
   "history": [
     {
       "inventory_sha256": "8b4f04b4ed6555cacb67fd8b8142077b25e52db836f40a6bb1e786f0d86bb55a",
+      "mapped_names": 70,
       "review_sha256": "d3454847fbfa7051f3b503d4d7c7a42eec89dc47d7ca95a7f0802014d7d1cca7",
       "reviewer": {
         "kind": "ai",
         "name": "codex-interactive"
       },
-      "mapped_names": 70,
       "unresolved_names": [
         "大料",
         "明油",
@@ -579,12 +801,12 @@
     },
     {
       "inventory_sha256": "5d459e23775108f9a3dd9eabfb47f5cbbebb5ea3fb8a9ce08f5da4f51bda660c",
+      "mapped_names": 70,
       "review_sha256": "54b36e5cdfd745c85a1d6d9c5db8a38498abe7f6c474947762a863ec3e3dc732",
       "reviewer": {
         "kind": "ai",
         "name": "codex-interactive"
       },
-      "mapped_names": 70,
       "unresolved_names": [
         "大料",
         "明油",
@@ -596,12 +818,12 @@
     },
     {
       "inventory_sha256": "5d459e23775108f9a3dd9eabfb47f5cbbebb5ea3fb8a9ce08f5da4f51bda660c",
+      "mapped_names": 70,
       "review_sha256": "2b8ed49964bab4be5fd12b154b3d807d9d82a7594982c638cfe45c2ae80cf1cc",
       "reviewer": {
         "kind": "ai",
         "name": "codex-interactive"
       },
-      "mapped_names": 70,
       "unresolved_names": [
         "大料",
         "明油",
@@ -613,12 +835,12 @@
     },
     {
       "inventory_sha256": "bec3ddcc2a21fbf75fcdf525079718e5a27beaf1a5b81e3a3b56115410a08adb",
+      "mapped_names": 73,
       "review_sha256": "1c27e08c4d2dc870e8e725cd4733254878d2b16f5fd1b882dd44c92abc1fdbaf",
       "reviewer": {
         "kind": "ai",
         "name": "codex-subagent-recipe_review_b"
       },
-      "mapped_names": 73,
       "unresolved_names": [
         "勾芡材料（未明确）",
         "大料",
@@ -627,6 +849,27 @@
         "汤水",
         "老抽或红烧王酱油",
         "香料（花椒、大料、辣椒、白芷）"
+      ]
+    },
+    {
+      "inventory_sha256": "0acd691e4c1a4062c0f08b331ba87737e4ef3aecda69a2a411a96f430db3dfa4",
+      "mapped_names": 103,
+      "review_sha256": "7dbfac0710ef1df9851e474e5853e3e66ded09e9857cc615a2aef4f729d7c12d",
+      "reviewer": {
+        "kind": "ai",
+        "name": "codex-subagent-recipe_review_a"
+      },
+      "unresolved_names": [
+        "勾芡材料（未明确）",
+        "原汤",
+        "大料",
+        "大料（红烧版）",
+        "大料（酱制变式）",
+        "明油",
+        "水或清汤",
+        "汤水",
+        "老抽或红烧王酱油",
+        "香料组合汇总参考（已分列，勿重复添加）"
       ]
     }
   ]

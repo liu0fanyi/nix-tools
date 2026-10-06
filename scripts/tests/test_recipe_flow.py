@@ -6,6 +6,7 @@ import shutil
 import tempfile
 import unittest
 from unittest import mock
+from jsonschema import ValidationError
 
 import test_recipe_batch as fixtures
 
@@ -675,6 +676,64 @@ class FlowChecks(unittest.TestCase):
         with mock.patch.object(self.flow, 'setting', return_value=config), mock.patch.object(f.shutil, 'disk_usage', return_value=usage), mock.patch.object(self.flow, 'inputs', side_effect=AssertionError('must pause before download')):
             self.assertEqual(self.flow.next()['paused'], 'low disk space')
         self.assertTrue(self.video.exists())
+
+
+    def proposal(self, archive):
+        data = f.batch.load(archive / 'recipe.internal.json')
+        fact = json.loads(json.dumps(data['steps'][0]['facts'][0])); fact['id'] = 'fact_revision_new'; fact['text'] = '补充原字幕豆腐翻炒动作'; fact['review_status'] = 'supported'
+        data['steps'][0]['facts'].append(fact)
+        path = self.root / 'proposal.json'; f.atomic(path, data)
+        return path
+
+    def test_additive_revision_preserves_history_and_new_fact_cannot_certify_itself(self):
+        archive = self.published(); old = f.batch.artifacts(archive); proposal = self.proposal(archive)
+        result = self.flow.prepare_revision('BVTest123', proposal, self.root / 'revision', 'synthetic-proposer')
+        seed = Path(result['seed']); data = f.batch.library_module().validate(seed, f.batch.load(f.batch.CONTRACTS / 'video-recipe.schema.json'))
+        self.assertEqual(data['steps'][0]['facts'][-1]['review_status'], 'needs_review')
+        self.assertEqual(data['status'], 'needs_review'); self.assertFalse(data['human_reviewed'])
+        self.assertEqual(f.batch.artifacts(archive), old)
+        self.assertTrue(any(i['resolution'] == 'open' and 'fact_revision_new' in i['target_ids'] for i in data['issues']))
+        f.batch.verify(seed); self.flow.rework('BVTest123', seed); self.flow.next()
+        self.assertEqual(self.flow.row('BVTest123')['state'], 'waiting_review')
+        folder = self.pending('review'); current = f.batch.load(folder / 'payload.json')['recipe']
+        self.assertIn('fact_revision_new', [x['id'] for x in current['steps'][0]['facts']])
+
+    def test_revision_keeps_resolved_pending_issue_history_when_old_fact_changes(self):
+        archive = self.published(); old = f.batch.load(archive / 'recipe.internal.json')
+        historical = {'id': 'issue_pending_fact_one', 'code': 'other', 'target_ids': ['fact_one'], 'description': '旧待审项', 'evidence_ids': ['ev_one'], 'resolution': 'resolved', 'resolution_note': '旧版本已经独立核对'}
+        # Synthetic historical fixture; real accepted archives are never edited.
+        old['issues'].append(historical); f.atomic(archive / 'recipe.internal.json', old)
+        f.atomic(archive / 'checksums.json', f.batch.artifacts(archive))
+        candidate = json.loads(json.dumps(old)); candidate['steps'][0]['facts'][0]['text'] = '修订豆腐翻炒原文说明'
+        proposal = self.root / 'old-fact-proposal.json'; f.atomic(proposal, candidate)
+        result = self.flow.prepare_revision('BVTest123', proposal, self.root / 'historical-seed', 'synthetic-proposer')
+        data = f.batch.library_module().validate(Path(result['seed']), f.batch.load(f.batch.CONTRACTS / 'video-recipe.schema.json'))
+        self.assertEqual(next(i for i in data['issues'] if i['id'] == historical['id']), historical)
+        self.assertTrue(any(i['id'] != historical['id'] and i['resolution'] == 'open' and 'fact_one' in i['target_ids'] for i in data['issues']))
+
+    def test_even_unchanged_ready_proposal_requires_independent_revision_review(self):
+        archive = self.published(); proposal = self.root / 'unchanged-proposal.json'; f.atomic(proposal, f.batch.load(archive / 'recipe.internal.json'))
+        result = self.flow.prepare_revision('BVTest123', proposal, self.root / 'unchanged-seed', 'synthetic-proposer')
+        data = f.batch.library_module().validate(Path(result['seed']), f.batch.load(f.batch.CONTRACTS / 'video-recipe.schema.json'))
+        self.assertEqual(data['status'], 'needs_review'); self.assertTrue(any(item['resolution'] == 'open' for item in data['issues']))
+
+    def test_revision_rejects_source_history_id_quote_and_issue_tampering(self):
+        archive = self.published(ready=False); original = f.batch.load(archive / 'recipe.internal.json')
+        changes = [lambda d: d['source'].update(author='fabricated'), lambda d: d.update(human_reviewed=True), lambda d: d['evidence'][0].update(quote='fabricated'), lambda d: d['issues'][0].update(resolution='resolved', resolution_note='self-certified'), lambda d: d['steps'][0]['facts'].clear(), lambda d: d['frames'][0].update(sha256='0'*64), lambda d: d['evidence'].append({**d['evidence'][0], 'id': 'ev_new_fake', 'quote': 'fabricated new cue quote'})]
+        for n, change in enumerate(changes):
+            with self.subTest(change=n):
+                data = json.loads(json.dumps(original)); change(data); proposal = self.root / 'tampered.json'; f.atomic(proposal, data)
+                destination = self.root / ('bad-seed-' + str(n))
+                with self.assertRaises((ValueError, ValidationError)): self.flow.prepare_revision('BVTest123', proposal, destination, 'synthetic-proposer')
+                self.assertFalse(destination.exists())
+
+    def test_revision_requires_new_safe_destination_and_keeps_original_proposal(self):
+        archive = self.published(); proposal = self.proposal(archive); digest = f.batch.digest(proposal)
+        existing = self.root / 'existing'; existing.mkdir(); marker = existing / 'keep'; marker.write_text('keep')
+        for destination in (existing, self.flow.root / 'accepted/new', self.flow.root / 'library/new'):
+            with self.subTest(destination=destination), self.assertRaises(ValueError):
+                self.flow.prepare_revision('BVTest123', proposal, destination, 'synthetic-proposer')
+        self.assertEqual(marker.read_text(), 'keep'); self.assertEqual(f.batch.digest(proposal), digest)
 
 
 if __name__ == '__main__': unittest.main()

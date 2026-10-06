@@ -185,3 +185,5 @@ Constitution Check：本机权威源、010 specs契约、docs手册、scripts实
 生命周期接口与恢复契约见[串行生命周期契约](contracts/video-recipe-flow.md)。待核对项通过rework创建独立revision，原页与审计保留；全库食材提案通过apply-vocabulary校验后更新工作流词典及索引，权威仓库词典另由主代理同步。发布绑定不可变词典快照，词典更新不破坏中断恢复；新复审不得adopt旧完成队列绕过。
 
 任务交换补齐：run --watch只自动推进机械步骤，以current.json导出当前任务、原子responses文件接收子代理结果，按摘要去重并保留接受回执。等待不预下载；错误响应暂停、已接受响应归档失败可重试且不撤销接受。关闭会话仍需另配AI服务才能持续产出新结果；本轮不发起外部模型调用。
+
+质量补齐实现采用prepare-revision→rework：完整提案保留旧来源/ID/证据/问题/帧/运行历史，变更项降为needs_review并记录源与提案审计；构建合法但明确未审阅的seed回执。窄图窗可使旧选帧失效，由程序明确登记重新选图。沿用现有四AI契约及源码摘要映射，不扩大旧repair白名单；完整结构变更在新revision独立审阅。本轮仅复核既有十道媒体，现成媒体的文字任务并行准备，正式流程按序复用一致的有效任务信封，不开启新下载/删除。Constitution Check：源码和docs/specs仍PC权威，私有提案/任务/帧仅Downloads，无新外部参考或模型上传，不改系统/锁/生产。

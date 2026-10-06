@@ -538,6 +538,77 @@ class Flow:
         for name, value in [('inventory.json', inventory), ('packet.json', ingredients.review_packet(inventory, dictionary)), ('dictionary.json', dictionary)]: immutable(destination / name, value)
         return {'output': str(destination), 'names': len(inventory['entries']), 'recipe_count': len(records)}
 
+    def prepare_revision(self, vid, proposal, destination, processor):
+        """Validate an additive content proposal and create an explicitly unreviewed seed."""
+        row = self.row(vid)
+        if not row['archive'] or row['release'] or row['state'] == 'deleted': raise ValueError('revision proposal requires retained archived source')
+        archive = safe(row['archive'], self.root / 'accepted'); batch.verify(archive)
+        old = batch.load(archive / 'recipe.internal.json'); candidate = batch.load(safe(proposal, proposal))
+        batch.schema('extract').validate(candidate)
+        for name in ('schema_version', 'recipe_id', 'title', 'source', 'coverage', 'covered_intervals', 'human_reviewed', 'frames', 'image_reviews', 'runs'):
+            if candidate[name] != old[name]: raise ValueError('proposal cannot change provenance or review history: ' + name)
+        _, old_ids = batch.objects(old); _, candidate_ids = batch.objects(candidate)
+        if not old_ids.keys() <= candidate_ids.keys(): raise ValueError('proposal cannot remove historical IDs')
+        for name in ('evidence', 'issues'):
+            originals = {item['id']: item for item in old[name]}
+            for item in candidate[name]:
+                if item['id'] in originals and item != originals[item['id']]: raise ValueError('proposal cannot overwrite evidence or issue history')
+                if name == 'issues' and item['id'] not in originals and item['resolution'] != 'open': raise ValueError('proposal cannot certify new issues')
+        # Facts remain attached to their original step/variant; relationships may be corrected.
+        for name in ('steps', 'variants'):
+            original = {item['id']: item for item in old[name]}
+            if not original.keys() <= {item['id'] for item in candidate[name]}: raise ValueError('proposal removed a step or variant')
+            for item in candidate[name]:
+                if item['id'] in original and not {x['id'] for x in original[item['id']]['facts']} <= {x['id'] for x in item['facts']}:
+                    raise ValueError('proposal cannot relocate historical facts')
+        facts, _ = batch.objects(candidate); changed = []
+        for item in candidate['ingredients'] + facts:
+            previous = old_ids.get(item['id'])
+            if previous is None or {k: v for k, v in item.items() if k != 'review_status'} != {k: v for k, v in previous.items() if k != 'review_status'}:
+                item['review_status'] = 'needs_review'; changed.append(item['id'])
+            else: item['review_status'] = previous['review_status']
+        for step in candidate['steps']:
+            previous = old_ids.get(step['id'])
+            if previous and (step['selected_frame_id'] != previous['selected_frame_id'] or step['no_image_reason'] != previous['no_image_reason']):
+                raise ValueError('proposal cannot select or remove images')
+            selected = step['selected_frame_id']
+            if selected:
+                frame = candidate_ids[selected]
+                if not any(max(0, w['start'] - 5) <= frame['timestamp'] <= w['end'] + 5 for w in step['evidence_windows']):
+                    step['selected_frame_id'] = None; step['no_image_reason'] = '修订后取图窗口变化，待按新窗口重新核对候选图。'
+                    candidate['issues'].append({'id': 'issue_revision_image_' + str(row['revision'] + 1) + '_' + step['id'], 'code': 'missing_image', 'target_ids': [step['id']], 'description': step['no_image_reason'], 'evidence_ids': [], 'resolution': 'open', 'resolution_note': None})
+        candidate['status'] = 'needs_review'
+        for item in candidate['ingredients'] + facts:
+            if item['review_status'] == 'needs_review' and not any(issue['resolution'] == 'open' and item['id'] in issue['target_ids'] for issue in candidate['issues']):
+                key = 'issue_revision_pending_' + str(row['revision'] + 1) + '_' + item['id']; suffix = 0
+                while any(issue['id'] == key for issue in candidate['issues']):
+                    suffix += 1; key = 'issue_revision_pending_' + str(row['revision'] + 1) + '_' + item['id'] + '_' + str(suffix)
+                candidate['issues'].append({'id': key, 'code': 'other', 'target_ids': [item['id']], 'description': '修订项证据仍需独立核对，历史问题结论保留。', 'evidence_ids': item['evidence_ids'], 'resolution': 'open', 'resolution_note': None})
+        if not any(item['resolution'] == 'open' for item in candidate['issues']):
+            candidate['issues'].append({'id': 'issue_revision_review_' + str(row['revision'] + 1), 'code': 'other', 'target_ids': [step['id'] for step in candidate['steps']], 'description': '修订准备不是独立审阅；新版本仍须独立文字和视觉复核。', 'evidence_ids': [], 'resolution': 'open', 'resolution_note': None})
+        transcript = batch.load(archive / 'transcript.json'); batch.validate_text(candidate, old['source'], transcript, extraction=False)
+        destination = self.output_path(destination)
+        if destination.exists(): raise ValueError('revision destination already exists')
+        durable_mkdir(destination.parent)
+        audit = {'method': 'unreviewed-additive-revision-proposal', 'processor': processor, 'model': None, 'source_archive': str(archive), 'source_checksums_sha256': batch.digest(archive / 'checksums.json'), 'proposal_sha256': batch.digest(proposal), 'changed_or_new_items': changed, 'proposal': batch.load(proposal), 'requires_independent_review': True}
+        if not isinstance(processor, str) or not processor.strip(): raise ValueError('actual proposal processor required')
+        with tempfile.TemporaryDirectory(prefix='.revision-', dir=destination.parent) as tmp:
+            draft = Path(tmp) / 'seed'; shutil.copytree(archive, draft)
+            for name in ('checksums.json', 'acceptance.json'): (draft / name).unlink(missing_ok=True)
+            audit_file = draft / 'revision-proposal.json'; atomic(audit_file, audit)
+            audit_sha = batch.digest(audit_file); shutil.copyfile(audit_file, draft / ('stage-input-' + audit_sha + '.json'))
+            candidate['runs'].append({'stage': 'repair', 'processor': processor, 'model': None, 'prompt_version': 'revision-seed-1.0.0', 'input_sha256': audit_sha})
+            # A preparation receipt is not an AI judgment. Preserve prior verdicts only for unchanged items.
+            semantic = {'stage': 'review', 'fact_reviews': [{'fact_id': item['id'], 'verdict': item['review_status'], 'reason': 'Revision preparation only; changed facts await independent review; unchanged verdict retained from archive.', 'evidence_ids': item['evidence_ids']} for item in facts], 'ingredient_reviews': [{'ingredient_id': item['id'], 'verdict': item['review_status'], 'reason': 'Revision preparation only; changed ingredients await independent review; unchanged verdict retained from archive.', 'evidence_ids': item['evidence_ids']} for item in candidate['ingredients']], 'issue_reviews': [{'issue_id': item['id'], 'resolution': item['resolution'], 'reason': item['resolution_note'] or 'Historical or new issue retained for independent review.', 'evidence_ids': item['evidence_ids']} for item in candidate['issues']], 'repair_requests': [], 'issues': []}
+            selections = batch.load(draft / 'image-selection.json')
+            for selection in selections:
+                step = next(item for item in candidate['steps'] if item['id'] == selection['step_id'])
+                selection['selected_frame_id'] = step['selected_frame_id']; selection['no_image_reason'] = step['no_image_reason']
+            atomic(draft / 'recipe.internal.json', candidate); atomic(draft / 'semantic-review.json', semantic); atomic(draft / 'image-selection.json', selections)
+            batch.library_module().validate(draft, batch.load(batch.CONTRACTS / 'video-recipe.schema.json'))
+            immutable(draft / 'checksums.json', batch.artifacts(draft)); durable_tree(draft); draft.rename(destination); sync_dir(destination.parent)
+        return {'id': vid, 'seed': str(destination), 'changed_or_new_items': changed, 'requires_independent_review': True}
+
     def rework(self, vid, seed=None):
         row = self.row(vid)
         if not row['archive'] or row['release'] or row['state'] == 'deleted': raise ValueError('rework requires retained media and no committed deletion intent')
@@ -600,6 +671,7 @@ def main():
     release = sub.add_parser('release'); release.add_argument('--job', required=True); release.add_argument('--execute', action='store_true')
     rebuild = sub.add_parser('rebuild'); rebuild.add_argument('destination', type=Path)
     inventory = sub.add_parser('inventory'); inventory.add_argument('destination', type=Path)
+    preparation = sub.add_parser('prepare-revision'); preparation.add_argument('--job', required=True); preparation.add_argument('--proposal', type=Path, required=True); preparation.add_argument('--output', type=Path, required=True); preparation.add_argument('--processor', required=True)
     rework = sub.add_parser('rework'); rework.add_argument('--job', required=True); rework.add_argument('--seed', type=Path)
     vocabulary = sub.add_parser('apply-vocabulary'); vocabulary.add_argument('--packet', type=Path, required=True); vocabulary.add_argument('--review', type=Path, required=True)
     retry = sub.add_parser('retry'); retry.add_argument('--job', required=True)
@@ -617,6 +689,7 @@ def main():
         elif args.command == 'release': result = flow.release(args.job, args.execute)
         elif args.command == 'rebuild': result = flow.rebuild(args.destination)
         elif args.command == 'inventory': result = flow.inventory(args.destination)
+        elif args.command == 'prepare-revision': result = flow.prepare_revision(args.job, args.proposal, args.output, args.processor)
         elif args.command == 'rework': result = flow.rework(args.job, args.seed)
         elif args.command == 'apply-vocabulary': result = flow.apply_vocabulary(args.packet, args.review)
         elif args.command == 'retry': flow.retry(args.job); result = flow.status()
