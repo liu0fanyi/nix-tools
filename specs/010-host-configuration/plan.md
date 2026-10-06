@@ -143,3 +143,11 @@ Screen Mark的源码Nix输入锁定canvas-kit e5237aa70e628f585418cca19b4e911968
 `scripts/subtitle-ocr`构建独立Nix运行环境并初始化版本固定的用户缓存venv；核心Python脚本探测区域后以4fps裁剪识别、精确合并及不改数量的闪烁桥接，输出SRT、诊断报告、批次索引和分块检查点。监测模式处理落盘稳定的新视频；复用输入/参数签名一致的检查点，不覆盖非工具管理或外部编辑过的字幕。
 
 Constitution Check：仅PC工具和现有010规格；无外部Git参考、无新增gitlink，依赖是常规包管理且版本固定。docs是自编说明，规格仍在specs；NUC资料白名单只读预演后同步。独立runtime构建不涉及系统配置，无需switch或完整系统重建；用户既有工作树改动保留。
+
+## 视频菜谱规范方案
+
+契约与提示词放010/contracts，自编手册放docs。内部结构使用JSON Schema Draft 2020-12，核对/选图/修复采用独立阶段Schema；本地完整契约与供应商受限Schema分开适配。唯一事实源由固定模板导出HTML及Schema.org Recipe，证据与疑点保留。JSON Schema不覆盖跨引用、文件和语义检查，V01–V10明确实现方验收边界。
+
+控制器将来独立运行，以阶段调用本地/云端模型，并保存检查点、配置指纹与实际用量；当前未配置模型后端。规范验证使用临时固定jsonschema 4.25.1，不增加系统依赖。真实局部例子的quote/时间/源字幕与图片摘要核对；拒绝未知字段、非法数量模式及缺失选图字段。完整视频处理与10菜式评估属于后续实现，未宣称完成。
+
+Constitution Check：PC权威源、沿用010工具规格；自编说明在docs，契约在specs，网页仅引用不引入上游副本。没有外部Git参考、新gitlink或浮动依赖；保护既有AGENTS、flake.lock、home.nix改动。只按既有sync-todos白名单预演、同步和校验，不启动下载、不删视频、不部署或switch。

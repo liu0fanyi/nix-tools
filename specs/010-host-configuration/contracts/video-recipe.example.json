@@ -1,0 +1,161 @@
+{
+  "schema_version": "1.0.0",
+  "recipe_id": "bili_bv1rxad6delq",
+  "title": "砂锅豆腐：炖煮步骤契约示例",
+  "source": {
+    "platform": "bilibili",
+    "video_id": "BV1RXaD6DELQ",
+    "url": "https://www.bilibili.com/video/BV1RXaD6DELQ",
+    "author": "老东北美食",
+    "duration_seconds": 362.665,
+    "transcript_sha256": "280acdd8c594a36fb7bb3d0145269bc4c8c4d4a421cb101af1b0ffcc4e608eb4",
+    "subtitle_origin": "ocr"
+  },
+  "coverage": "partial",
+  "covered_intervals": [
+    {
+      "start": 170,
+      "end": 173.5
+    },
+    {
+      "start": 203,
+      "end": 214
+    }
+  ],
+  "status": "needs_review",
+  "human_reviewed": false,
+  "ingredients": [
+    {
+      "id": "ing_tofu",
+      "name": "嫩豆腐",
+      "role": "main",
+      "quantity": {
+        "mode": "unspecified",
+        "min": null,
+        "max": null,
+        "unit": null,
+        "original": "视频未明确重量"
+      },
+      "evidence_ids": [
+        "ev_tofu"
+      ],
+      "review_status": "supported"
+    }
+  ],
+  "steps": [
+    {
+      "id": "step_simmer",
+      "title": "豆腐开锅后计时",
+      "depends_on": [],
+      "facts": [
+        {
+          "id": "fact_duration",
+          "kind": "duration",
+          "text": "豆腐开锅后计时，炖6分钟。",
+          "measure": {
+            "mode": "exact",
+            "min": 6,
+            "max": 6,
+            "unit": "min",
+            "original": "6分钟"
+          },
+          "ingredient_ids": [
+            "ing_tofu"
+          ],
+          "evidence_ids": [
+            "ev_93",
+            "ev_95"
+          ],
+          "review_status": "supported"
+        }
+      ],
+      "evidence_windows": [
+        {
+          "start": 203,
+          "end": 220
+        }
+      ],
+      "image_goal": "展示砂锅盖盖炖煮的操作，不作为6分钟时长的证据。",
+      "selected_frame_id": "frame_218",
+      "no_image_reason": null
+    }
+  ],
+  "variants": [],
+  "evidence": [
+    {
+      "id": "ev_93",
+      "kind": "subtitle",
+      "interval": {
+        "start": 207.0,
+        "end": 208.5
+      },
+      "cue_ids": [
+        93
+      ],
+      "frame_id": null,
+      "quote": "开上锅你就计时",
+      "observation": null
+    },
+    {
+      "id": "ev_95",
+      "kind": "subtitle",
+      "interval": {
+        "start": 211.5,
+        "end": 213.0
+      },
+      "cue_ids": [
+        95
+      ],
+      "frame_id": null,
+      "quote": "6分钟",
+      "observation": null
+    },
+    {
+      "id": "ev_tofu",
+      "kind": "subtitle",
+      "interval": {
+        "start": 170,
+        "end": 173.5
+      },
+      "cue_ids": [
+        78
+      ],
+      "frame_id": null,
+      "quote": "豆腐呢要嫩豆腐哈",
+      "observation": null
+    }
+  ],
+  "frames": [
+    {
+      "id": "frame_218",
+      "file": "images/218.jpg",
+      "sha256": "bf6c03a54a2f9b6e0528cacea65562dd5f3c8da33b13609172b9a3720bed4a3c",
+      "timestamp": 218,
+      "width": 960,
+      "height": 540
+    }
+  ],
+  "image_reviews": [
+    {
+      "step_id": "step_simmer",
+      "frame_id": "frame_218",
+      "relevance": "matches",
+      "quality": "usable",
+      "reason": "展示盖盖炖煮；图片不能验证实际炖煮时长。"
+    }
+  ],
+  "issues": [
+    {
+      "id": "issue_partial",
+      "code": "incomplete_coverage",
+      "target_ids": [
+        "step_simmer"
+      ],
+      "description": "仅演示一条步骤的数据契约，不是整道菜的完整规范化结果。",
+      "evidence_ids": [],
+      "resolution": "open",
+      "resolution_note": null
+    }
+  ],
+  "runs": []
+}

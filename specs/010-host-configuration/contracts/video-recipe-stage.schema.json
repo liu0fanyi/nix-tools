@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Review, image selection and repair outputs v1",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "stage": {
+          "const": "review"
+        },
+        "fact_reviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "fact_id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_-]*$"
+              },
+              "verdict": {
+                "enum": [
+                  "supported",
+                  "needs_review"
+                ]
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              },
+              "evidence_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_-]*$"
+                }
+              }
+            },
+            "required": [
+              "fact_id",
+              "verdict",
+              "reason",
+              "evidence_ids"
+            ]
+          }
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "$ref": "video-recipe.schema.json#/$defs/issue"
+          }
+        }
+      },
+      "required": [
+        "stage",
+        "fact_reviews",
+        "issues"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "stage": {
+          "const": "select_images"
+        },
+        "step_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]*$"
+        },
+        "candidate_reviews": {
+          "type": "array",
+          "items": {
+            "$ref": "video-recipe.schema.json#/$defs/image_review"
+          }
+        },
+        "selected_frame_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "no_image_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "observations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "target_id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_-]*$"
+              },
+              "frame_id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_-]*$"
+              },
+              "observation": {
+                "type": "string",
+                "minLength": 1
+              },
+              "verdict": {
+                "enum": [
+                  "supported",
+                  "needs_review"
+                ]
+              }
+            },
+            "required": [
+              "target_id",
+              "frame_id",
+              "observation",
+              "verdict"
+            ]
+          }
+        }
+      },
+      "required": [
+        "stage",
+        "step_id",
+        "candidate_reviews",
+        "selected_frame_id",
+        "no_image_reason",
+        "observations"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "stage": {
+          "const": "repair"
+        },
+        "changes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "target_id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_-]*$"
+              },
+              "field": {
+                "enum": [
+                  "name",
+                  "quantity",
+                  "review_status",
+                  "text",
+                  "measure",
+                  "evidence_ids",
+                  "depends_on",
+                  "evidence_windows",
+                  "image_goal",
+                  "selected_frame_id",
+                  "no_image_reason"
+                ]
+              },
+              "value": {},
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "target_id",
+              "field",
+              "value",
+              "reason"
+            ]
+          }
+        },
+        "issue_updates": {
+          "type": "array",
+          "items": {
+            "$ref": "video-recipe.schema.json#/$defs/issue"
+          }
+        }
+      },
+      "required": [
+        "stage",
+        "changes",
+        "issue_updates"
+      ]
+    }
+  ]
+}
