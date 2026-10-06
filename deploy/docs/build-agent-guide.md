@@ -59,7 +59,7 @@ devenv shell -- just manage <操作>                   # NUC 运维管理入口
 
 2. **单向调度防递归**：
    - NUC 用 private + Podman，阿里云用 public + Docker。所有产品构建在 PC 执行；服务器只备份、加载和运行。
-   - 产品 `just deploy` 反向调用这里，因此这里**只能调用产品 `just build`，绝不能调用产品 `deploy`**，避免递归调用。
+   - 产品 `just deploy` 反向调用这里，因此这里**只能调用产品 `just build` 或经 023 验收的 `just build-nix private`，绝不能调用产品 `deploy`**，避免递归调用。
    - 复杂 Python 配置/备份/激活/回滚代码保留，不要恢复旧 release-nuc/release-aliyun 等 Shell 包装或产品 .nu/.sh 构建包装。
 
 3. **源码与运行环境**：
@@ -108,3 +108,17 @@ devenv shell -- just manage <操作>                   # NUC 运维管理入口
 按用户绑定维护决定，clipboard-sync 子模块的功能规格统一位于本仓库 specs/005-clipboard-core、006-clipboard-reliability、007-clipboard-release。子模块只留手册与指向本仓库的入口，代码/Git/构建保持独立。其他产品仍在各自仓库管理规格。本规则明确恢复既有父仓库规格归属，不恢复已经取消的 dsh Web 或 Clip 2 分钟过期需求。
 
 同步前可运行 `just sync-todos --dry-run`；正式同步只对本项目 specs 使用删除镜像，docs 增量，附带 constitution/操作入口并以 checksum 复查。
+
+## 完整 Nix 私有镜像发布（tag-all 023）
+
+`devenv shell -- just -- deploy nuc tag-server --tag-packaging nix --dry-run` 先预演；
+移除 `--dry-run` 后由同一发布器调用 PC `just build-nix private <release-suffix>`。
+默认仍为 Alpine；Nix 仅用于 NUC 的 tag-server/all，Aliyun 和其他组件拒绝该选择。
+原 Containerfile 全 tester/private 验收保留，020–022 检查镜像不得发布。
+
+归档必须绑定本次 release 标签、SHA256、配置摘要和完整 private 探针报告；传输前再次核对，
+直接发送固定 Nix store 归档，不导入、迁移/reset/prune PC 默认 Podman。
+备份成功后才加载、激活；主后端、只读后端、启用的发现服务全部核对镜像。
+发现服务检查进程和 CLI，后端检查 HTTP，最后验代理；旧服务镜像不同则在变更前拒绝。
+失败尝试恢复全部目标，单项重建失败不能阻断其余恢复；报告未恢复项，保留数据库备份。
+不自动恢复数据库、认证、模型或前端，不更改原运行用户和挂载属主。

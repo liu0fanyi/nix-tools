@@ -13,5 +13,15 @@ NUC 单应用可用 `just deploy nuc frontend --frontend-app devices`（或 tran
 用户继续能力分层之后的 Nix dockerTools 试验：产品本机 `just check-nix-core` 先完成
 既有 Containerfile 全 tester/core，再组装同一二进制并用 Podman 验收。仅有本机
 `nix-trial-baseline` / `nix-core-trial` 标签；规格在 tag-all `specs/020-nix-image-trial/`。
-发布器继续只调用 `just build private/public`，不接受试验镜像或增加新 profile。
+020–022 发布边界仍只接受原 private/public，不接受这些检查镜像或增加新 profile。
 该约定不允许服务器构建、生产迁移或挂载数据库/socket，也不改变回滚流程。
+
+## 完整 Nix 私有镜像
+
+产品 023 的完整 private 已通过本机构建/持久化/回退/TLS/Git 验收；受控生产切换仍需
+单独记录。`just -- deploy nuc tag-server --tag-packaging nix --dry-run` 可预演，去掉
+`--dry-run` 才发布。默认 `--tag-packaging alpine` 保留；Nix 不用于 Aliyun。
+
+具体发布契约见 [Nix 打包选择](../../specs/009-infrastructure/contracts/tag-packaging.md)。
+服务端只加载运行，原数据/SSH/模型挂载及用户不变。发现服务一并切换，旧镜像不同则拒绝；
+失败恢复全部目标并检查代理，数据库不自动恢复。

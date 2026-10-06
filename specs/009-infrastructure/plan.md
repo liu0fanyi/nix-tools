@@ -30,3 +30,12 @@ PC 本地维护和构建；NUC 仅镜像。文档整理不授权系统切换、�
 构建权威仍为 PC；本机试验先保留 Containerfile 全 tester/core，Nix 仅组装同一二进制。
 服务器不编译，发布器只接受原 private/public，不传输试验镜像、不改现网。
 Constitution Check：不改变现有 PC 单向构建/服务器加载与三级隔离，不需要生产规则例外。
+
+## 完整 Nix 私有镜像发布器
+
+按产品 023 用户已批准方案，在隔离 worktree 实现显式 NUC Nix 选择、归档摘要校验、
+三服务激活/回滚；默认 Alpine、Aliyun 与 infra/frontend 不变。没有新增部署链路。
+Constitution Check：1.3.0 + 工作区规则；源码构建仅 PC，服务器加载，身份/数据库/模型
+不打包，不切换系统，不改引用 gitlink，不新增外部参考，不移动嵌入文件。
+主工作树无关 AGENTS/flake.lock/home-manager 修改保留；worktree 中 git-crypt 原字节
+保持加密，不解密或复制密钥。契约见 contracts/tag-packaging.md。

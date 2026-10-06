@@ -29,8 +29,8 @@ class ActivationTests(unittest.TestCase):
                 return 'sha256:' + active
             if args[1] == 'tag' and args[-1] == 'production':
                 active = 'old' if ':rollback-' in args[2] else 'new'
-            if ('recreate' in args or 'smoke' in args) and not failed:
-                if (scenario == 'recreate-failure' and 'recreate' in args) or (scenario == 'smoke-failure' and 'smoke' in args):
+            if ('recreate' in args or 'smoke' in args or '--help' in args) and not failed:
+                if (scenario == 'recreate-failure' and 'recreate' in args) or (scenario == 'smoke-failure' and 'smoke' in args) or (scenario == 'discovery-failure' and args[1:2] == ['exec'] and '--help' in args):
                     failed = True
                     raise subprocess.CalledProcessError(1, args)
             return ''
@@ -54,10 +54,37 @@ class ActivationTests(unittest.TestCase):
                     self.assertEqual(recreated[-len(services):], services)
 
     def test_both_engines_success_mismatch_and_rollback(self):
-        for engine, services in [('podman', ['tag-server', 'tag-server-readonly']), ('docker', ['tag-server'])]:
+        for engine, services in [('podman', ['tag-server', 'tag-server-readonly', 'tag-peer-discovery']), ('docker', ['tag-server'])]:
             for scenario in ('success', 'mismatch', 'recreate-failure', 'smoke-failure'):
                 with self.subTest(engine=engine, scenario=scenario):
                     self.simulate(engine, services, scenario)
+
+    def test_discovery_failure_rolls_back_all_three_services(self):
+        self.simulate('podman', ['tag-server', 'tag-server-readonly', 'tag-peer-discovery'], 'discovery-failure')
+
+    def test_rollback_recreates_remaining_services_after_one_failure(self):
+        calls = []
+        active = 'old'
+        def run(args):
+            nonlocal active
+            calls.append(args)
+            if args[1] == 'ps':
+                return args[-1].split('=')[-1]
+            if args[1:3] == ['image', 'inspect']:
+                return 'new'
+            if args[1] == 'inspect':
+                return active
+            if args[1] == 'tag' and args[-1] == 'production':
+                active = 'old' if ':rollback-' in args[2] else 'new'
+            if 'recreate' in args and args[-1] == 'tag-server':
+                raise subprocess.CalledProcessError(1, args)
+            return ''
+        services = ['tag-server', 'tag-server-readonly', 'tag-peer-discovery']
+        with patch.object(activate_tag, 'run', side_effect=run), \
+             patch.object(Path, 'read_text', return_value='COMPOSE_PROJECT_NAME="test"\n'), \
+             contextlib.redirect_stdout(io.StringIO()), self.assertRaisesRegex(RuntimeError, 'Rollback incomplete'):
+            activate_tag.activate('/repo', 'home', '/output', 'podman', 'image:release-test', 'new', 'production', 'http://example', services)
+        self.assertEqual([c[-1] for c in calls if 'recreate' in c][-3:], services)
 
     def test_nuc_split_images_refused(self):
         self.simulate('podman', ['tag-server', 'tag-server-readonly'], 'split-images')

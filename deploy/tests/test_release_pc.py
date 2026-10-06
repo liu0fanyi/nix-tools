@@ -1,8 +1,12 @@
 import contextlib
 import io
+import hashlib
+import json
 import shutil
 import subprocess
 import sys
+import tarfile
+import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -138,3 +142,63 @@ class ReleaseTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, 'image ID'):
                 release.transfer('image')
             digest.assert_not_called()
+
+    def test_nix_dry_run_uses_product_build_and_archive_without_commands(self):
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output), patch('subprocess.run', side_effect=AssertionError('dry run executed')):
+            self.assertEqual(main(['--target', 'nuc', 'tag-server', '--tag-packaging', 'nix', '--dry-run']), 0)
+        plan = output.getvalue()
+        self.assertIn('just build-nix private release-', plan)
+        self.assertIn('gzip -dc', plan)
+        self.assertIn('tag-peer-discovery', plan)
+        self.assertNotIn('podman save', plan)
+        self.assertNotIn('rsync', plan)
+        self.assertNotIn('47.93.153.102', plan)
+        self.assertLess(plan.index('backup'), plan.index('gzip -dc'))
+
+    def test_nix_invalid_target_or_component_does_not_execute(self):
+        for target, component in [('aliyun', 'tag-server'), ('nuc', 'infra'), ('nuc', 'frontend'), ('nuc', 'runtime-images')]:
+            with contextlib.redirect_stdout(io.StringIO()), patch('subprocess.run', side_effect=AssertionError):
+                self.assertEqual(main(['--target', target, component, '--tag-packaging', 'nix']), 1)
+
+    def test_nix_artifact_binds_fresh_tag_archive_and_config(self):
+        image = 'localhost/tag-server:release-test'
+        config = b'{"config":{"User":"0:0"}}'
+        expected = hashlib.sha256(config).hexdigest()
+        with tempfile.TemporaryDirectory() as temp:
+            source = Path(temp)
+            (source / '.devenv').mkdir()
+            archive = source / 'image.tar.gz'
+            with tarfile.open(archive, 'w:gz') as exported:
+                for name, data in [('config.json', config), ('manifest.json', json.dumps([{'RepoTags': [image], 'Config': 'config.json'}]).encode())]:
+                    member = tarfile.TarInfo(name)
+                    member.size = len(data)
+                    exported.addfile(member, io.BytesIO(data))
+            report = {'image_tag': image, 'image_output': str(archive), 'candidate_id': expected,
+                      'archive_sha256': hashlib.sha256(archive.read_bytes()).hexdigest(),
+                      'full_isolated_probe': True, 'pdf_worker_probe': True, 'model_packaged': False}
+            path = source / '.devenv/nix-private-report.json'
+            release = Release('nuc', tag_packaging='nix')
+            # Only the fixed store path is simulated; all archive bytes are real.
+            with patch.object(Path, 'is_relative_to', return_value=True):
+                path.write_text(json.dumps(report))
+                self.assertEqual(release.read_nix_artifact(source, image)['candidate_id'], expected)
+                for key, value in [('image_tag', 'old'), ('archive_sha256', '0' * 64),
+                                   ('candidate_id', '1' * 64), ('full_isolated_probe', False)]:
+                    path.write_text(json.dumps({**report, key: value}))
+                    with self.subTest(key=key), self.assertRaises(RuntimeError):
+                        release.read_nix_artifact(source, image)
+            path.write_text(json.dumps(report))
+            with self.assertRaisesRegex(RuntimeError, 'store artifact'):
+                release.read_nix_artifact(source, image)
+
+    def test_nix_transfer_rechecks_and_rejects_remote_digest(self):
+        release = Release('nuc', tag_packaging='nix')
+        artifact = {'image_tag': 'image', 'image_output': '/nix/store/fixed.tar.gz', 'candidate_id': 'a' * 64, 'source': '/tag'}
+        release.tag_artifact = artifact
+        with patch.object(release, 'read_nix_artifact', return_value=artifact) as verify, \
+             patch.object(release, 'run') as run, patch.object(release, 'remote_run', return_value='b' * 64):
+            with self.assertRaisesRegex(RuntimeError, 'config digest'):
+                release.transfer('image')
+            verify.assert_called_once_with(Path('/tag'), 'image')
+            self.assertIn('gzip -dc /nix/store/fixed.tar.gz', run.call_args.args[0][-1])

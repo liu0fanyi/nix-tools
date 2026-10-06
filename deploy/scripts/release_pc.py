@@ -5,9 +5,11 @@ from __future__ import annotations
 import argparse
 import datetime
 import hashlib
+import json
 import os
 import shlex
 import subprocess
+import tarfile
 import tomllib
 import urllib.request
 from pathlib import Path
@@ -20,7 +22,11 @@ TARGETS = {
 
 
 class Release:
-    def __init__(self, target: str, dry_run: bool = False):
+    def __init__(self, target: str, dry_run: bool = False, tag_packaging: str = 'alpine'):
+        if tag_packaging not in ('alpine', 'nix') or (tag_packaging == 'nix' and target != 'nuc'):
+            raise ValueError('Nix packaging is only supported for private NUC tag-server')
+        self.tag_packaging = tag_packaging
+        self.tag_artifact = None
         self.target = target
         self.remote, self.root, self.profile, self.output, self.engine = TARGETS[target]
         self.dry_run = dry_run
@@ -55,6 +61,8 @@ class Release:
         return ['podman', '--remote', '--url', url] if url else ['podman']
 
     def transfer(self, image):
+        if self.tag_artifact and self.tag_artifact['image_tag'] == image:
+            return self.transfer_nix(image)
         local_id = self.run([*self.podman(), 'image', 'inspect', image, '--format', '{{.Id}}'], capture=True)
         command = (f'{shlex.join(self.podman())} save {shlex.quote(image)} | zstd -T0 -3 -c | ssh {shlex.quote(self.remote)} '
                    + shlex.quote(f'bash -o pipefail -c {shlex.quote("zstd -d | " + self.engine + " load")}'))
@@ -69,6 +77,44 @@ class Release:
             if self.engine != 'docker' or self.docker_config_digest(image) != local_id:
                 raise RuntimeError('Transferred image ID/config digest differs from workstation image')
             print('Verified Docker config digest; runtime manifest ID is ' + remote_id)
+        return remote_id
+
+    def read_nix_artifact(self, source, image):
+        report = json.loads((source / '.devenv/nix-private-report.json').read_text())
+        archive = Path(report['image_output'])
+        expected = report['candidate_id'].removeprefix('sha256:')
+        if report.get('image_tag') != image or len(expected) != 64 or any(c not in '0123456789abcdef' for c in expected):
+            raise RuntimeError('Nix report does not identify this release')
+        if not archive.is_file() or not archive.resolve().is_relative_to('/nix/store'):
+            raise RuntimeError('Nix archive must be a fixed store artifact')
+        with archive.open('rb') as stream:
+            actual = hashlib.file_digest(stream, 'sha256').hexdigest()
+        if actual != report['archive_sha256']:
+            raise RuntimeError('Nix archive checksum differs from verified report')
+        with tarfile.open(archive) as exported:
+            manifest = json.load(exported.extractfile('manifest.json'))
+            if len(manifest) != 1 or manifest[0].get('RepoTags') != [image]:
+                raise RuntimeError('Nix archive does not contain this release tag')
+            config = exported.extractfile(manifest[0]['Config']).read()
+            if hashlib.sha256(config).hexdigest() != expected:
+                raise RuntimeError('Nix archive config digest differs from verified report')
+        if not report.get('full_isolated_probe') or not report.get('pdf_worker_probe') or report.get('model_packaged') is not False:
+            raise RuntimeError('Nix report lacks complete private verification')
+        return report
+
+    def transfer_nix(self, image):
+        artifact = self.tag_artifact
+        if not self.dry_run:
+            # Recheck immediately before sending; do not import into or migrate PC storage.
+            artifact = self.read_nix_artifact(Path(artifact['source']), image)
+        archive = artifact['image_output']
+        expected = artifact['candidate_id'].removeprefix('sha256:')
+        command = (f'gzip -dc {shlex.quote(archive)} | zstd -T0 -3 -c | ssh {shlex.quote(self.remote)} '
+                   + shlex.quote(f'bash -o pipefail -c {shlex.quote("zstd -d | podman load")}'))
+        self.run(['bash', '-o', 'pipefail', '-c', command])
+        remote_id = self.remote_run(['podman', 'image', 'inspect', image, '--format', '{{.Id}}'], capture=True).removeprefix('sha256:')
+        if not self.dry_run and remote_id != expected:
+            raise RuntimeError('Transferred Nix image config digest differs from verified archive')
         return remote_id
 
     def docker_config_digest(self, image):
@@ -145,12 +191,23 @@ print(digests[manifest[0]["Config"]])
         aliases = {'x86_64': 'amd64', 'aarch64': 'arm64'}
         if aliases.get(local_arch, local_arch) != aliases.get(remote_arch, remote_arch):
             raise RuntimeError('Workstation and target architectures differ')
-        self.run(['devenv', 'shell', '--', 'just', 'build', self.build_profile, image], cwd=source)
+        if self.tag_packaging == 'nix':
+            self.run(['devenv', 'shell', '--', 'just', 'build-nix', 'private', image.split(':', 1)[1]], cwd=source)
+            if self.dry_run:
+                print('Verify fresh Nix report, archive SHA256, release tag and config digest before backup/transfer', flush=True)
+                self.tag_artifact = {'image_tag': image, 'image_output': '<verified Nix store archive>',
+                                     'candidate_id': 'dry-run', 'source': str(source)}
+            else:
+                self.tag_artifact = {**self.read_nix_artifact(source, image), 'source': str(source)}
+        else:
+            self.run(['devenv', 'shell', '--', 'just', 'build', self.build_profile, image], cwd=source)
         return image
 
     def activate_tag(self, image):
         expected = self.transfer(image)
         services = ['tag-server'] + (['tag-server-readonly'] if self.config['features']['readonly'] else [])
+        if self.config['features'].get('tag_peer_discovery', False):
+            services.append('tag-peer-discovery')
         argv = ['python3', '-', self.root, self.profile, self.output, self.engine,
                 image, expected, self.config['images']['tag_server'], self.smoke_url(), *services]
         self.run(['ssh', self.remote, shlex.join(argv)],
@@ -164,6 +221,8 @@ print(digests[manifest[0]["Config"]])
         self.manage('smoke', '--base-url', url, '--resolve-address', '127.0.0.1', '--wait-seconds', '30')
 
     def execute(self, component, frontend, tag, app=None):
+        if self.tag_packaging == 'nix' and component not in ('tag-server', 'all'):
+            raise ValueError('--tag-packaging nix requires tag-server or all')
         if app and (self.target != 'nuc' or component != 'frontend'):
             raise ValueError('--frontend-app is only supported for nuc frontend')
         if component == 'runtime-images':
@@ -196,11 +255,12 @@ def main(argv=None):
     parser.add_argument('--frontend-source', type=Path, default=Path('/data/project/dufs-plus'))
     parser.add_argument('--tag-source', type=Path, default=Path('/data/project/tag-all'))
     parser.add_argument('--frontend-app', choices=('devices', 'transcriptions', 'recorder-bean'))
+    parser.add_argument('--tag-packaging', choices=('alpine', 'nix'), default='alpine')
     args = parser.parse_args(argv)
     component = args.component or 'infra'
     try:
-        Release(args.target, args.dry_run).execute(component, args.frontend_source, args.tag_source, args.frontend_app)
-    except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as error:
+        Release(args.target, args.dry_run, args.tag_packaging).execute(component, args.frontend_source, args.tag_source, args.frontend_app)
+    except (OSError, ValueError, KeyError, tarfile.TarError, RuntimeError, subprocess.CalledProcessError) as error:
         print(f'Release failed: {error}')
         return 1
     return 0

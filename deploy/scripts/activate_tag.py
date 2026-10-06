@@ -41,6 +41,9 @@ def activate(root, profile, output, engine, image, expected, production, url, se
             cid = container(service)
             if image_id(cid) != wanted:
                 raise RuntimeError(f'{service} is not using the expected image')
+            if service == 'tag-peer-discovery':
+                run([engine, 'exec', cid, '/app/tag-peer-discovery', '--help'])
+                continue
             for attempt in range(30):
                 try:
                     run([engine, 'exec', cid, 'wget', '-q', '-O', '/dev/null', 'http://127.0.0.1:8081/tags'])
@@ -66,12 +69,22 @@ def activate(root, profile, output, engine, image, expected, production, url, se
             run([*command, 'recreate', service])
         verify(expected)
         run([*command, 'smoke', '--base-url', url, '--resolve-address', '127.0.0.1', '--wait-seconds', '30'])
-    except Exception:
+    except Exception as original:
         print('Activation failed; restoring previous image. Database backup is retained.', flush=True)
         run([engine, 'tag', rollback, production])
+        failures = []
         for service in services:
-            run([*command, 'recreate', service])
-        verify(old)
+            try:
+                run([*command, 'recreate', service])
+            except Exception as error:
+                failures.append(f'{service}: {error}')
+        try:
+            verify(old)
+            run([*command, 'smoke', '--base-url', url, '--resolve-address', '127.0.0.1', '--wait-seconds', '30'])
+        except Exception as error:
+            failures.append(f'rollback verification: {error}')
+        if failures:
+            raise RuntimeError('Rollback incomplete: ' + '; '.join(failures)) from original
         raise
     print(f'Deployed and verified {image}', flush=True)
 
