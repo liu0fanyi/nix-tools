@@ -1,14 +1,12 @@
 {
   "schema_version": "1.0.0",
-  "revision": 1,
+  "revision": 3,
   "items": [
     {
       "id": "mushroom_group",
       "name": "蘑菇",
       "kind": "group",
-      "aliases": [
-        "食用菌"
-      ],
+      "aliases": [],
       "parents": []
     },
     {
@@ -447,7 +445,9 @@
       "id": "ingredient_069",
       "name": "食用碱",
       "kind": "ingredient",
-      "aliases": [],
+      "aliases": [
+        "食用碱（焯水阶段）"
+      ],
       "parents": []
     },
     {
@@ -541,6 +541,40 @@
         "明油",
         "水或清汤",
         "汤水",
+        "老抽或红烧王酱油",
+        "香料（未明确组成）"
+      ]
+    },
+    {
+      "inventory_sha256": "5d459e23775108f9a3dd9eabfb47f5cbbebb5ea3fb8a9ce08f5da4f51bda660c",
+      "review_sha256": "54b36e5cdfd745c85a1d6d9c5db8a38498abe7f6c474947762a863ec3e3dc732",
+      "reviewer": {
+        "kind": "ai",
+        "name": "codex-interactive"
+      },
+      "mapped_names": 70,
+      "unresolved_names": [
+        "大料",
+        "明油",
+        "水或清汤",
+        "汤水",
+        "老抽或红烧王酱油",
+        "香料（未明确组成）"
+      ]
+    },
+    {
+      "inventory_sha256": "5d459e23775108f9a3dd9eabfb47f5cbbebb5ea3fb8a9ce08f5da4f51bda660c",
+      "review_sha256": "2b8ed49964bab4be5fd12b154b3d807d9d82a7594982c638cfe45c2ae80cf1cc",
+      "reviewer": {
+        "kind": "ai",
+        "name": "codex-interactive"
+      },
+      "mapped_names": 70,
+      "unresolved_names": [
+        "大料",
+        "明油",
+        "汤水",
+        "水或清汤",
         "老抽或红烧王酱油",
         "香料（未明确组成）"
       ]

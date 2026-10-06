@@ -21,7 +21,7 @@ def normalize(value):
 
 
 def load(path):
-    return json.loads(Path(path).read_text(encoding='utf-8'))
+    return json.loads(Path(path).read_text(encoding='utf-8'), parse_constant=lambda value: (_ for _ in ()).throw(ValueError('non-finite JSON number: ' + value)))
 
 
 def fingerprint(value):

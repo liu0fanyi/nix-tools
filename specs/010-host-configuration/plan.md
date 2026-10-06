@@ -163,3 +163,7 @@ Constitution Check：PC权威、现有010工具范围、specs/contracts与docs�
 沿用010规格，config/recipe/ingredients.json维护稳定ID/标准名/同义名/父类及歧义；scripts/recipe-ingredients.py用标准库汇总证据快照、准备全名清单与有限实例、验收AI提案并生成下一版本。recipe-ingredient-search.js共享浏览器和Node检索逻辑，固定directory模板内嵌更新索引，不依赖SQLite/网络fetch。AI审阅Schema/契约在contracts，手册在docs；真实inventory/review在Downloads，模型后端未接入。
 
 Constitution Check：PC权威、现有010工具范围、资料来源分层；无外部参考仓库或新gitlink、无付费调用、不改HM/锁定、不switch/部署，保护原媒体和既有工作树改动。同步仅用既定todos/nix-tools白名单，先预演再checksum校验。
+
+### 十道菜实际实现边界
+
+固定recipe-library入口复用独立Nix运行环境和版本固定验证依赖，跨记录及阶段Schema验收后导出离线HTML/Recipe JSON，调用同一食材索引模块与v2词典。14项回归、10个实际页面/53张展示图与导航/窄屏一致性通过。当前输入由交互式AI整理，独立语义审阅标pending、所有事实needs_review；代表帧抽样替代默认1秒策略，缺图显式记录，不宣称无人批量AI流水线完成。媒体摘要/来源/私有审阅与截图留Downloads，不进入Git或NUC资料镜像。

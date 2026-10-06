@@ -5,7 +5,7 @@ DUFS Plus.
 
 ## Home Manager
 
-视频与音频下载使用 `yt-dlp`，命令和更新方式见 [视频下载](docs/video-download.md)；画面字幕的本地批量提取与续跑见 [字幕 OCR](docs/subtitle-ocr.md)。 字幕生成图文菜谱的规则与模型接口见 [菜谱处理规范](docs/video-recipe-workflow.md)，全库食材名称审阅及搜索重建见 [食材词典工具](docs/recipe-ingredients.md)。
+视频与音频下载使用 `yt-dlp`，命令和更新方式见 [视频下载](docs/video-download.md)；画面字幕的本地批量提取与续跑见 [字幕 OCR](docs/subtitle-ocr.md)。 字幕生成图文菜谱的规则、固定构建工具与十道菜试验见 [菜谱处理规范](docs/video-recipe-workflow.md)，全库食材名称审阅及搜索重建见 [食材词典工具](docs/recipe-ingredients.md)。
 
 Niri 的 `Shift+Fn+I` 截图标注（Screen Mark）、`Fn+O` 录屏、`Shift+Fn+O` 录完剪辑及 Waybar 声音菜单见 [截图与录屏](docs/screenshot-edit.md)。
 
