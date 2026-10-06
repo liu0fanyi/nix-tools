@@ -1,0 +1,34 @@
+{
+  "mode": "read-only-preflight",
+  "source_container": "dufs-plus-pc_tag-server_1",
+  "source_image_id": "9deedf60ac37250791384480cf4f03ad6394209446c8285e30c8a036ca68f0af",
+  "source_running": true,
+  "data_root": "/home/liou/.local/share/tag-all/pc/data",
+  "workspace": "/home/liou/dufs-lan",
+  "nested_workspace_targets": [
+    "/workspace/project"
+  ],
+  "configured_location_count": 1,
+  "configured_peer_count": 1,
+  "pairing_enabled": true,
+  "discovery_enabled": true,
+  "proposed_gateway": "http://127.0.0.1:18006",
+  "proposed_core": "127.0.0.1:18081",
+  "native_sync_enabled": false,
+  "cutover_ready": false,
+  "blocking_reasons": [
+    "Source writer is active; offline DB/metadata snapshot is not permitted yet.",
+    "Native trial disables sync/pairing/discovery; current PC topology is not equivalent.",
+    "Nested container workspace mounts need explicit native path mapping.",
+    "Preserve explicit location IDs and translate container paths before cutover."
+  ],
+  "writes_or_stops_performed": false,
+  "next_steps": [
+    "Keep current containers as the active node.",
+    "Resolve topology, location IDs, CA and nested mounts before planning activation.",
+    "Stop the explicitly selected writer, back up SQLite consistently and metadata offline.",
+    "Use new private state; verify before selecting the browser entry.",
+    "On failure restore old service entry; never overwrite DB automatically."
+  ],
+  "database_or_key_contents_read": false
+}

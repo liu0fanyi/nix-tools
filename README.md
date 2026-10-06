@@ -188,3 +188,7 @@ Clip 与本仓库绑定维护，功能规格见 specs/005-clipboard-core、006-c
 Workspace AGENTS and the work-progress skill are versioned here. See
 [installation and recovery](docs/local-agent-rules.md); preview with `just agent-rules`,
 install with `just agent-rules --apply`, and verify with `just agent-rules --check`.
+
+## 原生核心组合试验
+
+[复验与切换边界](docs/native-workspace.md)；规格和真实预检结果见 [012](specs/012-native-core-gateway/spec.md)。当前不替换现用 PC 节点。

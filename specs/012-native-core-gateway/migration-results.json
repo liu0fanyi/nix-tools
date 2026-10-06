@@ -1,0 +1,18 @@
+{
+  "full_binary_sha256": "d729c3a764ca182cf2fd1aa01bf15f2f59f71a8f60df8abfdc3e833d8d66fa51",
+  "full_archive_sha256": "a7d12958bdbad6fa9c4b6e75c3aacd763c8407c547bb222d58ad23413bfc541c",
+  "native_binary_sha256": "21a182a51a4719815793e51ab8481b7a9fb71977abf44b00eff1807d66687993",
+  "offline_sqlite_backup_integrity": true,
+  "native_reads_full_database": true,
+  "explicit_location_saved_web_and_file_tags_preserved": true,
+  "native_duplicate_writer_rejected": true,
+  "full_binary_rollback_keeps_native_writes": true,
+  "explicit_backup_recovery_in_new_directory": true,
+  "opaque_identity_and_disabled_fixture_preserved": true,
+  "source_backup_workspace_unchanged": true,
+  "symlink_rejected_before_destination_created": true,
+  "production_migration": false,
+  "active_pairing_sync_tested": false,
+  "real_task_recovery_tested": false,
+  "owned_cleanup": true
+}

@@ -1,0 +1,16 @@
+{
+  "generation": "/nix/store/vs15z6vnzldd7mph05wfdzz6xzka6n3f-home-manager-generation",
+  "default_disabled": true,
+  "enabled_assertions": true,
+  "core_package": "/nix/store/685y3g7makm37r50xlrnfd25b1qx24ix-tag-all-core-native-0.1.0",
+  "all_three_units_built": true,
+  "dependencies_and_default_target": true,
+  "private_socket_and_parameter_escaping": true,
+  "unit_sha256": {
+    "tag-all-core": "12678aa76a193d554b1f966cd18205db033b26837da2874a9af22f3313c2ec6a",
+    "tag-native-files": "adf77fe4974415bb817845a64ff6a12f90d99f385aebfafb62509025c990314e",
+    "tag-native-workspace": "a796719b0afa95e3c5a686d04c3acb4b71d6cd55b550eb74d0875d22ab13d84b"
+  },
+  "activated": false,
+  "real_login_boot_tested": false
+}

@@ -5,6 +5,17 @@ set shell := ["bash", "-euo", "pipefail", "-c"]
 check-native-workspace tag_all dufs_plus tag_browser:
     python3 scripts/check-native-workspace.py "$1" "$2" "$3"
 
+# 组合安装产物与合成迁移；不激活用户配置或操作现网状态。
+check-native-install tag_all dufs_plus:
+    python3 scripts/check-native-install.py "$1" "$2"
+
+check-native-migration tag_all:
+    python3 scripts/check-native-migration.py "$1"
+
+# 固定 PC 节点只读预演，无 --apply。
+plan-native-pc:
+    python3 scripts/plan-native-pc.py
+
 # 目标必须明确；infra 只更新基础设施，all 包括两个产品。
 deploy target component="infra" *args:
     python3 deploy/scripts/release-apps.py --target "$1" "$2" "${@:3}"

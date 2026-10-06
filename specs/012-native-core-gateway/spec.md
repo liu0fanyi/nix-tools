@@ -18,3 +18,10 @@
 实际原生核心 + Caddy + DUFS Unix socket 通过：匿名/错误凭证及匿名写入拒绝、认证标签/文本/上传/列表/原文件/流读取、私有应用入口拒绝，合成 PDF 未改变，自有进程/目录已清理。Home Manager 启用/停用求值、全部断言、依赖关系与特殊字符参数转义通过；模块未激活。
 
 在 nix-tools 的 devenv shell 中执行 `just check-native-workspace /data/project/tag-all /data/project/dufs-plus /data/project/tag-browser`。需既有 core 原生 gate 报告、dufs-plus dist、Playwright 的 NODE_PATH 和实际 CHROMIUM_PATH；无 API/静态 HTTP mock。模块复验见 nix-tools 的 tests/native-workspace-module.nix。生产安装、实际开机和迁移/回退属于 tag-all 024 T005。
+
+## 组合安装与迁移状态
+
+安装 generation 已实际构建；自有合成数据完成完整版 → SQLite/元数据离线快照 → 原生核心 → 完整版二进制回退，回退后保留原生新增标签；单独演示旧备份恢复到新目录。凭证/身份仅不透明夹具，真实签名与任务执行未测试。
+真实 PC 预检拒绝切换：原生试验关闭配对/同步/发现且不保持 loc_pc/容器嵌套挂载。现用容器、数据和配置未改变。剩余关卡见 tasks T005d/e；结果文件记录 activated=false 与 cutover_ready=false。
+
+合成迁移另验证明确位置 ID、网页收藏与文件标签均保留；该结果不替代现网同步/容器路径转换的验收。
