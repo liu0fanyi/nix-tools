@@ -151,3 +151,15 @@ Constitution Check：仅PC工具和现有010规格；无外部Git参考、无新
 控制器将来独立运行，以阶段调用本地/云端模型，并保存检查点、配置指纹与实际用量；当前未配置模型后端。规范验证使用临时固定jsonschema 4.25.1，不增加系统依赖。真实局部例子的quote/时间/源字幕与图片摘要核对；拒绝未知字段、非法数量模式及缺失选图字段。完整视频处理与10菜式评估属于后续实现，未宣称完成。
 
 Constitution Check：PC权威源、沿用010工具规格；自编说明在docs，契约在specs，网页仅引用不引入上游副本。没有外部Git参考、新gitlink或浮动依赖；保护既有AGENTS、flake.lock、home.nix改动。只按既有sync-todos白名单预演、同步和校验，不启动下载、不删视频、不部署或switch。
+
+## 十菜式菜谱库试验方案
+
+控制/验收/渲染工具存scripts，模板存scripts下独立目录；用户菜谱数据和截图留Downloads，临时提取与模型试稿留/tmp。本轮直接由交互式AI按模板执行文本整理、再审阅与实际候选图选择，记录执行方式与未人工核验边界。实现Schema与跨记录验收、固定HTML/Recipe JSON和食材索引；目录内嵌索引，使用浏览器DOM过滤，无fetch避免file://跨域问题。搜索只根据实际食材清单建立，替代方案保留正文不入食材索引，不从视频标题误加食材，默认多个词AND。
+
+Constitution Check：PC权威、现有010工具范围、specs/contracts与docs来源分层，无新增外部参考或gitlink，不刷新flake、不改HM、不部署/switch。镜像仍限todos/nix-tools，源视频只读。云端模型供应商及预算未配置，不调用付费API。
+
+## 全库食材词典审阅方案
+
+沿用010规格，config/recipe/ingredients.json维护稳定ID/标准名/同义名/父类及歧义；scripts/recipe-ingredients.py用标准库汇总证据快照、准备全名清单与有限实例、验收AI提案并生成下一版本。recipe-ingredient-search.js共享浏览器和Node检索逻辑，固定directory模板内嵌更新索引，不依赖SQLite/网络fetch。AI审阅Schema/契约在contracts，手册在docs；真实inventory/review在Downloads，模型后端未接入。
+
+Constitution Check：PC权威、现有010工具范围、资料来源分层；无外部参考仓库或新gitlink、无付费调用、不改HM/锁定、不switch/部署，保护原媒体和既有工作树改动。同步仅用既定todos/nix-tools白名单，先预演再checksum校验。

@@ -1,0 +1,549 @@
+{
+  "schema_version": "1.0.0",
+  "revision": 1,
+  "items": [
+    {
+      "id": "mushroom_group",
+      "name": "蘑菇",
+      "kind": "group",
+      "aliases": [
+        "食用菌"
+      ],
+      "parents": []
+    },
+    {
+      "id": "tofu_group",
+      "name": "豆腐",
+      "kind": "group",
+      "aliases": [
+        "豆腐类"
+      ],
+      "parents": []
+    },
+    {
+      "id": "chili_group",
+      "name": "辣椒",
+      "kind": "group",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_001",
+      "name": "五花肉",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_002",
+      "name": "冰糖",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_003",
+      "name": "味精",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_004",
+      "name": "土豆",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_005",
+      "name": "土豆淀粉",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "soybean_soy_sauce",
+      "name": "大豆酱油",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": [
+        "soy_sauce"
+      ]
+    },
+    {
+      "id": "ingredient_008",
+      "name": "姜",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "soft_tofu",
+      "name": "嫩豆腐",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": [
+        "tofu_group"
+      ]
+    },
+    {
+      "id": "xiaomi_chili",
+      "name": "小米辣",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": [
+        "chili_group"
+      ]
+    },
+    {
+      "id": "scallion",
+      "name": "小葱",
+      "kind": "ingredient",
+      "aliases": [
+        "小香葱"
+      ],
+      "parents": [
+        "scallion_unspecified"
+      ]
+    },
+    {
+      "id": "scallion_leaf",
+      "name": "小葱叶",
+      "kind": "ingredient",
+      "aliases": [
+        "小葱绿"
+      ],
+      "parents": [
+        "scallion"
+      ]
+    },
+    {
+      "id": "dried_tofu",
+      "name": "干豆腐",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": [
+        "tofu_group"
+      ]
+    },
+    {
+      "id": "dried_chili",
+      "name": "干辣椒",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": [
+        "chili_group"
+      ]
+    },
+    {
+      "id": "dried_lurong_mushroom",
+      "name": "干鹿茸菇",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": [
+        "mushroom_group"
+      ]
+    },
+    {
+      "id": "water",
+      "name": "水",
+      "kind": "ingredient",
+      "aliases": [
+        "开水",
+        "清水",
+        "热水"
+      ],
+      "parents": []
+    },
+    {
+      "id": "ingredient_018",
+      "name": "排骨",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "cooking_wine",
+      "name": "料酒",
+      "kind": "ingredient",
+      "aliases": [
+        "料酒（压制阶段）",
+        "料酒（收汁阶段）"
+      ],
+      "parents": []
+    },
+    {
+      "id": "ingredient_023",
+      "name": "桂皮",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_026",
+      "name": "水淀粉",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_028",
+      "name": "海米",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "seafood_mushroom",
+      "name": "海鲜菇",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": [
+        "mushroom_group"
+      ]
+    },
+    {
+      "id": "seafood_soy_sauce",
+      "name": "海鲜酱油",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": [
+        "soy_sauce"
+      ]
+    },
+    {
+      "id": "ingredient_033",
+      "name": "熟豆油",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_034",
+      "name": "牛前膀肉",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_035",
+      "name": "牛窝骨",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_036",
+      "name": "猪脊骨",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "light_soy_sauce",
+      "name": "生抽",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": [
+        "soy_sauce"
+      ]
+    },
+    {
+      "id": "ingredient_038",
+      "name": "番茄酱",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "sugar",
+      "name": "白糖",
+      "kind": "ingredient",
+      "aliases": [
+        "白糖（压制阶段）",
+        "白糖（收汁阶段）"
+      ],
+      "parents": []
+    },
+    {
+      "id": "ingredient_042",
+      "name": "白芷",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_043",
+      "name": "白菜",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_044",
+      "name": "盐",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_045",
+      "name": "竹笋",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_046",
+      "name": "米醋",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_047",
+      "name": "米饭",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_048",
+      "name": "糯米",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_049",
+      "name": "紫菜",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "dark_soy_sauce",
+      "name": "老抽",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": [
+        "soy_sauce"
+      ]
+    },
+    {
+      "id": "minced_meat_30pct_fat",
+      "name": "肉末（三肥七瘦）",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_053",
+      "name": "胡椒粉",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_054",
+      "name": "芝麻",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_055",
+      "name": "花椒",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_056",
+      "name": "花椒粉",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "scallion_unspecified",
+      "name": "葱",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "chopped_scallion",
+      "name": "葱花",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": [
+        "scallion_unspecified"
+      ]
+    },
+    {
+      "id": "garlic",
+      "name": "大蒜",
+      "kind": "ingredient",
+      "aliases": [
+        "蒜"
+      ],
+      "parents": []
+    },
+    {
+      "id": "ingredient_060",
+      "name": "蚝油",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_061",
+      "name": "蛏子",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_062",
+      "name": "蛏子原汁",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "soy_sauce",
+      "name": "酱油",
+      "kind": "ingredient",
+      "aliases": [
+        "酱油（压制阶段）",
+        "酱油（收汁阶段）"
+      ],
+      "parents": []
+    },
+    {
+      "id": "ingredient_066",
+      "name": "醋",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_067",
+      "name": "韭菜",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_068",
+      "name": "食用油",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_069",
+      "name": "食用碱",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_070",
+      "name": "香叶",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_072",
+      "name": "香油",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "shiitake",
+      "name": "香菇",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": [
+        "mushroom_group"
+      ]
+    },
+    {
+      "id": "ingredient_074",
+      "name": "香菜",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_075",
+      "name": "鸡蛋",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    },
+    {
+      "id": "ingredient_076",
+      "name": "黄酒",
+      "kind": "ingredient",
+      "aliases": [],
+      "parents": []
+    }
+  ],
+  "ambiguities": [
+    {
+      "name": "大料",
+      "candidate_ids": [],
+      "reason": "原文以整朵计数，但仅靠当前食材名称和字幕尚未核对具体香料，暂不自动改成八角。"
+    },
+    {
+      "name": "明油",
+      "candidate_ids": [],
+      "reason": "指最后淋油的操作用途，当前证据不能确定是哪种油。"
+    },
+    {
+      "name": "汤水",
+      "candidate_ids": [],
+      "reason": "原文只说汤水，不能确定是清水还是某种汤。"
+    },
+    {
+      "name": "水或清汤",
+      "candidate_ids": [],
+      "reason": "原文允许两个选项，不能合并成单一食材或把两个都当成实际使用。"
+    },
+    {
+      "name": "老抽或红烧王酱油",
+      "candidate_ids": [],
+      "reason": "这是替代关系；未拆分主用与可替代项前，保留原名。"
+    },
+    {
+      "name": "香料（未明确组成）",
+      "candidate_ids": [],
+      "reason": "原文未交代香料组成，不能补充具体品种。"
+    }
+  ],
+  "history": [
+    {
+      "inventory_sha256": "8b4f04b4ed6555cacb67fd8b8142077b25e52db836f40a6bb1e786f0d86bb55a",
+      "review_sha256": "d3454847fbfa7051f3b503d4d7c7a42eec89dc47d7ca95a7f0802014d7d1cca7",
+      "reviewer": {
+        "kind": "ai",
+        "name": "codex-interactive"
+      },
+      "mapped_names": 70,
+      "unresolved_names": [
+        "大料",
+        "明油",
+        "水或清汤",
+        "汤水",
+        "老抽或红烧王酱油",
+        "香料（未明确组成）"
+      ]
+    }
+  ]
+}
