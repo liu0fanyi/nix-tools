@@ -21,3 +21,8 @@
 
 T005a–c 的结果见 install-results.json、migration-results.json、pc-preflight.json。
 T005d/e 尚未完成，本次没有激活、停止生产容器或迁移现用数据库。
+
+T005d 第一项：组合模块现支持显式 configured + 运行期 TOML/环境文件；默认 isolated 不变。
+两个安装 generation 均已构建，含空格/中文/%/$ 的认证文件路径转义已检查，未激活。
+真实双节点 TLS/签名配对结果由 tag-all 024 的 peer-results.json 给出；实际 Caddy 配对入口、
+发现/嵌套目录映射和整套组合生命周期仍未通过，不勾选 T005d 整体。

@@ -25,3 +25,7 @@
 真实 PC 预检拒绝切换：原生试验关闭配对/同步/发现且不保持 loc_pc/容器嵌套挂载。现用容器、数据和配置未改变。剩余关卡见 tasks T005d/e；结果文件记录 activated=false 与 cutover_ready=false。
 
 合成迁移另验证明确位置 ID、网页收藏与文件标签均保留；该结果不替代现网同步/容器路径转换的验收。
+
+显式 configured 配置透传与运行期认证文件路径已实现；默认 isolated 保持。两种安装产物
+构建通过，产品真实双节点配对/CA/签名/重启证据见 [peer-results.json](peer-results.json)。
+该证据使用 Python TLS 夹具，实际 Caddy 配对入口、发现/路径适配仍未完成，不能切换现网。

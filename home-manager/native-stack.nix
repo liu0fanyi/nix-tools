@@ -13,11 +13,14 @@ in {
     gatewayPort = lib.mkOption { type = lib.types.port; default = 18006; };
     corePort = lib.mkOption { type = lib.types.port; default = 18081; };
     nodeId = lib.mkOption { type = lib.types.str; default = "pc-core-trial"; };
+    configurationFile = lib.mkOption { type = lib.types.nullOr lib.types.str; default = null; };
+    syncMode = lib.mkOption { type = lib.types.enum [ "isolated" "configured" ]; default = "isolated"; };
+    environmentFile = lib.mkOption { type = lib.types.nullOr lib.types.str; default = null; };
   };
   config = lib.mkIf cfg.enable {
     services.tag-all-core = {
       enable = true;
-      inherit (cfg) package workspace nodeId;
+      inherit (cfg) package workspace nodeId configurationFile syncMode environmentFile;
       port = cfg.corePort;
     };
     services.tag-native-workspace = {

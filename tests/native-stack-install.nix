@@ -1,4 +1,4 @@
-{ infrastructure, tagAll, dufsPlus, enabled ? true }:
+{ infrastructure, tagAll, dufsPlus, enabled ? true, configured ? false }:
 let
   lock = builtins.fromJSON (builtins.readFile (infrastructure + "/flake.lock"));
   hm = builtins.fetchTree lock.nodes.home-manager.locked;
@@ -18,6 +18,9 @@ let
         frontendRoot = dufsPlus + "/dist";
         workspace = "/tmp/nativecheck/work space % $ 中文";
         authFile = "/tmp/nativecheck/auth.entries";
+        syncMode = if configured then "configured" else "isolated";
+        configurationFile = if configured then "/tmp/nativecheck/runtime node.toml" else null;
+        environmentFile = if configured then "/tmp/nativecheck/private auth % $ 中文.env" else null;
       } else {};
     };
   };

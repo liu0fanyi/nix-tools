@@ -42,10 +42,19 @@ def main():
     assert '--bind /tmp/nativecheck/.local/share/tag-all/native-workspace/files.sock' in units['tag-native-files']
     for text in units.values():
         assert 'PrivateTmp=true' in text and 'NoNewPrivileges=true' in text and 'UMask=0077' in text
+    configured_assertions = json.loads(run(['nix', 'eval', '--impure', '--json', '--expr', '(' + expression + 'configured = true; }).assertions']))
+    assert all(configured_assertions)
+    configured_generation = Path(run(['nix-build', '--no-out-link', '-A', 'generation', '--expr', expression + 'configured = true; }']))
+    configured_unit = (configured_generation / 'home-files/.config/systemd/user/tag-all-core.service').read_text()
+    assert '--sync-mode configured' in configured_unit and "--config '/tmp/nativecheck/runtime node.toml'" in configured_unit
+    assert "EnvironmentFile='/tmp/nativecheck/private auth %% $ 中文.env'" in configured_unit
+    assert 'native-core-environment-check' in configured_unit
     report = {'generation': str(generation), 'default_disabled': True, 'enabled_assertions': True,
               'core_package': native['package'], 'all_three_units_built': True, 'dependencies_and_default_target': True,
               'private_socket_and_parameter_escaping': True,
               'unit_sha256': {name: hashlib.sha256(text.encode()).hexdigest() for name, text in units.items()},
+              'configured_generation': str(configured_generation), 'configured_runtime_paths_only': True,
+              'environment_path_escaping': True,
               'activated': False, 'real_login_boot_tested': False}
     output.write_text(json.dumps(report, indent=2) + '\n')
     print('Native combination installation generation verified, not activated: ' + str(output))
