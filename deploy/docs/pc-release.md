@@ -18,8 +18,8 @@ NUC 单应用可用 `just deploy nuc frontend --frontend-app devices`（或 tran
 
 ## 完整 Nix 私有镜像
 
-产品 023 的完整 private 已通过本机构建/持久化/回退/TLS/Git 验收；受控生产切换仍需
-单独记录。`just -- deploy nuc tag-server --tag-packaging nix --dry-run` 可预演，去掉
+产品 023 的完整 private 已通过本机构建/持久化/回退/TLS/Git 验收；已通过原入口部署 NUC；
+真实部署与备份/回滚摘要见产品 023 production-results.json，人工 R01–R05 仍待复验。`just -- deploy nuc tag-server --tag-packaging nix --dry-run` 可预演，去掉
 `--dry-run` 才发布。默认 `--tag-packaging alpine` 保留；Nix 不用于 Aliyun。
 
 具体发布契约见 [Nix 打包选择](../../specs/009-infrastructure/contracts/tag-packaging.md)。
