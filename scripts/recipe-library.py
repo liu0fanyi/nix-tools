@@ -116,7 +116,9 @@ def validate(folder,schema):
  if source.path.rstrip('/')!='/video/'+d['source']['video_id']:raise ValueError('source URL does not match video ID')
  for run in d['runs']:
   if run['stage']=='extract' and run['input_sha256']!=digest(folder/'source.srt'):raise ValueError('extract input digest mismatch')
-  if run['stage']=='select_images' and run['input_sha256']!=digest(folder/'candidates.json'):raise ValueError('image input digest mismatch')
+  if run['stage']=='select_images':
+   snapshots=[folder/'candidates.json',folder/('candidates-input-'+run['input_sha256']+'.json')]
+   if not any(p.is_file() and not p.is_symlink() and digest(p)==run['input_sha256'] for p in snapshots):raise ValueError('image input digest mismatch')
   if run['stage']=='render':
    snapshots=[folder/'recipe-input.json',folder/('recipe-input-'+run['input_sha256']+'.json')]
    if not any(p.is_file() and digest(p)==run['input_sha256'] for p in snapshots):raise ValueError('render input digest mismatch')
@@ -187,8 +189,8 @@ def build(source,output,dictionary_path):
     if (folder/name).is_file():shutil.copy2(folder/name,dst/name)
    for f in d['frames']:
     (dst/f['file']).parent.mkdir(exist_ok=True);shutil.copy2(folder/f['file'],dst/f['file'])
-   for snapshot in folder.glob('recipe-input*.json'):
-    if snapshot.is_file() and not snapshot.is_symlink():shutil.copy2(snapshot,dst/('recipe-input-'+digest(snapshot)+'.json'))
+   for snapshot in list(folder.glob('recipe-input*.json'))+list(folder.glob('candidates-input-*.json')):
+    if snapshot.is_file() and not snapshot.is_symlink():shutil.copy2(snapshot,dst/(('candidates-input-' if snapshot.name.startswith('candidates-input-') else 'recipe-input-')+digest(snapshot)+'.json'))
    shutil.copy2(folder/'recipe.internal.json',dst/'recipe-input.json')
    d['runs'].append({'stage':'render','processor':'recipe-library.py','model':None,'prompt_version':'1.0.0','input_sha256':digest(folder/'recipe.internal.json')})
    dump(dst/'recipe.internal.json',d)
@@ -198,7 +200,7 @@ def build(source,output,dictionary_path):
    selected=[frames_by_id[s['selected_frame_id']] for s in d['steps']if s['selected_frame_id']]
    thumbnail=f'recipes/{vid}/'+selected[-1]['file']if selected else None
    records.append({'id':vid,'title':d['title'],'page':f'recipes/{vid}/recipe.html','thumbnail':thumbnail,'ingredients':[{'name':i['name'],'role':i['role']}for i in d['ingredients']],'status':d['status'],'issues':len(review['open_issues'])})
-   dump(dst/'manifest.json',{'schema_version':d['schema_version'],'source':d['source'],'runs':d['runs'],'method':'interactive-ai-trial','processing':read(folder/'processing.json'),'ingredient_dictionary_sha256':digest(dictionary_path),'template_sha256':{name:digest(TEMPLATES/name)for name in ['recipe.html']},'outputs':{f.name:digest(f)for f in dst.glob('*')if f.is_file()}})
+   dump(dst/'manifest.json',{'schema_version':d['schema_version'],'source':d['source'],'runs':d['runs'],'method':read(folder/'processing.json').get('method','unknown'),'processing':read(folder/'processing.json'),'ingredient_dictionary_sha256':digest(dictionary_path),'template_sha256':{name:digest(TEMPLATES/name)for name in ['recipe.html']},'outputs':{f.name:digest(f)for f in dst.glob('*')if f.is_file()}})
   records.sort(key=lambda r:r['title']);records=ingredients_tool.index_records(records,dictionary);dump(stage/'search-index.json',records)
   shutil.copy2(dictionary_path,stage/'ingredient-dictionary.json')
   payload=json.dumps(records,ensure_ascii=False,separators=(',',':'))
