@@ -59,7 +59,7 @@
     # Tag Browser releases are built by its own CI and stored in Cachix.
     # Pin the private product flake; only liu-bigpc installs its desktop app.
     tag-browser-src = {
-      url = "git+ssh://git@github.com/liu0fanyi/tag-browser.git?ref=stable&exportIgnore=1";
+      url = "git+ssh://git@github.com/liu0fanyi/tag-browser.git?ref=product-stable&exportIgnore=1";
     };
   };
 

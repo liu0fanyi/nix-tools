@@ -457,3 +457,10 @@ P1真实子代理验收：十道1814cue、166事实、157食材、54步；162张
 - [ ] 根据小批结果明确全库运行门槛与资源配置，再安排4000多条处理。
 
 人工烹饪校对属于可选的独立验收，不由AI审阅或用户接受页面效果自动完成。
+
+
+## Tag Browser nix.31 安装输入
+
+- [x] 输入改用自有 product-stable，固定 `88c3cab2d49322d0c2e198f57f7250d8ee1cf040`；旧 stable 不再承载现行产品开发。私有 Release/本机/Cachix 输出 `/nix/store/6xc0mnfz4piy09gffzl0grvycw3lbysa-tag-browser-0.1.0` 一致，归档 SHA256、缓存命中、预取及签名核验通过，CI 37457364836 成功。
+- [x] 完整系统 `/nix/store/92cw19q6frsal7gw5brgfhm8mhjp6ga5-nixos-system-liu-bigpc-26.11.20260922.b6c98e9` 与 Home Manager `/nix/store/ga0drr27wpxgk8pm2carlpn0ihx9462f-home-manager-generation` 构建通过；系统浏览器命令指向 nix.31，hm-backup 设置保持。只提交浏览器输入及本条安装状态，保留其他锁节点和 AGENTS/home.nix 改动。
+- [ ] 用户普通终端执行 `nu rerun.nu liou --host liu-bigpc`，正常关闭旧窗口后确认 nix.31；不由 Agent 执行 switch。真实 PDF 观察按 tag-all 019 P01–P03，产品实现已完成五条固定关卡，不扩大安装验收范围。
