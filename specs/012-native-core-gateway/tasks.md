@@ -51,7 +51,15 @@ internal 模式，使用私有存储并禁止系统信任库安装。合成旧�
   真实核心读取位置身份、非法内置发现接口在 daemon 创建前拒绝；未广播。
 - 13 项配置/离线快照回归：SQLite完整性、metadata/CA/额外状态与私有权限保留，
   回退使用新数据库，拒绝源重启、symlink/危险凭证、覆盖已有目标和目标发布竞争。
-- 完整 toplevel 尚未通过：既有 Tag Browser fetchClosure 依赖缓存读取失败；
-  本机精确依赖路径有效，缓存 HTTP 请求返回403，原因未进一步确定。未更换浏览器包绕过构建。
+- 完整 toplevel 已通过：修复既有 Tag Browser 单缓存 fetchClosure 的依赖读取；
+  精确 nix.31 制品不变，通过正常签名 substituters 补齐公共缓存依赖。
+  先前403仅是 Python 默认客户端被 Cloudflare 拒绝；真实缺口为 Cachix 省略公共依赖的404。
 - 离线准备工具只完成合成测试；生产 --prepare-offline 未执行，最终用户 switch
-  命令和回退 Compose 合并预演尚待完整构建通过后交付。S2 不勾选。
+  命令和回退启动顺序仍待审查。旧恢复单元只能启动已有容器，
+  必须先验证新状态挂载再启用回退。S2 不勾选，当前仍剩 S2/S3 两步。
+
+- 回退 Compose 合并已通过实际 podman-compose 解析器的合成预演：
+  新 core.db、新 metadata、复制的 CA、原工作区挂载均保留；原生期间写入
+  在回退挂载中可见。仅替换模板中的凭证文件为合成输入，不读取生产凭证、
+  不启动容器。见 [rollback-merge-results.json](rollback-merge-results.json)。
+- S2 剩最终激活/回退启动顺序审查；旧恢复单元不得在容器挂载未迁移时启动。

@@ -3,12 +3,21 @@
   "host_source": "/home/liou/nix-tools",
   "actual_home_generation": "/nix/store/4ymkczj1bw42lanhg0rzxbdjq63368c6-home-manager-generation",
   "home_generation_built": true,
-  "actual_toplevel_built": false,
+  "actual_toplevel_built": true,
   "readiness_and_container_restore_exclusion_verified": true,
   "core_state_is_new_private_directory": true,
   "config_snapshot_unit_tests_passed": 13,
   "production_state_copied": false,
   "activated": false,
-  "blocking_reason": "Actual toplevel fails at existing Tag Browser fetchClosure dependency; local path is valid, cache HTTP requests return 403. No substitute browser package used.",
-  "host_source_requires_final_rebuild_after_cache_resolution": true
+  "blocking_reason": null,
+  "host_source_requires_final_rebuild_after_cache_resolution": false,
+  "actual_toplevel": "/nix/store/7nzax81v93n18krp1hbzqf6p1jvrqng0-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "host_source_commit": "9cc9b86",
+  "host_source_has_preexisting_worktree_changes": true,
+  "published_browser_path": "/nix/store/6xc0mnfz4piy09gffzl0grvycw3lbysa-tag-browser-0.1.0",
+  "published_browser_source_commit": "efef7fb97d088963eee1ac9d50dc3fae25a18418",
+  "remaining_s2_checks": [
+    "review final activation and container fallback sequence"
+  ],
+  "rollback_compose_merge_verified": true
 }

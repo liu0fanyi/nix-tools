@@ -1,0 +1,13 @@
+{
+  "compose_parser": "podman-compose 1.6.0",
+  "actual_pc_template": "/data/project/tag-all/deploy/pc/compose.pc.yaml",
+  "synthetic_credentials_and_state_only": true,
+  "merged_service_count": 5,
+  "core_and_discovery_share_new_state": true,
+  "peer_gateway_uses_copied_ca": true,
+  "workspace_mappings_preserved": true,
+  "native_period_write_visible_to_fallback": true,
+  "production_credentials_read": false,
+  "containers_started": false,
+  "activated": false
+}
