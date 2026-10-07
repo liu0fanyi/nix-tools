@@ -48,7 +48,13 @@ RECIPE_ROOT=/home/liou/Downloads/菜谱精简流程
 
 默认暂停，按住空格按所选速度播放，松开停止；失焦、切换标签页也停。−/+ 与选择框支持 0.25×–4×；S 暂停后请求下载 PNG，输入框内不抢键。截图受 canvas 跨域限制时明确提示失败，可以使用系统截图。
 
-**精确相邻帧仍待实现。** 当前 Zen 的隔离测试中 `seekToNextFrame` 是 undefined。脚本不采用固定秒跳转伪装逐帧，← 不可用，→ 仅在浏览器确实提供原生接口时调用该接口。默认浏览器的真实逐帧需求仍记录在阶段 S 的 S3 中；按住播放原型不算这一项完成。真实 B 站页面兼容性也需实际试用，不能用合成媒体测试代替。
+新版 0.2.0 已实现 ← 上一帧、→ 下一帧。安装或更新后必须刷新原视频页，再等面板出现“真实邻帧 · 已索引 N 帧”。脚本使用 `document-start` 和 `page` 注入，需在播放器创建媒体缓冲前运行；推荐使用 [Violentmonkey 官方 Firefox 入口](https://violentmonkey.github.io/get-it/)，不要将脚本改为 content 注入。[官方注入说明](https://violentmonkey.github.io/api/metadata-block/#inject-into)解释了早期运行的条件和限制。其他管理器须确认页面上下文和足够早的执行时机，尚未逐一验证。
+
+帧位置来自播放器正常追加到 MediaSource/SourceBuffer 的分片 MP4 时间表，按照实际呈现顺序处理 B 帧和变帧率，定位到相邻帧的呈现区间并等待 seeked/画面呈现后完成。不会用 1/25 或 1/30 秒猜帧，也不额外发起媒体请求。分片中的视频内容被跳过，只在内存保留有限帧时间元数据；实际视频下载/缓冲仍由原站播放器完成。容器结构依据 [W3C ISO BMFF 字节流说明](https://www.w3.org/TR/mse-byte-stream-format-isobmff/)。
+
+支持主页面中可捕获的单视频轨道分片 MP4，包含可变样本时长、B 帧的带符号组合偏移、timestampOffset 和单项 rate=1 的编辑时间表。仅在完整索引及实际缓冲范围内提供邻帧操作；不跨缺失分片猜邻帧。元数据错误、解码超时、定位被平台改写时明确报错，通常保留／恢复暂停位置。失焦、切换视频或退出模式时取消正在进行的逐帧操作。松开播放键先立即暂停，再将位置稳定到时间表中邻近的真实帧并等待呈现，避免 Zen 停住画面与播放时间差一帧；稳定期间不排队执行新操作。
+
+Worker 中的媒体缓冲、非 MP4/直接文件播放、sequence 时间轴、裁剪缓冲窗口和复杂编辑表暂不支持精确逐帧，按住播放与调速仍可用。截图受站点跨域策略限制时提示失败，不会报告保存成功。真实 B 站页面和用户脚本管理器的组合仍需安装后试用；合成媒体程序验证不冒称真实站点兼容确认。
 
 ## 可重复验证
 
@@ -57,7 +63,9 @@ RECIPE_ROOT=/home/liou/Downloads/菜谱精简流程
 ```bash
 python -m unittest discover -s scripts/tests -p test_recipe_simple.py -v
 node scripts/tests/test_recipe_ingredient_search.cjs
+node --test scripts/tests/test_recipe_frame_index.cjs
 python scripts/tests/check_recipe_player_zen.py --output /tmp/recipe-player-check
+python scripts/tests/check_recipe_frame_zen.py --output /tmp/recipe-frame-check
 ```
 
-最后一个检查只打开临时 Zen profile、使用本地合成视频，输出 report.json、截图和日志到指定目录；不读取真实 profile 或 Cookie。要求本机已有 Zen 和 ffmpeg。输出目录每次用新的路径，避免上次截图误判本次结果。测试验证默认暂停、按住播放、松键暂停、0.25× 慢放、失焦暂停、输入框不抢键、无伪逐帧、截图实际落盘及关闭模式后恢复原播放控制。
+两个浏览器检查只打开临时 Zen profile、使用本地合成视频，输出 report.json、截图和日志到指定目录；不读取真实 profile 或 Cookie。要求本机已有 Zen、Node、ffmpeg，以及入口环境的 Pillow。输出目录每次用新路径，避免旧截图误判。按住检查覆盖默认暂停、松键/失焦暂停、0.25× 慢放、输入不抢键、无索引拒绝伪逐帧、截图落盘、跨域失败及恢复原控制。帧检查对恒定/变帧率、时间偏移和带符号 B 帧偏移的流，逐一用浏览器显示图片匹配独立 ffmpeg 解码帧，核验前后单帧及按住播放后暂停的衔接；不能仅验证 currentTime 改变。

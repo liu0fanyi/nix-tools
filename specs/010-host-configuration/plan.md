@@ -212,6 +212,6 @@ Constitution Check：代码在本机 nix-tools、手册 docs、需求/契约 spe
 
 复用已验证的中文 AI 字幕获取器及食材检索函数；新控制器只管理字幕/封面、一个 AI 包和发布。封面从平台元数据取 HTTPS 图片并验证保存，视频下载/ffmpeg/OCR不在处理链。单次文本输出小 Schema，引用绑定后脚本生成时间链接；静态 HTML+JSON，SQLite 可续跑，不另建关系图谱。
 
-原网页直接复用其 HTML video 和登录播放能力，用户脚本只控制暂停/速度/真帧移动及截图；不代理原视频流、不抓浏览器 Cookie。当前原型只实现按住播放/调速/截图；Zen 实测缺原生逐帧 API。后续精确邻帧候选方案基于实际 PTS 的帧时间索引或邻帧解码，必要时拒绝而非固定步长猜测，需再以合成变帧率视频验证。当前按住操作以 Zen 隔离配置/合成视频验证；真实 B 站用户脚本安装由用户完成，不擅写其浏览器配置。
+原网页直接复用 HTML video 和登录播放能力；document-start/page 用户脚本只旁观主页面 MediaSource/SourceBuffer 正常缓冲的分片 MP4 元数据，不额外请求媒体、不保留视频内容。解析真实帧时间、B 帧组合偏移、编辑表与timestampOffset；只在时间连续且已缓冲的帧区间内双向定位，等待画面呈现，未知来源或缺口拒绝。Zen 的暂停帧回调时间可能等于请求跳转时间，不能据此搜索邻帧。程序以隔离 Zen/合成恒定与变帧率媒体、B帧、偏移场景对照独立ffmpeg解码图片验证；真实 B 站和用户脚本管理器组合由用户安装刷新后确认，不擅写其浏览器配置。
 
 Constitution Check：PC 权威源、沿用010工具范围；docs/specs 分层，无新外部参考原件或 Git 仓，不变锁文件/系统、不部署。私有字幕/封面/AI回复留 Downloads。只同步本工程规范/当前手册/生成看板到 todos/nix-tools，预演与 checksum；保护原有 AGENTS/README/deploy docs/flake.lock/home.nix 改动。

@@ -7,7 +7,7 @@ profile=root/'profile';profile.mkdir(exist_ok=True)
 (profile/'user.js').write_text('user_pref("media.autoplay.default",0);\nuser_pref("media.autoplay.blocking_policy",0);\nuser_pref("browser.download.folderList",2);\nuser_pref("browser.download.dir",'+json.dumps(str(root))+');\nuser_pref("browser.download.useDownloadDir",true);\nuser_pref("browser.download.alwaysOpenPanel",false);\n')
 subprocess.run(['ffmpeg','-hide_banner','-loglevel','error','-y','-f','lavfi','-i','testsrc2=size=320x180:rate=25:duration=8','-an','-c:v','libx264','-pix_fmt','yuv420p',str(root/'test.mp4')],check=True)
 shutil.copyfile(str(Path(__file__).resolve().parents[1]/'bilibili-recipe-controls.user.js'),root/'controls.js')
-(root/'index.html').write_text('''<video src="test.mp4" muted style="width:640px;height:360px"></video><textarea></textarea><script src="controls.js"></script><script>
+(root/'index.html').write_text('''<head><meta charset="utf-8"><script src="controls.js"></script></head><body><video src="test.mp4" muted style="width:640px;height:360px"></video><textarea></textarea><script>
 const delay=ms=>new Promise(r=>setTimeout(r,ms)),video=document.querySelector('video');
 const down=(code,target=window)=>target.dispatchEvent(new KeyboardEvent('keydown',{code,bubbles:true,cancelable:true}));
 const up=code=>window.dispatchEvent(new KeyboardEvent('keyup',{code,bubbles:true,cancelable:true}));
@@ -22,6 +22,10 @@ const up=code=>window.dispatchEvent(new KeyboardEvent('keyup',{code,bubbles:true
  down('ArrowLeft');await delay(100);checks.noFakePrevious=Math.abs(video.currentTime-prior)<0.02;
  down('KeyS');await delay(300);checks.screenshotRequested=document.querySelector('[data-status]').textContent.includes('已请求');
  const toggle=document.querySelector('input');toggle.checked=false;toggle.dispatchEvent(new Event('change'));await video.play();window.dispatchEvent(new Event('blur'));await delay(100);checks.disabledLeavesNative= !video.paused;video.pause();
+ toggle.checked=true;toggle.dispatchEvent(new Event('change'));
+ const cross=new URL('test.mp4',location.href);cross.hostname='localhost';video.src=cross.href;
+ await new Promise((resolve,reject)=>{video.addEventListener('loadeddata',resolve,{once:true});setTimeout(()=>reject(Error('cross-origin video timeout')),8000)});
+ await delay(150);down('KeyS');await delay(300);checks.corsFailureReported=document.querySelector('[data-status]').textContent.includes('跨域策略禁止截图');
  }catch(error){checks.error=error.message}await fetch('/result',{method:'POST',body:JSON.stringify(checks)});})();
 </script>''')
 result={};event=threading.Event()
