@@ -57,3 +57,7 @@ check-native-peer-gateway tag_all dufs_plus:
 # Synthetic Caddy CA storage takeover and live renewal, no production PKI.
 check-native-peer-renewal tag_all dufs_plus:
     python3 scripts/check-native-peer-renewal.py {{tag_all}} {{dufs_plus}}
+
+# Adapted synthetic TOML; malformed discovery rejected before any broadcast.
+check-native-config-runtime tag_all:
+    python3 scripts/check-native-config-runtime.py {{tag_all}}

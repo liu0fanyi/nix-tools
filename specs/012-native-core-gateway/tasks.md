@@ -42,3 +42,16 @@ internal 模式，使用私有存储并禁止系统信任库安装。合成旧�
 临时证书为 30 秒、续期扫描 1 秒，仅测试调整；产品使用 Caddy 默认值。
 默认关闭/静态证书/配置模式安装回归通过，测试进程和存储已清理。
 未读取生产私钥，未迁移生产 CA；实际离线复制和启动互斥仍属于 S2 切换方案。
+
+## S2 预演进展（未完成，当前仍剩 2 步）
+
+- [host-preflight-results.json](host-preflight-results.json)：实际 liu-bigpc Home Manager
+  generation 构建通过；检查新状态路径、ready/回退模式互斥、旧容器恢复不自动启动。
+- [config-runtime-results.json](config-runtime-results.json)：转换后的 TOML 无损往返、
+  真实核心读取位置身份、非法内置发现接口在 daemon 创建前拒绝；未广播。
+- 13 项配置/离线快照回归：SQLite完整性、metadata/CA/额外状态与私有权限保留，
+  回退使用新数据库，拒绝源重启、symlink/危险凭证、覆盖已有目标和目标发布竞争。
+- 完整 toplevel 尚未通过：既有 Tag Browser fetchClosure 依赖缓存读取失败；
+  本机精确依赖路径有效，缓存 HTTP 请求返回403，原因未进一步确定。未更换浏览器包绕过构建。
+- 离线准备工具只完成合成测试；生产 --prepare-offline 未执行，最终用户 switch
+  命令和回退 Compose 合并预演尚待完整构建通过后交付。S2 不勾选。

@@ -76,3 +76,30 @@ def adapt_configuration(config, mounts, arguments):
             raise ValueError('Discovery metadata must match the source core state layout')
         discovery.update(external_agent=False, advertise_ip=str(address), interfaces=[interface])
     return candidate, {'workspace': workspace, 'workspace_mounts': mappings}
+
+
+def serialize_configuration(config):
+    """Canonical TOML without a second parser dependency; verify lossless roundtrip."""
+    import datetime
+    import json
+    import tomllib
+
+    def value(item):
+        if isinstance(item, str):
+            return json.dumps(item, ensure_ascii=False)
+        if isinstance(item, bool):
+            return 'true' if item else 'false'
+        if isinstance(item, (int, float)):
+            return repr(item)
+        if isinstance(item, (datetime.datetime, datetime.date, datetime.time)):
+            return item.isoformat()
+        if isinstance(item, list):
+            return '[' + ', '.join(value(entry) for entry in item) + ']'
+        if isinstance(item, dict) and all(isinstance(key, str) for key in item):
+            return '{ ' + ', '.join(value(key) + ' = ' + value(entry) for key, entry in item.items()) + ' }'
+        raise ValueError('Unsupported TOML configuration value')
+
+    text = '\n'.join(value(key) + ' = ' + value(entry) for key, entry in config.items()) + '\n'
+    if tomllib.loads(text) != config:
+        raise ValueError('TOML serialization must preserve every configuration field')
+    return text

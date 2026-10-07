@@ -1,0 +1,9 @@
+{
+  "toml_roundtrip_preserves_unknown_fields": true,
+  "adapted_location_identity_actual_core_startup": true,
+  "invalid_builtin_discovery_rejected_before_daemon": true,
+  "positive_builtin_broadcast_tested": false,
+  "production_state_read": false,
+  "activated": false,
+  "owned_process_and_fixture_cleaned": true
+}

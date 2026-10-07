@@ -90,3 +90,14 @@ symlink；缺文件直接拒绝，避免静默生成不同根 CA。S2 须在旧�
 续期验收见 peer-renewal-results.json；不把临时 CA 结果当成已完成生产迁移。
 官方依据：[Caddy 自动 HTTPS 配置](https://caddyserver.com/docs/caddyfile/options)、
 [内部证书签发](https://caddyserver.com/docs/caddyfile/directives/tls)。
+
+## S2 当前实现与阻塞
+
+候选模块只扩展实际主机进行非激活构建，使用明确的新状态、5006网页和5009节点入口；
+ready/container-mode 防止空库启动和旧恢复自动抢占。离线准备 CLI 默认只计划，
+用户显式准备时需两个停机复查；原数据不覆盖，Linux renameat2 NOREPLACE 原子发布。
+SQLite/metadata/CA/认证均只在源停止后复制。容器回退配置改用新 core.db 与新 CA 存储。
+实际 HM generation 已通过；完整系统被既有 Tag Browser 缓存读取阻塞，
+不能以独立 generation 或换浏览器包代替完整构建。当前剩余仍为 S2/S3。
+Constitution Check：本轮无生产快照/密钥读取、现网停止或 switch；仅随机合成文件
+与只读固定项目 inspect、缓存读取；不增加阶段完成条件或外部参考。
