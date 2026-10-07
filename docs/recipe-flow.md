@@ -1,5 +1,7 @@
 # 串行生成菜谱与释放视频
 
+现在仅需要材料、做法与原封面时，使用[精简菜谱入口](recipe-simple.md)。本文是保留视频／片段与复审的原流程说明，不是精简流程。
+
 `scripts/recipe-flow` 把大清单登记、单视频准备、AI任务包、归档、网页目录及视频释放接成可续跑流程。状态使用本地SQLite；网页检索使用内嵌JSON，可直接打开离线目录。字段与验收规则以[010规格](../specs/010-host-configuration/spec.md#串行处理与视频释放)、[菜谱契约](../specs/010-host-configuration/contracts/video-recipe.md)和[食材契约](../specs/010-host-configuration/contracts/video-recipe-ingredients.md)为准。
 
 ## 当前默认：只获取 B 站中文 AI 字幕

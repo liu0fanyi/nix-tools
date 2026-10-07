@@ -207,3 +207,11 @@ SQLite 查询和 broker 终止条件排除 skipped，跳过不占 retain_count�
 Constitution Check：代码在本机 nix-tools、手册 docs、需求/契约 specs，沿用 010 工具范围；官方 yt-dlp 源码仅在线核对，无引入外部参考原件/gitlink；Downloads 保存平台元数据、字幕、任务和试验日志，不进入公开 Git 或 NUC 镜像。只同步本工程 specs、任务手册及生成看板至 todos/nix-tools，预演和 checksum 复核；保护已有 AGENTS/README/deploy docs/flake.lock/home.nix 改动。
 
 中文专用 yt-dlp 提取插件只在字幕探测时显式加载，在读取平台轨道元数据后仅下载 ai-zh 正文，不请求人工/英文/其他语言字幕或弹幕正文。确认插件生效标记后才判断缺字幕；API 非零码、登录要求、无效轨道元数据及空正文属于失败。探测进程最长 600 秒，超时保留可重试失败，不永久跳过。插件实现由本工程维护，使用[官方插件扩展接口](https://github.com/yt-dlp/yt-dlp#developing-plugins)，无需安装新平台 SDK。
+
+### 精简实现与键盘浏览
+
+复用已验证的中文 AI 字幕获取器及食材检索函数；新控制器只管理字幕/封面、一个 AI 包和发布。封面从平台元数据取 HTTPS 图片并验证保存，视频下载/ffmpeg/OCR不在处理链。单次文本输出小 Schema，引用绑定后脚本生成时间链接；静态 HTML+JSON，SQLite 可续跑，不另建关系图谱。
+
+原网页直接复用其 HTML video 和登录播放能力，用户脚本只控制暂停/速度/真帧移动及截图；不代理原视频流、不抓浏览器 Cookie。当前原型只实现按住播放/调速/截图；Zen 实测缺原生逐帧 API。后续精确邻帧候选方案基于实际 PTS 的帧时间索引或邻帧解码，必要时拒绝而非固定步长猜测，需再以合成变帧率视频验证。当前按住操作以 Zen 隔离配置/合成视频验证；真实 B 站用户脚本安装由用户完成，不擅写其浏览器配置。
+
+Constitution Check：PC 权威源、沿用010工具范围；docs/specs 分层，无新外部参考原件或 Git 仓，不变锁文件/系统、不部署。私有字幕/封面/AI回复留 Downloads。只同步本工程规范/当前手册/生成看板到 todos/nix-tools，预演与 checksum；保护原有 AGENTS/README/deploy docs/flake.lock/home.nix 改动。
