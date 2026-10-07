@@ -9,6 +9,7 @@ in {
   options.services.tag-native-stack = {
     enable = lib.mkEnableOption "authenticated native core and file workspace trial";
     package = lib.mkOption { type = lib.types.package; };
+    pdfContainer = import (tagAllSource + "/nix/pdf-container-option.nix") { inherit lib; };
     frontendRoot = lib.mkOption { type = lib.types.path; };
     workspace = lib.mkOption { type = lib.types.str; };
     authFile = lib.mkOption { type = lib.types.str; };
@@ -27,7 +28,7 @@ in {
   config = lib.mkIf cfg.enable {
     services.tag-all-core = {
       enable = true;
-      inherit (cfg) package workspace nodeId configurationFile syncMode environmentFile workspaceMounts;
+      inherit (cfg) package pdfContainer workspace nodeId configurationFile syncMode environmentFile workspaceMounts;
       port = cfg.corePort;
     };
     services.tag-native-workspace = {

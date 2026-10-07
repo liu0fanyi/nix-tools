@@ -1,0 +1,20 @@
+{
+  "coreSelectionRejected": true,
+  "floatingImageRejected": true,
+  "missingSelectionRejected": true,
+  "networkRuntimeRejected": true,
+  "pureCore": true,
+  "servedStateRejected": true,
+  "valid": true,
+  "environment_percent_dollar_path_escaping": true,
+  "default_disabled_gate_reused": true,
+  "actual_user_configuration_activated": false,
+  "home_manager_locked": {
+    "lastModified": 1790110821,
+    "narHash": "sha256-4vgPxAtYGryB/9SZVFMrcRKmNcOqcN3+MwRJPTVpb1o=",
+    "owner": "nix-community",
+    "repo": "home-manager",
+    "rev": "a5768f1a46942657352e58037b7891bdcbc0741f",
+    "type": "github"
+  }
+}

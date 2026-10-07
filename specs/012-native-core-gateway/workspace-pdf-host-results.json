@@ -1,0 +1,15 @@
+{
+  "actual_toplevel": "/nix/store/fyy8cizlh8sgwdq7ys4xmfshv8xq2ylm-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "actual_home_generation": "/nix/store/97jcflij46sw9sk2c6skv0jh1g4qird8-home-manager-generation",
+  "actual_host_source_snapshot": "/nix/store/n0c2r6q36n0v4x1z5asv789pr4px5lxg-source",
+  "native_package": "/nix/store/yr1rhr9qzrq0p2k1dcwli25mm3la5vm5-tag-all-workspace-native-0.1.0",
+  "generated_core_unit_sha256": "4766b612ab0500fcab9f11587fa4fc41b5609b8f271c92317bb657df4b07398e",
+  "one_backend_service_name": "tag-all-core.service",
+  "actual_pinned_pdf_selection_in_unit": true,
+  "processing_option_enabled_for_preflight_only": true,
+  "default_candidate_still_core": true,
+  "activated": false,
+  "cutover_ready": false,
+  "real_generated_units_pdf_runtime_tested": false,
+  "remaining_stage_steps": 1
+}

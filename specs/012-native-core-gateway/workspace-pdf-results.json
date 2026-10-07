@@ -1,0 +1,355 @@
+{
+  "profile": "workspace-pdf",
+  "package": "/nix/store/yr1rhr9qzrq0p2k1dcwli25mm3la5vm5-tag-all-workspace-native-0.1.0",
+  "binary_sha256": "d729c3a764ca182cf2fd1aa01bf15f2f59f71a8f60df8abfdc3e833d8d66fa51",
+  "binary_bytes": 34378480,
+  "image_id": "b4245b0aa73222ddb4b2ac0c26c823a3e6319d2cc7feb3db7b683bfc36a1efee",
+  "archive_sha256": "a7d12958bdbad6fa9c4b6e75c3aacd763c8407c547bb222d58ad23413bfc541c",
+  "nixpkgs_locked": {
+    "lastModified": 1787814960,
+    "narHash": "sha256-PYZq1qzCJXC2zGI0mH07vrZBsw6DRBAOX0jN1pPtqOQ=",
+    "owner": "NixOS",
+    "repo": "nixpkgs",
+    "rev": "c27cdad491a991b11ed731760aa2ef8db0cb0410",
+    "type": "github"
+  },
+  "cutover_ready": false,
+  "deployed": false,
+  "pdf_information_render_crop_actual_http": true,
+  "worker_restricted_mounts_observed": true,
+  "worker_tasks_observed": 4,
+  "pdf_owner_restart_preserved": true,
+  "tags_text_restart_preserved": true,
+  "duplicate_database_writer_rejected": true,
+  "invalid_runtime_configuration_rejected": true,
+  "source_unchanged": true,
+  "processing_reports": [
+    {
+      "api_version": 1,
+      "capabilities": {
+        "archive": {
+          "compiled": true,
+          "enabled": true,
+          "ready": false,
+          "reason": "dependency_unavailable"
+        },
+        "audio_video": {
+          "compiled": true,
+          "enabled": true,
+          "ready": false,
+          "reason": "dependency_unavailable"
+        },
+        "comic": {
+          "compiled": true,
+          "enabled": true,
+          "ready": false,
+          "reason": "dependency_unavailable"
+        },
+        "core": {
+          "compiled": true,
+          "enabled": true,
+          "ready": true,
+          "reason": null
+        },
+        "device_api": {
+          "compiled": true,
+          "enabled": true,
+          "ready": true,
+          "reason": null
+        },
+        "epub": {
+          "compiled": true,
+          "enabled": true,
+          "ready": true,
+          "reason": null
+        },
+        "git": {
+          "compiled": true,
+          "enabled": true,
+          "ready": false,
+          "reason": "dependency_unavailable"
+        },
+        "image": {
+          "compiled": true,
+          "enabled": true,
+          "ready": true,
+          "reason": null
+        },
+        "music": {
+          "compiled": true,
+          "enabled": true,
+          "ready": false,
+          "reason": "dependency_unavailable"
+        },
+        "pdf": {
+          "compiled": true,
+          "enabled": true,
+          "ready": true,
+          "reason": null
+        },
+        "transcription_local": {
+          "compiled": true,
+          "enabled": true,
+          "ready": false,
+          "reason": "dependency_unavailable"
+        },
+        "writing": {
+          "compiled": true,
+          "enabled": true,
+          "ready": true,
+          "reason": null
+        },
+        "writing_git": {
+          "compiled": true,
+          "enabled": true,
+          "ready": false,
+          "reason": "dependency_unavailable"
+        }
+      },
+      "capability_schema_version": 1,
+      "features": {
+        "location_scoped_reader": true,
+        "location_scoped_tags": true
+      }
+    },
+    {
+      "api_version": 1,
+      "capabilities": {
+        "archive": {
+          "compiled": true,
+          "enabled": true,
+          "ready": false,
+          "reason": "dependency_unavailable"
+        },
+        "audio_video": {
+          "compiled": true,
+          "enabled": true,
+          "ready": false,
+          "reason": "dependency_unavailable"
+        },
+        "comic": {
+          "compiled": true,
+          "enabled": true,
+          "ready": false,
+          "reason": "dependency_unavailable"
+        },
+        "core": {
+          "compiled": true,
+          "enabled": true,
+          "ready": true,
+          "reason": null
+        },
+        "device_api": {
+          "compiled": true,
+          "enabled": true,
+          "ready": true,
+          "reason": null
+        },
+        "epub": {
+          "compiled": true,
+          "enabled": true,
+          "ready": true,
+          "reason": null
+        },
+        "git": {
+          "compiled": true,
+          "enabled": true,
+          "ready": false,
+          "reason": "dependency_unavailable"
+        },
+        "image": {
+          "compiled": true,
+          "enabled": true,
+          "ready": true,
+          "reason": null
+        },
+        "music": {
+          "compiled": true,
+          "enabled": true,
+          "ready": false,
+          "reason": "dependency_unavailable"
+        },
+        "pdf": {
+          "compiled": true,
+          "enabled": true,
+          "ready": true,
+          "reason": null
+        },
+        "transcription_local": {
+          "compiled": true,
+          "enabled": true,
+          "ready": false,
+          "reason": "dependency_unavailable"
+        },
+        "writing": {
+          "compiled": true,
+          "enabled": true,
+          "ready": true,
+          "reason": null
+        },
+        "writing_git": {
+          "compiled": true,
+          "enabled": true,
+          "ready": false,
+          "reason": "dependency_unavailable"
+        }
+      },
+      "capability_schema_version": 1,
+      "features": {
+        "location_scoped_reader": true,
+        "location_scoped_tags": true
+      }
+    }
+  ],
+  "production_changed": false,
+  "owned_fixture_cleanup": true,
+  "closure_nar_bytes": 704862720,
+  "closure_paths": [
+    "/nix/store/0b9rsplla8fak6zyadcn7skmj0yvw3rz-fuse-overlayfs-1.17",
+    "/nix/store/0lyhggaxmmfdmgrzk60375ahy4fiwznn-fuse-3.18.2",
+    "/nix/store/0vqb1mcas5j8dv6bhbrshinlgsg6bvgi-gcc-15.3.0-lib",
+    "/nix/store/17xmg38m60inc59az3frp540ccrwn2r8-util-linux-minimal-2.42.2-lib",
+    "/nix/store/217wr6zsyp3hkrvsrl5h4d7yphdm4wir-mpdecimal-4.0.1",
+    "/nix/store/23q1ns1s025b401ixc1fz89rfpf2a2c6-lz4-1.10.0-lib",
+    "/nix/store/26m93d2bs16y6s3aby48w3iyi4wrs9gw-dns-root-data-2025-04-14",
+    "/nix/store/2gkqj0v0msfcagwf5ix199rf1lnwf2a1-expat-2.8.3",
+    "/nix/store/33xn5f7b17rg5lhiva2nfrnxwfr4inrq-libksba-1.8.0",
+    "/nix/store/3cfcygkbamw4b9snazj1xl4x5snhf62c-elfutils-0.195",
+    "/nix/store/3qgy8q2j64v2m9jy3a5jmssacbblhd4r-coreutils-9.11",
+    "/nix/store/3xl852rpg72m4a49k65gmnd77n1ix9df-libcap-2.78-lib",
+    "/nix/store/4hlgp6r4j5p6b2b9sxw01cba0x3fjxd6-systemd-minimal-libs-261.2",
+    "/nix/store/4xxc7cldibnlw5496qg5d45i0nmxyz11-nettle-3.10.2",
+    "/nix/store/59qsa2rfqvj2frvnd3lz2w52bh3xzjci-util-linux-minimal-2.42.2-mount",
+    "/nix/store/5cl8f2vjwgnzfkjbpkyq353449g25syp-iptables-1.8.13-lib",
+    "/nix/store/5j174mnq072i0d95f2x9vila7dh4yzc0-conmon-2.2.1",
+    "/nix/store/5xym1gmpk8kxl2vvfaaxja52qap9g49l-util-linux-minimal-2.42.2-login",
+    "/nix/store/61534nwjl335kpcv3s3n7nyk5xzmg4sd-libcbor-0.14.0",
+    "/nix/store/644qss57cp3gya55xxlg7g4pm46hbzly-libnet-1.3",
+    "/nix/store/65ql38i4yki6adklv0d83amba6c5cd9i-util-linux-minimal-2.42.2-bin",
+    "/nix/store/6lxb0vhv7gxpdcdirbfmm75vi4idjjhq-libusb-1.0.30",
+    "/nix/store/6nf45s5zbvz14sjifq5jvfnmw747qzsy-nftables-1.1.6",
+    "/nix/store/6pfa3sxidnzik3kjym6l3j5bz08d86y9-kbd-2.9.0",
+    "/nix/store/6zvxln5ygqlib6gqpimdiqfpc3gc9xpy-libassuan-3.0.2",
+    "/nix/store/71k4v2hi1lz1cwkialykqak31ip463xg-catatonit-0.2.1",
+    "/nix/store/76040w2af6xbwpfpqaskc5708ws85grl-protobuf-c-1.5.2-lib",
+    "/nix/store/7645ix9bmf95gzhdf390pbifbzg13ba9-libtool-2.6.2-lib",
+    "/nix/store/7a60q5dgnv6z96c279rc1nalyiw4mgqn-bash-interactive-5.3p15",
+    "/nix/store/7x021x160xhywqya2vwigp49ax8hzgv4-util-linux-2.42.2-mount",
+    "/nix/store/88rpjhka2v8d01frjnsl6chvlv9lnvjc-libselinux-3.10",
+    "/nix/store/8jnb0l7s676sp8p1mh8n2188gk6vjgwp-acl-2.4.0",
+    "/nix/store/8kdw4bzswar0130r5m5cd2m3ga22lmax-tpm2-tss-4.2.0",
+    "/nix/store/8vqfy9aqxcb5akhpcqdm2iv4q6wx2rih-ngtcp2-1.23.0",
+    "/nix/store/95rwp9dj3c6z4aplfh61apm786k5kxhw-libseccomp-2.6.1-lib",
+    "/nix/store/9g3536ribbggd4swm4bwk8sknsddfl3j-libxml2-2.15.3",
+    "/nix/store/9ipfvwnqp1q8ijnmi5sxvlx9r8w34lw3-bash-5.3p15",
+    "/nix/store/9j9c2j5bbwbzgvdlrsphcfw4r4pd6hng-lvm2-2.03.41-lib",
+    "/nix/store/9kg53rdi54r7krlk9iwz6hplh75ppq5i-libtpms-0.10.2-unstable-2026-05-06",
+    "/nix/store/a3hr0l5skscvbkcr7kz3nhi4linz1p71-glib-2.88.3",
+    "/nix/store/ab0ibqmyi58khr3vfaf8q4jqg2nzk438-criu-4.1.1",
+    "/nix/store/adhjdycq6m1n6ljzm9ifp843y2my6zd8-krb5-1.22.2-lib",
+    "/nix/store/axmdd5wlxg1c9dbblvj09pjhkawqxmqx-glibc-2.42-84-bin",
+    "/nix/store/b5bpi6zfajzzrwwpgba2q6li3nnya4bs-python3-3.14.7",
+    "/nix/store/bb2jb295969rw2xmijf6s578yb0pxypr-attr-2.6.0",
+    "/nix/store/bdwsskqikgdlq94xqh5dvyd8263w995g-xz-5.8.3",
+    "/nix/store/bmyw1idq6xyp1h4ksmb14s4imwnf8vwa-gmp-with-cxx-6.3.0",
+    "/nix/store/c56b702wjn1ic9vh3vlbn3sk4zna3spg-gnutar-1.35",
+    "/nix/store/c56x66gbj3qwv3g7dhadcfiq408q2hay-brotli-1.2.0-lib",
+    "/nix/store/c6lcjhvgz0cg6w2xxki1gvdz2lsf4i8s-qrencode-4.1.1",
+    "/nix/store/c6mgy63s5y1353152dp2s2jaig026j3h-readline-8.3p3",
+    "/nix/store/cj9443b6ljpw3pzxa3x3ck7vrig9kkc0-pcre2-10.47",
+    "/nix/store/cm1r1dml740xsbfaxxvxrgnn3n2ma8k7-tcb-1.2",
+    "/nix/store/cnlcnkrhd3h67g92jhxij3w864ynhi6n-util-linux-2.42.2-login",
+    "/nix/store/cqsl6djcsccg91y947v3rs5r456z6dww-npth-1.8",
+    "/nix/store/d4wj0svs73h1p0726a7k3vi4vkic8qb5-nghttp2-1.70.0-lib",
+    "/nix/store/d9l35nclmi0390dxpgivrikv5sf228kx-gnutls-3.8.13",
+    "/nix/store/dbnaxh8gphmb5pymv0593c29hrnhpzzx-passt-2026_07_16.090d739",
+    "/nix/store/f1i90m4xwg5yc3ca5ylp49ni51dx5g24-audit-4.2.1-lib",
+    "/nix/store/fwzl4in6i7pj30zp0rz3mx90cl6vg4km-libgcrypt-1.12.2-lib",
+    "/nix/store/fxnqhp2iqwfcg8bjwlans8ni0i7cgh1x-libnfnetlink-1.0.2",
+    "/nix/store/g4ygi5cq1f4dqjhydlvpyhjyvknjghkx-libmd-1.2.0",
+    "/nix/store/gax6r1j1i28bvxjcs1v98npzaa4hwj7d-libbsd-0.12.2",
+    "/nix/store/glfrj1lg16mcgyhn5pjyng197idbr72z-nss-cacert-3.126",
+    "/nix/store/gmj42fvbymgbhywp68g24xyfjfdshadd-openldap-2.6.13",
+    "/nix/store/gqr3pk0kzp0f61nv793qrkh9h4075cz9-pcsclite-2.4.1-lib",
+    "/nix/store/gw82p6qrjp6ln4jzx6chvf67wrz8phib-iptables-1.8.13",
+    "/nix/store/h6q94p1jw42irzqybm1049fmxakh8701-mailcap-2.1.54",
+    "/nix/store/hg41dqig0qxm7shyi0a0xkw29a14i3js-openssl-3.6.3",
+    "/nix/store/hz954b4dkbxmwl3vbisipn0ww9hqlyf4-libtasn1-4.21.0",
+    "/nix/store/i2v86im08iwwyg3jaj1886756fbapmyg-crun-1.29.1",
+    "/nix/store/il0fks5h18ddws825l0b83115ifcn0vp-libmicrohttpd-1.0.6",
+    "/nix/store/imvc9v7wiw7rh5rrzjdhmrd96s2wszi2-json-c-0.18",
+    "/nix/store/iv3npjf8gjxmzcx5wxaix2ha89628ywk-kmod-31-lib",
+    "/nix/store/j0agkcf443dkbkcn1v0ka6jcw6mhm76i-libkrun-1.19.0",
+    "/nix/store/j8jv6f34b1k1ry70dzjs0yddfcnpvha3-netavark-1.17.2",
+    "/nix/store/jg66vcyjabrdwfm6v8bz65vbpxfkhyal-keyutils-1.6.3-lib",
+    "/nix/store/js998ih76w3n2cqnysa7g27608djj5yn-gdbm-1.26-lib",
+    "/nix/store/jwyskbj2mc7izs67ib2msydsh0vbnwl9-gmp-with-cxx-6.3.0",
+    "/nix/store/kfqbfq23lafkrbhxxblzf65baqz5p1ia-perl-5.42.3",
+    "/nix/store/kfskrzkf6gr5ibn4zsgm97l4fkadzcvb-libnl-3.12.0",
+    "/nix/store/kn3a61sk602hrg2b98q0ii8z2rbf0wif-kexec-tools-2.0.32",
+    "/nix/store/ks6ni13a1bnfi1bdj03nqvrhr842ww86-libpsl-0.21.5",
+    "/nix/store/kxij42i82abmk9knpc16bns88m58g2np-podman-5.8.6",
+    "/nix/store/l3p6y554mkxi4vipnnp8809kxj0g1lyv-zlib-1.3.2",
+    "/nix/store/laa2rxlj6rpd5nkhlpijp96pkcj192pa-cracklib-2.10.3",
+    "/nix/store/lpd2ifkgr46iqm0b009ayfxygz1mf34m-libnetfilter_conntrack-1.1.1",
+    "/nix/store/lwvkmswcrra987aklpsby82hb4hscsa0-libarchive-3.8.9-lib",
+    "/nix/store/m7v9cqyhncd3gbp548cnxm4b2acig3ng-linux-pam-1.7.2",
+    "/nix/store/mhd5j36zdk4wq73d2znv4axx8fyvd2w9-libevent-2.1.13",
+    "/nix/store/mkrc0dnys009hh8hl04pczp6kldcg87v-util-linux-minimal-2.42.2-swap",
+    "/nix/store/mp4xhfghdxp0db0jf3k5iqack3ms3x9k-libssh2-1.11.1",
+    "/nix/store/n51dhmdbik1kfrsm62j5knavmigwrl1a-glibc-2.42-84",
+    "/nix/store/n8kjpmp59fxfbq7dbrri04b5zjrz19qf-aardvark-dns-2.1.0",
+    "/nix/store/nb6fq3nrjmyx9f9syrfnmsyfhx1ks9vg-iana-etc-20251215",
+    "/nix/store/nfvwp1x1bzaiala6nhciaa0ncn0296c3-libapparmor-5.0.2",
+    "/nix/store/nga9d6m9iplygw3iqghk2g840nz7b0gy-libidn2-2.3.8",
+    "/nix/store/nhj6kcdm054vyjkh5hivcmgld5zzvsyd-podman-helper-binary-wrapper",
+    "/nix/store/nklryjwy3pzablcckxa42jydrd3rwjyx-libkrunfw-5.5.0",
+    "/nix/store/nsz0fdxbfn2c3g4bkirc36wplq0ghrbn-db-5.3.28",
+    "/nix/store/nvh2r6adpxhkl37wsxglz4w9cbsz506h-gnupg-2.4.9",
+    "/nix/store/nxj00npy8vi9cwiw8wzch8n1x7kgj3fv-libpwquality-1.4.5-lib",
+    "/nix/store/p0ff33dca0fbkskqwrl3spvxcn5974h0-tzdata-2026c",
+    "/nix/store/pfww4nv3wkgpyk1jvqqpz6ymxgj7cbbh-libxcrypt-4.5.2",
+    "/nix/store/pkbv160i0kq3g7k52r79a5axmyavhrlh-rdma-core-64.0",
+    "/nix/store/ps2lab24277jv6jkl0c5xdks8w9dpmmq-libmnl-1.0.5",
+    "/nix/store/q22jwk7vaa69na5akgklgh70bhv9y4al-libcap-ng-0.9.3",
+    "/nix/store/qdgsn5ziaawlgwwcpgghxm8yqn50rq7a-iproute2-7.1.0",
+    "/nix/store/qikidl3z4p1i05wri3y53ya4gq2nb8as-shadow-4.20.2",
+    "/nix/store/qvh3wmxf35f8cb8sgb99cysrqikijzvj-unbound-1.26.0-lib",
+    "/nix/store/qwp9al3cgy38lp2aljz9h7r9vli5wssy-libpcap-1.10.6-lib",
+    "/nix/store/r9agcp0d8ngzrrjf7pyampq0y0sipjxc-publicsuffix-list-0-unstable-2026-08-14",
+    "/nix/store/rbc496f0h04ddix6b05ya4w5csms1a9v-libsodium-1.0.22-unstable-2026-07-31",
+    "/nix/store/rkdfqfbwyiwg2pgvw7rkd0g71b702s4l-util-linux-2.42.2-lib",
+    "/nix/store/rm1pxpky3hd09wa7aa8w4yfa19141sl5-util-linux-2.42.2-lastlog",
+    "/nix/store/s03pwvivxwjqbk3iflyhqyv4ryhfj374-p11-kit-0.26.2",
+    "/nix/store/s140law6rxbjkyjblkaldi9klslnfvwg-gpgme-2.1.2",
+    "/nix/store/scjpx9gmjl0pzkgivgs7p3hdg5b9yw67-cyrus-sasl-2.1.28",
+    "/nix/store/sd9qcv5s2gxvd6hpp5hk5cixq2bd4jd1-gzip-1.14",
+    "/nix/store/sgsbfaq5zsw6ykrzpcfz3f6ia3wxkl86-libbpf-1.7.0",
+    "/nix/store/sm8d6jpilwdy3bw3yq2lv8rr8jld26pb-systemd-261.2",
+    "/nix/store/sn0l78pwk2z2hkcq5zcy61hw51h2p0zp-runc-1.4.3",
+    "/nix/store/ssvq1r0xd8f7paf6zqgpfql1a4drwhy2-xgcc-15.3.0-libgcc",
+    "/nix/store/vkzbcqvnxj1inwrjymp3gd0bn61kb0wl-db-4.8.30",
+    "/nix/store/vz1kbkl0178apj4q15l0j4pjgibgi5bv-libfido2-1.17.0",
+    "/nix/store/w739x4v97c261v1vwcsk4jpw99qy9qgf-systemd-minimal-261.2",
+    "/nix/store/w7g6j8g4z3jii569vg5mw7v5vhvd5hi3-jansson-2.15.0",
+    "/nix/store/wb232z007b8qynidq89lli8lb2c4q0r4-libffi-3.8.0",
+    "/nix/store/wc1z9b7r9q9cxf5cyw48v9kgcvs67cdq-libedit-20260508-3.1",
+    "/nix/store/wi6kaycsa2479qrxv9xy6yg3q5ggfs6j-gcc-15.3.0-libgcc",
+    "/nix/store/wqr4s3bk0mkyqx8f09yl3d5bi9n0kpir-libnftnl-1.3.1",
+    "/nix/store/x4xicianwlchh2cadblv4pfz8syvl97b-curl-8.21.0",
+    "/nix/store/xcv2rrfly0za0kdhzvmc0j2a6074zkib-sqlite-3.53.3",
+    "/nix/store/xcwclh5qgw2x6qc39x6ixara06xczzlw-zstd-1.5.7",
+    "/nix/store/xmrzhcfqg1vzwsvgm1dk9dq5fl64rlck-nghttp3-1.16.0",
+    "/nix/store/xryrhsmmwrgdpqd5ic0fwkm64ghjmn4c-libgpg-error-1.61",
+    "/nix/store/xz5xsq0nihfs15fbknz5w0yblg04760q-bzip2-1.0.8",
+    "/nix/store/yh8rykx8wakl1ccn8rc351f6r2wbg4cn-libunistring-1.4.2",
+    "/nix/store/yr1rhr9qzrq0p2k1dcwli25mm3la5vm5-tag-all-workspace-native-0.1.0",
+    "/nix/store/zq860n82fcl4cd38nbr9hhb7sm65gk21-kmod-31",
+    "/nix/store/zwv3i1aawb8zmxj029x7lyd0an5q4nj6-util-linux-2.42.2-bin",
+    "/nix/store/zxbpvhc7s8sw2xrcl5qqh8y0ibmj3667-cryptsetup-2.8.7",
+    "/nix/store/zygwm8dln4ck42wc90gzc668jbrhdvpz-util-linux-2.42.2-swap",
+    "/nix/store/zz125vwahb637g5ckl046ll8fcqmc8pk-ncurses-6.6"
+  ],
+  "default_podman_storage_changed": false,
+  "tool_runtime_owned_and_removed": true
+}

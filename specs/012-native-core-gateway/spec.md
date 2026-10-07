@@ -67,3 +67,26 @@ Range、Markdown 附件引用与字节、实际 WASM/PDF.js 阅读通过。
 用户明确选择补齐 PC 处理服务、保持完整功能。S3 未通过，当前仍剩 1 步；
 现用 PC/NUC 服务未切换，cutover_ready=false。
 下一步接带处理接口的唯一原生工作区装配及受控工具执行器；不得并行写同一 DB。
+
+## S3：可选原生工作区 PDF 接入已通过
+
+- [workspace-pdf-results.json](workspace-pdf-results.json)：复用 023 相同已验收 image ID 的
+  完整静态 API 制品，原核心启动器继续持有同一 DB/身份/任务锁；纯核心包与其制品未改。
+  页数、页面 JPEG 渲染和切边实际 HTTP 通过，两次启停保留标签、文本与 PDF owner。
+  实际观察 4 个 worker：只读单文件输入、只读根、无网络和资源限额；源 PDF 未改。
+  非法位置、越界、缺文件、重复 DB writer、浮动镜像/网络运行时/工作区内状态均拒绝。
+  工具镜像仅加载到自有 rootless VFS 运行时，结束清理；默认 Podman 存储未导入镜像。
+- [workspace-pdf-module-results.json](workspace-pdf-module-results.json)：产品共享 PDF 配置类型、
+  实际 HM 合法配置及纯核心通过；五种错误选择被拒绝，Environment 中 %/$/中文/空格处理通过。
+  默认停用既有门槛复验通过；不新增第二个媒体 tag-server 或第二个 DB writer。
+- [workspace-pdf-host-results.json](workspace-pdf-host-results.json)：基于同一实际 liu-bigpc
+  源码快照的可选 PDF 系统/HM 均构建，生成单元的镜像/状态/socket 参数核对通过；未激活。
+  组合预检仅显式 processing=true 使用该包，默认候选仍为原核心；真实生成单元运行尚未验。
+- 可选包静态服务为 34,378,480 字节；包含 Podman 的 NAR 运行闭包 704,862,720 字节、
+  144 路径。这不是下载压缩量，也未包含工具镜像体积；不宣称本次包装更小。
+
+当前仍剩 **1 步 S3**，cutover_ready=false。这次只完成 PDF 装配及合成门槛，
+封面/缩略图、EPUB 服务端/前端阅读、漫画转换、解压、音视频及现用扩展能力对照仍须接续。
+归档/音视频/漫画/Git/音乐/转写等缺工具的能力当前为 dependency_unavailable，不能说全部媒体已恢复。
+下一步接归档/音视频受控执行，逐项补结果与取消/恢复；完整工具就绪后再复验最终候选
+实际单元、互斥、回退与镜像生命周期。真实 PC/NUC 服务保持，现阶段不要求用户停机。

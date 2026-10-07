@@ -1,5 +1,5 @@
 # Read-only candidate factory. Imported only by the preflight build, never automatically.
-{ tagAllSource, corePackage, frontendRoot }:
+{ tagAllSource, corePackage, frontendRoot, pdfContainer ? null }:
 { config, lib, pkgs, ... }:
 let
   guard = mode: "${pkgs.python3}/bin/python3 ${../../scripts/native_pc_mode_guard.py} --mode ${mode} --podman ${pkgs.podman}/bin/podman --systemctl ${pkgs.systemd}/bin/systemctl";
@@ -11,7 +11,7 @@ in {
     services.tag-native-stack = {
       enable = true;
       package = corePackage;
-      inherit frontendRoot;
+      inherit frontendRoot pdfContainer;
       nodeId = "pc";
       workspace = "/home/liou/dufs-lan";
       workspaceMounts.project = "/data/project";
