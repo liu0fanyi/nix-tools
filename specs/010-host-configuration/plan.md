@@ -197,3 +197,13 @@ Constitution Check：本机权威源、010 specs契约、docs手册、scripts实
 在现有工具内增加recipe-clips机械阶段和独立本地媒体编辑入口；Flow init CLI默认clips，历史配置缺字段解释为images且不可变。Batch文字复审后直接按窗口生成片段并组装；图片模式保留。新增step-clips.json契约及验证器；Library复制片段、生成右侧播放/选图控件，归档重建复制同一媒体。编辑服务只监听127.0.0.1，使用精确配方/步骤/片段ID白名单、摘要绑定、有限时间点与原子状态更新，JPEG由ffmpeg生成，不接受任意路径或浏览器提交的媒体。手选状态保存在workflow/user-media，验收内容不变。
 
 Constitution Check：仅本机scripts/tests/docs/specs及Downloads实验产物；远端只既定NUC文档白名单。无新增依赖/外部参考仓库、无上传媒体/模型调用、无系统/HM/锁/生产修改；不删除旧素材或修改既有归档。验证真实视频片段、无视觉任务的队列闭环、截帧保存/恢复/导入、拒绝越界/旧摘要/非法片段/跨站写入、摘要篡改阻止释放及无视频重建。
+
+### AI 字幕限定流程
+
+先保存独立 platform-subtitles/<BV>/result.json 检查点，字幕获取使用 --skip-download/--write-subs/--sub-langs ai-zh，探测请求间隔 15 秒；沿用明确授权的 Zen Cookie 读取方式但不记录 Cookie 值。成功且无中文 AI 轨道才 skipped，失败进入 failed/retry；有字幕时验证 UTF-8 SRT、视频 ID/时长并绑定摘要，后续下载仍串行低频、单片段并发和限速。脚本读取字幕来源，AI 整理/独立文本复审仍按完整现有契约执行，clips 组装不新增视觉 AI。
+
+SQLite 查询和 broker 终止条件排除 skipped，跳过不占 retain_count；正负探测结果持久，重复 next/resume 不重查。已有视频不因跳过删除；实际成功菜谱删除门槛及不可变归档保持。验收归档增加 AI 字幕来源回执，正文和问题核验保持。CLI 默认新策略，老数据库缺该字段仍兼容；不原地改配置。新增 recipe-runtime.nix 让 recipe-flow 脱离 OCR 运行入口，固定现有锁文件、不做系统切换。
+
+Constitution Check：代码在本机 nix-tools、手册 docs、需求/契约 specs，沿用 010 工具范围；官方 yt-dlp 源码仅在线核对，无引入外部参考原件/gitlink；Downloads 保存平台元数据、字幕、任务和试验日志，不进入公开 Git 或 NUC 镜像。只同步本工程 specs、任务手册及生成看板至 todos/nix-tools，预演和 checksum 复核；保护已有 AGENTS/README/deploy docs/flake.lock/home.nix 改动。
+
+中文专用 yt-dlp 提取插件只在字幕探测时显式加载，在读取平台轨道元数据后仅下载 ai-zh 正文，不请求人工/英文/其他语言字幕或弹幕正文。确认插件生效标记后才判断缺字幕；API 非零码、登录要求、无效轨道元数据及空正文属于失败。探测进程最长 600 秒，超时保留可重试失败，不永久跳过。插件实现由本工程维护，使用[官方插件扩展接口](https://github.com/yt-dlp/yt-dlp#developing-plugins)，无需安装新平台 SDK。

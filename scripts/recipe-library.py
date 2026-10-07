@@ -41,9 +41,11 @@ def validate(folder,schema):
  import sys
  sys.path.insert(0,str(Path(__file__).parent))
  def sec(t):
-  h,m,s=t.replace(',','.').split(':');return int(h)*3600+int(m)*60+float(s)
+  match=re.fullmatch(r'(\d{2,}):(\d{2}):(\d{2})[,.](\d{3})',t.strip())
+  if not match or int(match[2])>=60 or int(match[3])>=60:raise ValueError('invalid SRT timestamp')
+  return int(match[1])*3600+int(match[2])*60+int(match[3])+int(match[4])/1000
  parsed=[]
- for block in re.split(r'\n\s*\n',(folder/'source.srt').read_text().strip()):
+ for block in re.split(r'\n\s*\n',(folder/'source.srt').read_text(encoding='utf-8-sig').replace('\r\n','\n').strip()):
   lines=block.splitlines();a,b=lines[1].split(' --> ');parsed.append({'id':int(lines[0]),'start':sec(a),'end':sec(b),'text':'\n'.join(lines[2:])})
  if parsed!=transcript['cues']:raise ValueError('normalized transcript does not match SRT')
  duration=d['source']['duration_seconds'];ids=[]

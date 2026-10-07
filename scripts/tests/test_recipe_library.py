@@ -27,6 +27,16 @@ class RecipeChecks(unittest.TestCase):
   m.validate(self.folder,self.schema)
   self.data['evidence'][0]['quote']='invented';self.save()
   with self.assertRaisesRegex(ValueError,'quote'):m.validate(self.folder,self.schema)
+ def test_millisecond_srt_normalization_agrees_and_rejects_real_changes(self):
+  # 01:33,700 + 3.230 formerly differed from integer-seconds parsing by one ULP.
+  transcript=m.read(self.folder/'transcript.json')
+  cue={'id':999,'start':93.7,'end':97.23,'text':'真实毫秒时间轴合成测试'}
+  transcript['cues'].append(cue)
+  with (self.folder/'source.srt').open('a')as stream:stream.write('\n999\n00:01:33,700 --> 00:01:37,230\n真实毫秒时间轴合成测试\n')
+  sha=m.digest(self.folder/'source.srt');self.data['source']['transcript_sha256']=sha;transcript['transcript_sha256']=sha
+  m.dump(self.folder/'transcript.json',transcript);self.save();m.validate(self.folder,self.schema)
+  transcript['cues'][-1]['end']=97.231;m.dump(self.folder/'transcript.json',transcript)
+  with self.assertRaisesRegex(ValueError,'normalized transcript'):m.validate(self.folder,self.schema)
  def test_changed_image_and_dependency_cycle_rejected(self):
   self.data['steps'][0]['depends_on']=['step_simmer'];self.save()
   with self.assertRaisesRegex(ValueError,'dependency'):m.validate(self.folder,self.schema)

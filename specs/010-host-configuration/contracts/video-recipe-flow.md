@@ -50,3 +50,13 @@ recipe-session提供绑定原task_id/input_sha256的独立视图，不修改原A
 Overlay不修改recipe.internal、accepted、library内容，不提升human_reviewed；导出/导入选择JSON可在同摘要菜谱恢复，图片可由片段重建。归档/重建包含片段和清单。视频释放仍需OCR done无flags、无开放事实疑点与来源/归档/发布/媒体一致；只将每步AI图片必选条件替换为经校验的完整片段，不能按“浏览页面可播放”直接删除。
 
 片段时间范围同时覆盖步骤evidence_windows和该步骤全部事实引用的字幕区间，前后扩展后合并重叠窗口，不连续区间分别保存；不能仅沿用旧选图的窄窗口截断步骤说明。手选时间精度为毫秒，超出精度或范围的导入拒绝。HTTP编辑入口只在响应内挂载当前控件和选图状态，不修改归档HTML。
+
+## AI-only 字幕准入
+
+CLI init 默认 subtitle_policy=bilibili-ai-only（旧设置缺字段或显式 legacy 保持历史处理），固定配置不原地改写。该策略 add 仅接受 id/title/author 和可选已有 video；subtitles/subtitle_origin/seed 拒绝，adopt 拒绝外部结果。先在 ROOT/platform-subtitles/<BV>/ 保存平台 info 和 source.ai-zh.srt；--ignore-config 防止用户全局下载/字幕设置意外扩大范围。字幕探测成功、无登录/字幕请求警告且无 ai-zh 才保存 {id,status:skipped,reason:no_ai_zh_subtitles}；控制器设置 state=skipped、started=0，next 和 watch 完结查询排除 skipped、retain_count 排除 skipped。已有视频和 sidecar 不删除。
+
+有轨道则 SRT 完整解析、时长/ID/摘要校验；result.json 保存 {id,status:available,language:ai-zh,origin:platform,generation:ai,duration,cue_count,sha256}。该结果先于视频下载持久化，恢复复用并重新验证字幕 SHA。网络/风控/登录失效/缺文件/坏字幕为 failed，可 retry，不能永久跳过。每个 next 至多探测一条；run --watch 在无 AI 任务时继续下一条，全部 skipped 时终止。
+
+通过准入后 subtitle_origin=platform，继续全文 AI 整理、独立文本审阅/修复、clips 及归档/目录。验收归档 source-platform-subtitles.json 复制已验证回执并绑定实际字幕摘要；字幕为平台 AI 输出，不是人工校验。既有事实、独立复审、疑点、媒体身份及完整片段门槛保持；新流程不存在 OCR 任务或 OCR 门槛，实际语义问题仍须保留。
+
+中文专用 yt-dlp 提取插件只在字幕探测时显式加载，在读取平台轨道元数据后仅下载 ai-zh 正文，不请求人工/英文/其他语言字幕或弹幕正文。确认插件生效标记后才判断缺字幕；API 非零码、登录要求、无效轨道元数据及空正文属于失败。探测进程最长 600 秒，超时保留可重试失败，不永久跳过。插件实现由本工程维护，使用[官方插件扩展接口](https://github.com/yt-dlp/yt-dlp#developing-plugins)，无需安装新平台 SDK。

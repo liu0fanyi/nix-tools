@@ -2,6 +2,33 @@
 
 `scripts/recipe-flow` 把大清单登记、单视频准备、AI任务包、归档、网页目录及视频释放接成可续跑流程。状态使用本地SQLite；网页检索使用内嵌JSON，可直接打开离线目录。字段与验收规则以[010规格](../specs/010-host-configuration/spec.md#串行处理与视频释放)、[菜谱契约](../specs/010-host-configuration/contracts/video-recipe.md)和[食材契约](../specs/010-host-configuration/contracts/video-recipe-ingredients.md)为准。
 
+## 当前默认：只获取 B 站中文 AI 字幕
+
+先获取 `ai-zh` 字幕，成功后才下载视频并处理。没有中文 AI 字幕的标记 `skipped`，不下载视频、不运行 OCR、不生成菜谱任务；已有视频保留。登录/风控/网络错误和损坏的字幕标记 `failed`，用 `retry --job BV号` 重试，避免误跳过。有人工字幕、英文字幕或弹幕也不替代中文 AI 轨道。
+
+新 ROOT 的 CLI 默认 `--subtitle-policy bilibili-ai-only --media-mode clips`。旧流程配置固定，应新建目录切换；旧目录仍能查看和续跑，独立 OCR 工具保留。新入口不加载 OCR 运行环境或模型。AI 字幕仍可能误识别食材和数字，全文文字复审及疑点处理保留，字幕不会自动认证菜谱。
+
+```bash
+FLOW=/home/liou/nix-tools/scripts/recipe-flow
+FLOW_ROOT='/home/liou/Downloads/菜谱AI字幕流程'
+"$FLOW" --root "$FLOW_ROOT" init --subtitle-policy bilibili-ai-only \
+  --media-mode clips --browser 'firefox:/实际/Zen/profile'
+"$FLOW" --root "$FLOW_ROOT" add /实际/待处理清单.json
+"$FLOW" --root "$FLOW_ROOT" run --watch
+# 另一终端只读查看：
+"$FLOW" --root "$FLOW_ROOT" status --summary
+```
+
+清单仅写 `id/title/author`，可加 `video` 复用已有视频；新策略不接受外部字幕、seed 或旧队列 adopt，以免绕过平台 AI 字幕检查。例：
+
+```json
+[{"id":"BV13beA6SEh9","title":"肉末蛏子盖饭","author":"老东北美食"}]
+```
+
+`ROOT/platform-subtitles/<BV>/result.json` 记录有没有字幕、AI 来源与字幕摘要；字幕和原始平台元数据只保存在私有 ROOT。结果可续跑复用；无字幕条目不会占保留视频名额，也不会在重启后重复探测。正文、独立文字复审 → 步骤 MP4 → HTML/JSON/食材索引 → 手动选图 → 达到原有质量门槛后释放视频。每个 `next` 最多处理一个视频，`run --watch` 自动跨过缺字幕项。
+
+下面旧字幕输入/OCR/adopt 的说明适用于历史目录或显式 legacy，不适用于当前默认 AI-only 新流程。
+
 ## 新流程：步骤片段与手动选图
 
 新建CLI流程默认`clips`，保留文字整理、全文复审/修复和食材复核，随后脚本裁剪片段并生成网页，不调用视觉选图或图后复审。每步按证据窗口前后各5秒截取，多个窗口分别生成MP4；时间标签是视频位置，不代表实际烹饪时长。右侧默认视频，图片可选。既有配置不能原地切换；旧图片流程继续使用原目录，新片段流程应新建ROOT。`init --media-mode images`显式创建旧图片模式。
@@ -16,7 +43,7 @@
 
 文字/OCR疑点仍保留，选图不算逐项人工烹饪核验。clips允许无图片，释放前必须验证完整独立片段以及原有事实/OCR/文件身份门槛。下面的视觉任务说明和旧实测表适用于images模式，不能当作新片段流程的固定费用。
 
-## 初始化与登记清单
+## 历史兼容：外部字幕与 OCR 清单
 
 在本机终端设置入口和私有数据路径。`FLOW_ROOT` 使用新的流程目录；`BASE` 指向已有视频所在目录，清单中显式填写各视频路径。
 
@@ -24,7 +51,7 @@
 FLOW=/home/liou/nix-tools/scripts/recipe-flow
 BASE='/home/liou/Downloads/Bilibili/老东北美食 [514273130]'
 FLOW_ROOT="$BASE/菜谱串行流程"
-"$FLOW" --root "$FLOW_ROOT" init --media-mode clips --media-root "$BASE"
+"$FLOW" --root "$FLOW_ROOT" init --subtitle-policy legacy --media-mode clips --media-root "$BASE"
 "$FLOW" --root "$FLOW_ROOT" add "$BASE/待处理清单.json"
 ```
 
@@ -50,7 +77,7 @@ FLOW_ROOT="$BASE/菜谱串行流程"
 需登录下载且已获Cookie授权时，可在初始化追加以下选项，替换成真实Zen配置目录。Zen使用Firefox的Cookie读取方式，配置只保存浏览器选择器，不记录Cookie值。
 
 ```bash
-"$FLOW" --root "$FLOW_ROOT" init --media-root "$BASE" \
+"$FLOW" --root "$FLOW_ROOT" init --subtitle-policy legacy --media-root "$BASE" \
   --browser 'firefox:/实际/Zen/profile'
 ```
 
@@ -247,3 +274,7 @@ usage只读本机会话日志的实际`token_usage_record.usage`，按唯一resp
 片段时间范围同时覆盖步骤evidence_windows和该步骤全部事实引用的字幕区间，前后扩展后合并重叠窗口，不连续区间分别保存；不能仅沿用旧选图的窄窗口截断步骤说明。手选时间精度为毫秒，超出精度或范围的导入拒绝。HTTP编辑入口只在响应内挂载当前控件和选图状态，不修改归档HTML。
 
 真实演示目录为Downloads/菜谱步骤视频试验-20261007-完整步骤；14个片段约70MiB，保存完整步骤上下文可能比原视频大，不保证节省磁盘。演示保留文字/OCR疑点和原视频；未执行全库。旧运行队列若因工具/契约升级出现旧任务摘要失效，应重新导出当前任务，不改摘要或旧回复绕过验证；已经验收的图片模式归档仍可查看/重建。修订步骤窗口时，只在新修订临时目录重生成片段，原归档和用户选择保留，旧选择绑定不同摘要时拒绝自动套用。
+
+中文专用 yt-dlp 提取插件只在字幕探测时显式加载，在读取平台轨道元数据后仅下载 ai-zh 正文，不请求人工/英文/其他语言字幕或弹幕正文。确认插件生效标记后才判断缺字幕；API 非零码、登录要求、无效轨道元数据及空正文属于失败。探测进程最长 600 秒，超时保留可重试失败，不永久跳过。插件实现由本工程维护，使用[官方插件扩展接口](https://github.com/yt-dlp/yt-dlp#developing-plugins)，无需安装新平台 SDK。
+
+AI-only 真实样稿位于 `/home/liou/Downloads/菜谱AI字幕流程试验-20261007`：肉末蛏子盖饭使用121条新平台字幕，14步/23食材/15片段，15待核对问题保留，原视频未删除。用 `scripts/recipe-flow --root '/home/liou/Downloads/菜谱AI字幕流程试验-20261007' serve` 打开本地目录并选图；另外两条已缓存字幕但未生成菜谱。不读取原视频的重建及食材检索通过；117项回归通过。毫秒时间按整数秒加毫秒统一解析，保持真实时间轴改动拒绝，不使用浮点容差放过来源变化。

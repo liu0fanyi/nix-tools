@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 repo=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
-runtime=$(nix build --impure --no-link --print-out-paths --file "$repo/packages/subtitle-ocr-runtime.nix")
+runtime=$(nix build --impure --no-link --print-out-paths --file "$repo/packages/recipe-runtime.nix")
 export PATH="$runtime/bin:$PATH"
 cache="${XDG_CACHE_HOME:-$HOME/.cache}/nix-tools/recipe-library"
 mkdir -p "$cache"
@@ -17,4 +17,4 @@ export UV_CACHE_DIR="$cache/uv"
     touch "$venv/.ready"
   fi
 ) 9>"$cache/setup.lock"
-exec "$runtime/bin/ocr-run" "$venv/bin/python" "$repo/scripts/recipe-flow.py" "$@"
+exec "$venv/bin/python" "$repo/scripts/recipe-flow.py" "$@"

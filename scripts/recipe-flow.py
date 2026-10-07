@@ -28,6 +28,10 @@ def module(name):
 batch = module('recipe-batch')
 ingredients = module('recipe-ingredients')
 DEFAULT_SAMPLING = {'width': 960, 'candidates': 12, 'interval': 1, 'padding': 5, 'strategy': 'bounded-uniform-per-window'}
+class NoAISubtitles(Exception):
+    """Successful platform query without a usable Chinese AI subtitle track."""
+
+
 MEDIA_SUFFIXES = {'.mkv', '.mp4', '.webm', '.mov'}
 
 
@@ -121,8 +125,11 @@ class Flow:
         if not row: raise ValueError('initialize workflow first')
         return json.loads(row['value'])
 
-    def init(self, media_root=None, browser=None, max_retained=3, min_free_gib=5, sampling=None, media_mode=None):
+    def init(self, media_root=None, browser=None, max_retained=3, min_free_gib=5, sampling=None, media_mode=None, subtitle_policy=None):
         settings = {'media_root': str(safe(media_root or self.root / 'media', media_root or self.root / 'media')), 'browser': browser, 'max_retained': max_retained, 'min_free_gib': min_free_gib, 'sampling': sampling or DEFAULT_SAMPLING}
+        if subtitle_policy is not None:
+            if subtitle_policy not in ('bilibili-ai-only', 'legacy'): raise ValueError('invalid subtitle policy')
+            settings['subtitle_policy'] = subtitle_policy
         if media_mode is not None:
             if media_mode not in ('images','clips'): raise ValueError('invalid media mode')
             settings['sampling'] = {**settings['sampling'], 'media_mode': media_mode}
@@ -152,7 +159,7 @@ class Flow:
         with self.db: self.db.execute('UPDATE items SET ' + ','.join(k + '=?' for k in values) + ' WHERE id=?', tuple(values.values()) + (vid,))
 
     def add(self, path):
-        self.setting('config'); entries = batch.load(path)
+        config = self.setting('config'); entries = batch.load(path)
         # Also accept yt-dlp --flat-playlist --dump-single-json output; enumeration is separate.
         if isinstance(entries, dict) and isinstance(entries.get('entries'), list):
             entries = [{'id': e.get('id'), 'title': e.get('title'), 'author': e.get('uploader') or entries.get('uploader')} for e in entries['entries']]
@@ -161,6 +168,8 @@ class Flow:
         for raw in entries:
             if not isinstance(raw, dict) or set(raw) - {'id', 'title', 'author', 'video', 'subtitles', 'subtitle_origin', 'seed'}: raise ValueError('invalid entry fields')
             if not all(isinstance(raw.get(k), str) and raw[k].strip() for k in ('id', 'title', 'author')) or not re.fullmatch(r'BV[A-Za-z0-9]+', raw['id']): raise ValueError('invalid video metadata')
+            if config.get('subtitle_policy') == 'bilibili-ai-only' and any(k in raw for k in ('subtitles', 'subtitle_origin', 'seed')):
+                raise ValueError('AI-only workflow fetches its own subtitles; external subtitles/seeds are not accepted')
             entry = copy.deepcopy(raw)
             for k in ('video', 'subtitles', 'seed'):
                 if k in entry:
@@ -181,16 +190,74 @@ class Flow:
 
     def log_command(self, vid, kind, command):
         # Never record Cookie values; only the browser selector is persisted in config.
-        with safe(self.root / 'logs' / (vid + '-' + kind + '.log'), self.root).open('ab') as log:
-            subprocess.run(command, check=True, stdout=log, stderr=subprocess.STDOUT, pass_fds=(self.lock.fileno(),))
+        log_path = safe(self.root / 'logs' / (vid + '-' + kind + '.log'), self.root)
+        offset = log_path.stat().st_size if log_path.exists() else 0
+        with log_path.open('ab') as log:
+            subprocess.run(command, check=True, stdout=log, stderr=subprocess.STDOUT, pass_fds=(self.lock.fileno(),), timeout=600 if kind == 'ai-subtitles' else None)
+        with log_path.open('rb') as log:
+            log.seek(offset)
+            return log.read().decode('utf-8', errors='replace')
+
+    def ai_subtitles(self, vid, config):
+        # Query subtitles BEFORE downloading media; all raw metadata remains private.
+        directory = safe(self.root / 'platform-subtitles' / vid, self.root)
+        durable_mkdir(directory)
+        marker = safe(directory / 'result.json', self.root)
+        srt = safe(directory / 'source.ai-zh.srt', self.root)
+        info = safe(directory / 'source.info.json', self.root)
+        if not marker.exists():
+            command = ['yt-dlp', '--ignore-config', '--no-playlist', '--skip-download',
+                       '--no-plugin-dirs', '--plugin-dirs', str(ROOT / 'scripts/recipe-ytdlp-plugins'),
+                       '--write-subs', '--sub-langs', 'ai-zh', '--write-info-json',
+                       '--no-progress', '--sleep-requests', '15', '--retries', '2',
+                       '--extractor-retries', '0', '--socket-timeout', '30',
+                       '-o', str(directory / 'source.%(ext)s')]
+            if config['browser']: command += ['--cookies-from-browser', config['browser']]
+            # No --no-overwrites: retry a partial subtitle download rather than accepting it.
+            log = self.log_command(vid, 'ai-subtitles', command + ['https://www.bilibili.com/video/' + vid])
+            if 'Recipe AI-only subtitle filter active' not in log:
+                raise ValueError('AI-only subtitle extractor did not load; retry after checking runtime')
+            if 'Subtitles are only available when logged in' in log:
+                raise ValueError('AI subtitles require a valid logged-in browser; retry after login')
+            if any('WARNING:' in line and any(word in line.lower() for word in ('subtitle', 'http error', 'unable to download')) for line in log.splitlines()):
+                raise ValueError('platform subtitle query was incomplete; retry rather than skip')
+            data = batch.load(batch.file(info))
+            if data.get('id') != vid: raise ValueError('subtitle metadata ID mismatch')
+            duration = data.get('duration')
+            if not batch.finite(duration) or duration <= 0: raise ValueError('invalid platform duration')
+            tracks = data.get('subtitles')
+            if not isinstance(tracks, dict): raise ValueError('invalid subtitle metadata')
+            if not tracks.get('ai-zh'):
+                immutable(marker, {'id': vid, 'status': 'skipped', 'reason': 'no_ai_zh_subtitles'})
+            else:
+                if not srt.is_file(): raise ValueError('AI track advertised but subtitle download missing')
+                cues = batch.parse_srt(batch.file(srt), duration)
+                immutable(marker, {'id': vid, 'status': 'available', 'language': 'ai-zh',
+                                   'origin': 'platform', 'generation': 'ai', 'duration': duration,
+                                   'cue_count': len(cues), 'sha256': batch.digest(srt)})
+        result = batch.load(marker)
+        if result.get('id') != vid: raise ValueError('subtitle receipt ID mismatch')
+        if result.get('status') == 'skipped':
+            if set(result) != {'id','status','reason'} or result.get('reason') != 'no_ai_zh_subtitles':
+                raise ValueError('invalid skipped subtitle receipt')
+            raise NoAISubtitles('no_ai_zh_subtitles')
+        if set(result) != {'id','status','language','origin','generation','duration','cue_count','sha256'} or result.get('status') != 'available' or result.get('language') != 'ai-zh' or result.get('origin') != 'platform' or result.get('generation') != 'ai' or not batch.finite(result.get('duration')) or result['duration'] <= 0 or type(result.get('cue_count')) is not int or batch.digest(batch.file(srt)) != result.get('sha256'):
+            raise ValueError('AI subtitle receipt or content changed')
+        if len(batch.parse_srt(srt, result['duration'])) != result['cue_count']:
+            raise ValueError('AI subtitle cue count changed')
+        return srt
 
     def inputs(self, row):
         config = self.setting('config'); entry = json.loads(row['entry']); vid = entry['id']
+        ai_only = config.get('subtitle_policy') == 'bilibili-ai-only'
+        if ai_only:
+            entry['subtitles'] = str(self.ai_subtitles(vid, config))
+            entry['subtitle_origin'] = 'platform'
         if 'video' not in entry:
             directory = safe(Path(config['media_root']) / vid, config['media_root']); durable_mkdir(directory)
             video = directory / 'source.mkv'; info = directory / 'source.info.json'; marker = directory / 'download.json'
             if not marker.exists():
-                command = ['yt-dlp', '--no-playlist', '--continue', '--no-overwrites', '--no-progress', '--sleep-requests', '15', '--sleep-interval', '30', '--max-sleep-interval', '60', '--limit-rate', '2M', '--concurrent-fragments', '1', '--retries', '3', '--fragment-retries', '3', '--write-info-json', '--merge-output-format', 'mkv', '--remux-video', 'mkv', '-o', str(directory / 'source.%(ext)s')]
+                command = ['yt-dlp', '--ignore-config', '--no-playlist', '--continue', '--no-overwrites', '--no-progress', '--sleep-requests', '15', '--sleep-interval', '30', '--max-sleep-interval', '60', '--limit-rate', '2M', '--concurrent-fragments', '1', '--retries', '3', '--fragment-retries', '3', '--write-info-json', '--merge-output-format', 'mkv', '--remux-video', 'mkv', '-o', str(directory / 'source.%(ext)s')]
                 if config['browser']: command += ['--cookies-from-browser', config['browser']]
                 self.log_command(vid, 'download', command + ['https://www.bilibili.com/video/' + vid])
                 if not info.is_file() or batch.load(info).get('id') != vid: raise ValueError('download metadata ID mismatch')
@@ -208,15 +275,16 @@ class Flow:
             if data.get('tool') != 'video-subtitle-ocr' or data.get('status') not in ('done', 'review') or data.get('settings', {}).get('duration') is not None or data.get('source') != str(video) or batch.digest(subtitles) != data.get('srt_sha256'): raise ValueError('OCR did not yield a verified full subtitle file')
             entry['subtitles'] = str(subtitles); entry['subtitle_origin'] = 'ocr'
         entry.setdefault('subtitle_origin', 'ocr')
+        if ai_only: batch.parse_srt(entry['subtitles'], batch.probe(video))
         return entry
 
     def retain_count(self):
-        return self.db.execute("SELECT count(*) FROM items WHERE (started=1 OR archive IS NOT NULL) AND state != 'deleted'").fetchone()[0]
+        return self.db.execute("SELECT count(*) FROM items WHERE (started=1 OR archive IS NOT NULL) AND state NOT IN ('deleted','skipped')").fetchone()[0]
 
     def next(self, delete_videos=False):
         # Frozen accepted snapshots bypass the stage controller and original video entirely.
         self.recover(delete_videos)
-        row = self.db.execute("SELECT * FROM items WHERE archive IS NULL AND state != 'failed' ORDER BY ordinal LIMIT 1").fetchone()
+        row = self.db.execute("SELECT * FROM items WHERE archive IS NULL AND state NOT IN ('failed','skipped') ORDER BY ordinal LIMIT 1").fetchone()
         if not row: return self.status()
         config = self.setting('config')
         if not row['started'] and self.retain_count() >= config['max_retained']: return {'paused': 'retained-video limit', **self.status()}
@@ -242,6 +310,8 @@ class Flow:
                 self.update(vid, state=job['status'], error=None)
                 if job['status'] == 'complete': self.accept(q, job)
             finally: q.close()
+        except NoAISubtitles as exc:
+            self.update(vid, state='skipped', started=0, error=str(exc))
         except Exception as exc:
             self.update(vid, state='failed', error=str(exc)); raise
         return self.recover(delete_videos)
@@ -267,6 +337,11 @@ class Flow:
                     bound = report.get('tool') == 'video-subtitle-ocr' and report.get('source') == entry['video'] and report.get('signature') == signature and report.get('srt_sha256') == entry['subtitles_sha256'] and 'settings' in report and report['settings'].get('duration') is None
                     shutil.copyfile(ocr, draft / 'source-ocr.json')
                     ocr_review = not bound or report.get('status') != 'done' or bool(report.get('flags'))
+                if self.setting('config').get('subtitle_policy') == 'bilibili-ai-only':
+                    self.ai_subtitles(vid, self.setting('config'))
+                    receipt = batch.load(self.root / 'platform-subtitles' / vid / 'result.json')
+                    if receipt['sha256'] != entry['subtitles_sha256']: raise ValueError('AI subtitle provenance mismatch')
+                    immutable(draft / 'source-platform-subtitles.json', receipt)
                 ready = data['status'] == 'ready' and data['coverage'] == 'full' and (batch.load(source/'processing.json').get('media_mode') == 'clips' or all(s['selected_frame_id'] for s in data['steps'])) and not any(i['resolution'] == 'open' for i in data['issues']) and not ocr_review
                 immutable(draft / 'acceptance.json', {'video_id': vid, 'source_video': entry['video'], 'video_sha256': entry['video_sha256'], 'video_stat': batch.stamp(entry['video']), 'assembly_sha256': batch.digest(source / 'recipe.internal.json'), 'release_ready': ready, 'release_policy': '1.0.0', 'ocr_review_pending': ocr_review, 'human_reviewed': False})
                 immutable(draft / 'checksums.json', batch.artifacts(draft)); durable_tree(draft); draft.rename(target); sync_dir(target.parent)
@@ -275,6 +350,8 @@ class Flow:
         self.update(vid, archive=str(target), state='accepted', error=None, started=1)
 
     def adopt(self, queue_path, vid):
+        if self.setting('config').get('subtitle_policy') == 'bilibili-ai-only':
+            raise ValueError('AI-only workflow cannot adopt external subtitle results')
         q = batch.Queue(queue_path, read_only=True)
         try:
             binding = q.db.execute("SELECT value FROM settings WHERE key='model_binding'").fetchone(); q.model_binding = binding['value'] if binding else None
@@ -504,7 +581,7 @@ class Flow:
             if result['current']['tasks']:
                 time.sleep(poll_seconds); continue
             # Ready publication may just have finished. Advance to the next queued item.
-            if self.db.execute("SELECT 1 FROM items WHERE archive IS NULL AND state != 'failed'").fetchone(): continue
+            if self.db.execute("SELECT 1 FROM items WHERE archive IS NULL AND state NOT IN ('failed','skipped')").fetchone(): continue
             return result
 
     def output_path(self, destination):
@@ -672,7 +749,7 @@ class Flow:
 def main():
     parser = argparse.ArgumentParser(description=__doc__); parser.add_argument('--root', type=Path, required=True)
     sub = parser.add_subparsers(dest='command', required=True)
-    init = sub.add_parser('init'); init.add_argument('--media-mode', choices=['clips','images'], default='clips'); init.add_argument('--media-root', type=Path); init.add_argument('--browser'); init.add_argument('--max-retained', type=int, default=3); init.add_argument('--min-free-gib', type=float, default=5)
+    init = sub.add_parser('init'); init.add_argument('--subtitle-policy', choices=['bilibili-ai-only','legacy'], default='bilibili-ai-only'); init.add_argument('--media-mode', choices=['clips','images'], default='clips'); init.add_argument('--media-root', type=Path); init.add_argument('--browser'); init.add_argument('--max-retained', type=int, default=3); init.add_argument('--min-free-gib', type=float, default=5)
     serve = sub.add_parser('serve'); serve.add_argument('--port',type=int,default=8765)
     add = sub.add_parser('add'); add.add_argument('manifest', type=Path)
     next_ = sub.add_parser('next'); next_.add_argument('--delete-videos', action='store_true')
@@ -694,7 +771,7 @@ def main():
         module('recipe-media-server').serve(args.root,args.port); return
     flow = Flow(args.root, read_only=args.command == 'status')
     try:
-        if args.command == 'init': flow.init(args.media_root, args.browser, args.max_retained, args.min_free_gib, media_mode=args.media_mode); result = flow.status()
+        if args.command == 'init': flow.init(args.media_root, args.browser, args.max_retained, args.min_free_gib, media_mode=args.media_mode, subtitle_policy=args.subtitle_policy); result = flow.status()
         elif args.command == 'add': result = flow.add(args.manifest)
         elif args.command == 'run':
             flow.run(args.packets or args.root / 'task-packages', args.responses or args.root / 'responses', args.delete_videos, args.watch, args.poll_seconds); return
