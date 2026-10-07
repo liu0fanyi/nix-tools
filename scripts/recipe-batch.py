@@ -480,6 +480,8 @@ class Queue:
         recipe, review, audit_history, waiting = self.review_cycle(job, recipe, transcript, contracts, frame_paths, 'text')
         if waiting:
             return waiting
+        if config.get('media_mode') == 'clips':
+            return self.assemble_clips(job, entry, config, recipe, review, prep, audit_history, extracted)
         selections = []
         new_frames = []
         frame_dirs = []
@@ -571,6 +573,36 @@ class Queue:
             library = library_module()
             library.validate(draft, load(CONTRACTS / 'video-recipe.schema.json'))
         self.stage(job, 'assemble', {'recipe': recipe, 'review': review, 'audit_inputs': [digest(self.result(p)) for p in audit_history], 'selections': [digest(self.result(p)) for p, _ in selections], 'frames': [digest(p / 'frames.json') for p in frame_dirs], 'validator': digest(ROOT / 'scripts/recipe-library.py')}, assemble)
+        return 'complete'
+
+    def assemble_clips(self, job, entry, config, recipe, review, prep, history, extracted):
+        clips = library_module().clips_module()
+        # Clip checkpoints have no model task and are replayed without re-encoding.
+        media, _ = self.stage(job, 'step_clips', {'video': entry['video_sha256'], 'steps': [{k:s[k] for k in ('id','evidence_windows','facts')} for s in recipe['steps']], 'evidence': recipe['evidence'], 'padding': config['padding'], 'width': config['width'], 'clip_tool': digest(ROOT/'scripts/recipe-clips.py')},
+                              lambda d,k: clips.build(entry['video'], entry['video_sha256'], recipe, d, config['padding'], config['width']))
+        final = copy.deepcopy(recipe)
+        for step in final['steps']:
+            step['selected_frame_id'] = None; step['no_image_reason'] = '步骤视频展示，可手动选图。'
+        # Retain history; only the mechanical missing-image prerequisite is superseded.
+        for issue in final['issues']:
+            if issue['code'] == 'missing_image' and issue['resolution'] == 'open' and set(issue['target_ids']) <= {s['id'] for s in final['steps']}:
+                evidence = [eid for s in final['steps'] if s['id'] in issue['target_ids'] for f in s['facts'] for eid in f['evidence_ids']]
+                if evidence:
+                    issue.update(resolution='resolved', resolution_note='按字幕步骤窗口生成独立视频片段，图片不再必选；未作视觉认证。', evidence_ids=list(dict.fromkeys(evidence)))
+        final['status'] = 'needs_review' if any(i['resolution']=='open' for i in final['issues']) else 'ready'
+        def assemble(draft,key):
+            for name in ('source.srt','transcript.json'): shutil.copyfile(prep/name,draft/name)
+            # Preserve referenced seed images, never claim a new image review.
+            if final['frames']:
+                for frame in final['frames']:
+                    dst=draft/frame['file'];dst.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(extracted/frame['file'],dst)
+            for directory in history:
+                path=directory/'payload.json';shutil.copyfile(path,draft/('stage-input-'+digest(path)+'.json'))
+            shutil.copytree(media/'clips',draft/'clips');shutil.copyfile(media/'step-clips.json',draft/'step-clips.json')
+            write(draft/'recipe.internal.json',final);write(draft/'recipe-input.json',final);write(draft/'semantic-review.json',review);write(draft/'image-selection.json',[]);write(draft/'candidates.json',[])
+            write(draft/'processing.json',{'method':'stage-controller-clips','media_mode':'clips','independent_semantic_review':'imported-with-ingredient-review','human_reviewed':False,'source_video_sha256':entry['video_sha256'],'source_video_file':entry['video'],'model_calls':self.model_metadata(history+([extracted] if not entry.get('seed') else [])),'limitations':['no automated visual selection or visual certification','unresolved issues retained']})
+            library_module().validate(draft,load(CONTRACTS/'video-recipe.schema.json'))
+        self.stage(job,'assemble',{'recipe':final,'review':review,'media':digest(media/'checksums.json'),'audits':[digest(self.result(p)) for p in history],'validator':digest(ROOT/'scripts/recipe-library.py')},assemble)
         return 'complete'
 
     def result(self, folder):

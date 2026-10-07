@@ -39,3 +39,14 @@ inventory收集全库当前/previous已归档清单并保留所有不同名称�
 合成专用媒体验收真实unlink及各中断点，不作为菜谱语义质量证明。真实十道已完成复核结果只迁入/归档/发布与释放预演，全部needs_review、视频保留。4200项清单仅证明持久登记及串行状态能力，不证明线上目录完整、真实新下载/全量OCR或4000道内容通过；真实扩容仍先30–50道及已规定质量门槛。
 
 recipe-session提供绑定原task_id/input_sha256的独立视图，不修改原AI契约或验收。文字视图保留全文语义及cue；视觉视图限步骤窗口±5秒及两条邻句，所有候选图片原摘要仍核验；使用新会话执行阶段，并保留原信封绑定。usage登记明确stage/agent_path/task_ids，按本地真实thread_id及response_id去重汇总请求，缓存输入/推理输出分别是输入/输出子集；缺记录或计数冲突拒绝作为完整实测。开发调度不混入视频AI阶段，完成状态与用量快照分开验证。
+
+
+## 步骤片段与手选媒体
+
+新建CLI流程`init --media-mode clips`为默认；`images`及历史缺字段配置保留旧视觉流程。clips队列仅请求extract/review/必要repair，随后执行机械step_clips/assemble，无select_images/review_visual。`processing.json.media_mode=clips`声明新增媒体分支，`step-clips.json`按[片段Schema](video-recipe-clips.schema.json)及语义校验要求覆盖每步每个扩展窗口，sha绑定来源与普通MP4，校验H.264/AAC、尺寸、时长与文件摘要。图片可为空，不创建虚假的图片评价；来源事实和文字复审契约不变。
+
+`scripts/recipe-flow --root ROOT serve --port 8765`只监听127.0.0.1，静态服务ROOT/library。`GET/PUT /api/recipes/<recipe-key>/media`返回/保存`{version,recipe_sha256,clips_sha256,steps:{step-id:{mode:video|images|both,frames:[{clip_id,time}]}}}`，time为片段内秒数、有限且在片段/窗口内，每步最多32帧。绑定过期、跨步骤片段、未知字段/步骤、越界、重复帧和仅图片但为空拒绝。写入要求同Host/Origin，拒绝跨站请求，正文最多1MiB；用户JSON不能指定文件路径或上传图像。脚本从已校验片段生成JPEG，状态原子写入ROOT/user-media/<recipe-key>/，图片只允许读取当前状态引用的SHA文件。GET/HEAD路径拒绝符号链接/越界，不提供Cookie或任意目录访问。
+
+Overlay不修改recipe.internal、accepted、library内容，不提升human_reviewed；导出/导入选择JSON可在同摘要菜谱恢复，图片可由片段重建。归档/重建包含片段和清单。视频释放仍需OCR done无flags、无开放事实疑点与来源/归档/发布/媒体一致；只将每步AI图片必选条件替换为经校验的完整片段，不能按“浏览页面可播放”直接删除。
+
+片段时间范围同时覆盖步骤evidence_windows和该步骤全部事实引用的字幕区间，前后扩展后合并重叠窗口，不连续区间分别保存；不能仅沿用旧选图的窄窗口截断步骤说明。手选时间精度为毫秒，超出精度或范围的导入拒绝。HTTP编辑入口只在响应内挂载当前控件和选图状态，不修改归档HTML。

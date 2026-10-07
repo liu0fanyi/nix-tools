@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Independent step clips v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "const": "1.0.0"
+    },
+    "mode": {
+      "const": "clips"
+    },
+    "source_video_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "padding_seconds": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 60
+    },
+    "width": {
+      "type": "integer",
+      "minimum": 16,
+      "maximum": 3840
+    },
+    "clips": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^clip_[0-9a-f]{20}$"
+          },
+          "step_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "window_index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "start": {
+            "type": "number",
+            "minimum": 0
+          },
+          "end": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "file": {
+            "type": "string",
+            "pattern": "^clips/clip_[0-9a-f]{20}\\.mp4$"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "duration_seconds": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "width": {
+            "type": "integer",
+            "minimum": 16,
+            "maximum": 3840
+          },
+          "height": {
+            "type": "integer",
+            "minimum": 2
+          }
+        },
+        "required": [
+          "id",
+          "step_id",
+          "window_index",
+          "start",
+          "end",
+          "file",
+          "sha256",
+          "duration_seconds",
+          "width",
+          "height"
+        ]
+      }
+    }
+  },
+  "required": [
+    "version",
+    "mode",
+    "source_video_sha256",
+    "padding_seconds",
+    "width",
+    "clips"
+  ]
+}

@@ -121,8 +121,11 @@ class Flow:
         if not row: raise ValueError('initialize workflow first')
         return json.loads(row['value'])
 
-    def init(self, media_root=None, browser=None, max_retained=3, min_free_gib=5, sampling=None):
+    def init(self, media_root=None, browser=None, max_retained=3, min_free_gib=5, sampling=None, media_mode=None):
         settings = {'media_root': str(safe(media_root or self.root / 'media', media_root or self.root / 'media')), 'browser': browser, 'max_retained': max_retained, 'min_free_gib': min_free_gib, 'sampling': sampling or DEFAULT_SAMPLING}
+        if media_mode is not None:
+            if media_mode not in ('images','clips'): raise ValueError('invalid media mode')
+            settings['sampling'] = {**settings['sampling'], 'media_mode': media_mode}
         if type(max_retained) is not int or max_retained < 1 or not batch.finite(min_free_gib) or min_free_gib < 0: raise ValueError('invalid capacity')
         if browser is not None and (not isinstance(browser, str) or not browser.startswith('firefox') or '\n' in browser): raise ValueError('browser must be firefox or firefox:/absolute/Zen/profile')
         if self.db.execute('SELECT 1 FROM settings').fetchone():
@@ -264,7 +267,7 @@ class Flow:
                     bound = report.get('tool') == 'video-subtitle-ocr' and report.get('source') == entry['video'] and report.get('signature') == signature and report.get('srt_sha256') == entry['subtitles_sha256'] and 'settings' in report and report['settings'].get('duration') is None
                     shutil.copyfile(ocr, draft / 'source-ocr.json')
                     ocr_review = not bound or report.get('status') != 'done' or bool(report.get('flags'))
-                ready = data['status'] == 'ready' and data['coverage'] == 'full' and all(s['selected_frame_id'] for s in data['steps']) and not any(i['resolution'] == 'open' for i in data['issues']) and not ocr_review
+                ready = data['status'] == 'ready' and data['coverage'] == 'full' and (batch.load(source/'processing.json').get('media_mode') == 'clips' or all(s['selected_frame_id'] for s in data['steps'])) and not any(i['resolution'] == 'open' for i in data['issues']) and not ocr_review
                 immutable(draft / 'acceptance.json', {'video_id': vid, 'source_video': entry['video'], 'video_sha256': entry['video_sha256'], 'video_stat': batch.stamp(entry['video']), 'assembly_sha256': batch.digest(source / 'recipe.internal.json'), 'release_ready': ready, 'release_policy': '1.0.0', 'ocr_review_pending': ocr_review, 'human_reviewed': False})
                 immutable(draft / 'checksums.json', batch.artifacts(draft)); durable_tree(draft); draft.rename(target); sync_dir(target.parent)
         acceptance = batch.load(target / 'acceptance.json')
@@ -605,6 +608,16 @@ class Flow:
                 step = next(item for item in candidate['steps'] if item['id'] == selection['step_id'])
                 selection['selected_frame_id'] = step['selected_frame_id']; selection['no_image_reason'] = step['no_image_reason']
             atomic(draft / 'recipe.internal.json', candidate); atomic(draft / 'semantic-review.json', semantic); atomic(draft / 'image-selection.json', selections)
+            if batch.load(draft/'processing.json').get('media_mode') == 'clips':
+                media = batch.library_module().clips_module(); manifest = batch.load(draft/'step-clips.json')
+                expected = [(s['id'],w['start'],w['end']) for s in candidate['steps'] for w in media.windows(s,candidate['source']['duration_seconds'],manifest['padding_seconds'],candidate['evidence'])]
+                actual = [(c['step_id'],c['start'],c['end']) for c in manifest['clips']]
+                if expected != actual:
+                    accepted = batch.load(archive/'acceptance.json'); video = safe(accepted['source_video'],self.setting('config')['media_root'])
+                    if batch.stamp(video)!=accepted['video_stat'] or batch.digest(video)!=accepted['video_sha256']:raise ValueError('source changed; cannot regenerate revision clips')
+                    shutil.rmtree(draft/'clips')  # Only this owned temporary draft, never the archive.
+                    media.build(video,accepted['video_sha256'],candidate,draft,manifest['padding_seconds'],manifest['width'])
+                    if batch.stamp(video)!=accepted['video_stat']:raise ValueError('source changed while regenerating clips')
             batch.library_module().validate(draft, batch.load(batch.CONTRACTS / 'video-recipe.schema.json'))
             immutable(draft / 'checksums.json', batch.artifacts(draft)); durable_tree(draft); draft.rename(destination); sync_dir(destination.parent)
         return {'id': vid, 'seed': str(destination), 'changed_or_new_items': changed, 'requires_independent_review': True}
@@ -659,7 +672,8 @@ class Flow:
 def main():
     parser = argparse.ArgumentParser(description=__doc__); parser.add_argument('--root', type=Path, required=True)
     sub = parser.add_subparsers(dest='command', required=True)
-    init = sub.add_parser('init'); init.add_argument('--media-root', type=Path); init.add_argument('--browser'); init.add_argument('--max-retained', type=int, default=3); init.add_argument('--min-free-gib', type=float, default=5)
+    init = sub.add_parser('init'); init.add_argument('--media-mode', choices=['clips','images'], default='clips'); init.add_argument('--media-root', type=Path); init.add_argument('--browser'); init.add_argument('--max-retained', type=int, default=3); init.add_argument('--min-free-gib', type=float, default=5)
+    serve = sub.add_parser('serve'); serve.add_argument('--port',type=int,default=8765)
     add = sub.add_parser('add'); add.add_argument('manifest', type=Path)
     next_ = sub.add_parser('next'); next_.add_argument('--delete-videos', action='store_true')
     run = sub.add_parser('run'); run.add_argument('--packets', type=Path); run.add_argument('--responses', type=Path); run.add_argument('--delete-videos', action='store_true'); run.add_argument('--watch', action='store_true'); run.add_argument('--poll-seconds', type=float, default=10)
@@ -675,9 +689,12 @@ def main():
     rework = sub.add_parser('rework'); rework.add_argument('--job', required=True); rework.add_argument('--seed', type=Path)
     vocabulary = sub.add_parser('apply-vocabulary'); vocabulary.add_argument('--packet', type=Path, required=True); vocabulary.add_argument('--review', type=Path, required=True)
     retry = sub.add_parser('retry'); retry.add_argument('--job', required=True)
-    args = parser.parse_args(); flow = Flow(args.root, read_only=args.command == 'status')
+    args = parser.parse_args()
+    if args.command == 'serve':
+        module('recipe-media-server').serve(args.root,args.port); return
+    flow = Flow(args.root, read_only=args.command == 'status')
     try:
-        if args.command == 'init': flow.init(args.media_root, args.browser, args.max_retained, args.min_free_gib); result = flow.status()
+        if args.command == 'init': flow.init(args.media_root, args.browser, args.max_retained, args.min_free_gib, media_mode=args.media_mode); result = flow.status()
         elif args.command == 'add': result = flow.add(args.manifest)
         elif args.command == 'run':
             flow.run(args.packets or args.root / 'task-packages', args.responses or args.root / 'responses', args.delete_videos, args.watch, args.poll_seconds); return

@@ -28,7 +28,11 @@ def quantity(q):
  return ('约' if q['mode']=='approximate' else '')+value+q['unit']
 def ingredient_name(name):return re.sub(r'（.*?）|\(.*?\)','',name).strip()
 
+def clips_module():
+ spec=importlib.util.spec_from_file_location('recipe_clips',ROOT/'scripts/recipe-clips.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
+
 def validate(folder,schema):
+ clip_mode=(folder/'processing.json').exists() and read(folder/'processing.json').get('media_mode')=='clips'
  d=read(folder/'recipe.internal.json');transcript=read(folder/'transcript.json');cue={c['id']:c for c in transcript['cues']}
  Draft202012Validator(schema).validate(d)
  if d['source']['transcript_sha256']!=digest(folder/'source.srt'):raise ValueError('source subtitle digest mismatch')
@@ -91,7 +95,7 @@ def validate(folder,schema):
   for window in s['evidence_windows']:interval(window)
   selected=s['selected_frame_id']
   if selected is None:
-   if not s['no_image_reason']or not any(i['code']=='missing_image'and s['id']in i['target_ids']for i in d['issues']):raise ValueError('empty image without reason and issue')
+   if not clip_mode and (not s['no_image_reason']or not any(i['code']=='missing_image'and s['id']in i['target_ids']for i in d['issues'])):raise ValueError('empty image without reason and issue')
   else:
    f=frames[selected]
    if not any(r['step_id']==s['id']and r['frame_id']==selected and r['relevance']=='matches'and r['quality']=='usable'for r in d['image_reviews']):raise ValueError('selected frame lacks positive review')
@@ -142,7 +146,10 @@ def validate(folder,schema):
    if not set(item['evidence_ids'])<=ev.keys() or (item['verdict']=='supported'and not item['evidence_ids']):raise ValueError('invalid ingredient review evidence')
    if item['verdict']!=ingredients[item['ingredient_id']]['review_status']:raise ValueError('ingredient review differs from recipe')
  selections=read(folder/'image-selection.json')
- if {x['step_id']for x in selections}!=set(stepids) or len(selections)!=len(stepids):raise ValueError('image selection does not cover all steps')
+ if clip_mode:
+  clips_module().validate(folder,d)
+  if selections:raise ValueError('clips mode cannot claim AI image selections')
+ elif {x['step_id']for x in selections}!=set(stepids) or len(selections)!=len(stepids):raise ValueError('image selection does not cover all steps')
  for selection in selections:
   validator.validate(selection)
   if selection['selected_frame_id']!=stepids[selection['step_id']]['selected_frame_id']:raise ValueError('selected image response differs from recipe')
@@ -152,6 +159,8 @@ def validate(folder,schema):
  return d
 
 def render_recipe(d,folder):
+ clip_mode=(folder/'processing.json').exists() and read(folder/'processing.json').get('media_mode')=='clips'
+ clip_manifest=read(folder/'step-clips.json') if clip_mode else None
  frames={f['id']:f for f in d['frames']};evidence={e['id']:e for e in d['evidence']}
  exported={'@context':'https://schema.org','@type':'Recipe','name':d['title'],'author':{'@type':'Person','name':d['source']['author']},'url':d['source']['url'],'description':'视频字幕与画面整理的AI试稿；未明确用量和待核对项见阅读版。','recipeIngredient':[], 'recipeInstructions':[]}
  ingredients=[]
@@ -172,11 +181,18 @@ def render_recipe(d,folder):
   if s['selected_frame_id']:
    f=frames[s['selected_frame_id']];data=base64.b64encode((folder/f['file']).read_bytes()).decode();image=f'<img alt="{esc(s["image_goal"])}" src="data:image/jpeg;base64,{data}"><small>操作画面 · {clock(f["timestamp"])}</small>';step['image']=f['file']
   else:image=f'<div class="empty-image">{esc(s["no_image_reason"])}</div>'
+  if clip_mode:
+   videos=''.join(f'<div class="clip-player"><video controls playsinline preload="none" data-clip-id="{esc(c["id"])}" data-source-start="{c["start"]}" src="{esc(c["file"])}"></video><small>原视频 {clock(c["start"])}–{clock(c["end"])} · 演示片段</small><button class="capture" type="button">选取当前画面</button></div>' for c in clip_manifest['clips'] if c['step_id']==s['id'])
+   image=f'<section class="step-media" data-step-id="{esc(s["id"])}"><label>展示 <select class="media-mode"><option value="video">视频</option><option value="images">图片</option><option value="both">视频和图片</option></select></label><div class="videos">{videos}</div><div class="picked-images"></div><p class="media-message" role="status"></p></section>'
+   step['video']=[{'@type':'VideoObject','contentUrl':c['file'],'name':s['title']} for c in clip_manifest['clips'] if c['step_id']==s['id']]
   rows.append(f'<tr id="{esc(s["id"])}"><td><span class="number">{n:02}</span><h3>{esc(s["title"])}</h3>{facts}<a class="time" href="{esc(url)}">来源 {clock(start)}–{clock(end)} ↗</a></td><td>{image}</td></tr>');exported['recipeInstructions'].append(step)
  variants=''.join(f'<li><b>{esc(v["name"])}</b>'+''.join(f'<p>{esc(f["text"])}</p>'for f in v['facts'])+'</li>'for v in d['variants'])or'<li>未列其他版本。</li>'
  issues=''.join('<li>'+esc(i['description'])+'</li>'for i in d['issues']if i['resolution']=='open')
  vals={'TITLE':esc(d['title']),'AUTHOR':esc(d['source']['author']),'SOURCE':esc(d['source']['url']),'INGREDIENTS':''.join(ingredients),'STEPS':''.join(rows),'VARIANTS':variants,'ISSUES':issues}
  template=(TEMPLATES/'recipe.html').read_text()
+ if clip_mode:
+  template=template.replace('左文右图','左文右视频 / 自选图片').replace('本样稿由字幕与候选画面整理','本样稿由字幕整理，片段与手选图未经AI视觉核验')
+  script=(ROOT/'scripts/recipe-media-picker.js').read_text();template=template.replace('</main>', '<section id="media-tools"><button id="export-media">导出选图记录</button> <label>导入选图记录 <input id="import-media" type="file" accept="application/json"></label><p id="media-status" role="status"></p></section></main>').replace('</body>', '<script>'+script+'</script></body>')
  template=re.sub(r'\{\{('+ '|'.join(vals) +r')\}\}',lambda match:vals[match[1]],template)
  return template,exported
 
@@ -203,6 +219,8 @@ def build(source,output,dictionary_path):
     (dst/f['file']).parent.mkdir(exist_ok=True);shutil.copy2(folder/f['file'],dst/f['file'])
    for snapshot in list(folder.glob('recipe-input*.json'))+list(folder.glob('candidates-input-*.json'))+list(folder.glob('stage-input-*.json')):
     if snapshot.is_file() and not snapshot.is_symlink():shutil.copy2(snapshot,dst/(('candidates-input-' if snapshot.name.startswith('candidates-input-') else 'stage-input-' if snapshot.name.startswith('stage-input-') else 'recipe-input-')+digest(snapshot)+'.json'))
+   if (folder/'step-clips.json').exists():
+    shutil.copy2(folder/'step-clips.json',dst/'step-clips.json');shutil.copytree(folder/'clips',dst/'clips')
    shutil.copy2(folder/'recipe.internal.json',dst/'recipe-input.json')
    d['runs'].append({'stage':'render','processor':'recipe-library.py','model':None,'prompt_version':'1.0.0','input_sha256':digest(folder/'recipe.internal.json')})
    dump(dst/'recipe.internal.json',d)

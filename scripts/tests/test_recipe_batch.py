@@ -145,15 +145,20 @@ class BatchChecks(unittest.TestCase):
     def test_assembly_only_compatibility_is_gated_by_exact_source_hashes(self):
         pinned = m.load(m.ROOT/'config/recipe/cache-compatibility.json'); inputs={'test':True}
         expected=m.sha({'job':'BVTest123','stage':'review','version':m.VERSION,'controller_sha256':m.sha({'controller':pinned['reusable_controller_sha256'],'review':pinned['review_sha256']}),'inputs':inputs,'model_binding':None})
-        self.assertEqual(self.queue.stage_key('BVTest123','review',inputs,True),expected)
-        current_assembly=self.queue.stage_key('BVTest123','assemble',inputs,False)
+        real=m.digest
+        def pinned_digest(path):
+            if Path(path)==Path(m.__file__):return pinned['controller_sha256']
+            if Path(path)==m.ROOT/'scripts/recipe-review.py':return pinned['review_sha256']
+            return real(path)
+        # The old one-off pin applies only to its exact historical source hashes.
+        with mock.patch.object(m,'digest',side_effect=pinned_digest):
+            self.assertEqual(self.queue.stage_key('BVTest123','review',inputs,True),expected)
+            current_assembly=self.queue.stage_key('BVTest123','assemble',inputs,False)
         legacy_assembly=m.sha({'job':'BVTest123','stage':'assemble','version':m.VERSION,'controller_sha256':m.sha({'controller':pinned['reusable_controller_sha256'],'review':pinned['review_sha256']}),'inputs':inputs,'model_binding':None})
         self.assertNotEqual(current_assembly,legacy_assembly)
-        real=m.digest
-        with mock.patch.object(m,'digest',side_effect=lambda p:'f'*64 if Path(p)==Path(m.__file__) else real(p)):
-            self.assertNotEqual(self.queue.stage_key('BVTest123','review',inputs,True),expected)
-        with mock.patch.object(m,'digest',side_effect=lambda p:'f'*64 if Path(p)==m.ROOT/'scripts/recipe-review.py' else real(p)):
-            self.assertNotEqual(self.queue.stage_key('BVTest123','review',inputs,True),expected)
+        for changed in (Path(m.__file__),m.ROOT/'scripts/recipe-review.py'):
+            with mock.patch.object(m,'digest',side_effect=lambda p:'f'*64 if Path(p)==changed else pinned_digest(p)):
+                self.assertNotEqual(self.queue.stage_key('BVTest123','review',inputs,True),expected)
 
     def test_reject_invented_quote_and_escalation_then_accept_corrected_result(self):
         self.queue.run(); folder = self.pending('extract'); draft = self.draft(folder)
