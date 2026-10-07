@@ -91,14 +91,22 @@ symlink；缺文件直接拒绝，避免静默生成不同根 CA。S2 须在旧�
 官方依据：[Caddy 自动 HTTPS 配置](https://caddyserver.com/docs/caddyfile/options)、
 [内部证书签发](https://caddyserver.com/docs/caddyfile/directives/tls)。
 
-## S2 当前实现与阻塞
+## S2 激活与回退预演完成
 
-候选模块只扩展实际主机进行非激活构建，使用明确的新状态、5006网页和5009节点入口；
-ready/container-mode 防止空库启动和旧恢复自动抢占。离线准备 CLI 默认只计划，
-用户显式准备时需两个停机复查；原数据不覆盖，Linux renameat2 NOREPLACE 原子发布。
-SQLite/metadata/CA/认证均只在源停止后复制。容器回退配置改用新 core.db 与新 CA 存储。
-实际 HM generation 和完整系统均已通过；同一 nix.31 浏览器输出已改用正常签名
-substituters，避免单一 Cachix 缺少公共依赖。完整产物见 host-preflight-results.json。
-最终回退 Compose 合并及用户激活顺序仍待审查，当前剩余仍为 S2/S3。
-Constitution Check：本轮无生产快照/密钥读取、现网停止或 switch；仅随机合成文件
-与只读固定项目 inspect、缓存读取；不增加阶段完成条件或外部参考。
+最终候选的三个原生服务各用 ExecCondition 检查固定源容器均已停止；通过本机
+Podman socket 只读获取状态，私有用户/挂载命名空间实测可访问该 socket。
+容器恢复单元要求 ready + container-mode，检查四个原生单元停止、五个容器身份/
+固定镜像及新 DB/CA/证书/工作区挂载后只启动固定五个名称。默认主机不启用候选。
+离线 overlay 固定全部源镜像，并引用新认证环境与信任证书；实际 Compose 合并
+和原生期间新写入可见已验证。源 DB/CA 保留，不能用直接启动旧容器代替回退。
+
+最终系统/HM 均构建并添加自有 GC 根；六项真实 ExecCondition 放行/拒绝及20项
+回归通过。用户操作链路固定为停止源→离线准备→守卫→固定候选激活；回退为
+停止原生→标记回退→只创建五容器→实际守卫→受保护恢复。返回原生先停全部容器。
+具体命令权威源在 nix-tools docs/native-pc-cutover.md；切换非原子，实际用户操作
+仍未执行。当前仅剩 S3，cutover_ready=false。
+
+候选是明确固定产物的试用配置，普通 rerun 使用默认主机配置会撤掉候选；试用期
+系统升级须重新构建同一候选入口、核对完整系统/HM再由用户激活，不能隐式混用。
+Constitution Check：仅本机候选构建/合成临时单元/只读 inspect，无生产凭证或数据库
+读取、真实广播、停止容器、离线生产复制或宿主 switch；不扩大阶段完成条件。

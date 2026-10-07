@@ -1,0 +1,10 @@
+{
+  "generated_generation": "/nix/store/kp9zb8hqz0iix8d4baskhsbp03c57ak6-home-manager-generation",
+  "transient_execcondition_cases_passed": 6,
+  "private_user_and_mount_namespace": true,
+  "default_container_restore_is_guarded": true,
+  "only_five_fixed_restore_names": true,
+  "real_container_commands_mutated": false,
+  "production_state_read": false,
+  "activated": false
+}

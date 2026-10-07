@@ -13,6 +13,8 @@ in {
   toplevel = candidate.config.system.build.toplevel;
   home = candidate.config.home-manager.users.liou.home.activationPackage;
   hostname = candidate.config.networking.hostName;
+  hostSourceSnapshot = host.outPath;
+  homeBackupExtension = candidate.config.home-manager.backupFileExtension;
   services = candidate.config.home-manager.users.liou.systemd.user.services;
   target = candidate.config.home-manager.users.liou.systemd.user.targets.tag-native-stack;
 }

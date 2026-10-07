@@ -44,7 +44,7 @@ def basic_entries(text):
     return '\n'.join(entries) + '\n'
 
 
-def offline_snapshot(destination, mounts, source_config, discovery_args, source_caddy, source_environment, source_pki, source_command, source_image, ensure_offline=lambda: None):
+def offline_snapshot(destination, mounts, source_config, discovery_args, source_caddy, source_environment, source_pki, source_command, source_image, ensure_offline=lambda: None, source_images=None):
     """No process control or activation. Publish only a complete new private directory."""
     ensure_offline()
     destination = Path(destination)
@@ -93,9 +93,16 @@ def offline_snapshot(destination, mounts, source_config, discovery_args, source_
         # Container fallback uses NEW state and core.db, preserving native-period writes.
         command[command.index('--database') + 1] = '/data/core.db'
         rollback = {'services': {
-            'tag-server': {'image': source_image, 'command': command, 'volumes': [str(destination / 'data') + ':/data:rw']},
+            'tag-server': {'image': source_image, 'command': command, 'env_file': [str(destination / 'config/peer-admin.env')], 'volumes': [str(destination / 'data') + ':/data:rw', str(destination / 'certs') + ':/etc/tag-server/certs:ro']},
             'peer-discovery': {'image': source_image, 'volumes': [str(destination / 'data') + ':/data:rw']},
             'peer-gateway': {'volumes': [str(destination / 'peer-caddy') + ':/data:rw']}}}
+        if source_images is not None:
+            if set(source_images) != {'tag-server', 'peer-discovery', 'peer-gateway', 'caddy', 'dufs'} or any(not re.fullmatch(r'sha256:[0-9a-f]{64}', value) for value in source_images.values()):
+                raise ValueError('Expected all five fixed source image digests')
+            if source_images['tag-server'] != source_image:
+                raise ValueError('Core source image must match the inspected snapshot source')
+            for name, image in source_images.items():
+                rollback['services'].setdefault(name, {})['image'] = image
         (runtime / 'container-rollback.json').write_text(json.dumps(rollback, indent=2) + '\n')
         (temporary / 'ready').write_text('offline-snapshot-complete\n')
         for path in temporary.rglob('*'):

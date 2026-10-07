@@ -7,12 +7,12 @@
 - [ ] T005d PC 切换前准备；以以下 S1–S3 为唯一剩余步骤。
 - [ ] T005e 用户实际切换后的入口、同步、发现、登录/开机与回退验收。
 
-## 当前阶段：PC 服务切换前准备（剩余 2 步）
+## 当前阶段：PC 服务切换前准备（剩余 1 步）
 
 以下三个编号是当前阶段的唯一计数；内部测试不另算步骤。完成一个才减少计数。
 
 - [x] S1 保留现有 CA 信任与证书自动续期；临时服务的离线存储接管、实际运行中自动续期与信任验收通过。
-- [ ] S2 完成当前主机的可切换配置与预演：转换配置序列化和合成启动、非法发现配置拒绝（不广播）、完整 toplevel 和 Home Manager generation 构建、旧容器自动启动互斥，以及明确的离线备份/切换/回退步骤。
+- [x] S2 完成当前主机的可切换配置与预演：转换配置序列化和合成启动、非法发现配置拒绝（不广播）、完整 toplevel 和 Home Manager generation 构建、旧容器自动启动互斥，以及明确的离线备份/切换/回退步骤。
 - [ ] S3 确认当前文件和媒体功能可继续使用，逐项说明原生核心与保留工具服务的路径，验证必要回退；不可用项必须解决或取得用户明确接受后才能通过。
 
 三步均完成且证据固定，即结束切换前准备，向用户交付实际可执行的切换步骤。
@@ -43,23 +43,22 @@ internal 模式，使用私有存储并禁止系统信任库安装。合成旧�
 默认关闭/静态证书/配置模式安装回归通过，测试进程和存储已清理。
 未读取生产私钥，未迁移生产 CA；实际离线复制和启动互斥仍属于 S2 切换方案。
 
-## S2 预演进展（未完成，当前仍剩 2 步）
+## S2 预演完成（当前仅剩 S3）
 
-- [host-preflight-results.json](host-preflight-results.json)：实际 liu-bigpc Home Manager
-  generation 构建通过；检查新状态路径、ready/回退模式互斥、旧容器恢复不自动启动。
-- [config-runtime-results.json](config-runtime-results.json)：转换后的 TOML 无损往返、
-  真实核心读取位置身份、非法内置发现接口在 daemon 创建前拒绝；未广播。
-- 13 项配置/离线快照回归：SQLite完整性、metadata/CA/额外状态与私有权限保留，
-  回退使用新数据库，拒绝源重启、symlink/危险凭证、覆盖已有目标和目标发布竞争。
-- 完整 toplevel 已通过：修复既有 Tag Browser 单缓存 fetchClosure 的依赖读取；
-  精确 nix.31 制品不变，通过正常签名 substituters 补齐公共缓存依赖。
-  先前403仅是 Python 默认客户端被 Cloudflare 拒绝；真实缺口为 Cachix 省略公共依赖的404。
-- 离线准备工具只完成合成测试；生产 --prepare-offline 未执行，最终用户 switch
-  命令和回退启动顺序仍待审查。旧恢复单元只能启动已有容器，
-  必须先验证新状态挂载再启用回退。S2 不勾选，当前仍剩 S2/S3 两步。
+- [host-preflight-results.json](host-preflight-results.json)：最终完整 liu-bigpc 系统及对应 HM 已构建，
+  精确产物与 GC 根固定；未激活。使用实际主仓已有主机修改，没有将其无关改动提交。
+- [config-runtime-results.json](config-runtime-results.json)：配置无损往返与真实核心启动，非法发现接口拒绝；无广播。
+- 20 项配置/离线快照/模式守卫回归通过；源重启、覆盖/竞争、非私有/缺失文件均拒绝。
+- [mode-guard-results.json](mode-guard-results.json)：六项真实临时 ExecCondition 检查。
+  两项放行实际执行启动桩；源未停、旧状态、原生未停或镜像不符实际没有执行启动桩。
+  实际 Podman socket 在 PrivateUsers/PrivateMounts 下只读可达；未启动生产容器。
+- [rollback-merge-results.json](rollback-merge-results.json)：五个各自固定镜像、新 DB/metadata/CA/认证/信任证书，
+  实际 Compose 合并通过。原生期间新写入保留，旧源凭证不能覆盖快照中的新值。
+- 候选替换旧恢复逻辑，只在 ready + container-mode 下检查实际挂载/镜像及原生停止后恢复固定五容器；
+  原生三个服务要求源容器全部停止。默认主机配置仍不启用候选。
+- 已审查明确的用户离线准备、固定系统激活、只创建后核验再启动回退、开机恢复及返回原生顺序。
+  手册以 nix-tools docs/native-pc-cutover.md 为准；普通 rerun 不包含候选，不用于原生试用升级。
+- S2 已通过，当前仅剩 S3。生产离线准备/实际 switch/真实开机未执行，cutover_ready=false。
+  S3 通过前不向用户要求执行停机或切换。
 
-- 回退 Compose 合并已通过实际 podman-compose 解析器的合成预演：
-  新 core.db、新 metadata、复制的 CA、原工作区挂载均保留；原生期间写入
-  在回退挂载中可见。仅替换模板中的凭证文件为合成输入，不读取生产凭证、
-  不启动容器。见 [rollback-merge-results.json](rollback-merge-results.json)。
-- S2 剩最终激活/回退启动顺序审查；旧恢复单元不得在容器挂载未迁移时启动。
+只读核对确认现用 PC 核心/发现容器镜像不同；快照分别固定原镜像，不要求相同、不替换版本。合成合并与启动守卫以不同镜像复验通过；五个现用容器仍在运行。
