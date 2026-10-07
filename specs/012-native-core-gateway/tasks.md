@@ -46,7 +46,8 @@ internal 模式，使用私有存储并禁止系统信任库安装。合成旧�
 ## S2 预演完成（当前仅剩 S3）
 
 - [host-preflight-results.json](host-preflight-results.json)：最终完整 liu-bigpc 系统及对应 HM 已构建，
-  精确产物与 GC 根固定；未激活。使用实际主仓已有主机修改，没有将其无关改动提交。
+  精确产物与 GC 根固定；未激活。实际主机源码已捕获为同一不可变 Nix快照，
+  系统/HM均从该快照构建；hm-backup保护已核验。使用实际主仓已有主机修改，没有将其无关改动提交。
 - [config-runtime-results.json](config-runtime-results.json)：配置无损往返与真实核心启动，非法发现接口拒绝；无广播。
 - 20 项配置/离线快照/模式守卫回归通过；源重启、覆盖/竞争、非私有/缺失文件均拒绝。
 - [mode-guard-results.json](mode-guard-results.json)：六项真实临时 ExecCondition 检查。

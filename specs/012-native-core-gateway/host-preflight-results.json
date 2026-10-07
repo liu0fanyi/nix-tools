@@ -12,7 +12,6 @@
   "blocking_reason": null,
   "host_source_requires_final_rebuild_after_cache_resolution": false,
   "actual_toplevel": "/nix/store/gb8kdh4r7pzf5fl2c1mpjwwx4al7gzml-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
-  "host_source_commit": "bb1f10c",
   "host_source_has_preexisting_worktree_changes": true,
   "published_browser_path": "/nix/store/6xc0mnfz4piy09gffzl0grvycw3lbysa-tag-browser-0.1.0",
   "published_browser_source_commit": "efef7fb97d088963eee1ac9d50dc3fae25a18418",
@@ -25,5 +24,9 @@
   "private_namespace_readonly_podman_socket_verified": true,
   "final_candidate_gc_roots_created": true,
   "source_containers_running_at_end": true,
-  "source_core_and_discovery_different_images_preserved": true
+  "source_core_and_discovery_different_images_preserved": true,
+  "host_source_store_snapshot": "/nix/store/6hjc7gzmp43y7gq379nnq9nd6zi2zb4f-source",
+  "candidate_code_commit": "b48bd11",
+  "home_manager_backup_extension_verified": "hm-backup",
+  "system_and_home_built_from_same_host_snapshot": true
 }
