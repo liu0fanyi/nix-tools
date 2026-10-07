@@ -59,3 +59,13 @@ just plan-native-pc
 使用实际生成 Caddy 配置与两个临时原生核心；候选由临时文件提供，过滤过期候选
 并跑申请/同意/签名同步。没有 mDNS 广播、现网认证文件读取或生产切换。
 真实宿主地址/接口/CA 和目录配置尚未适配，不能直接照试验端口替换现用节点。
+
+## 保留已有 Caddy CA
+
+默认仍使用显式证书文件。已有 Caddy `tls internal` 的实例可设置 peer.tlsMode 为
+`internal`，并用 peer.storageDirectory 指向私有 Caddy 存储根（直接含 pki/ 和
+certificates/）。certificateFile/privateKeyFile 必须为空。
+这保留 Caddy 的自动续期，不尝试安装系统信任。存储和 CA 文件必须通过私有权限守卫。
+现用服务不得在线共享存储；停旧服务、备份并离线复制的实际步骤归 S2 切换方案，
+本说明不代表已具备切换条件。合成回归入口：
+`just check-native-peer-renewal /data/project/tag-all /data/project/dufs-plus`。

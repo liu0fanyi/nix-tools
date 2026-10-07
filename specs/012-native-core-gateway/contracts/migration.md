@@ -12,3 +12,7 @@
 - `TAG_PODMAN_URL` 仅接受当前用户的 `/run/user/<uid>/podman/podman.sock` Unix 服务，不允许任意远端 Podman。
 - proposed_native_sync_enabled 只是候选配置意图，不代表原生服务已启用。cutover_ready 仍为 false。
 - 现用 internal CA 必须同时保持信任根与自动续期；只引用旧叶证书不足以满足迁移契约。
+
+- peer.tlsMode 默认 files；显式 internal 要求私有 storageDirectory 指向离线复制的既有 Caddy 存储，静态证书选项必须为空。自动 HTTPS 只禁重定向，禁止信任库自动安装。
+- internal 启动守卫要求现有当前用户所有的700存储/pki目录，以及600的根/中间证书与私钥；缺失、symlink 或过宽权限拒绝，不自动生成新信任根。
+- `just check-native-peer-renewal <tag-all> <dufs-plus>` 仅合成临时存储与随机loopback：离线复制、缓存叶证书保留、实际自动续期、旧根信任/负例、实际守卫及源快照不变。测试加速不进入产品选项。

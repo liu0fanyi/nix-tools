@@ -16,7 +16,7 @@
   "environment_path_escaping": true,
   "escaping_mapping_rejected": true,
   "whole_stack_target_is_autostart_owner": true,
-  "peer_generation": "/nix/store/mghif7583cqz9ad8i06bacm5n4gi90zc-home-manager-generation",
+  "peer_generation": "/nix/store/5zw7h82x969rhwa68qgg9yng935mb6sc-home-manager-generation",
   "configured_peer_tls_unit_and_negative_gates": true,
   "activated": false,
   "real_login_boot_tested": false

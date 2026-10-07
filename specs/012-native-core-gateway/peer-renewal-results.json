@@ -1,0 +1,17 @@
+{
+  "synthetic_offline_storage_takeover": true,
+  "cached_leaf_retained": true,
+  "live_automatic_leaf_renewal": true,
+  "original_root_trust_preserved": true,
+  "untrusted_ca_rejected": true,
+  "peer_admin_route_still_denied": true,
+  "actual_generated_private_storage_guard": true,
+  "unsafe_missing_symlink_key_rejected": true,
+  "source_snapshot_unchanged": true,
+  "fixture_leaf_lifetime_seconds": 30,
+  "fixture_renew_interval_seconds": 1,
+  "production_keys_read": false,
+  "activated": false,
+  "generation": "/nix/store/w760rrbn699yclhpxk0xs44bcb57pdms-home-manager-generation",
+  "owned_process_and_storage_cleaned": true
+}

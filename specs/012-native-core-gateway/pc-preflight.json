@@ -37,7 +37,7 @@
   "blocking_reasons": [
     "Source writer is active; offline DB/metadata snapshot is not permitted yet.",
     "Current host full configuration and Home Manager generation build is still required.",
-    "Existing internal-CA certificate renewal must be preserved; static leaf-file reuse alone is insufficient.",
+    "Reviewed cutover must include an offline private CA-storage snapshot; never share live writable storage.",
     "Real LAN discovery observation remains an activation gate; temporary tests never broadcast.",
     "Existing PC boot restore must be disabled in the reviewed cutover configuration.",
     "Complete tools/fallback compatibility must be confirmed before replacing the current full service."

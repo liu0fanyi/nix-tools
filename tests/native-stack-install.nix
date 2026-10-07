@@ -1,4 +1,4 @@
-{ infrastructure, tagAll, dufsPlus, enabled ? true, configured ? false, peerEnabled ? false, peerPort ? 18009,
+{ infrastructure, tagAll, dufsPlus, enabled ? true, configured ? false, peerEnabled ? false, peerInternal ? false, peerStorage ? "/tmp/nativecheck/private-storage", peerPort ? 18009,
   homeDirectory ? "/tmp/nativecheck", workspaceMounts ? {}, gatewayPort ? 18006, corePort ? 18081 }:
 let
   lock = builtins.fromJSON (builtins.readFile (infrastructure + "/flake.lock"));
@@ -23,8 +23,10 @@ let
         peer = if peerEnabled then {
           enable = true;
           port = peerPort;
-          certificateFile = homeDirectory + "/runtime certificate.pem";
-          privateKeyFile = homeDirectory + "/runtime key.pem";
+          tlsMode = if peerInternal then "internal" else "files";
+          storageDirectory = if peerInternal then peerStorage else "";
+          certificateFile = if peerInternal then "" else homeDirectory + "/runtime certificate.pem";
+          privateKeyFile = if peerInternal then "" else homeDirectory + "/runtime key.pem";
         } else {};
         syncMode = if configured then "configured" else "isolated";
         configurationFile = if configured then "/tmp/nativecheck/runtime node.toml" else null;

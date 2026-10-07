@@ -67,14 +67,26 @@ Constitution Check：本机固定二进制/Nix 依赖，无 Rust 重编译、外
 
 现用 peer-gateway 使用 Caddy tls internal；只读文件元数据确认已有叶证书、根与中间
 CA 均为当前用户所有、600。不能只把现有叶证书路径交给静态 TLS：还须保留同一 CA
-下的自动续期。后续先解决既有 CA 存储接管/续期，再构建当前主机完整候选配置；
+下的自动续期。既有 CA 存储接管/续期已通过 S1 合成验收，下一步构建当前主机完整候选配置；
 切换方案必须停用旧 pc-private-node-restore 自动恢复，防止旧容器抢占端口。
 不读取私钥字节，不迁移在线 DB，不提前停止旧服务。
 
 ## 当前执行顺序与停止汇报
 
-按 tasks.md 的 S1 → S2 → S3 收敛，三步完成后交付用户切换；不得新增优化前置。
+S1 已验收，按 tasks.md 的 S2 → S3 收敛，三步完成后交付用户切换；不得新增优化前置。
 每次结束工作时说明阶段名称、剩余步骤数、未完成编号和下一步；
 计数按 S1–S3 验收状态，不按测试数量或历史任务累计。切换后改按 T005e 的验收清单计数。
 Constitution Check：本次只收敛既有范围和新增用户明确要求的汇报约束，
 不引入外部参考、不修改构建/迁移授权、不执行系统激活或读取生产密钥。
+
+## S1 证书续期接管完成
+
+显式 peer.tlsMode=internal 使用 peer.storageDirectory 指向离线复制后的 Caddy
+存储根（含 pki/、certificates/），继续 tls internal，自动 HTTPS 只禁重定向；
+skip_install_trust 保证不自动改宿主信任库。files 模式和默认关闭保持。
+启动前要求现有 CA 根/中间证书及密钥，当前用户所有、600，pki 目录700且无
+symlink；缺文件直接拒绝，避免静默生成不同根 CA。S2 须在旧网关停止后复制到
+新私有状态，禁止新旧服务共享在线可写 CA 存储。生产私钥不进入 Nix store。
+续期验收见 peer-renewal-results.json；不把临时 CA 结果当成已完成生产迁移。
+官方依据：[Caddy 自动 HTTPS 配置](https://caddyserver.com/docs/caddyfile/options)、
+[内部证书签发](https://caddyserver.com/docs/caddyfile/directives/tls)。

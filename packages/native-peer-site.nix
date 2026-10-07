@@ -3,7 +3,7 @@
 ''
   https://${peer.serverName}:${toString peer.port} {
     bind ${peer.listenAddress}
-    tls "${peer.certificateFile}" "${peer.privateKeyFile}"
+    ${if (peer.tlsMode or "files") == "internal" then "tls internal" else ''tls "${peer.certificateFile}" "${peer.privateKeyFile}"''}
     route {
       @peer {
         remote_ip ${builtins.concatStringsSep " " peer.allowedNetworks}

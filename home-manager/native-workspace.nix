@@ -31,6 +31,10 @@ in {
     serverName = lib.mkOption { type = lib.types.str; default = "localhost"; };
     port = lib.mkOption { type = lib.types.port; default = 18009; };
     allowedNetworks = lib.mkOption { type = lib.types.listOf lib.types.str; default = [ "127.0.0.1/32" ]; };
+    tlsMode = lib.mkOption { type = lib.types.enum [ "files" "internal" ]; default = "files";
+      description = "Internal reuses an offline-copied Caddy storage with the existing CA and automated renewal."; };
+    storageDirectory = lib.mkOption { type = lib.types.str; default = "";
+      description = "Private existing Caddy storage root (including pki/), outside the served workspace; never live-shared with the old gateway."; };
     certificateFile = lib.mkOption { type = lib.types.str; default = ""; };
     privateKeyFile = lib.mkOption { type = lib.types.str; default = ""; };
   };
@@ -43,10 +47,16 @@ in {
           && cfg.peer.allowedNetworks != []
           && lib.all (network: lib.match "[0-9.]+(/[0-9]+)?" network != null) cfg.peer.allowedNetworks;
         message = "Native peer entry requires an explicit safe DNS name, IPv4 bind and allowed networks."; }
-      { assertion = lib.all (path: lib.hasPrefix "/" path
+      { assertion = cfg.peer.tlsMode != "files" || lib.all (path: lib.hasPrefix "/" path
           && !(lib.any (c: lib.hasInfix c path) [ "\n" "\r" "\"" "\\" "{" "}" ])
           && !(lib.hasPrefix (cfg.workspace + "/") path)) [ cfg.peer.certificateFile cfg.peer.privateKeyFile ];
         message = "Native peer TLS files must be explicit safe runtime paths outside the workspace."; }
+      { assertion = cfg.peer.tlsMode != "internal" || (lib.hasPrefix "/" cfg.peer.storageDirectory
+          && !(lib.any (c: lib.hasInfix c cfg.peer.storageDirectory) [ "\n" "\r" "\"" "\\" "{" "}" ])
+          && cfg.peer.storageDirectory != cfg.workspace
+          && !(lib.hasPrefix (cfg.workspace + "/") cfg.peer.storageDirectory)
+          && cfg.peer.certificateFile == "" && cfg.peer.privateKeyFile == "");
+        message = "Internal native peer TLS requires a safe private storage path and no static TLS files."; }
     ] ++ lib.optionals (cfg.administratorEnvironmentFile != null) [
       { assertion = lib.hasPrefix "/" cfg.administratorEnvironmentFile && !lib.hasPrefix (cfg.workspace + "/") cfg.administratorEnvironmentFile;
         message = "Native gateway administrator environment must be a runtime path outside the workspace."; }
@@ -122,7 +132,22 @@ in {
           ''}
         '') ]) ] ++ lib.optionals cfg.peer.enable [ (command [ (pkgs.writeShellScript "native-peer-tls-check" ''
           set -eu
-          for file in ${lib.escapeShellArgs [ cfg.peer.certificateFile cfg.peer.privateKeyFile ]}; do
+          ${lib.optionalString (cfg.peer.tlsMode == "internal") ''
+            storage=${lib.escapeShellArg cfg.peer.storageDirectory}
+            test -d "$storage" && test ! -L "$storage"
+            test "$(${pkgs.coreutils}/bin/stat -c %u -- "$storage")" = "$(${pkgs.coreutils}/bin/id -u)"
+            test "$(${pkgs.coreutils}/bin/stat -c %a -- "$storage")" = 700
+            # Reject symlinked parents inside private storage, not just the leaf key.
+            for directory in "$storage/pki" "$storage/pki/authorities" "$storage/pki/authorities/local"; do
+              test -d "$directory" && test ! -L "$directory"
+              test "$(${pkgs.coreutils}/bin/stat -c %u -- "$directory")" = "$(${pkgs.coreutils}/bin/id -u)"
+              test "$(${pkgs.coreutils}/bin/stat -c %a -- "$directory")" = 700
+            done
+          ''}
+          for file in ${lib.escapeShellArgs (if cfg.peer.tlsMode == "internal" then
+            map (name: cfg.peer.storageDirectory + "/pki/authorities/local/" + name)
+              [ "root.crt" "root.key" "intermediate.crt" "intermediate.key" ]
+            else [ cfg.peer.certificateFile cfg.peer.privateKeyFile ])}; do
             test -f "$file" && test ! -L "$file"
             test "$(${pkgs.coreutils}/bin/stat -c %u -- "$file")" = "$(${pkgs.coreutils}/bin/id -u)"
             test "$(${pkgs.coreutils}/bin/stat -c %a -- "$file")" = 600

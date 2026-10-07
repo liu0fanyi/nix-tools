@@ -53,3 +53,7 @@ agent-rules *args:
 # Actual generated Caddy peer entries, synthetic identities only; no discovery broadcasts.
 check-native-peer-gateway tag_all dufs_plus:
     python3 scripts/check-native-peer-gateway.py {{tag_all}} {{dufs_plus}}
+
+# Synthetic Caddy CA storage takeover and live renewal, no production PKI.
+check-native-peer-renewal tag_all dufs_plus:
+    python3 scripts/check-native-peer-renewal.py {{tag_all}} {{dufs_plus}}

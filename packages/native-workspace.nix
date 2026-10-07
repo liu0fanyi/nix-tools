@@ -4,7 +4,11 @@ let
   config = pkgs.writeText "tag-native-workspace.Caddyfile" ''
     {
       admin off
-      auto_https off
+      ${if peer != null && (peer.tlsMode or "files") == "internal" then ''
+        auto_https disable_redirects
+        skip_install_trust
+        storage file_system "${peer.storageDirectory}"
+      '' else "auto_https off"}
     }
     http://127.0.0.1:${toString gatewayPort} {
       bind 127.0.0.1
