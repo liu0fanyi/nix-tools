@@ -264,9 +264,23 @@ def progress(root):
     if active:state='waiting_for_ai' if pending>=collector.get('max_pending',10) else 'collecting'
     elif counts['queued']==0:state='sources_finished'
     else:state='stopped'
+    ai_active=False;ai_lock=f.safe(Path(root)/'.ai-worker.lock',Path(root))
+    if ai_lock.exists():
+        with ai_lock.open('rb') as lock:
+            try:fcntl.flock(lock,fcntl.LOCK_SH|fcntl.LOCK_NB)
+            except BlockingIOError:ai_active=True
+    ai_marker=f.safe(Path(root)/'ai-worker.json',Path(root));ai={'active':ai_active,'state':'not_configured'}
+    if ai_marker.exists():
+        data=f.batch.load(ai_marker);phase=data.get('state')
+        allowed={'extracting','publishing','published','waiting_for_subtitles','failed','finished','stopped'}
+        ai['state']=phase if phase in allowed and (ai_active or phase in {'failed','finished','stopped'}) else 'stopped'
+        model=data.get('model')
+        if isinstance(model,str) and len(model)<=120:ai['model']=model
+        vid=data.get('id')
+        if ai_active and isinstance(vid,str) and re.fullmatch(r'BV[A-Za-z0-9]+',vid):ai['current_id']=vid
     total=sum(counts.values());settled=counts['published']+counts['skipped']
     return {'total':total,'counts':counts,'settled':settled,'source_ready':settled+pending,
-            'remaining':total-settled,'collector':{'active':active,'state':state,**collector}}
+            'remaining':total-settled,'ai':ai,'collector':{'active':active,'state':state,**collector}}
 
 
 def serve(root,port):
@@ -322,9 +336,14 @@ def main():
     sub.add_parser('next');sub.add_parser('status');imp=sub.add_parser('import');imp.add_argument('response',type=Path)
     collector=sub.add_parser('collect');collector.add_argument('--max-pending',type=int,default=10);collector.add_argument('--interval',type=int,default=60);collector.add_argument('--watch',action='store_true')
     retry=sub.add_parser('retry');retry.add_argument('--job',required=True);sub.add_parser('rebuild');preview=sub.add_parser('serve');preview.add_argument('--port',type=int,default=8765)
+    ai=sub.add_parser('ai');ai.add_argument('--model',default='gpt-6.1-sol');ai.add_argument('--once',action='store_true');ai.add_argument('--timeout',type=int,default=600)
     args=parser.parse_args()
     if args.command=='serve':serve(args.root,args.port);return
     if args.command=='collect':collect(args.root,args.max_pending,args.interval,args.watch);return
+    if args.command=='ai':
+        if args.timeout<1:parser.error('timeout must be positive')
+        module_spec=importlib.util.spec_from_file_location('recipe_ai',ROOT/'scripts/recipe-ai-worker.py');module=importlib.util.module_from_spec(module_spec);module_spec.loader.exec_module(module)
+        module.worker(args.root,args.model,args.once,args.timeout);return
     app=Simple(args.root,read_only=args.command=='status')
     try:
         if args.command=='init':app.init(args.browser);result=app.status()

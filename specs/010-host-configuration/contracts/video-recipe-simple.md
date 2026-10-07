@@ -31,3 +31,8 @@ AI 输入包 task_id/input_sha256/source/transcript/prompt/result_schema；结�
 本地GET `/api/progress`提供总数、五类计数、已结束（published+skipped）、来源处理（published+skipped+waiting_extract）、剩余数及采集器汇总状态；不提供ROOT、任务路径、Cookie、原始元数据或错误正文。SQLite聚合只读统计，不请求字幕或调用模型；采集器是否运行以已有采集锁实际占用为准，不单凭PID或陈旧心跳。失败不计入完成，来源已处理不等同于菜谱已生成，零总数不除零。
 
 GET `/progress.html`显示已生成菜谱与来源处理两条进度条、published/waiting_extract/queued/skipped/failed数，每5秒刷新。连接失败保留上次数据并标明失效，单次请求超时6秒，不重叠轮询。接口和页面no-store，沿用127.0.0.1监听及Host校验，其他私有文件仍404。目录提供“处理进度”链接。
+
+
+### Codex CLI自动消费者
+
+另行获得模型目的地的数据传输授权后，可用既有CLI登录进行非交互式单次全文提取。消费者独占`.ai-worker.lock`，每条任务新上下文、只读沙盒、stdin输入和Schema输出，不持有数据库写锁等待推理；导入阶段使用原输入/输出绑定与cue校验。已有完整响应复用，未完成尝试拒绝默默重推；错误停止，详细日志仅本地，停止标记在任务边界生效。原进度API增添ai.active/state/model/current_id白名单，按实际锁判断活性，不输出提示词、Cookie、日志或私有路径。真实模型准入未通过不能标自动流程实测完成。
