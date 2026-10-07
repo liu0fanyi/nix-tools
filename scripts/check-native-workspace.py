@@ -15,6 +15,8 @@ import urllib.error
 import urllib.request
 import uuid
 
+from native_pc_media import check as check_media
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -153,6 +155,7 @@ def main():
             assert request('/?json')[0] == 200
             assert request('/book.pdf')[1] == original_pdf
             assert request('/tag-api/v1/proxy/stream/default/book.pdf')[1] == original_pdf
+            media_results = check_media(request, workspace, target)
             for path in ['/device-api', '/dist/devices/', '/dist/transcriptions/', '/dist/recorder-bean/']:
                 assert request(path)[0] == 404, path
             secret_payload = json.dumps({'base': base, 'username': username, 'password': password, 'nodeId': node_id})
@@ -169,6 +172,7 @@ def main():
                 'sidebar_actual_methods': True, 'wasm_pdfjs_actual_http': True,
                 'synthetic_pdf_unchanged': True, 'deployed': False,
                 'full_firefox_ui_tested': False, 'real_pc_migration_tested': False}
+            results['file_media_compatibility'] = media_results
         finally:
             for process in reversed(processes):
                 if process.poll() is None:

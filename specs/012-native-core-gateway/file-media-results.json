@@ -1,0 +1,134 @@
+{
+  "native_core_binary_sha256": "21a182a51a4719815793e51ab8481b7a9fb71977abf44b00eff1807d66687993",
+  "nixpkgs_locked": {
+    "lastModified": 1787814960,
+    "narHash": "sha256-PYZq1qzCJXC2zGI0mH07vrZBsw6DRBAOX0jN1pPtqOQ=",
+    "owner": "NixOS",
+    "repo": "nixpkgs",
+    "rev": "c27cdad491a991b11ed731760aa2ef8db0cb0410",
+    "type": "github"
+  },
+  "caddy_package": "/nix/store/9v0131sch36inqjr4qsl7swa9385xjmq-caddy-2.11.4",
+  "dufs_package": "/nix/store/x0l3895mr2zyacabd8qpbzm8dsqvlahb-dufs-0.46.0",
+  "frontend_index_sha256": "b4664b854f9f5146b1240d0f36b5ad94fdc0d3093e65f1f30bb886f553aadb4b",
+  "wasm_pdfjs_actual_http": true,
+  "synthetic_pdf_unchanged": true,
+  "owned_fixture_cleanup": true,
+  "authenticated_file_upload_download_delete": true,
+  "unicode_space_percent_paths": true,
+  "range_download": true,
+  "markdown_attachment_text_persisted": true,
+  "image_epub_and_video_attachment_bytes_roundtrip": true,
+  "video_playback_tested": false,
+  "epub_browser_render_tested": false,
+  "processing_capabilities": {
+    "image": {
+      "compiled": false,
+      "enabled": false,
+      "ready": false,
+      "reason": "not_compiled"
+    },
+    "pdf": {
+      "compiled": false,
+      "enabled": false,
+      "ready": false,
+      "reason": "not_compiled"
+    },
+    "epub": {
+      "compiled": false,
+      "enabled": false,
+      "ready": false,
+      "reason": "not_compiled"
+    },
+    "archive": {
+      "compiled": false,
+      "enabled": false,
+      "ready": false,
+      "reason": "not_compiled"
+    },
+    "comic": {
+      "compiled": false,
+      "enabled": false,
+      "ready": false,
+      "reason": "not_compiled"
+    },
+    "audio_video": {
+      "compiled": false,
+      "enabled": false,
+      "ready": false,
+      "reason": "not_compiled"
+    },
+    "git": {
+      "compiled": false,
+      "enabled": false,
+      "ready": false,
+      "reason": "not_compiled"
+    },
+    "device_api": {
+      "compiled": false,
+      "enabled": false,
+      "ready": false,
+      "reason": "not_compiled"
+    },
+    "music": {
+      "compiled": false,
+      "enabled": false,
+      "ready": false,
+      "reason": "not_compiled"
+    },
+    "writing": {
+      "compiled": false,
+      "enabled": false,
+      "ready": false,
+      "reason": "not_compiled"
+    },
+    "writing_git": {
+      "compiled": false,
+      "enabled": false,
+      "ready": false,
+      "reason": "not_compiled"
+    },
+    "transcription_local": {
+      "compiled": false,
+      "enabled": false,
+      "ready": false,
+      "reason": "not_compiled"
+    }
+  },
+  "unavailable_capabilities": {
+    "image": "not_compiled",
+    "pdf": "not_compiled",
+    "epub": "not_compiled",
+    "archive": "not_compiled",
+    "comic": "not_compiled",
+    "audio_video": "not_compiled",
+    "git": "not_compiled",
+    "device_api": "not_compiled",
+    "music": "not_compiled",
+    "writing": "not_compiled",
+    "writing_git": "not_compiled",
+    "transcription_local": "not_compiled"
+  },
+  "processing_endpoint_statuses": {
+    "pdf_info": 404,
+    "pdf_render": 404,
+    "pdf_crop": 404,
+    "preview": 404,
+    "cover": 404,
+    "thumbnail": 404,
+    "epub_info": 404,
+    "epub_page": 404,
+    "comic_jobs": 404,
+    "video_jobs": 404,
+    "archive_extract": 404,
+    "git_file": 404
+  },
+  "processing_task_execution_tested": false,
+  "cutover_ready": false,
+  "production_state_read": false,
+  "production_changed": false,
+  "user_decision": "Preserve PC processing before cutover; no acceptance of missing capabilities",
+  "stage": "S3",
+  "s3_passed": false,
+  "remaining_stage_steps": 1
+}
