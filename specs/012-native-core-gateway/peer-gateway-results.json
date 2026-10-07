@@ -1,0 +1,29 @@
+{
+  "package": "/nix/store/gcsmr22i4lfwagh7vymj3mfqjccg8gg1-tag-all-core-native-0.1.0",
+  "binary_sha256": "21a182a51a4719815793e51ab8481b7a9fb71977abf44b00eff1807d66687993",
+  "configured_native_peers": true,
+  "actual_tls_private_ca": true,
+  "untrusted_ca_rejected": true,
+  "unsigned_and_missing_admin_rejected": true,
+  "wrong_fingerprint_rejected": true,
+  "two_approvals_required": true,
+  "signed_sync_and_tag_persistence": true,
+  "replay_bad_signature_and_revocation_rejected": true,
+  "real_key_and_trust_restart_preserved": true,
+  "unsafe_config_rejected_before_state_creation": true,
+  "discovery_broadcast": false,
+  "production_access": false,
+  "external_discovery_candidates_and_request_acceptance": true,
+  "actual_caddy_peer_gateway_tested": true,
+  "owned_cleanup": true,
+  "generated_gateway_configs": [
+    "/nix/store/5v3d2pkb57nfkflnz5lv5i5n8vgzbvcc-tag-native-workspace.Caddyfile",
+    "/nix/store/hr79d8lklw7vcdajk8pbiafz5ligpkxl-tag-native-workspace.Caddyfile"
+  ],
+  "peer_route_allowlist_and_admin_exclusion": true,
+  "authenticated_browser_management": true,
+  "unsigned_sync_over_https_rejected": true,
+  "default_peer_entry_disabled": true,
+  "real_discovery_broadcast": false,
+  "owned_gateway_processes_and_fixture_cleaned": true
+}

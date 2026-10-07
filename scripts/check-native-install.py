@@ -55,6 +55,13 @@ def main():
     assert '--sync-mode configured' in configured_unit and "--config '/tmp/nativecheck/runtime node.toml'" in configured_unit
     assert "EnvironmentFile='/tmp/nativecheck/private auth %% $ 中文.env'" in configured_unit
     assert 'native-core-environment-check' in configured_unit
+    peer_generation = Path(run(['nix-build', '--no-out-link', '-A', 'generation', '--expr', expression + 'configured = true; peerEnabled = true; }']))
+    peer_unit = (peer_generation / 'home-files/.config/systemd/user/tag-native-workspace.service').read_text()
+    assert 'native-peer-tls-check' in peer_unit
+    rejected_peer = subprocess.run(['nix', 'eval', '--impure', '--json', '--expr', '(' + expression + 'peerEnabled = true; }).assertions'], capture_output=True, text=True, timeout=300)
+    assert rejected_peer.returncode and 'requires explicit configured core mode' in rejected_peer.stderr
+    colliding_peer = subprocess.run(['nix', 'eval', '--impure', '--json', '--expr', '(' + expression + 'configured = true; peerEnabled = true; peerPort = 18006; }).assertions'], capture_output=True, text=True, timeout=300)
+    assert colliding_peer.returncode and 'requires a separate TLS port' in colliding_peer.stderr
     report = {'generation': str(generation), 'default_disabled': True, 'enabled_assertions': True,
               'core_package': native['package'], 'all_three_units_built': True, 'dependencies_and_default_target': True,
               'private_socket_and_parameter_escaping': True,
@@ -62,6 +69,7 @@ def main():
               'configured_generation': str(configured_generation), 'configured_runtime_paths_only': True,
               'environment_path_escaping': True, 'escaping_mapping_rejected': True,
               'whole_stack_target_is_autostart_owner': True,
+              'peer_generation': str(peer_generation), 'configured_peer_tls_unit_and_negative_gates': True,
               'activated': False, 'real_login_boot_tested': False}
     output.write_text(json.dumps(report, indent=2) + '\n')
     print('Native combination installation generation verified, not activated: ' + str(output))

@@ -5,6 +5,8 @@ let
   gateway = import ../packages/native-workspace.nix {
     inherit pkgs;
     inherit (cfg) frontendRoot authFile fileSocket gatewayPort corePort;
+    peer = if cfg.peer.enable then cfg.peer else null;
+    peerAdministration = cfg.administratorEnvironmentFile != null;
   };
   unitArg = value: lib.replaceStrings [ "%" "$" ] [ "%%" "$$" ] (toString value);
   command = args: lib.escapeShellArgs (map unitArg args);
@@ -17,12 +19,38 @@ in {
     gatewayPort = lib.mkOption { type = lib.types.port; default = 18006; };
     corePort = lib.mkOption { type = lib.types.port; default = 18081; };
     fileSocket = lib.mkOption { type = lib.types.str; default = "${config.xdg.dataHome}/tag-all/native-workspace/files.sock"; };
+    administratorEnvironmentFile = lib.mkOption { type = lib.types.nullOr lib.types.str; default = null;
+      description = "Private runtime administrator environment shared with core; never imported into the store."; };
     workspaceBindPaths = lib.mkOption { type = lib.types.listOf lib.types.str; default = [];
       description = "Validated mappings from the authoritative native stack module."; };
     workspaceMountDirectories = lib.mkOption { type = lib.types.listOf lib.types.str; default = []; };
   };
+  options.services.tag-native-workspace.peer = {
+    enable = lib.mkEnableOption "explicit private HTTPS peer entry";
+    listenAddress = lib.mkOption { type = lib.types.str; default = "127.0.0.1"; };
+    serverName = lib.mkOption { type = lib.types.str; default = "localhost"; };
+    port = lib.mkOption { type = lib.types.port; default = 18009; };
+    allowedNetworks = lib.mkOption { type = lib.types.listOf lib.types.str; default = [ "127.0.0.1/32" ]; };
+    certificateFile = lib.mkOption { type = lib.types.str; default = ""; };
+    privateKeyFile = lib.mkOption { type = lib.types.str; default = ""; };
+  };
   config = lib.mkIf cfg.enable {
-    assertions = [
+    assertions = lib.optionals cfg.peer.enable [
+      { assertion = lib.all (port: cfg.peer.port != port) [ cfg.corePort cfg.gatewayPort ];
+        message = "Native peer entry requires a separate TLS port."; }
+      { assertion = lib.match "[a-zA-Z0-9][a-zA-Z0-9.-]*" cfg.peer.serverName != null
+          && lib.match "[0-9.]+" cfg.peer.listenAddress != null
+          && cfg.peer.allowedNetworks != []
+          && lib.all (network: lib.match "[0-9.]+(/[0-9]+)?" network != null) cfg.peer.allowedNetworks;
+        message = "Native peer entry requires an explicit safe DNS name, IPv4 bind and allowed networks."; }
+      { assertion = lib.all (path: lib.hasPrefix "/" path
+          && !(lib.any (c: lib.hasInfix c path) [ "\n" "\r" "\"" "\\" "{" "}" ])
+          && !(lib.hasPrefix (cfg.workspace + "/") path)) [ cfg.peer.certificateFile cfg.peer.privateKeyFile ];
+        message = "Native peer TLS files must be explicit safe runtime paths outside the workspace."; }
+    ] ++ lib.optionals (cfg.administratorEnvironmentFile != null) [
+      { assertion = lib.hasPrefix "/" cfg.administratorEnvironmentFile && !lib.hasPrefix (cfg.workspace + "/") cfg.administratorEnvironmentFile;
+        message = "Native gateway administrator environment must be a runtime path outside the workspace."; }
+    ] ++ [
       { assertion = builtins.stringLength cfg.fileSocket < 108;
         message = "Native DUFS Unix socket path must fit the Linux 107-byte limit."; }
       { assertion = cfg.gatewayPort != cfg.corePort;
@@ -72,7 +100,9 @@ in {
         After = [ "tag-all-core.service" "tag-native-files.service" ];
       };
       Service = {
-        ExecStartPre = command [ (pkgs.writeShellScript "native-workspace-auth-check" ''
+        EnvironmentFile = lib.mkIf (cfg.administratorEnvironmentFile != null)
+          (lib.escapeShellArg (lib.replaceStrings [ "%" ] [ "%%" ] cfg.administratorEnvironmentFile));
+        ExecStartPre = [ (command [ (pkgs.writeShellScript "native-workspace-auth-check" ''
           set -eu
           file=${lib.escapeShellArg cfg.authFile}
           test -f "$file" && test ! -L "$file"
@@ -81,7 +111,26 @@ in {
           workspace=$(${pkgs.coreutils}/bin/realpath -e -- ${lib.escapeShellArg cfg.workspace})
           actual=$(${pkgs.coreutils}/bin/realpath -e -- "$file")
           case "$actual" in "$workspace"|"$workspace"/*) exit 2 ;; esac
-        '') ];
+          ${lib.optionalString (cfg.administratorEnvironmentFile != null) ''
+            environment=${lib.escapeShellArg cfg.administratorEnvironmentFile}
+            test -f "$environment" && test ! -L "$environment"
+            test "$(${pkgs.coreutils}/bin/stat -c %u -- "$environment")" = "$(${pkgs.coreutils}/bin/id -u)"
+            test "$(${pkgs.coreutils}/bin/stat -c %a -- "$environment")" = 600
+            environment=$(${pkgs.coreutils}/bin/realpath -e -- "$environment")
+            case "$environment" in "$workspace"|"$workspace"/*) exit 2 ;; esac
+            test -n "''${TAG_PEER_ADMIN_TOKEN:-}"
+          ''}
+        '') ]) ] ++ lib.optionals cfg.peer.enable [ (command [ (pkgs.writeShellScript "native-peer-tls-check" ''
+          set -eu
+          for file in ${lib.escapeShellArgs [ cfg.peer.certificateFile cfg.peer.privateKeyFile ]}; do
+            test -f "$file" && test ! -L "$file"
+            test "$(${pkgs.coreutils}/bin/stat -c %u -- "$file")" = "$(${pkgs.coreutils}/bin/id -u)"
+            test "$(${pkgs.coreutils}/bin/stat -c %a -- "$file")" = 600
+            workspace=$(${pkgs.coreutils}/bin/realpath -e -- ${lib.escapeShellArg cfg.workspace})
+            actual=$(${pkgs.coreutils}/bin/realpath -e -- "$file")
+            case "$actual" in "$workspace"|"$workspace"/*) exit 2 ;; esac
+          done
+        '') ]) ];
         ExecStart = command [ "${gateway.caddy}/bin/caddy" "run" "--config" gateway.config "--adapter" "caddyfile" ];
         Restart = "on-failure";
         UMask = "0077";

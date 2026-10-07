@@ -49,3 +49,7 @@ install-test-nuc:
 # 本机规则安装：默认预演，--apply 安装，--check 核验。
 agent-rules *args:
     python3 scripts/agent-rules.py "$@"
+
+# Actual generated Caddy peer entries, synthetic identities only; no discovery broadcasts.
+check-native-peer-gateway tag_all dufs_plus:
+    python3 scripts/check-native-peer-gateway.py {{tag_all}} {{dufs_plus}}

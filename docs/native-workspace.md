@@ -43,3 +43,19 @@ just plan-native-pc
 只运行随机名称的实际生成单元副本及合成数据，检查映射读写、逐项 SIGKILL 恢复、
 整套停止/重启和精确清理。Caddy 数据/自动保存限定于组合私有状态，socket 路径
 超过 Linux 107 字节限制会在构建前拒绝。实际开机和现网迁移仍未执行，不据此激活。
+
+## 显式 HTTPS 配对入口
+
+在组合配置的 `peer` 中显式设置 `enable`、`serverName`、`listenAddress`、`port`、
+`allowedNetworks`、`certificateFile` 和 `privateKeyFile`；默认不开启，试验默认仅 loopback。
+启用时须 `syncMode = "configured"` 并指定私有 `environmentFile`；TLS 两个文件必须
+是当前用户所有的普通文件、权限 600、位于工作区外。文件内容不入 Nix store。
+
+本机认证网页入口可以刷新候选、发起申请、同意和撤销；管理员令牌由已认证网关
+在内部注入。HTTPS 节点入口只接受声明网段内的配对/同步/受控代理请求，其他路径 404。
+节点入口删除管理员及设备权限头，后端仍验证签名/批准/私人 CA。
+
+复验：`just check-native-peer-gateway /data/project/tag-all /data/project/dufs-plus`。
+使用实际生成 Caddy 配置与两个临时原生核心；候选由临时文件提供，过滤过期候选
+并跑申请/同意/签名同步。没有 mDNS 广播、现网认证文件读取或生产切换。
+真实宿主地址/接口/CA 和目录配置尚未适配，不能直接照试验端口替换现用节点。

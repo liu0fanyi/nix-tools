@@ -20,6 +20,10 @@ in {
     environmentFile = lib.mkOption { type = lib.types.nullOr lib.types.str; default = null; };
     workspaceMounts = lib.mkOption { type = lib.types.attrsOf lib.types.str; default = {}; };
   };
+  options.services.tag-native-stack.peer = lib.mkOption {
+    type = lib.types.attrs; default = {};
+    description = "Explicit peer TLS options forwarded to the private gateway; defaults disabled.";
+  };
   config = lib.mkIf cfg.enable {
     services.tag-all-core = {
       enable = true;
@@ -29,6 +33,8 @@ in {
     services.tag-native-workspace = {
       enable = true;
       inherit (cfg) frontendRoot workspace authFile corePort gatewayPort;
+      peer = cfg.peer;
+      administratorEnvironmentFile = cfg.environmentFile;
       workspaceBindPaths = mappings.paths;
       workspaceMountDirectories = mappings.directories;
     };
@@ -50,6 +56,8 @@ in {
       Install.WantedBy = lib.mkForce [];
     };
     assertions = [
+      { assertion = !(config.services.tag-native-workspace.peer.enable) || (cfg.syncMode == "configured" && cfg.environmentFile != null);
+        message = "Native peer entry requires explicit configured core mode and private administrator environment."; }
       { assertion = config.services.tag-all-core.workspace == config.services.tag-native-workspace.workspace;
         message = "Native core and files must serve the same workspace."; }
       { assertion = config.services.tag-all-core.port == config.services.tag-native-workspace.corePort;

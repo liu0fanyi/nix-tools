@@ -1,5 +1,5 @@
 {
-  "generation": "/nix/store/wdhcyzz2bcbn64s5vnrk4bm783srcn7y-home-manager-generation",
+  "generation": "/nix/store/xxh6q1myjavpgfji81v7hfsl1l4wyfnb-home-manager-generation",
   "native_package": "/nix/store/gcsmr22i4lfwagh7vymj3mfqjccg8gg1-tag-all-core-native-0.1.0",
   "actual_generated_service_units": true,
   "runtime_names_only_changed": true,

@@ -1,5 +1,5 @@
 {
-  "generation": "/nix/store/9np206f9hprza5gzpicpa42lha7kb1m5-home-manager-generation",
+  "generation": "/nix/store/criz8dd7klhgflsid5x8k6wc74z27phl-home-manager-generation",
   "default_disabled": true,
   "enabled_assertions": true,
   "core_package": "/nix/store/gcsmr22i4lfwagh7vymj3mfqjccg8gg1-tag-all-core-native-0.1.0",
@@ -9,13 +9,15 @@
   "unit_sha256": {
     "tag-all-core": "9297fcae0242a0f507f7f0ef28733d905a381270cc29be6bc5f9d88931b9a23e",
     "tag-native-files": "9bbe391383e10673bd10e58a4156ab812ac116b8e34bebe3d007110a8a8ea0de",
-    "tag-native-workspace": "7f5679aae9c708a28ff9062c6ebbd619782b5b77ae100efd5292a6a215ab10b3"
+    "tag-native-workspace": "036daf0c17a99ce6c37c1461b9979740a361c49e6a17d70f6246463d5a2468c8"
   },
-  "configured_generation": "/nix/store/07wc88qrs144iq063ldq6836slyya68g-home-manager-generation",
+  "configured_generation": "/nix/store/n2hpkd883np2xzna42gkvqcz84wrdxpd-home-manager-generation",
   "configured_runtime_paths_only": true,
   "environment_path_escaping": true,
   "escaping_mapping_rejected": true,
   "whole_stack_target_is_autostart_owner": true,
+  "peer_generation": "/nix/store/mghif7583cqz9ad8i06bacm5n4gi90zc-home-manager-generation",
+  "configured_peer_tls_unit_and_negative_gates": true,
   "activated": false,
   "real_login_boot_tested": false
 }

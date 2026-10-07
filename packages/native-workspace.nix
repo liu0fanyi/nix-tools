@@ -1,5 +1,5 @@
 # Trusted gateway configuration; upstreams are fixed loopback core and private Unix DUFS socket, never URL input.
-{ pkgs, frontendRoot, authFile, fileSocket, gatewayPort ? 18006, corePort ? 18081 }:
+{ pkgs, frontendRoot, authFile, fileSocket, gatewayPort ? 18006, corePort ? 18081, peer ? null, peerAdministration ? false }:
 let
   config = pkgs.writeText "tag-native-workspace.Caddyfile" ''
     {
@@ -17,6 +17,17 @@ let
           header Cache-Control no-store
           respond `{"dufs_write":true,"tag_write":true,"bevy_sketch":false,"game_tools":false,"terminal":false}` 200
         }
+        ${if peerAdministration then ''
+          @peer_admin path /tag-api/peer-manager /tag-api/v1/peers/web/* /tag-api/v1/peers/candidates /tag-api/v1/peers/requests /tag-api/v1/peers/requests/* /tag-api/v1/peers/approvals /tag-api/v1/peers/approvals/*
+          handle @peer_admin {
+            uri strip_prefix /tag-api
+            reverse_proxy 127.0.0.1:${toString corePort} {
+              header_up X-Tag-Admin-Token {env.TAG_PEER_ADMIN_TOKEN}
+              header_up -X-Dufs-Device-Api
+              header_up -X-Dufs-Device-Provisioning
+            }
+          }
+        '' else ""}
         handle_path /tag-api/* {
           reverse_proxy 127.0.0.1:${toString corePort} {
             header_up -X-Dufs-Device-Api
@@ -56,6 +67,7 @@ let
         }
       }
     }
+    ${if peer == null then "" else import ./native-peer-site.nix { inherit peer corePort; }}
   '';
 in {
   inherit config;
