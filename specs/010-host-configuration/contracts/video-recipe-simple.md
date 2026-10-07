@@ -6,7 +6,7 @@ AI 返回 title、ingredients[{name,amount:null|string,optional:boolean}]、step
 
 AI 输入包 task_id/input_sha256/source/transcript/prompt/result_schema；结果信封仅 task_id/input_sha256/processor/model/result。来源和字幕、封面 SHA 绑定；重复导入幂等，过期/修改输入拒绝。SQLite 仅保存进度，静态目录使用 JSON/现有食材词典，保留原名/未知/可选标记；本轮不新增强制 AI 词典全库复审。平台元数据在新 ROOT 裁为获取封面和字幕所需字段，不保存视频格式/CDN播放URL。
 
-只读本地预览仅允许 library 的普通文件，不暴露 Cookie/SQLite/平台元数据/任务包。目录展示视频原封面，菜谱为材料和步骤，每步链接 B 站原视频相应时间，保持材料检索。封面是原封面，不声称画面选图。播放器增强不把原视频流代理或复制到菜谱服务。
+只读本地预览允许 library 的普通文件及下述汇总进度接口，不暴露 Cookie/SQLite/平台元数据/任务包。目录展示视频原封面，菜谱为材料和步骤，每步链接 B 站原视频相应时间，保持材料检索。封面是原封面，不声称画面选图。播放器增强不把原视频流代理或复制到菜谱服务。
 
 ## 用户确认的键盘浏览语义
 
@@ -24,3 +24,10 @@ AI 输入包 task_id/input_sha256/source/transcript/prompt/result_schema；结�
 ## 全量源采集
 
 `collect --max-pending 10 --interval 60`在pending上限退出；增加`--watch`则等待AI输出导入后继续采集。仅queued可自动准备，waiting_extract检查点与published不重取；缺字幕skipped，其他错误failed并停止。独立`.collector.lock`防重复采集，普通写锁每条结束后释放；导入与采集冲突时等待，不绕过锁。`ROOT/collect.stop`存在时在当前请求结束的检查点退出；移除停止标记再执行collect可续跑。后台不运行模型或下载视频，全量完成必须按实际菜谱发布及失败/跳过对账判断。
+
+
+## 只读实时进度
+
+本地GET `/api/progress`提供总数、五类计数、已结束（published+skipped）、来源处理（published+skipped+waiting_extract）、剩余数及采集器汇总状态；不提供ROOT、任务路径、Cookie、原始元数据或错误正文。SQLite聚合只读统计，不请求字幕或调用模型；采集器是否运行以已有采集锁实际占用为准，不单凭PID或陈旧心跳。失败不计入完成，来源已处理不等同于菜谱已生成，零总数不除零。
+
+GET `/progress.html`显示已生成菜谱与来源处理两条进度条、published/waiting_extract/queued/skipped/failed数，每5秒刷新。连接失败保留上次数据并标明失效，单次请求超时6秒，不重叠轮询。接口和页面no-store，沿用127.0.0.1监听及Host校验，其他私有文件仍404。目录提供“处理进度”链接。

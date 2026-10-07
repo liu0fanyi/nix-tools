@@ -3,6 +3,7 @@ import copy
 import importlib.util
 import io
 import json
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -114,5 +115,40 @@ class SimpleChecks(unittest.TestCase):
             self.assertEqual(m.collect(self.root,watch=True)['phase'],'failed');sleep.assert_called_once_with(30)
         self.app=m.Simple(self.root)
         with self.assertRaisesRegex(ValueError,'interval'):m.collect(self.root,interval=1)
+
+    def test_progress_counts_and_real_collector_lock(self):
+        self.app.close();self.app=m.Simple(self.root)
+        m.f.atomic(self.manifest,[{**self.entry,'id':f'BVState{i}'} for i in range(4)]);self.app.add(self.manifest)
+        for vid,state in zip([self.entry['id']]+[f'BVState{i}' for i in range(4)],['published','waiting_extract','queued','skipped','failed']):self.app.update(vid,state)
+        m.f.atomic(self.root/'collector.json',{'max_pending':1,'interval':60,'error':'PRIVATE SECRET','root':'PRIVATE PATH'})
+        lock=(self.root/'.collector.lock').open('a');m.fcntl.flock(lock,m.fcntl.LOCK_EX|m.fcntl.LOCK_NB)
+        try:
+            report=m.progress(self.root);self.assertEqual(report['total'],5);self.assertEqual(report['settled'],2);self.assertEqual(report['source_ready'],3);self.assertEqual(report['remaining'],3)
+            self.assertEqual(report['collector']['state'],'waiting_for_ai');self.assertTrue(report['collector']['active']);self.assertNotIn('PRIVATE',json.dumps(report))
+        finally:lock.close()
+        self.assertEqual(m.progress(self.root)['collector']['state'],'stopped')
+        self.app.update('BVState1','skipped');self.assertEqual(m.progress(self.root)['collector']['state'],'sources_finished')
+    def test_progress_http_live_safe_and_no_store(self):
+        import subprocess,sys,time,urllib.request,urllib.error,socket
+        sock=socket.socket();sock.bind(('127.0.0.1',0));port=sock.getsockname()[1];sock.close()
+        proc=subprocess.Popen([sys.executable,str(path),'--root',str(self.root),'serve','--port',str(port)],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+        try:
+            for _ in range(50):
+                try:
+                    with urllib.request.urlopen(f'http://127.0.0.1:{port}/api/progress') as response:
+                        self.assertEqual(response.headers['Cache-Control'],'no-store');self.assertEqual(json.load(response)['counts']['queued'],1)
+                    break
+                except urllib.error.URLError:time.sleep(.1)
+            else:self.fail('server did not start')
+            self.app.update(self.entry['id'],'waiting_extract')
+            with urllib.request.urlopen(f'http://127.0.0.1:{port}/api/progress') as response:self.assertEqual(json.load(response)['counts']['waiting_extract'],1)
+            with urllib.request.urlopen(f'http://127.0.0.1:{port}/progress.html') as response:self.assertIn('recipe-bar',response.read().decode())
+            for url,code in [('/config.json',404),('/simple.sqlite3',404),('/../collector.json',404)]:
+                with self.assertRaises(urllib.error.HTTPError) as error:urllib.request.urlopen(f'http://127.0.0.1:{port}'+url)
+                self.assertEqual(error.exception.code,code)
+            req=urllib.request.Request(f'http://127.0.0.1:{port}/api/progress',headers={'Host':'evil.invalid'})
+            with self.assertRaises(urllib.error.HTTPError) as error:urllib.request.urlopen(req)
+            self.assertEqual(error.exception.code,403)
+        finally:proc.terminate();proc.wait(timeout=10)
 
 if __name__=='__main__':unittest.main()

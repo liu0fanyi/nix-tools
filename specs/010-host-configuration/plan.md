@@ -229,3 +229,10 @@ Constitution Check：PC 权威源、沿用010工具范围；docs/specs 分层，
 从既有完整账号清单产生仅id/title/author的私有准入表。用SQLite backup继承十道登记状态，复制已绑定字幕/封面/任务/回复/页面并逐一核对任务摘要；新ID按清单顺序queued。新增collect子命令，单独collector文件锁防重复启动，各条通过普通Simple写锁准备输入、更新waiting_extract后释放；达到pending上限默认退出，--watch每30秒检查，发布释放一个槽后继续。视频间隔默认60秒，缺字幕记skipped；任意准备错误记failed并退出，不自动重试风控。collect.stop只作为停止请求，不删检查点。后台不调用AI，交互会话完整读取输入后单次提取并导入，保持原Schema/输入绑定/原子发布。
 
 Constitution Check：PC本仓库工具与010规格权威源；无新增外部参考仓/原件，无系统切换、锁文件调整或视频下载。新全量ROOT与原十道ROOT分开，私有数据留Downloads；只按todos/nix-tools白名单同步规格、相关手册和生成看板，预演/checksum复核，保留其他任务未提交改动。
+
+
+### 阶段 V：只读聚合与双进度条
+
+沿用本任务本地服务，动态提供进度HTML及GET汇总接口；每请求单独只读SQLite连接做GROUP BY快照，不持有普通写锁，不修改正在运行的采集器。只读打开现有采集锁并尝试共享锁判断进程是否仍持有独占锁，结合当前pending上限决定等待状态。接口白名单只出统计及调度参数。前端零依赖，五秒串行轮询、有超时/失败提示及手动刷新；统计源采集与最终菜谱两条独立进度，失败不充数。
+
+Constitution Check：本机nix-tools scripts与010 specs为唯一源，无新外部参考/依赖/系统配置。只重启已核对的8765自有预览，不动后台采集进程，原菜谱与输入不变；私有报告留Downloads，公开Git和NUC仅工具/合成验证/规格手册，按todos/nix-tools白名单预演及checksum核验。

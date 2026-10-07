@@ -206,7 +206,7 @@ class Simple:
             records.append({'id':vid,'title':recipe['title'],'author':recipe['source']['author'],'page':'recipes/'+vid+'/recipe.html','thumbnail':'recipes/'+vid+'/cover.jpg','status':'needs_review' if recipe['notes'] else 'draft','issues':len(recipe['notes']),'ingredients':[{'name':i['name'],'role':'optional' if i['optional'] else 'main'} for i in recipe['ingredients']]})
         records=f.ingredients.index_records(records,f.batch.load(self.root/'dictionary.json'))
         directory=f.ingredients.render_directory(records,self.root/'library').replace('图文菜谱库','AI 字幕菜谱库').replace('从食材清单找做法，再看关键操作画面。','从食材清单找材料和做法，封面来自原视频。').replace('点击菜谱查看左文右图步骤','点击菜谱查看材料和做法').replace("record.title + '操作画面'","record.title + '原视频封面'")
-        directory=directory.replace('</header>','<p><a href="bilibili-recipe-controls.user.js">原视频键盘浏览脚本</a> · <a href="player-guide.html">使用方法</a></p></header>',1)
+        directory=directory.replace('</header>','<p><a href="progress.html">处理进度</a> · <a href="bilibili-recipe-controls.user.js">原视频键盘浏览脚本</a> · <a href="player-guide.html">使用方法</a></p></header>',1)
         f.atomic(self.root/'library/search-index.json',records);f.atomic(self.root/'library/index.html',directory,text=True)
         for source in ('bilibili-recipe-controls.user.js','recipe-player-guide.html'):
             path=ROOT/'scripts'/source
@@ -243,12 +243,45 @@ def render_recipe(recipe):
     return '''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'''+esc(recipe['title'])+'''</title><style>body{margin:0;background:#f5f3ee;color:#282d28;font:17px/1.8 system-ui,sans-serif}main{max-width:850px;margin:auto;padding:26px}h1{font-size:32px}img{display:block;width:100%;max-height:390px;object-fit:contain;border-radius:12px;background:#eee}a{color:#476833}li{margin:12px 0}small,.meta{color:#687166;font-size:14px}details{margin-top:28px;background:#fff;padding:14px;border-radius:8px}section{background:white;padding:12px 24px;margin:20px 0;border-radius:10px}</style><main><nav><a href="../../index.html">← 菜谱目录</a> · <a href="../../player-guide.html">原视频键盘浏览</a></nav><h1>'''+esc(recipe['title'])+'''</h1><p class="meta">'''+esc(source['author'])+''' · AI 字幕整理</p><img src="cover.jpg" alt="原视频封面"><p><a target="_blank" rel="noopener noreferrer" href="'''+esc(source['url'])+'''">观看原视频 ↗</a></p><section><h2>材料</h2><ul>'''+ingredients+'''</ul></section><section><h2>制作过程</h2><ol>'''+steps+'''</ol></section>'''+notes+'''<p class="meta">用量未明确时保留未知。时间链接是原视频位置，不是烹饪时长。<a href="recipe.json">菜谱 JSON</a></p></main></html>'''
 
 
+def progress(root):
+    app=Simple(Path(root),read_only=True)
+    try:
+        counts={state:0 for state in ('published','waiting_extract','queued','skipped','failed')}
+        counts.update({r[0]:r[1] for r in app.db.execute('SELECT state,count(*) FROM jobs GROUP BY state')})
+    finally:app.close()
+    active=False;lock_path=f.safe(Path(root)/'.collector.lock',Path(root))
+    if lock_path.exists():
+        with lock_path.open('rb') as lock:
+            try:fcntl.flock(lock,fcntl.LOCK_SH|fcntl.LOCK_NB)
+            except BlockingIOError:active=True
+    marker=f.safe(Path(root)/'collector.json',Path(root));collector={}
+    if marker.exists():
+        data=f.batch.load(marker)
+        for key in ('max_pending','interval'):
+            value=data.get(key)
+            if isinstance(value,int) and not isinstance(value,bool) and value>0:collector[key]=value
+    pending=counts['waiting_extract']
+    if active:state='waiting_for_ai' if pending>=collector.get('max_pending',10) else 'collecting'
+    elif counts['queued']==0:state='sources_finished'
+    else:state='stopped'
+    total=sum(counts.values());settled=counts['published']+counts['skipped']
+    return {'total':total,'counts':counts,'settled':settled,'source_ready':settled+pending,
+            'remaining':total-settled,'collector':{'active':active,'state':state,**collector}}
+
+
 def serve(root,port):
     library=f.safe(Path(root)/'library',Path(root)/'library')
     class Handler(SimpleHTTPRequestHandler):
         def __init__(self,*args,**kwargs):super().__init__(*args,directory=str(library),**kwargs)
         def do_GET(self):
             if self.headers.get('Host') not in (f'127.0.0.1:{self.server.server_port}',f'localhost:{self.server.server_port}'):self.send_error(403);return
+            route=urllib.parse.urlsplit(self.path).path
+            if route in ('/api/progress','/progress.html'):
+                try:
+                    data=json.dumps(progress(root),ensure_ascii=False).encode() if route=='/api/progress' else (ROOT/'scripts/recipe-progress.html').read_bytes()
+                except (OSError,ValueError,sqlite3.Error):self.send_error(503,'Progress temporarily unavailable');return
+                self.send_response(200);self.send_header('Content-Type','application/json; charset=utf-8' if route=='/api/progress' else 'text/html; charset=utf-8')
+                self.send_header('Cache-Control','no-store');self.send_header('Content-Length',str(len(data)));self.end_headers();self.wfile.write(data);return
             path=Path(super().translate_path(self.path))
             try:f.safe(path,library)
             except ValueError:self.send_error(403);return
