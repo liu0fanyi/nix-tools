@@ -2,6 +2,7 @@ import importlib.util,json,fcntl
 from pathlib import Path
 from unittest import mock
 import unittest
+from jsonschema import ValidationError
 import test_recipe_simple as base
 m=base.m
 spec=importlib.util.spec_from_file_location('worker',Path(__file__).resolve().parents[1]/'recipe-ai-worker.py');w=importlib.util.module_from_spec(spec);spec.loader.exec_module(w)
@@ -67,3 +68,16 @@ class WorkerChecks(unittest.TestCase):
  def test_saved_answer_wrong_input_binding_rejected(self):
   response=self.ready();d=self.root/'ai-work/BVTest123';d.mkdir(parents=True);m.f.atomic(d/'started.json',{'input_sha256':'wrong'});m.f.atomic(d/'answer.json',response['result'])
   with self.assertRaisesRegex(ValueError,'input changed'):w.worker(self.root,once=True)
+
+ def test_provider_schema_preserves_local_unique_validation(self):
+  response=self.ready();d=self.root/'ai-work/BVTest123';d.mkdir(parents=True)
+  packet=m.f.batch.load(self.root/'tasks/BVTest123/packet.json');converted=w.provider_schema(packet['result_schema'])
+  self.assertNotIn('uniqueItems',converted['properties']['steps']['items']['properties']['cue_ids']);self.assertTrue(packet['result_schema']['properties']['steps']['items']['properties']['cue_ids']['uniqueItems'])
+  response['result']['steps'][0]['cue_ids']=[1,1];m.f.atomic(d/'answer.json',response['result'])
+  with self.assertRaises(ValidationError):w.worker(self.root,once=True)
+  self.app=m.Simple(self.root,read_only=True);self.assertEqual(self.app.status()['counts'],{'waiting_extract':1})
+
+ def test_mechanical_chronology_sort_preserves_raw_answer(self):
+  response=self.ready();d=self.root/'ai-work/BVTest123';d.mkdir(parents=True);response['result']['steps'].reverse();m.f.atomic(d/'answer.json',response['result']);before=(d/'answer.json').read_bytes()
+  with mock.patch.object(w.subprocess,'Popen',side_effect=AssertionError('no second model call')):w.worker(self.root,once=True)
+  self.assertEqual((d/'answer.json').read_bytes(),before);out=m.f.batch.load(self.root/'results/BVTest123.json');self.assertEqual(out['steps'][0]['cue_ids'],[1])
