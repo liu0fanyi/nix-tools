@@ -1,4 +1,5 @@
-{ infrastructure, tagAll, dufsPlus, enabled ? true, configured ? false }:
+{ infrastructure, tagAll, dufsPlus, enabled ? true, configured ? false,
+  homeDirectory ? "/tmp/nativecheck", workspaceMounts ? {}, gatewayPort ? 18006, corePort ? 18081 }:
 let
   lock = builtins.fromJSON (builtins.readFile (infrastructure + "/flake.lock"));
   hm = builtins.fetchTree lock.nodes.home-manager.locked;
@@ -10,14 +11,15 @@ let
     configuration = {
       imports = [ (import (infrastructure + "/home-manager/native-stack.nix") { tagAllSource = tagAll; }) ];
       home.username = "nativecheck";
-      home.homeDirectory = "/tmp/nativecheck";
+      home.homeDirectory = homeDirectory;
       home.stateVersion = "25.11";
       services.tag-native-stack = if enabled then {
         enable = true;
         package = builtins.storePath report.package;
         frontendRoot = dufsPlus + "/dist";
-        workspace = "/tmp/nativecheck/work space % $ 中文";
-        authFile = "/tmp/nativecheck/auth.entries";
+        workspace = homeDirectory + "/work space % $ 中文";
+        authFile = homeDirectory + "/auth.entries";
+        inherit workspaceMounts gatewayPort corePort;
         syncMode = if configured then "configured" else "isolated";
         configurationFile = if configured then "/tmp/nativecheck/runtime node.toml" else null;
         environmentFile = if configured then "/tmp/nativecheck/private auth % $ 中文.env" else null;
@@ -28,4 +30,5 @@ in {
   generation = evaluated.activationPackage;
   assertions = map (item: item.assertion) evaluated.config.assertions;
   services = builtins.attrNames evaluated.config.systemd.user.services;
+  targets = builtins.attrNames evaluated.config.systemd.user.targets;
 }

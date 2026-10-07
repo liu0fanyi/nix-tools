@@ -30,3 +30,14 @@ T005d.1 组合模块传递 configurationFile、syncMode、environmentFile，环�
 默认 isolated 和独立状态保持。configured 从私有 TOML 保存现用身份/位置/CA/同步配置，
 当前双节点 gate 在 tag-all 用独立随机身份验证，未读取/复制生产配置密钥。
 尚需 Caddy 专用配对入口/发现和嵌套工作区适配、整套生命周期、实际宿主配置构建预演。
+
+## T005d 目录映射与生命周期
+
+组合模块调用 tag-all 权威 workspace-mounts.nix；可信 workspaceMounts 显式声明
+工作区相对目录与宿主源目录。只为 core/DUFS 开启私有用户和挂载命名空间，现有
+目录保持原样；ConditionPathIsDirectory 在启动前要求两端目录存在。
+一个默认停用的组合 target 负责三个服务的启动/停止/恢复，凭证仍只在私有运行期文件。
+Caddy 的 autosave 和数据目录限定到本组合私有状态；Unix socket 长度超限提前拒绝。
+实际生成单元仅替换测试名称，以临时合成数据验证读写、崩溃恢复、停止再启动和清理。
+Constitution Check：本机构建、产品模块单源、依赖锁定；无外部参考新增，无宿主
+switch、现网目录挂载或生产数据库操作。真实 Caddy 配对入口/发现及宿主完整构建仍待完成。

@@ -17,9 +17,14 @@ in {
     gatewayPort = lib.mkOption { type = lib.types.port; default = 18006; };
     corePort = lib.mkOption { type = lib.types.port; default = 18081; };
     fileSocket = lib.mkOption { type = lib.types.str; default = "${config.xdg.dataHome}/tag-all/native-workspace/files.sock"; };
+    workspaceBindPaths = lib.mkOption { type = lib.types.listOf lib.types.str; default = [];
+      description = "Validated mappings from the authoritative native stack module."; };
+    workspaceMountDirectories = lib.mkOption { type = lib.types.listOf lib.types.str; default = []; };
   };
   config = lib.mkIf cfg.enable {
     assertions = [
+      { assertion = builtins.stringLength cfg.fileSocket < 108;
+        message = "Native DUFS Unix socket path must fit the Linux 107-byte limit."; }
       { assertion = cfg.gatewayPort != cfg.corePort;
         message = "Native gateway and core require distinct loopback ports."; }
       { assertion = lib.hasPrefix "/" cfg.workspace && lib.hasPrefix "/" cfg.authFile;
@@ -30,7 +35,10 @@ in {
         message = "Native DUFS socket must be absolute and outside the served workspace."; }
     ];
     systemd.user.services.tag-native-files = {
-      Unit.Description = "Native workspace file service (private Unix socket)";
+      Unit = {
+        Description = "Native workspace file service (private Unix socket)";
+        ConditionPathIsDirectory = map (path: lib.replaceStrings [ "%" ] [ "%%" ] path) cfg.workspaceMountDirectories;
+      };
       Service = {
         ExecStartPre = command [ (pkgs.writeShellScript "native-file-socket-dir" ''
           set -eu
@@ -53,6 +61,8 @@ in {
         UMask = "0077";
         NoNewPrivileges = true;
         PrivateTmp = true;
+        PrivateUsers = lib.mkIf (cfg.workspaceBindPaths != []) true;
+        BindPaths = cfg.workspaceBindPaths;
       };
     };
     systemd.user.services.tag-native-workspace = {
@@ -77,6 +87,10 @@ in {
         UMask = "0077";
         NoNewPrivileges = true;
         PrivateTmp = true;
+        Environment = map (value: lib.escapeShellArg (lib.replaceStrings [ "%" ] [ "%%" ] value)) [
+          "XDG_CONFIG_HOME=${config.xdg.dataHome}/tag-all/native-workspace/config"
+          "XDG_DATA_HOME=${config.xdg.dataHome}/tag-all/native-workspace/data"
+        ];
       };
       Install.WantedBy = [ "default.target" ];
     };

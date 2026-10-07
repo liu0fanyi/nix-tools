@@ -1,5 +1,5 @@
 {
-  "generation": "/nix/store/wfsk1f5k97br4vpncan31nvzl68dh8db-home-manager-generation",
+  "generation": "/nix/store/9np206f9hprza5gzpicpa42lha7kb1m5-home-manager-generation",
   "default_disabled": true,
   "enabled_assertions": true,
   "core_package": "/nix/store/gcsmr22i4lfwagh7vymj3mfqjccg8gg1-tag-all-core-native-0.1.0",
@@ -7,13 +7,15 @@
   "dependencies_and_default_target": true,
   "private_socket_and_parameter_escaping": true,
   "unit_sha256": {
-    "tag-all-core": "42ba0dc77ae2fbf111aa3ad3ab858d1f1904ceae64ead7eaa2ff971649a13605",
-    "tag-native-files": "adf77fe4974415bb817845a64ff6a12f90d99f385aebfafb62509025c990314e",
-    "tag-native-workspace": "a796719b0afa95e3c5a686d04c3acb4b71d6cd55b550eb74d0875d22ab13d84b"
+    "tag-all-core": "9297fcae0242a0f507f7f0ef28733d905a381270cc29be6bc5f9d88931b9a23e",
+    "tag-native-files": "9bbe391383e10673bd10e58a4156ab812ac116b8e34bebe3d007110a8a8ea0de",
+    "tag-native-workspace": "7f5679aae9c708a28ff9062c6ebbd619782b5b77ae100efd5292a6a215ab10b3"
   },
-  "configured_generation": "/nix/store/p1xky3xa9b0bi4054a0blnf3dfig7vlb-home-manager-generation",
+  "configured_generation": "/nix/store/07wc88qrs144iq063ldq6836slyya68g-home-manager-generation",
   "configured_runtime_paths_only": true,
   "environment_path_escaping": true,
+  "escaping_mapping_rejected": true,
+  "whole_stack_target_is_autostart_owner": true,
   "activated": false,
   "real_login_boot_tested": false
 }

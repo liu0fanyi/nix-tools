@@ -1,0 +1,19 @@
+{
+  "generation": "/nix/store/wdhcyzz2bcbn64s5vnrk4bm783srcn7y-home-manager-generation",
+  "native_package": "/nix/store/gcsmr22i4lfwagh7vymj3mfqjccg8gg1-tag-all-core-native-0.1.0",
+  "actual_generated_service_units": true,
+  "runtime_names_only_changed": true,
+  "private_namespace_mapped_reads_and_writes": true,
+  "host_mount_target_unchanged": true,
+  "all_three_sigkill_recovery": [
+    "tag-all-core.service",
+    "tag-native-files.service",
+    "tag-native-workspace.service"
+  ],
+  "whole_target_stop_and_restart": true,
+  "tag_and_mapped_files_persist": true,
+  "production_touched": false,
+  "real_boot_tested": false,
+  "configured_peer_gateway_tested": false,
+  "owned_units_links_and_fixture_cleaned": true
+}

@@ -1,7 +1,9 @@
 # Factory: consumer supplies the product's authoritative module source.
 { tagAllSource }:
 { config, lib, ... }:
-let cfg = config.services.tag-native-stack;
+let
+  cfg = config.services.tag-native-stack;
+  mappings = import (tagAllSource + "/nix/workspace-mounts.nix") { inherit lib; inherit (cfg) workspace; mounts = cfg.workspaceMounts; };
 in {
   imports = [ (tagAllSource + "/nix/home-manager-core.nix") ./native-workspace.nix ];
   options.services.tag-native-stack = {
@@ -16,16 +18,36 @@ in {
     configurationFile = lib.mkOption { type = lib.types.nullOr lib.types.str; default = null; };
     syncMode = lib.mkOption { type = lib.types.enum [ "isolated" "configured" ]; default = "isolated"; };
     environmentFile = lib.mkOption { type = lib.types.nullOr lib.types.str; default = null; };
+    workspaceMounts = lib.mkOption { type = lib.types.attrsOf lib.types.str; default = {}; };
   };
   config = lib.mkIf cfg.enable {
     services.tag-all-core = {
       enable = true;
-      inherit (cfg) package workspace nodeId configurationFile syncMode environmentFile;
+      inherit (cfg) package workspace nodeId configurationFile syncMode environmentFile workspaceMounts;
       port = cfg.corePort;
     };
     services.tag-native-workspace = {
       enable = true;
       inherit (cfg) frontendRoot workspace authFile corePort gatewayPort;
+      workspaceBindPaths = mappings.paths;
+      workspaceMountDirectories = mappings.directories;
+    };
+    systemd.user.targets.tag-native-stack = {
+      Unit = {
+        Description = "Native private workspace services";
+        Wants = [ "tag-all-core.service" "tag-native-files.service" "tag-native-workspace.service" ];
+        Upholds = [ "tag-all-core.service" "tag-native-files.service" "tag-native-workspace.service" ];
+      };
+      Install.WantedBy = [ "default.target" ];
+    };
+    systemd.user.services.tag-all-core = {
+      Unit.PartOf = [ "tag-native-stack.target" ];
+      Install.WantedBy = lib.mkForce [];
+    };
+    systemd.user.services.tag-native-files.Unit.PartOf = [ "tag-native-stack.target" ];
+    systemd.user.services.tag-native-workspace = {
+      Unit.PartOf = [ "tag-native-stack.target" ];
+      Install.WantedBy = lib.mkForce [];
     };
     assertions = [
       { assertion = config.services.tag-all-core.workspace == config.services.tag-native-workspace.workspace;

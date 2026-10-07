@@ -12,6 +12,9 @@ check-native-install tag_all dufs_plus:
 check-native-migration tag_all:
     python3 scripts/check-native-migration.py "$1"
 
+check-native-stack-runtime tag_all dufs_plus:
+    python3 scripts/check-native-stack-runtime.py "$1" "$2"
+
 # 固定 PC 节点只读预演，无 --apply。
 plan-native-pc:
     python3 scripts/plan-native-pc.py

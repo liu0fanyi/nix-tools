@@ -29,3 +29,7 @@
 显式 configured 配置透传与运行期认证文件路径已实现；默认 isolated 保持。两种安装产物
 构建通过，产品真实双节点配对/CA/签名/重启证据见 [peer-results.json](peer-results.json)。
 该证据使用 Python TLS 夹具，实际 Caddy 配对入口、发现/路径适配仍未完成，不能切换现网。
+
+目录映射/生命周期验收见 [stack-runtime-results.json](stack-runtime-results.json)：
+使用实际生成单元，在自有临时状态验证映射读写、三项崩溃恢复、整套停止再启动和清理。
+不改变宿主工作区目录；未触碰生产服务。配置入口仍默认停用，实际开机/切换未验。

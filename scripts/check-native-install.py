@@ -29,13 +29,19 @@ def main():
     assert not any(name in disabled for name in ['tag-all-core', 'tag-native-files', 'tag-native-workspace'])
     assertions = json.loads(run(['nix', 'eval', '--impure', '--json', '--expr', '(' + expression + 'enabled = true; }).assertions']))
     assert all(assertions)
+    invalid = subprocess.run(['nix', 'eval', '--impure', '--json', '--expr', '(' + expression + 'workspaceMounts = { "../escape" = "/tmp/source"; }; }).assertions'], capture_output=True, text=True, timeout=300)
+    assert invalid.returncode != 0 and 'Native workspace mappings require' in invalid.stderr, 'Reject escaping workspace target before activation'
     generation = Path(run(['nix-build', '--no-out-link', '-A', 'generation', '--expr', expression + 'enabled = true; }']))
     unit_root = generation / 'home-files/.config/systemd/user'
     units = {name: (unit_root / (name + '.service')).read_text()
              for name in ['tag-all-core', 'tag-native-files', 'tag-native-workspace']}
     native = json.loads((args.tag_all / '.devenv/native-core-results.json').read_text())
     assert native['package'] + '/bin/tag-all-core' in units['tag-all-core']
-    assert 'WantedBy=default.target' in units['tag-all-core'] and 'WantedBy=default.target' in units['tag-native-workspace']
+    target_unit = (unit_root / 'tag-native-stack.target').read_text()
+    assert 'WantedBy=default.target' in target_unit
+    assert 'Upholds=tag-all-core.service' in target_unit
+    for text in units.values():
+        assert 'PartOf=tag-native-stack.target' in text and 'WantedBy=default.target' not in text
     for upstream in ['tag-all-core', 'tag-native-files']:
         assert 'Requires=' + upstream + '.service' in units['tag-native-workspace']
     assert 'work space %% $$ 中文' in units['tag-all-core'] and 'work space %% $$ 中文' in units['tag-native-files']
@@ -54,7 +60,8 @@ def main():
               'private_socket_and_parameter_escaping': True,
               'unit_sha256': {name: hashlib.sha256(text.encode()).hexdigest() for name, text in units.items()},
               'configured_generation': str(configured_generation), 'configured_runtime_paths_only': True,
-              'environment_path_escaping': True,
+              'environment_path_escaping': True, 'escaping_mapping_rejected': True,
+              'whole_stack_target_is_autostart_owner': True,
               'activated': False, 'real_login_boot_tested': False}
     output.write_text(json.dumps(report, indent=2) + '\n')
     print('Native combination installation generation verified, not activated: ' + str(output))
