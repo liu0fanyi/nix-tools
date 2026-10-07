@@ -215,3 +215,10 @@ Constitution Check：代码在本机 nix-tools、手册 docs、需求/契约 spe
 原网页直接复用 HTML video 和登录播放能力；document-start/page 用户脚本只旁观主页面 MediaSource/SourceBuffer 正常缓冲的分片 MP4 元数据，不额外请求媒体、不保留视频内容。解析真实帧时间、B 帧组合偏移、编辑表与timestampOffset；只在时间连续且已缓冲的帧区间内双向定位，等待画面呈现，未知来源或缺口拒绝。Zen 的暂停帧回调时间可能等于请求跳转时间，不能据此搜索邻帧。程序以隔离 Zen/合成恒定与变帧率媒体、B帧、偏移场景对照独立ffmpeg解码图片验证；真实 B 站和用户脚本管理器组合由用户安装刷新后确认，不擅写其浏览器配置。
 
 Constitution Check：PC 权威源、沿用010工具范围；docs/specs 分层，无新外部参考原件或 Git 仓，不变锁文件/系统、不部署。私有字幕/封面/AI回复留 Downloads。只同步本工程规范/当前手册/生成看板到 todos/nix-tools，预演与 checksum；保护原有 AGENTS/README/deploy docs/flake.lock/home.nix 改动。
+
+
+### 阶段 T：先清理旧视频，再测试十道精简菜谱
+
+限定本次账号根目录的下载原件，以及四份已由位置/文件名/大小核对的试验输入原件，写私有逐文件审计后检查 inode/大小/mtime 再 unlink；已有字幕、封面、菜谱及派生步骤片段不删除。后台实际进程核对，避免旧下载重建原件。新 ROOT 沿用 Simple 的单写者数据库和不可变字幕/AI输入绑定；低频采集每条保持平台请求间隔，视频之间另留间隔。串行准备字幕/封面时释放每条完成后的锁，当前会话读取完整字幕进行单次新提取并导入，未接入外部模型。
+
+真实十道验收采用脚本核验引用、摘要、封面、索引及重建，不新增模型复审。只切换本任务自有 8765 预览；无需安装浏览器脚本或修改真实 profile。Constitution Check：PC 本仓库 specs 权威源，现有正常依赖，无新增参考原件/Git、无锁文件或系统修改；私有字幕/封面/AI结果/删除清单留 Downloads，公开 Git 与 NUC 镜像只包含本轮 specs 与手册验收摘要，镜像严格限于 todos/nix-tools，保护其他任务未提交文件。

@@ -1,6 +1,6 @@
 # 精简菜谱：AI 字幕、材料、做法与原封面
 
-推荐入口是 `scripts/recipe-simple`。它使用独立数据目录，先取 B 站 `ai-zh` 字幕和原封面，仅做一次 AI 文本整理，再生成 HTML、JSON 与食材搜索目录。不下载视频、不 OCR、不生成步骤片段，不做独立文本或视觉复审。旧 `recipe-flow` 和旧视频保持可用，不原地迁移。要求与验收见[精简契约](../specs/010-host-configuration/contracts/video-recipe-simple.md)。
+推荐入口是 `scripts/recipe-simple`。它使用独立数据目录，先取 B 站 `ai-zh` 字幕和原封面，仅做一次 AI 文本整理，再生成 HTML、JSON 与食材搜索目录。不下载视频、不 OCR、不生成步骤片段，不做独立文本或视觉复审。旧 `recipe-flow` 仍可使用；精简入口不原地迁移或自动删除旧数据。已有原视频可按用户明确指令单独清理。要求与验收见[精简契约](../specs/010-host-configuration/contracts/video-recipe-simple.md)。
 
 ## 一次处理与续跑
 
@@ -69,3 +69,22 @@ python scripts/tests/check_recipe_frame_zen.py --output /tmp/recipe-frame-check
 ```
 
 两个浏览器检查只打开临时 Zen profile、使用本地合成视频，输出 report.json、截图和日志到指定目录；不读取真实 profile 或 Cookie。要求本机已有 Zen、Node、ffmpeg，以及入口环境的 Pillow。输出目录每次用新路径，避免旧截图误判。按住检查覆盖默认暂停、松键/失焦暂停、0.25× 慢放、输入不抢键、无索引拒绝伪逐帧、截图落盘、跨域失败及恢复原控制。帧检查对恒定/变帧率、时间偏移和带符号 B 帧偏移的流，逐一用浏览器显示图片匹配独立 ffmpeg 解码帧，核验前后单帧及按住播放后暂停的衔接；不能仅验证 currentTime 改变。
+
+
+## 十道精简样稿
+
+2026-10-07 的十道样稿数据在 `/home/liou/Downloads/菜谱精简试验-10道-20261007`，本任务本地预览为 `http://127.0.0.1:8765/index.html`。目录提供食材搜索、同名食材别名及可选食材筛选，菜谱只有原封面、材料、步骤和原视频时间链接。字幕未明确用量显示“未明确”，疑点保留在说明中。该轮十份均来自平台AI字幕重新整理，未下载视频或复用旧OCR菜谱。
+
+查看进度：
+
+```bash
+/home/liou/nix-tools/scripts/recipe-simple --root /home/liou/Downloads/菜谱精简试验-10道-20261007 status
+```
+
+本地服务退出后重启：
+
+```bash
+/home/liou/nix-tools/scripts/recipe-simple --root /home/liou/Downloads/菜谱精简试验-10道-20261007 serve --port 8765
+```
+
+原视频删除仅针对这轮用户明确授权的账号原下载和四份试验输入副本，逐文件审计留样稿ROOT；既有字幕和旧菜谱保留。试验结果及验收计数以[阶段T任务](../specs/010-host-configuration/tasks.md)为准，完整模型服务无人值守及全库执行不包含在这轮十道验收。
