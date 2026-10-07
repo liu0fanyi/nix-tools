@@ -1,6 +1,6 @@
 # 精简菜谱与原网页键盘浏览契约
 
-新入口 recipe-simple，独立 ROOT，唯一处理链：平台 ai-zh 字幕与原视频封面 → 单次 AI 材料/用量/制作过程提取 → HTML/JSON/食材目录。不下载视频/音频、不 OCR、不切片、不抽图、不执行独立文本/视觉复审，不包含视频释放或人工认证门槛。旧流程、旧档案及原视频保留。缺中文 AI 字幕 skipped；风控/网络/登录/封面错误 failed 可 retry；每条检查点可续跑，单写者。
+新入口 recipe-simple，独立 ROOT，唯一处理链：平台 ai-zh 字幕与原视频封面 → 单次 AI 材料/用量/制作过程提取 → HTML/JSON/食材目录。不下载视频/音频、不 OCR、不切片、不抽图、不执行独立文本/视觉复审，不包含视频释放或人工认证门槛。旧流程和旧档案不自动迁移；已有原视频仅按用户明确清理授权处理。缺中文 AI 字幕 skipped；风控/网络/登录/封面错误 failed 可 retry；每条检查点可续跑，单写者。
 
 AI 返回 title、ingredients[{name,amount:null|string,optional:boolean}]、steps[{text,cue_ids}]、notes。用量不明用 null，误识别保留 notes，不为凑材料或过程猜数字；替代食材 optional=true 并在过程/notes注明替代条件。Schema 见 video-recipe-simple.schema.json，控制器验证引用真实、非空、时间顺序，按引用脚本生成每步原视频时间范围。不再生成事实图谱、逐项 review 记录或 frame 候选。菜谱统一标“AI 字幕整理”，不冒称已独立或人工核验。
 
@@ -19,3 +19,8 @@ AI 输入包 task_id/input_sha256/source/transcript/prompt/result_schema；结�
 ## 实现范围与验证结论
 
 0.2.0 的单轨道分片 MP4 邻帧及按住播放/调速/截图已实现。要求用户安装后刷新原页、以page上下文足够早运行；未捕获初始化、Worker缓冲、非MP4、sequence模式、裁剪窗口、复杂编辑表、缺失相邻分片/未缓冲帧，均报告不可用，不猜帧或静默跳秒。公开规格/测试不保存真实字幕、封面、Cookie或原视频。真实 B 站安装后确认独立于本机合成媒体程序验证。
+
+
+## 全量源采集
+
+`collect --max-pending 10 --interval 60`在pending上限退出；增加`--watch`则等待AI输出导入后继续采集。仅queued可自动准备，waiting_extract检查点与published不重取；缺字幕skipped，其他错误failed并停止。独立`.collector.lock`防重复采集，普通写锁每条结束后释放；导入与采集冲突时等待，不绕过锁。`ROOT/collect.stop`存在时在当前请求结束的检查点退出；移除停止标记再执行collect可续跑。后台不运行模型或下载视频，全量完成必须按实际菜谱发布及失败/跳过对账判断。

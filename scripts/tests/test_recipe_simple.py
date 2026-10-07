@@ -84,4 +84,35 @@ class SimpleChecks(unittest.TestCase):
         response=self.response();response['result']['title']='</script><script>bad()</script>';self.send(response)
         page=(self.root/'library/recipes/BVTest123/recipe.html').read_text();self.assertNotIn('<script>bad()',page);self.assertIn('&lt;script&gt;',page)
 
+    def test_collector_bound_skips_waiting_and_resumes(self):
+        self.prepare()
+        next_entry={**self.entry,'id':'BVNext123'};m.f.atomic(self.manifest,[next_entry]);self.app.add(self.manifest)
+        with mock.patch.object(self.app,'prepare',side_effect=lambda entry:self.app.packet(entry['id']).parent.mkdir(parents=True)) as prepare:
+            self.assertEqual(self.app.prepare_pending(1)['phase'],'waiting_for_ai');prepare.assert_not_called()
+            result=self.app.prepare_pending(2);self.assertEqual(result['phase'],'prepared');self.assertEqual(result['id'],'BVNext123')
+            self.assertEqual(self.app.status()['counts'],{'waiting_extract':2})
+        self.app.close();self.app=m.Simple(self.root)
+        with mock.patch.object(self.app,'prepare',side_effect=AssertionError('must not repeat')):
+            self.assertEqual(self.app.prepare_pending(2)['phase'],'waiting_for_ai')
+    def test_collector_skip_failure_and_stop(self):
+        with mock.patch.object(self.app,'prepare',side_effect=m.f.NoAISubtitles()):self.assertEqual(self.app.prepare_pending(10)['phase'],'skipped')
+        self.assertEqual(self.app.prepare_pending(10)['phase'],'sources_finished')
+        self.app.update(self.entry['id'],'queued')
+        with mock.patch.object(self.app,'prepare',side_effect=ValueError('login required')):self.assertEqual(self.app.prepare_pending(10)['phase'],'failed')
+        self.assertEqual(self.app.status()['counts'],{'failed':1})
+        self.app.close();self.app=m.Simple(self.root)
+        (self.root/'collect.stop').write_text('')
+        with mock.patch.object(m.Simple,'prepare_pending',side_effect=AssertionError('stop before network')):
+            self.assertEqual(m.collect(self.root)['phase'],'stopped')
+    def test_collector_defaults_bound_watch_and_error_exit(self):
+        self.app.close();self.app=m.Simple(self.root)
+        # Producer cannot write while the ordinary writer is busy.
+        with mock.patch.object(m,'Simple',side_effect=[ValueError('simple workflow busy'),self.app]),mock.patch.object(self.app,'prepare_pending',return_value={'phase':'waiting_for_ai','pending':10}),mock.patch.object(m.time,'sleep') as sleep:
+            self.assertEqual(m.collect(self.root)['phase'],'waiting_for_ai');sleep.assert_called_once_with(5)
+        self.app=m.Simple(self.root)
+        with mock.patch.object(m,'Simple',return_value=self.app),mock.patch.object(self.app,'prepare_pending',side_effect=[{'phase':'waiting_for_ai','pending':10},{'phase':'failed','error':'HTTP 412'}]),mock.patch.object(m.time,'sleep') as sleep:
+            self.assertEqual(m.collect(self.root,watch=True)['phase'],'failed');sleep.assert_called_once_with(30)
+        self.app=m.Simple(self.root)
+        with self.assertRaisesRegex(ValueError,'interval'):m.collect(self.root,interval=1)
+
 if __name__=='__main__':unittest.main()

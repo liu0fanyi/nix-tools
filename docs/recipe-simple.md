@@ -88,3 +88,30 @@ python scripts/tests/check_recipe_frame_zen.py --output /tmp/recipe-frame-check
 ```
 
 原视频删除仅针对这轮用户明确授权的账号原下载和四份试验输入副本，逐文件审计留样稿ROOT；既有字幕和旧菜谱保留。试验结果及验收计数以[阶段T任务](../specs/010-host-configuration/tasks.md)为准，完整模型服务无人值守及全库执行不包含在这轮十道验收。
+
+
+## 全量库与低频采集
+
+全量ROOT为`/home/liou/Downloads/菜谱精简库-老东北美食`，已有清单4159条，继承已完成十道，预览仍为`http://127.0.0.1:8765/index.html`。
+
+```bash
+/home/liou/nix-tools/scripts/recipe-simple --root /home/liou/Downloads/菜谱精简库-老东北美食 status
+tail -f /home/liou/Downloads/菜谱精简库-老东北美食/采集.log
+```
+
+状态分别显示published菜谱、waiting_extract待AI整理、queued待采集、skipped无字幕、failed错误。后台只采集字幕/封面，最多准备十份待AI字幕，每个视频之间再等一分钟；当前会话导入AI结果后才腾出槽继续取下一条。退出会话后，采集达到上限会等待，不会自行生成四千道菜谱。
+
+停止采集（当前请求结束后退出）：
+
+```bash
+touch /home/liou/Downloads/菜谱精简库-老东北美食/collect.stop
+```
+
+续跑（先确认旧采集已退出；重复运行会被锁拒绝）：
+
+```bash
+rm -f /home/liou/Downloads/菜谱精简库-老东北美食/collect.stop
+/home/liou/nix-tools/scripts/recipe-simple --root /home/liou/Downloads/菜谱精简库-老东北美食 collect --max-pending 10 --interval 60 --watch
+```
+
+采集遇错记failed并退出，不自动重复请求。查明网络/登录/风控问题后可对对应BV ID执行已有retry命令，再继续collect；缺字幕不会进入AI阶段。sources_finished只是所有排队来源已处理，不代表全部菜谱发布。

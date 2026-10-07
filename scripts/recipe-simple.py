@@ -10,6 +10,7 @@ from pathlib import Path
 import re
 import shutil
 import sqlite3
+import time
 import urllib.parse
 import urllib.request
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -160,6 +161,22 @@ class Simple:
         except f.NoAISubtitles:self.update(vid,'skipped','no_ai_zh_subtitles')
         except Exception as exc:self.update(vid,'failed',str(exc));raise
         return self.status()
+    def prepare_pending(self,max_pending):
+        if max_pending<1:raise ValueError('max_pending must be positive')
+        pending=self.db.execute("SELECT count(*) FROM jobs WHERE state='waiting_extract'").fetchone()[0]
+        if pending>=max_pending:return {'phase':'waiting_for_ai','pending':pending}
+        row=self.db.execute("SELECT * FROM jobs WHERE state='queued' ORDER BY rowid LIMIT 1").fetchone()
+        if not row:return {'phase':'sources_finished','pending':pending}
+        vid=row['id']
+        try:
+            if (self.root/'results'/(vid+'.json')).exists():self.publish(vid);return {'phase':'recovered','id':vid}
+            if shutil.disk_usage(self.root).free<256*1024**2:raise ValueError('less than 256 MiB free')
+            self.prepare(json.loads(row['entry']));self.update(vid,'waiting_extract')
+            return {'phase':'prepared','id':vid,'pending':pending+1}
+        except f.NoAISubtitles:
+            self.update(vid,'skipped','no_ai_zh_subtitles');return {'phase':'skipped','id':vid}
+        except Exception as exc:
+            self.update(vid,'failed',str(exc));return {'phase':'failed','id':vid,'error':str(exc)}
     def accept(self,path):
         response=f.batch.load(path)
         if not isinstance(response,dict) or set(response)!={'task_id','input_sha256','processor','model','result'} or not isinstance(response['processor'],str) or not response['processor'].strip() or (response['model'] is not None and not isinstance(response['model'],str)):raise ValueError('invalid response envelope')
@@ -242,13 +259,39 @@ def serve(root,port):
     print(f'http://127.0.0.1:{server.server_port}/index.html',flush=True);server.serve_forever()
 
 
+def collect(root,max_pending=10,interval=60,watch=False):
+    if max_pending<1 or interval<30:raise ValueError('max_pending >= 1 and interval >= 30 required')
+    root=f.safe(root,root)
+    lock=f.safe(root/'.collector.lock',root).open('a')
+    try:
+        try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+        except BlockingIOError:raise ValueError('source collector already running')
+        while True:
+            if f.safe(root/'collect.stop',root).exists():result={'phase':'stopped'}
+            else:
+                try:app=Simple(root)
+                except ValueError as exc:
+                    if str(exc)!='simple workflow busy':raise
+                    time.sleep(5);continue
+                try:result=app.prepare_pending(max_pending)
+                finally:app.close()
+            f.atomic(root/'collector.json',{**result,'updated_at':time.time(),'max_pending':max_pending,'interval':interval})
+            print(json.dumps(result,ensure_ascii=False),flush=True)
+            if result['phase'] in ('failed','sources_finished','stopped'):return result
+            if result['phase']=='waiting_for_ai' and not watch:return result
+            time.sleep(30 if result['phase']=='waiting_for_ai' else interval)
+    finally:lock.close()
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--root',type=Path,required=True);sub=parser.add_subparsers(dest='command',required=True)
     init=sub.add_parser('init');init.add_argument('--browser');add=sub.add_parser('add');add.add_argument('manifest',type=Path)
     sub.add_parser('next');sub.add_parser('status');imp=sub.add_parser('import');imp.add_argument('response',type=Path)
+    collector=sub.add_parser('collect');collector.add_argument('--max-pending',type=int,default=10);collector.add_argument('--interval',type=int,default=60);collector.add_argument('--watch',action='store_true')
     retry=sub.add_parser('retry');retry.add_argument('--job',required=True);sub.add_parser('rebuild');preview=sub.add_parser('serve');preview.add_argument('--port',type=int,default=8765)
     args=parser.parse_args()
     if args.command=='serve':serve(args.root,args.port);return
+    if args.command=='collect':collect(args.root,args.max_pending,args.interval,args.watch);return
     app=Simple(args.root,read_only=args.command=='status')
     try:
         if args.command=='init':app.init(args.browser);result=app.status()
