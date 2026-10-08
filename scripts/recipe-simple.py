@@ -276,9 +276,10 @@ def recent_events(root):
             except (ValueError,TypeError):continue
             if not isinstance(data,dict):continue
             phase=data.get('phase' if stage=='source' else 'state')
-            if phase not in EVENTS:continue
+            if not isinstance(phase,str) or phase not in EVENTS:continue
             vid=data.get('id');vid=vid if isinstance(vid,str) and re.fullmatch(r'BV[A-Za-z0-9]+',vid) else None
-            reason=(data.get('error_code') if data.get('error_code') in REASONS else failure_code(data.get('error',''))) if phase=='failed' else None
+            code=data.get('error_code')
+            reason=(code if isinstance(code,str) and code in REASONS else failure_code(data.get('error',''))) if phase=='failed' else None
             row={'stage':stage,'phase':phase,'video_id':vid,'time':event_time(data.get('updated_at')),'message':EVENTS[phase]+('：'+REASONS[reason] if reason else '')}
             if compact and all(compact[-1][k]==row[k] for k in ('phase','video_id','message')):compact[-1]=row
             else:compact.append(row)

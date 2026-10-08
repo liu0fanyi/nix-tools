@@ -155,7 +155,7 @@ class SimpleChecks(unittest.TestCase):
         self.app.close();self.app=m.Simple(self.root)
         secret='Cookie: SECRET_TOKEN /home/private </script>'
         m.f.atomic(self.root/'collector.json',{'phase':'failed','updated_at':1000,'error':'image file is truncated '+secret,'id':'BVTest123'})
-        (self.root/'采集.log').write_text(json.dumps({'phase':'failed','id':'BVTest123','error':'image file is truncated '+secret})+'\n'+secret+'\n')
+        (self.root/'采集.log').write_text(json.dumps({'phase':'failed','id':'BVTest123','error':'image file is truncated '+secret})+'\n'+secret+'\n'+json.dumps({'phase':[],'error':secret})+'\n')
         (self.root/'AI整理.log').write_text(''.join(json.dumps({'state':'waiting_for_subtitles','id':None})+'\n' for _ in range(5000)))
         m.f.atomic(self.root/'ai-worker.json',{'state':'waiting_for_subtitles','updated_at':2000,'model':'test'})
         with (self.root/'.ai-worker.lock').open('a') as lock:
