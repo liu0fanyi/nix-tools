@@ -38,3 +38,8 @@ GET `/progress.html`显示已生成菜谱与来源处理两条进度条、publis
 另行获得模型目的地的数据传输授权后，可用既有CLI登录进行非交互式单次全文提取。消费者独占`.ai-worker.lock`，每条任务新上下文、只读沙盒、stdin输入和Schema输出，不持有数据库写锁等待推理；导入阶段使用原输入/输出绑定与cue校验。已有完整响应复用，未完成尝试拒绝默默重推；错误停止，详细日志仅本地，停止标记在任务边界生效。原进度API增添ai.active/state/model/current_id白名单，按实际锁判断活性，不输出提示词、Cookie、日志或私有路径。真实模型准入未通过不能标自动流程实测完成。
 
 发送Schema允许移除服务端不支持的uniqueItems；本地原始Schema及真实cue校验不得放宽。发布步骤按真实字幕起点稳定排序，原始答案须保留，不改材料或步骤文本，不添加复审模型调用。
+
+
+### 进度事件白名单
+
+progress新增events（至多80项）：stage、phase、video_id、time和受控message，旧记录时间可null；每阶段日志读取量≤64KiB，不直接暴露日志路径或全文。health为state/reason/last_progress_at；采集停止且仍有来源排队即blocked，即使AI进程活着。collector/ai的last_activity_at是状态报告时间，不得当作菜谱推进时间。错误正文仍只留本地，页面只显示固定类别，日志文本禁止按HTML插入。

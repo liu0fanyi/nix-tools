@@ -151,4 +151,22 @@ class SimpleChecks(unittest.TestCase):
             self.assertEqual(error.exception.code,403)
         finally:proc.terminate();proc.wait(timeout=10)
 
+    def test_event_tail_redaction_collapse_and_blocked_health(self):
+        self.app.close();self.app=m.Simple(self.root)
+        secret='Cookie: SECRET_TOKEN /home/private </script>'
+        m.f.atomic(self.root/'collector.json',{'phase':'failed','updated_at':1000,'error':'image file is truncated '+secret,'id':'BVTest123'})
+        (self.root/'采集.log').write_text(json.dumps({'phase':'failed','id':'BVTest123','error':'image file is truncated '+secret})+'\n'+secret+'\n')
+        (self.root/'AI整理.log').write_text(''.join(json.dumps({'state':'waiting_for_subtitles','id':None})+'\n' for _ in range(5000)))
+        m.f.atomic(self.root/'ai-worker.json',{'state':'waiting_for_subtitles','updated_at':2000,'model':'test'})
+        with (self.root/'.ai-worker.lock').open('a') as lock:
+            m.fcntl.flock(lock,m.fcntl.LOCK_EX|m.fcntl.LOCK_NB);p=m.progress(self.root)
+        self.assertTrue(p['ai']['active']);self.assertEqual(p['health']['state'],'blocked');self.assertEqual(p['health']['reason'],'source_failed');self.assertEqual(p['collector']['state'],'failed')
+        self.assertEqual(len(p['events']),2);self.assertEqual(p['events'][0]['time'],1000);self.assertIn('封面图片解码失败',p['events'][0]['message']);self.assertNotIn('SECRET',json.dumps(p));self.assertNotIn('/home/private',json.dumps(p))
+    def test_events_unknown_timestamp_and_progress_not_heartbeat(self):
+        self.app.close();self.app=m.Simple(self.root)
+        (self.root/'采集.log').write_text(json.dumps({'phase':'prepared','id':'BVTest123'})+'\n')
+        (self.root/'AI整理.log').write_text(json.dumps({'state':'published','id':'BVTest123','updated_at':1500})+'\n')
+        m.f.atomic(self.root/'ai-worker.json',{'state':'waiting_for_subtitles','updated_at':2500})
+        p=m.progress(self.root);self.assertIsNone(p['events'][0]['time']);self.assertEqual(p['health']['last_progress_at'],1500)
+
 if __name__=='__main__':unittest.main()

@@ -243,6 +243,52 @@ def render_recipe(recipe):
     return '''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'''+esc(recipe['title'])+'''</title><style>body{margin:0;background:#f5f3ee;color:#282d28;font:17px/1.8 system-ui,sans-serif}main{max-width:850px;margin:auto;padding:26px}h1{font-size:32px}img{display:block;width:100%;max-height:390px;object-fit:contain;border-radius:12px;background:#eee}a{color:#476833}li{margin:12px 0}small,.meta{color:#687166;font-size:14px}details{margin-top:28px;background:#fff;padding:14px;border-radius:8px}section{background:white;padding:12px 24px;margin:20px 0;border-radius:10px}</style><main><nav><a href="../../index.html">← 菜谱目录</a> · <a href="../../player-guide.html">原视频键盘浏览</a></nav><h1>'''+esc(recipe['title'])+'''</h1><p class="meta">'''+esc(source['author'])+''' · AI 字幕整理</p><img src="cover.jpg" alt="原视频封面"><p><a target="_blank" rel="noopener noreferrer" href="'''+esc(source['url'])+'''">观看原视频 ↗</a></p><section><h2>材料</h2><ul>'''+ingredients+'''</ul></section><section><h2>制作过程</h2><ol>'''+steps+'''</ol></section>'''+notes+'''<p class="meta">用量未明确时保留未知。时间链接是原视频位置，不是烹饪时长。<a href="recipe.json">菜谱 JSON</a></p></main></html>'''
 
 
+EVENTS={'prepared':'字幕和封面已就绪','recovered':'已恢复并发布保存结果','skipped':'没有中文AI字幕，跳过','waiting_for_ai':'缓存已满，等待AI整理','sources_finished':'来源队列已结束','stopped':'任务已停止','failed':'任务失败，已停止','extracting':'开始AI字幕整理','publishing':'开始校验和发布','published':'菜谱发布完成','waiting_for_subtitles':'等待下一份字幕','finished':'AI队列已处理完毕'}
+REASONS={'cover_decode':'封面图片解码失败','rate_limited':'平台限流或风控','authentication':'登录或认证失败','timeout':'请求超时','disk_full':'磁盘空间不足','model_error':'模型调用失败','invalid_result':'AI结果未通过校验','unknown':'任务发生错误，详情留本地日志'}
+
+def failure_code(value):
+    text=str(value).lower()
+    if 'truncated' in text or 'cannot identify image' in text:return 'cover_decode'
+    if any(x in text for x in ('http 412','http 429','status code 412','status code 429')):return 'rate_limited'
+    if any(x in text for x in ('unauthorized','login','http 401','authentication')):return 'authentication'
+    if 'timeout' in text or 'timed out' in text:return 'timeout'
+    if 'less than 256' in text or 'no space left' in text:return 'disk_full'
+    if 'codex execution failed' in text:return 'model_error'
+    if any(x in text for x in ('cue','schema','chronological','input changed','incomplete')):return 'invalid_result'
+    return 'unknown'
+
+def event_time(value):
+    return value if isinstance(value,(int,float)) and not isinstance(value,bool) and 0<value<100000000000 else None
+
+def recent_events(root):
+    # Read a bounded tail, never return raw stderr, transcript, paths or headers.
+    rows=[]
+    for stage,name,marker_name in [('source','采集.log','collector.json'),('ai','AI整理.log','ai-worker.json')]:
+        path=f.safe(Path(root)/name,Path(root));marker=f.safe(Path(root)/marker_name,Path(root))
+        snapshot=f.batch.load(marker) if marker.exists() else {}
+        if not path.exists():continue
+        with path.open('rb') as stream:
+            stream.seek(0,2);size=stream.tell();offset=max(0,size-65536);stream.seek(offset);lines=stream.read(65536).decode('utf-8',errors='replace').splitlines()
+        if offset:lines=lines[1:]
+        compact=[]
+        for line in lines[-256:]:
+            try:data=json.loads(line)
+            except (ValueError,TypeError):continue
+            if not isinstance(data,dict):continue
+            phase=data.get('phase' if stage=='source' else 'state')
+            if phase not in EVENTS:continue
+            vid=data.get('id');vid=vid if isinstance(vid,str) and re.fullmatch(r'BV[A-Za-z0-9]+',vid) else None
+            reason=(data.get('error_code') if data.get('error_code') in REASONS else failure_code(data.get('error',''))) if phase=='failed' else None
+            row={'stage':stage,'phase':phase,'video_id':vid,'time':event_time(data.get('updated_at')),'message':EVENTS[phase]+('：'+REASONS[reason] if reason else '')}
+            if compact and all(compact[-1][k]==row[k] for k in ('phase','video_id','message')):compact[-1]=row
+            else:compact.append(row)
+        if compact:
+            last=compact[-1]
+            if last['phase']==snapshot.get('phase' if stage=='source' else 'state') and last['video_id']==snapshot.get('id') and last['time'] is None:last['time']=event_time(snapshot.get('updated_at'))
+        rows.extend(compact[-40:])
+    return sorted(rows,key=lambda r:r['time'] or 0)[-80:]
+
+
 def progress(root):
     app=Simple(Path(root),read_only=True)
     try:
@@ -254,14 +300,16 @@ def progress(root):
         with lock_path.open('rb') as lock:
             try:fcntl.flock(lock,fcntl.LOCK_SH|fcntl.LOCK_NB)
             except BlockingIOError:active=True
-    marker=f.safe(Path(root)/'collector.json',Path(root));collector={}
+    marker=f.safe(Path(root)/'collector.json',Path(root));collector={};source_snapshot={}
     if marker.exists():
-        data=f.batch.load(marker)
+        data=f.batch.load(marker);source_snapshot=data
+        collector['last_activity_at']=event_time(data.get('updated_at'))
         for key in ('max_pending','interval'):
             value=data.get(key)
             if isinstance(value,int) and not isinstance(value,bool) and value>0:collector[key]=value
     pending=counts['waiting_extract']
     if active:state='waiting_for_ai' if pending>=collector.get('max_pending',10) else 'collecting'
+    elif source_snapshot.get('phase')=='failed':state='failed'
     elif counts['queued']==0:state='sources_finished'
     else:state='stopped'
     ai_active=False;ai_lock=f.safe(Path(root)/'.ai-worker.lock',Path(root))
@@ -271,7 +319,7 @@ def progress(root):
             except BlockingIOError:ai_active=True
     ai_marker=f.safe(Path(root)/'ai-worker.json',Path(root));ai={'active':ai_active,'state':'not_configured'}
     if ai_marker.exists():
-        data=f.batch.load(ai_marker);phase=data.get('state')
+        data=f.batch.load(ai_marker);phase=data.get('state');ai['last_activity_at']=event_time(data.get('updated_at'))
         allowed={'extracting','publishing','published','waiting_for_subtitles','failed','finished','stopped'}
         ai['state']=phase if phase in allowed and (ai_active or phase in {'failed','finished','stopped'}) else 'stopped'
         model=data.get('model')
@@ -279,8 +327,18 @@ def progress(root):
         vid=data.get('id')
         if ai_active and isinstance(vid,str) and re.fullmatch(r'BV[A-Za-z0-9]+',vid):ai['current_id']=vid
     total=sum(counts.values());settled=counts['published']+counts['skipped']
+    events=recent_events(root);last_progress=None
+    index=f.safe(Path(root)/'library/search-index.json',Path(root))
+    if counts['published'] and index.exists():last_progress=index.stat().st_mtime
+    for row in events:
+        if row['phase'] in {'prepared','recovered','published','skipped'} and row['time']:last_progress=max(last_progress or 0,row['time'])
+    reason=None
+    if counts['queued'] and not active:reason='source_failed' if state=='failed' else 'source_stopped'
+    elif pending and not ai_active:reason='ai_failed' if ai['state']=='failed' else 'ai_stopped'
+    health={'state':'blocked' if reason else 'finished' if settled==total else 'running' if active or ai_active else 'stopped','reason':reason,'last_progress_at':last_progress}
+    if state=='failed':collector['failure_reason']=REASONS[failure_code(source_snapshot.get('error',''))]
     return {'total':total,'counts':counts,'settled':settled,'source_ready':settled+pending,
-            'remaining':total-settled,'ai':ai,'collector':{'active':active,'state':state,**collector}}
+            'remaining':total-settled,'health':health,'events':events,'ai':ai,'collector':{'active':active,'state':state,**collector}}
 
 
 def serve(root,port):
@@ -323,7 +381,7 @@ def collect(root,max_pending=10,interval=60,watch=False):
                 try:result=app.prepare_pending(max_pending)
                 finally:app.close()
             f.atomic(root/'collector.json',{**result,'updated_at':time.time(),'max_pending':max_pending,'interval':interval})
-            print(json.dumps(result,ensure_ascii=False),flush=True)
+            print(json.dumps({**result,'updated_at':time.time()},ensure_ascii=False),flush=True)
             if result['phase'] in ('failed','sources_finished','stopped'):return result
             if result['phase']=='waiting_for_ai' and not watch:return result
             time.sleep(30 if result['phase']=='waiting_for_ai' else interval)

@@ -25,8 +25,13 @@ def worker(root,model='gpt-6.1-sol',once=False,timeout=600):
  try:
   try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
   except BlockingIOError:raise ValueError('AI worker already running')
-  def state(phase,vid=None):
-   m.f.atomic(root/'ai-worker.json',{'state':phase,'id':vid,'model':model,'updated_at':time.time()});print(json.dumps({'state':phase,'id':vid}),flush=True)
+  last_state=None
+  def state(phase,vid=None,reason=None):
+   nonlocal last_state
+   event={'state':phase,'id':vid,'model':model,'updated_at':time.time()}
+   if reason:event['error_code']=reason
+   m.f.atomic(root/'ai-worker.json',event)
+   if last_state!=(phase,vid):print(json.dumps(event),flush=True);last_state=(phase,vid)
   def connect():
    while True:
     try:return m.Simple(root)
@@ -75,7 +80,7 @@ def worker(root,model='gpt-6.1-sol',once=False,timeout=600):
     finally:a.close()
     state('published',vid)
    except Exception as e:
-    state('failed',vid)
+    state('failed',vid,m.failure_code(str(e)))
     m.f.atomic(work/'failure.json',{'error':str(e),'input_sha256':packet['input_sha256'],'updated_at':time.time()})
     # Keep waiting_extract and its inputs intact; retry must be explicit.
     raise
