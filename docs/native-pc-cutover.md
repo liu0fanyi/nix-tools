@@ -1,7 +1,7 @@
 # PC 原生服务切换与回退
 
 **切换前准备已通过：S3.7 完成 3/3，固定候选可由用户执行试用切换。**
-本文给出用户执行的顺序。Agent 不执行 switch、离线生产迁移或停止现用容器。
+用户已明确授权 Agent 停服、离线迁移和切换。Agent 可执行用户权限操作；当前会话 no_new_privs 阻止 sudo，系统激活仍由用户在普通终端执行。
 
 ## 固定入口与产物
 
@@ -45,7 +45,7 @@ Git/OpenSSH 由原生包提供；没有新增转写模型。首次启动包装�
 
 1. 保存编辑内容，核对 S1–S3 全部通过，固定报告中的候选系统/HM和源镜像。
    先记录运行系统与当前 system profile 的路径，保留它们的 GC 根；不要删除任何源备份。
-2. 停止旧恢复单元，再停止固定五个容器：
+2. 旧恢复单元默认 KillMode=control-group 会连带杀死 conmon。停止前用自有 runtime drop-in 设置 KillMode=process 并 daemon-reload，再停止恢复单元及固定五容器；检查全部容器真正停止。候选已固定 KillMode=process。清除 failed 标记后才运行离线快照：
 
    ```bash
    systemctl --user stop pc-private-node-restore.service
@@ -96,7 +96,7 @@ Git/OpenSSH 由原生包提供；没有新增转写模型。首次启动包装�
 
    实际执行权属于用户。激活不是跨系统、HM和数据的原子事务；失败后先检查哪些单元已启动，
    只要原生开始写入就必须采用下述新状态回退，不能直接启动旧 DB 的源容器。
-6. 核验5006认证入口、loc_pc、5009身份/签名同步与发现，再进行 T005e 登录/开机与浏览器验收。
+6. 核验5006仅 loopback 入口、loc_pc、5009身份/签名同步与发现，再进行 T005e 登录/开机与浏览器验收。
    固定目标已挂 default.target；无 ready 时不创建空库，有 container-mode 时不启动原生服务。
 
 ## 保留新写入的容器回退
@@ -177,3 +177,13 @@ PDF-only/S3.6 产物。`tests/native-pc-host.nix` 必须显式 processing=true�
 下一阶段 T005e 固定三项：用户离线准备及候选激活；真实入口/文件阅读处理/PC–NUC同步发现；
 登录与重启恢复及真实回退核验。真实系统启动、用户 profile、LAN/NUC 数据不是合成验收结果。
 不要把准备阶段通过写成生产已切换或用户已验收。
+
+## 真实切换暴露的问题与修正
+
+首次执行停旧恢复服务时，systemd 等待超时后 SIGKILL 同 cgroup 的 conmon，导致 podman stop 无法取得退出码。实际五容器都退出；未迁移数据或激活系统。随后快照因旧 PC Caddy/DUFS 均无登录认证而拒绝；这是此前候选错误要求 basic_auth 的预演遗漏。旧五容器已按固定名称恢复，入口 200，源数据保留。
+
+修正只作用于 PC：固定候选 localAuthentication=loopback，Caddy UI 绑定127.0.0.1；其他消费者默认仍 basic，LAN 签名/TLS及管理路径过滤不变，NUC 不切换。离线程序必须显式选择 loopback，发现既有 Basic Auth/import/DUFS auth 就拒绝，不能把解析失败当成免登录。迁移回归增加此保护。
+
+快捷执行入口为 `bash /home/liou/nix-tools/scripts/native-pc-activate.sh`，也可继续使用之前提供的 `.devenv/activate-native-pc.sh` 包装；停止前先验证当前认证形式，防止重复无谓停机。podman stop 报错后只有实际全部固定容器处于退出状态才能继续。准备失败且没有原生写入时可恢复旧容器；旧自动恢复器 should-start-on-boot 过滤未必重启手动停止的容器，必须按固定名称明确恢复并验入口。
+
+修正候选已完整构建，9项真实组合、8项实际生成互斥及21项配置/迁移回归通过。精确新产物以最终组合报告为准；实际切换仍未完成，T005e剩3项。

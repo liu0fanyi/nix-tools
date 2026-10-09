@@ -5,13 +5,13 @@
   "remaining_stage_steps": 0,
   "remaining_pre_switch_macro_items": [],
   "cutover_ready": true,
-  "actual_toplevel": "/nix/store/wlga3rj8y4n4z6k1qqp0394ws9x1p0yp-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
-  "actual_home_generation": "/nix/store/5wgv3715x4ikxh9lgz5cqr2h56fv7281-home-manager-generation",
-  "actual_host_source_snapshot": "/nix/store/z5x73n7yjjp0l1d0smm603j9pxcm0rri-source",
+  "actual_toplevel": "/nix/store/wrj4rwilqm90dywg8bi5jj5h99nlrnj8-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "actual_home_generation": "/nix/store/hgc15qkpgam9b2db3x9g4avmagzxm473-home-manager-generation",
+  "actual_host_source_snapshot": "/nix/store/zlbdws0blzb96asq7jm1q284ck807v4z-source",
   "combination_gate": {
     "cases": [
       "nonprivate_existing_executor_parent_rejected_before_db_without_permission_changes",
-      "final_generated_full_target_authenticated_files_pdf_epub_archive_and_readiness",
+      "final_generated_full_target_loopback_files_pdf_epub_archive_and_readiness",
       "authenticated_real_video_transcode_original_preserved_and_range_stream",
       "all_four_crash_recoveries_and_target_upholds_clean_child_stop_preserve_writes",
       "same_full_package_actual_gateway_tls_approvals_signed_sync_and_restart",
@@ -236,15 +236,15 @@
       "default_podman_storage_changed": false,
       "tool_runtime_configured_by_module": true
     },
-    "generation": "/nix/store/g9m9gmpqvx3g2iq2dn6wfliqkn2ir04v-home-manager-generation",
+    "generation": "/nix/store/hgc15qkpgam9b2db3x9g4avmagzxm473-home-manager-generation",
     "source_unit_sha256": {
       "tag-all-core.service": "863d434d8db0231081622be8e371f943f382dfdd9916360988565cf7d1f266e0",
       "tag-all-tools.service": "841743e44e435c9c71fb1701b54b2bbf874c193c74a83e01ac0609e9b5c13468",
       "tag-native-files.service": "5357a472500abbcbe06417f1d7ad122fe1a209cce834b005908681efbf263006",
-      "tag-native-workspace.service": "fd69e5551c174ef876dafd64b6e5f168dda950b2219c99a86cc537e2dacf19b2",
+      "tag-native-workspace.service": "63b51d7003893515e1f917ed63d0b5d4b601a9aaa8c5f916bb17b33d83a84992",
       "tag-native-stack.target": "7942389d5c5bb00d5a12bf82342d4484879d65c656e12eff547d634f226e037b"
     },
-    "gateway_config_sha256": "34e5cad7f8b593d78a1c748ae89b99b4fb73122b467169699e84073ada70b846",
+    "gateway_config_sha256": "958899a67a8cbf57f012dfa5c41db1574ac8b54707e62ba2796231d8cac6f39e",
     "peer_gate": {
       "package": "/nix/store/irhihmrj1vb3a8avmjvq4kczgnl14zcw-tag-all-workspace-native-0.1.0",
       "binary_sha256": "c6907e9829ddb1c49dcf0271b6c573616b42a5e72a40b4055935143cab73b659",
@@ -267,8 +267,8 @@
       "actual_final_gateway_routes": true,
       "full_package_processing_selected": true,
       "gateway_fixture_sha256": [
-        "99363f5ec47917d03d44443016150ab9a9a3b95f0282715bb04c48e0101a194d",
-        "33e6b32329f8ade7a3b281fbfd7065d5ef8db7003e1dd893f4b59d2cc313fcbd"
+        "1cd28201faeaf20b3415cd3effd67f00d22817be7cd8a147d92938777f73fd75",
+        "f100db983c578a9803f4360ba1cd5126544ff50106a2097bbf04c2ae19c3f76a"
       ]
     },
     "legacy_binary_sha256": "d729c3a764ca182cf2fd1aa01bf15f2f59f71a8f60df8abfdc3e833d8d66fa51",
@@ -583,17 +583,22 @@
   },
   "owned_product_source_sha256": {
     "scripts/native-workspace-adapter.sh": "ed6c6cd7a4fb87e2e06909225893658716298dd760d4ec8f393286bcca00afab",
-    "scripts/check-native-final-stack.py": "94a358dbb0c9a81c75cf08978e470809a51418985a6f39c97cd1049fe319c5ce",
-    "scripts/check_native_final_peers.py": "c7e31f73cb18cc702ae7ae58783865995fe37a2cd7057881f7ae1e159da2ce2e",
+    "scripts/check-native-final-stack.py": "989a43d0a375d1c406482bfc293786842fb690005eb8daf95447d86afd9ac33d",
+    "scripts/check_native_final_peers.py": "a582344064d199bae848cb45568f15e813f87fd985fb9b98936210ffe42845a6",
     "scripts/check-native-final-reader.cjs": "cae52bb349dc9e2469dafefe4d104553cb3acfc7ea8fd8a1bfa0780ca737cfe6",
     "scripts/check-native-peers.py": "285f11fa3588d03d35fe2a6c634ef4aa1d3014fc4c8cb83a79add84f18e108c6"
   },
   "owned_infrastructure_source_sha256": {
-    "home-manager/native-stack.nix": "faca4881e53168c696c47221d1f0465a3192dacff09a960418a7fd75c5a6bd1b",
-    "nixos/modules/native-pc-candidate.nix": "443244df23217f86f6a0faafa6052cbf734d839274e68d172bcdaac1c0d0cd9f",
+    "home-manager/native-stack.nix": "f6286bd797ffb310b4da72d03d76d5843b662df6e9b837a9911bfd238154f4c2",
+    "nixos/modules/native-pc-candidate.nix": "80c7ceec364dede2f4938e7b2f7244c364b1d924c935bcc7835816fd89a8a6a5",
     "tests/native-pc-host.nix": "edf45f374d71aae9edfd6ff1148b12a72d589f53cd49ac6282f021b7234ecdf1",
     "scripts/native_pc_mode_guard.py": "a19efff17f9f02a87fd3f6a91db1aea1f324694c6f00e9a026923d2075f76569",
-    "scripts/check-native-pc-guard-runtime.py": "0d2777627a4d030f210c1d3bb2e016eb21d1f39cab6de88404a42ea26e2e1ad8"
+    "scripts/check-native-pc-guard-runtime.py": "fb830388bfe74cb81bfc892a0dccb68d14d005e9c40d49ed00d97e943fccff45",
+    "packages/native-workspace.nix": "11d4e42f6cee615847879ef7876fed6ac815e4bcce46f3707e9aa48e462a6c33",
+    "home-manager/native-workspace.nix": "c01e6fcd062e6972c45114dbe7d817a769f9265c86cb6053c818cf38ce3996ee",
+    "scripts/native_pc_snapshot.py": "9eadcfda4357258d06d1da2b652ab63b4f789b7e33475d28274dcd3864aedb25",
+    "scripts/native-pc-cutover.py": "13555cd0e0842f2ba722363bdfb74c0f00dbe1071b1114d691db0e18c1c0c39a",
+    "scripts/native-pc-activate.sh": "8049c24efb97e8b06d3bdef3afc0eba6a61c179ad379400aef51f7558a1d2519"
   },
   "guard_regression_source_sha256": "4ca38ab2ed664226b8d8800ad37ce7e5fb8b964345dc75a8782878e49fdd1868",
   "frozen_cli_sources_verified": 173,
@@ -601,29 +606,47 @@
   "full_tester_groups": 222,
   "full_tester_reused_from": "native-extensions-results.json",
   "binary_unchanged": true,
-  "production_fixed_containers_unchanged": true,
-  "combination_log_sha256": "cdd75917e411abcd7e9b4b6ad3a41b58c65a2a1e2a312429f9d0d563e6169e46",
-  "host_build_log_sha256": "3b4e05d798dcdea3ba8a5894ff03d7033e2cb226de1d4b6e3410929aac4b3e73",
+  "production_fixed_containers_unchanged": false,
+  "combination_log_sha256": "37c047584d78b8ef47d486242ef9d999bda15fbcb712a6b9928ae0c1eb7fd52e",
+  "host_build_log_sha256": "350779654bbef9d0fc9a8a0d76bcf969a939caecdeae046cf2644bcfdfc5afe8",
   "configuration_test_log_sha256": "7b02c012e2b668214bced789cae1baa26987ca251c5a903ab958e2b8f15d4ceb",
   "default_native_configuration_disabled": true,
   "source_data_or_credentials_read": false,
-  "production_modified": false,
+  "production_modified": true,
   "activated": false,
-  "cutover_ready_scope": "fixed candidate and synthetic pre-switch gates only; user-run production migration, activation and T005e remain",
+  "cutover_ready_scope": "corrected fixed PC candidate and synthetic gates only; production migration and activation remain",
   "limits": [
     "actual production container recreation is not exercised; actual legacy CLI new-state compatibility and prior Compose overlay/guard evidence are combined",
     "real LAN/PC-NUC discovery and sync, real login/boot, installed Firefox/Zen and user data are T005e",
     "missing production speech model is preserved; no real transcription recognition claimed"
   ],
   "tested_host_generation_before_independent_configuration_refresh": "/nix/store/g9m9gmpqvx3g2iq2dn6wfliqkn2ir04v-home-manager-generation",
-  "native_service_units_unchanged_after_host_configuration_refresh": {
-    "tag-all-core.service": "863d434d8db0231081622be8e371f943f382dfdd9916360988565cf7d1f266e0",
-    "tag-all-tools.service": "841743e44e435c9c71fb1701b54b2bbf874c193c74a83e01ac0609e9b5c13468",
-    "tag-native-files.service": "5357a472500abbcbe06417f1d7ad122fe1a209cce834b005908681efbf263006",
-    "tag-native-workspace.service": "fd69e5551c174ef876dafd64b6e5f168dda950b2219c99a86cc537e2dacf19b2",
-    "tag-native-stack.target": "7942389d5c5bb00d5a12bf82342d4484879d65c656e12eff547d634f226e037b",
-    "pc-private-node-restore.service": "cd41453631d70eb02eb6d194e712d2f7318ea0b2cda9cb3374fde686215acfb1"
-  },
+  "native_service_units_unchanged_after_host_configuration_refresh": null,
   "current_nix_inputs_match_fixed_host_snapshot": true,
-  "combination_evidence_reused_for_identical_native_units": true
+  "combination_evidence_reused_for_identical_native_units": false,
+  "configuration_regression_cases_passed": 21,
+  "runtime_guard_gate": {
+    "generated_generation": "/nix/store/hgc15qkpgam9b2db3x9g4avmagzxm473-home-manager-generation",
+    "transient_execcondition_cases_passed": 8,
+    "private_user_and_mount_namespace": true,
+    "default_container_restore_is_guarded": true,
+    "only_five_fixed_restore_names": true,
+    "real_container_commands_mutated": false,
+    "production_state_read": false,
+    "activated": false
+  },
+  "source_configuration_read": true,
+  "source_database_read": false,
+  "pc_entry_authentication": "explicit anonymous loopback only; other consumers default basic",
+  "cutover_attempt": {
+    "source_stop_attempted": true,
+    "conmon_killed_by_old_restore_cgroup": true,
+    "offline_preparation_refused_before_snapshot": true,
+    "reason": "existing PC entry has no basic_auth",
+    "source_database_overwritten": false,
+    "native_snapshot_created": false,
+    "fixed_five_source_containers_restored": true,
+    "pc_http_status": 200,
+    "nuc_services_changed": false
+  }
 }

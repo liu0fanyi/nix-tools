@@ -4,7 +4,7 @@ let
   cfg = config.services.tag-native-workspace;
   gateway = import ../packages/native-workspace.nix {
     inherit pkgs;
-    inherit (cfg) frontendRoot authFile fileSocket gatewayPort corePort;
+    inherit (cfg) frontendRoot authFile fileSocket gatewayPort corePort localAuthentication;
     peer = if cfg.peer.enable then cfg.peer else null;
     peerAdministration = cfg.administratorEnvironmentFile != null;
   };
@@ -16,6 +16,8 @@ in {
     frontendRoot = lib.mkOption { type = lib.types.path; description = "Previously built dufs-plus dist, immutable in production."; };
     workspace = lib.mkOption { type = lib.types.str; description = "Explicit existing workspace, matching native core."; };
     authFile = lib.mkOption { type = lib.types.str; description = "Runtime private Caddy basic_auth entries; never copied to the Nix store."; };
+    localAuthentication = lib.mkOption { type = lib.types.enum [ "basic" "loopback" ]; default = "basic";
+      description = "Loopback explicitly preserves an existing local anonymous PC entry; the gateway remains bound only to 127.0.0.1."; };
     gatewayPort = lib.mkOption { type = lib.types.port; default = 18006; };
     corePort = lib.mkOption { type = lib.types.port; default = 18081; };
     fileSocket = lib.mkOption { type = lib.types.str; default = "${config.xdg.dataHome}/tag-all/native-workspace/files.sock"; };

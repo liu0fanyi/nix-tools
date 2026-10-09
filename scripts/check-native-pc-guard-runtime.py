@@ -33,6 +33,7 @@ def main():
         for unit in ['tag-native-files.service', 'tag-native-workspace.service']:
             assert ' --mode native ' in (unit_root / unit).read_text()
         restore = (unit_root / 'pc-private-node-restore.service').read_text()
+        assert 'KillMode=process' in restore, 'Stopping restore must not kill owned conmon processes'
         assert 'WantedBy=default.target' in restore
         assert 'ConditionPathExists=/home/liou/.local/share/tag-all/pc-native/container-mode' in restore
         assert 'ConditionPathExists=/home/liou/.local/share/tag-all/pc-native/ready' in restore

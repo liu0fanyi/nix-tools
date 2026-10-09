@@ -15,6 +15,8 @@ in {
       nodeId = "pc";
       workspace = "/home/liou/dufs-lan";
       workspaceMounts.project = "/data/project";
+      # Preserve the existing anonymous PC entry, strictly on loopback.
+      localAuthentication = "loopback";
       gatewayPort = 5006;
       corePort = 18081;
       configurationFile = root + "/config/node.toml";
@@ -53,6 +55,8 @@ in {
       tag-native-workspace.Unit.ConditionPathExists = [ (root + "/ready") ("!" + root + "/container-mode") ];
       pc-private-node-restore = {
         Install.WantedBy = lib.mkForce [ "default.target" ];
+        # This oneshot starts containers; stopping it must not kill their conmon.
+        Service.KillMode = "process";
         Service.ExecCondition = guard "container";
         Service.ExecStart = lib.mkForce "${pkgs.writeShellScript "restore-native-pc-fallback" ''
           set -eu

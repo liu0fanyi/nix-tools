@@ -109,3 +109,9 @@ S3.7 A/B/C 完成 3/3，切换前准备剩余 0。
 无 Rust 改动、无外部参考/gitlink 变更，不改生产容器/DB/CA/认证/模型/活动 profile。
 cutover_ready=true 是固定候选切换前门槛通过；activated=false。真实 Compose 容器重建、
 LAN、PC–NUC、登录开机由 tasks.md T005e 的三项用户验收完成，不再增加开发前置。
+
+### T005e-A 真实切换修正（2026-10-09）
+
+本次只切 PC，NUC 保持现状。首次停止旧恢复单元误杀同 cgroup 的 conmon；五容器实际退出。离线准备随后因旧 PC 无 basic_auth 而拒绝，未生成 ready、未激活、未改源数据库。旧服务已按固定名称恢复并核验5006为200。
+候选补显式 loopback 认证模式，仅127.0.0.1免登录；其他消费者仍默认 Basic Auth，peer TLS/签名/管理员路径不放宽。迁移拒绝已有认证或 imports，不静默降级。候选恢复单元 KillMode=process；停旧单元前加临时同等覆盖并复核真实状态。
+仍属既有 T005e-A 的阻塞修正，不新增阶段项。T005e 三项仍未完成；部署后再核验实际功能与重启。

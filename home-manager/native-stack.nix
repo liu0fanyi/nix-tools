@@ -15,6 +15,7 @@ in {
     frontendRoot = lib.mkOption { type = lib.types.path; };
     workspace = lib.mkOption { type = lib.types.str; };
     authFile = lib.mkOption { type = lib.types.str; };
+    localAuthentication = lib.mkOption { type = lib.types.enum [ "basic" "loopback" ]; default = "basic"; };
     gatewayPort = lib.mkOption { type = lib.types.port; default = 18006; };
     corePort = lib.mkOption { type = lib.types.port; default = 18081; };
     nodeId = lib.mkOption { type = lib.types.str; default = "pc-core-trial"; };
@@ -35,7 +36,7 @@ in {
     };
     services.tag-native-workspace = {
       enable = true;
-      inherit (cfg) frontendRoot workspace authFile corePort gatewayPort;
+      inherit (cfg) frontendRoot workspace authFile corePort gatewayPort localAuthentication;
       peer = cfg.peer;
       administratorEnvironmentFile = cfg.environmentFile;
       workspaceBindPaths = mappings.paths;

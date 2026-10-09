@@ -44,7 +44,7 @@ def basic_entries(text):
     return '\n'.join(entries) + '\n'
 
 
-def offline_snapshot(destination, mounts, source_config, discovery_args, source_caddy, source_environment, source_pki, source_command, source_image, ensure_offline=lambda: None, source_images=None):
+def offline_snapshot(destination, mounts, source_config, discovery_args, source_caddy, source_environment, source_pki, source_command, source_image, ensure_offline=lambda: None, source_images=None, local_authentication="basic"):
     """No process control or activation. Publish only a complete new private directory."""
     ensure_offline()
     destination = Path(destination)
@@ -57,7 +57,16 @@ def offline_snapshot(destination, mounts, source_config, discovery_args, source_
     for path in [Path(source_config), Path(source_caddy)]:
         if path.is_symlink() or not path.is_file(): raise ValueError('Source configuration must be regular files')
     config = tomllib.loads(Path(source_config).read_text())
-    entries = basic_entries(Path(source_caddy).read_text())
+    caddy_text = Path(source_caddy).read_text()
+    if local_authentication == "basic":
+        entries = basic_entries(caddy_text)
+    elif local_authentication == "loopback":
+        # Explicit preservation only: never infer anonymous from malformed auth.
+        if re.search(r"\b(?:basic_auth|basicauth|import)\b", caddy_text):
+            raise ValueError('Loopback migration refuses existing authentication or imported configuration')
+        entries = ""
+    else:
+        raise ValueError('Unsupported local authentication mode')
     command = list(source_command)
     database = command[command.index('--database') + 1]
     if database != '/data/pc.db': raise ValueError('Unexpected fixed PC source database')

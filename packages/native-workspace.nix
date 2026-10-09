@@ -1,5 +1,5 @@
 # Trusted gateway configuration; upstreams are fixed loopback core and private Unix DUFS socket, never URL input.
-{ pkgs, frontendRoot, authFile, fileSocket, gatewayPort ? 18006, corePort ? 18081, peer ? null, peerAdministration ? false }:
+{ pkgs, frontendRoot, authFile, fileSocket, gatewayPort ? 18006, corePort ? 18081, peer ? null, peerAdministration ? false, localAuthentication ? "basic" }:
 let
   config = pkgs.writeText "tag-native-workspace.Caddyfile" ''
     {
@@ -13,9 +13,11 @@ let
     http://127.0.0.1:${toString gatewayPort} {
       bind 127.0.0.1
       route {
-        basic_auth {
-          import "${authFile}"
-        }
+        ${if localAuthentication == "basic" then ''
+          basic_auth {
+            import "${authFile}"
+          }
+        '' else ""}
         handle /.dufs-plus/capabilities.json {
           header Content-Type application/json
           header Cache-Control no-store

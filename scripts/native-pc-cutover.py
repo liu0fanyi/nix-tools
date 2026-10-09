@@ -44,11 +44,16 @@ def main():
     if pki.get('/data') != '/home/liou/.local/share/tag-all/pc/peer-caddy':
         raise ValueError('Fixed peer storage changed')
     caddy = {entry['Destination']: entry['Source'] for entry in containers[NAMES[3]]['Mounts'] if entry['Type'] == 'bind'}
+    # This fixed PC candidate preserves the current anonymous local entry.
+    # Refuse DUFS credentials rather than silently discarding existing auth.
+    dufs_args = containers[NAMES[4]]['Config']['Cmd']
+    if any(arg in {'-a', '--auth'} or arg.startswith('--auth=') or arg.startswith('-a=') for arg in dufs_args):
+        raise ValueError('Existing DUFS authentication requires an authenticated candidate')
     result = offline_snapshot(DESTINATION, mounts, mounts['/etc/tag-server/tag-server.toml'],
         containers[NAMES[1]]['Config']['Cmd'], caddy['/etc/caddy/Caddyfile'],
         '/home/liou/.local/share/tag-all/pc/peer-admin.env', Path(pki['/data']) / 'caddy',
         server['Config']['Cmd'], 'sha256:' + server['Image'].removeprefix('sha256:'), ensure_offline=ensure_offline,
-        source_images={name.removeprefix('dufs-plus-pc_').removesuffix('_1'): 'sha256:' + record['Image'].removeprefix('sha256:') for name, record in containers.items()})
+        source_images={name.removeprefix('dufs-plus-pc_').removesuffix('_1'): 'sha256:' + record['Image'].removeprefix('sha256:') for name, record in containers.items()}, local_authentication='loopback')
     print(json.dumps(result, indent=2))
 
 

@@ -75,6 +75,19 @@ class OfflineSnapshot(unittest.TestCase):
         for text in ['basic_auth {\n import other\n}', 'basic_auth {\n fixture plaintext\n}']:
             with self.assertRaises(ValueError): basic_entries(text)
 
+    def test_loopback_auth_is_explicit_and_refuses_existing_auth(self):
+        self.caddy.write_text(':5006 {\n respond "fixture"\n}\n')
+        with self.assertRaises(ValueError): self.prepare()
+        offline_snapshot(self.dest, self.mounts, self.config, [], self.caddy, self.env, self.pki,
+                         ['--database', '/data/pc.db'], 'sha256:fixture', local_authentication='loopback')
+        self.assertEqual((self.dest / 'config/basic.entries').read_text(), '')
+        for text in ['basic_auth { fixture hash }', 'basicauth { fixture hash }', 'import hidden.conf']:
+            self.caddy.write_text(text)
+            with self.assertRaises(ValueError):
+                offline_snapshot(self.root / 'reject', self.mounts, self.config, [], self.caddy, self.env, self.pki,
+                                 ['--database', '/data/pc.db'], 'sha256:fixture', local_authentication='loopback')
+        self.assertFalse((self.root / 'reject').exists())
+
     def test_writer_restart_before_publish_refuses_snapshot(self):
         calls = []
         def stopped():
