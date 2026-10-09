@@ -173,6 +173,10 @@ class Controller:
             if dest.exists() or dest.is_symlink():raise ValueError('Native registration collision')
             dest.symlink_to(source/name);folder=self.units_dir/(name+'.d');folder.mkdir(mode=0o700)
             atomic_file(folder/'native-startup.conf',text)
+        hosts=self.root/'private/config/hosts'
+        if hosts.exists():
+            private_file(hosts)
+            atomic_file(self.units_dir/'tag-nuc-private-core.service.d/peer-network.conf','[Service]\nBindReadOnlyPaths='+str(hosts)+':/etc/hosts\n')
         self.run(['systemctl','--user','daemon-reload']);self.run(['systemctl','--user','enable','tag-native-nuc.target']);self.phase('native-registered')
     def caddy(self,original,desired,files):
         self.check_inputs();path=self.runtime/'Caddyfile'
@@ -200,7 +204,7 @@ class Controller:
             for s in REPLACE:self.run(['podman','update','--restart=no',PREFIX+s+'_1'])
             self.verify_offline();self.phase('old-applications-stopped')
             paths=self.config['paths']
-            roles={role:{'mounts':{m['Destination']:m['Source'] for m in records[PREFIX+service+'_1']['Mounts'] if m['Type']=='bind'}} for role,service in [('private','tag-server'),('readonly','tag-server-readonly')]}
+            roles={role:{'extra_hosts':records[PREFIX+service+'_1']['HostConfig'].get('ExtraHosts',[]),'mounts':{m['Destination']:m['Source'] for m in records[PREFIX+service+'_1']['Mounts'] if m['Type']=='bind'}} for role,service in [('private','tag-server'),('readonly','tag-server-readonly')]}
             snapshot(self.root,roles,source_config=self.runtime/'tag-server.toml',discovery_args=records[PREFIX+'tag-peer-discovery_1']['Config']['Cmd'],environment_files=[Path(paths['secrets'])/'tag-server.env',Path(paths['secrets'])/'tag-peer-admin.env'],caddyfile=self.runtime/'Caddyfile',pki=Path(paths['caddy_data'])/'pki',whisper_package=self.manifest['whisper_package'],models=paths['whisper_models'],source_images=self.source_images,ensure_offline=self.verify_offline)
             atomic_file(self.root/'startup.lock','');atomic_file(self.root/'startup-mode','transition\n');self.phase('double-snapshot-ready');self.register()
             native=self.root/'config-native.json';fallback=self.root/'config-fallback.json'
@@ -225,11 +229,15 @@ class Controller:
             if (self.runtime/'Caddyfile').read_bytes()!=original:raise ValueError('Unexpected fallback ingress edits')
             for name in UNITS:
                 if digest(Path(self.manifest['candidate'])/'lib/systemd/user'/name)!=self.manifest['units'][name]:raise ValueError('Candidate unit changed')
-                if (self.units_dir/name).resolve()!=Path(self.manifest['candidate'])/'lib/systemd/user'/name:raise ValueError('Registered unit changed')
+                installed=self.units_dir/name
+                missing_target=name=='tag-native-nuc.target' and not installed.exists() and not installed.is_symlink()
+                if not missing_target and installed.resolve()!=(Path(self.manifest['candidate'])/'lib/systemd/user'/name).resolve():raise ValueError('Registered unit changed')
             self.mode('transition');self.phase('resuming-migrated')
             for service in REPLACE:self.run(['podman','stop','--time','60',PREFIX+service+'_1'])
             self.wait_stopped();self.verify_offline()
             for service in REPLACE:self.run(['podman','update','--restart=no',PREFIX+service+'_1'])
+            target=self.units_dir/'tag-native-nuc.target'
+            if not target.exists() and not target.is_symlink():target.symlink_to(Path(self.manifest['candidate'])/'lib/systemd/user/tag-native-nuc.target')
             hook=self.runtime/'native-nuc-control'
             atomic_file(hook,'#!/bin/sh\nset -eu\nexec '+shlex.join([self.python,str(self.release/'native_nuc_startup.py')])+' "$@"\n',0o700)
             for name,text in unit_dropins([self.python,str(self.release/'native_nuc_startup.py')]).items():

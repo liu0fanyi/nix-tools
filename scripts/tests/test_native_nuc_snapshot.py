@@ -32,6 +32,9 @@ class DoubleSnapshot(unittest.TestCase):
         return snapshot(self.dest,self.roles,source_config=self.config,discovery_args=self.args,environment_files=[self.env],
             caddyfile=self.caddy,pki=self.pki,whisper_package='/nix/store/test-whisper',models='/home/liou/models',source_images={PREFIX+n+'_1':'a'*64 for n in REPLACE+KEEP},ensure_offline=check)
     def test_double_state_identity_ca_and_new_writes_preserved(self):
+        self.roles['private']['extra_hosts']=['pc-rollout.invalid:192.168.1.100']
+        trusted=Path(self.roles['private']['mounts']['/data'])/'metadata/paired-peers.json'
+        trusted.write_text(json.dumps([{'identity':{'node_id':'pc'},'url':'https://pc-rollout.invalid:5009'}]))
         originals={r:(Path(e['mounts']['/data'])/'tag_all.db').read_bytes() for r,e in self.roles.items()}
         result=self.prepare();self.assertTrue(result['both_sqlite_integrity'])
         for role,entry in self.roles.items():
@@ -42,6 +45,9 @@ class DoubleSnapshot(unittest.TestCase):
                 conn.execute("INSERT INTO fixture VALUES ('native-new-write')")
             self.assertEqual((self.dest/role/'state/metadata/identity').read_text(),role+'-identity')
         private=tomllib.loads((self.dest/'private/config/node.toml').read_text())
+        self.assertEqual(private['sync']['peer_nodes'],{'pc':'https://pc-rollout.invalid:5009'})
+        self.assertIn('192.168.1.100 pc-rollout.invalid',(self.dest/'private/config/hosts').read_text())
+        self.assertFalse((self.dest/'readonly/config/hosts').exists())
         self.assertEqual(private['pairing']['trusted_ca_files'],[str(self.dest/'private/state/metadata/certs/pc-root.crt')])
         self.assertFalse(private['discovery']['external_agent']);self.assertEqual(private['discovery']['interfaces'],['wlan0'])
         readonly=tomllib.loads((self.dest/'readonly/config/node.toml').read_text());self.assertEqual(readonly['node']['id'],'nuc');self.assertFalse(readonly['sync']['enabled'])

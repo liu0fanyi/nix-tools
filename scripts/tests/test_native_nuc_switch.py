@@ -124,6 +124,7 @@ class Switch(unittest.TestCase):
         self.assertEqual(json.loads(self.controller.journal.read_text())['phase'],'container-active')
     def test_resume_reuses_both_current_databases_without_snapshot(self):
         self.controller.activate();self.controller.rollback()
+        (self.controller.units_dir/'tag-native-nuc.target').unlink()  # Real systemctl disable removes linked target.
         with patch('native_nuc_switch.snapshot',side_effect=AssertionError('must not snapshot')):
             result=self.controller.resume_migrated()
         self.assertTrue(result['both_existing_migrated_databases_reused'])

@@ -74,3 +74,12 @@ python3 scripts/native-nuc-switch.py --resume --editors-closed
 
 此入口仅重用两份当前core.db，不恢复源DB；失败仍保留journal并明确诊断。
 本次守卫修正将precheck委托宿主用户管理器，避免+执行方式与读写BindPaths组合失败。
+
+## 现网运行状态与管理
+
+NUC现为原生模式：八用户单元运行，保留Caddy/Authelia/只读网关/DDNS容器。
+主区配置与双区当前DB位于私有nuc-native目录；旧库不再作为活动数据库。
+日常管理沿受控compose-control入口，原infra/tag-server/all激活仍被屏障拒绝。
+不手工启动五个旧应用或恢复源DB；必要回退须明确使用固定--rollback入口。
+主区peer-network.conf只读挂载私有hosts文件，保留源extra_hosts对端别名；同步peer_nodes
+来自已批准配对，不能用任意外部地址替换。公网仍要求Authelia二次验证。

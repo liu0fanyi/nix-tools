@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "mode": "native",
+  "candidate": "/nix/store/49gihkvq010kiscjjvcgzmbll7yklvps-tag-all-native-nuc-candidate",
+  "prepared_release": "/home/liou/.local/share/tag-all/nuc-native-release/4aa042e323824c9bc569e087e420567efc3c51f3d968123e2d8bdd855477a330",
+  "all_eight_native_units_active": true,
+  "both_existing_migrated_databases_reused": true,
+  "source_resnapshot": false,
+  "identity_and_ca_preserved": true,
+  "four_ingress_containers_running": true,
+  "five_old_apps_stopped_and_restart_disabled": true,
+  "http": {
+    "private_core_tags": 200,
+    "readonly_core_tags": 200,
+    "lan_anonymous_tags": 401,
+    "lan_authenticated_tags": 200,
+    "lan_authenticated_files": 200,
+    "readonly_anonymous_tags": 401,
+    "readonly_authenticated_tags": 200,
+    "readonly_authenticated_files": 200,
+    "readonly_authenticated_POST_rejected": 405,
+    "peer_identity_retained_CA": 200,
+    "public_main_anonymous_redirect": 302,
+    "public_login_page": 200,
+    "public_readonly_anonymous": 401,
+    "authelia_first_factor_http": 200,
+    "authelia_first_factor_status": "OK",
+    "public_after_first_factor": "second factor required; returned login HTML, not API JSON"
+  },
+  "public_second_factor_manual_acceptance": "pending",
+  "sync": {
+    "NUC new tag reaches PC": true,
+    "PC new tag reaches NUC": true,
+    "both probe tags removed and deletion synchronized": true
+  },
+  "runtime_network_correction": {
+    "preserved_inspected_PC_host_alias": true,
+    "approved_peer_broadcast_destination": true,
+    "host_etc_hosts_changed": false,
+    "signatures_policy_changed": false
+  },
+  "boot": {
+    "target_enabled": true,
+    "compose_boot_unit_enabled": true,
+    "linger_enabled": true,
+    "actual_host_reboot_tested": false
+  },
+  "regressions": {
+    "native_nuc": 67,
+    "real_systemd_groups": 6
+  },
+  "limitations": [
+    "Full public two-factor authenticated UI acceptance requires user browser; first-factor session is intentionally insufficient",
+    "Actual NUC reboot not performed; enabled boot configuration, startup guards and core restart validated",
+    "Future snapshot automation includes peer-network adaptation; current live correction was applied privately from inspected source aliases and approved pairing, without resnapshot"
+  ],
+  "input_sha256": {
+    "scripts/native_nuc_network.py": "077bef8b63edb14997e2377c8720e88499adafa81d73d30231ccabcd69d34110",
+    "scripts/native_nuc_snapshot.py": "8fa762208ea48e38f3fe33f1606584f798cd2173160fde06949976bb11b35f19",
+    "scripts/native_nuc_switch.py": "4daf52eeb1e8aca9fe0dfeb1d71ebec8413d713c7902b453d09c3c1c1b658e55",
+    "scripts/tests/test_native_nuc_network.py": "3de559969e431065a435b892da2b0ee7fc167f9faba5877cfefdad57cb776c11",
+    "scripts/tests/test_native_nuc_switch.py": "eb4360cd46c1b40ba7cb1d868052a080a1aa7ae0183bafda84169c5afc4f4f25",
+    "scripts/tests/test_native_nuc_snapshot.py": "27056e72987eba712bdf733f86742d97afe14c40c6d43e6b87e92ae61cf4c6c5"
+  }
+}

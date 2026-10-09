@@ -15,6 +15,7 @@ from native_pc_snapshot import regular_tree,private_file
 from native_pc_config import adapt_configuration,serialize_configuration
 from native_nuc_runtime import adapt_environment
 from native_nuc_plan import PREFIX,REPLACE,KEEP
+from native_nuc_network import adapt_network
 
 
 def parse_environment(text):
@@ -105,6 +106,11 @@ def snapshot(destination,roles,*,source_config,discovery_args,environment_files,
                 mounts=dict(entry['mounts']);mounts['/data']=str(destination/role/'state')
                 config,layout=adapt_configuration(tomllib.loads(original_config.decode()),mounts,discovery_args)
                 if layout['workspace']!=entry['mounts']['/workspace']:raise ValueError('Workspace translation changed')
+                if entry.get('extra_hosts') is not None:
+                    trusted=target/'metadata/paired-peers.json'
+                    approved=json.loads(trusted.read_text()) if trusted.exists() else []
+                    config,hosts=adapt_network(config,approved,entry['extra_hosts'],Path('/etc/hosts').read_text())
+                    (cfgdir/'hosts').write_text(hosts)
                 if config.get('node',{}).get('id')!='nuc':raise ValueError('Existing NUC identity must be preserved')
                 if not values.get('TAG_PEER_ADMIN_TOKEN'):raise ValueError('Private admin token must be retained')
             else:
