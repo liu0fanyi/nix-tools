@@ -56,6 +56,14 @@ rm -- "$stop_override/native-cutover-stop.conf"
 systemctl --user daemon-reload
 python3 scripts/native-pc-cutover.py --prepare-offline
 python3 scripts/native_pc_mode_guard.py --mode native
+# The pinned static backend cannot use host NSS mDNS. Keep the old explicit
+# container aliases only inside its mount namespace; never edit global hosts.
+network_override=/home/liou/.config/systemd/user/tag-all-core.service.d
+mkdir -p "$network_override"
+test ! -e "$network_override/native-cutover-hosts.conf"
+printf '[Service]\nBindReadOnlyPaths=%s/config/hosts:/etc/hosts\n' "$native_state" > "$network_override/native-cutover-hosts.conf"
+chmod 644 "$network_override/native-cutover-hosts.conf"
+systemctl --user daemon-reload
 umask 077
 printf '%s\n' "$system_before" > "$native_state/config/system-before-cutover"
 printf '%s\n' "$profile_before" > "$native_state/config/profile-before-cutover"
@@ -63,6 +71,7 @@ nix-store --add-root "$native_state/config/system-before-gc-root" --indirect --r
 nix-store --add-root "$native_state/config/profile-before-gc-root" --indirect --realise "$profile_before"
 sudo nix-env -p /nix/var/nix/profiles/system --set "$candidate_system"
 sudo "$candidate_system/bin/switch-to-configuration" switch
+python3 scripts/native-pc-register.py
 systemctl --user start tag-native-stack.target
 for unit in tag-native-stack.target tag-all-core.service tag-native-files.service tag-native-workspace.service tag-all-tools.service; do
   systemctl --user is-active "$unit"

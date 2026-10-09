@@ -187,3 +187,13 @@ PDF-only/S3.6 产物。`tests/native-pc-host.nix` 必须显式 processing=true�
 快捷执行入口为 `bash /home/liou/nix-tools/scripts/native-pc-activate.sh`，也可继续使用之前提供的 `.devenv/activate-native-pc.sh` 包装；停止前先验证当前认证形式，防止重复无谓停机。podman stop 报错后只有实际全部固定容器处于退出状态才能继续。准备失败且没有原生写入时可恢复旧容器；旧自动恢复器 should-start-on-boot 过滤未必重启手动停止的容器，必须按固定名称明确恢复并验入口。
 
 修正候选已完整构建，9项真实组合、8项实际生成互斥及21项配置/迁移回归通过。精确新产物以最终组合报告为准；实际切换仍未完成，T005e剩3项。
+
+## PC 已切换及普通宿主更新的保护
+
+2026-10-09 实际离线快照/SQLite检查与原生激活已完成。真实PC文件映射、PDF信息/JPEG、EPUB MuPDF与PC–NUC同步200通过。静态musl二进制不能使用宿主NSS mDNS，迁移必须保留旧容器ExtraHosts：写私有config/hosts，通过服务专用BindReadOnlyPaths覆盖其/etc/hosts，不修改宿主全局DNS。同步配置使用同主机名且不歧义的既有批准HTTPS origin，保留原签名策略/身份，未批准或显式带凭证的地址不替换。
+
+核验期间另一次宿主/HM切换移除了试用候选的五单元；当前系统的其他配置保留。`scripts/native-pc-register.py` 把已验收单元注册到 ~/.local/share/systemd/user 并保留私有GC根，启用目标；不依赖试用HM generation拥有同名文件。旧恢复器有持久drop-in，要求container-mode及实际互斥守卫，只启动新状态的固定五容器。手工临时runtime链接和debug已移除，当前加载持久用户单元并同步200。
+
+快捷切换入口已纳入网络准备和持久注册。已迁移机器不要重新运行prepare-offline或覆盖现有快照。注册器遇到不同来源的已有单元/override会拒绝，不擅自覆盖。注册保留同一固定服务版本；升级或卸载须先核对其manifest和服务状态，不能删除运行数据/GC根代替卸载。
+
+真实重启、LAN发现和用户界面试用仍待T005e验收，已启用不等于真实开机已通过。

@@ -10,7 +10,7 @@ import sqlite3
 import stat
 import tomllib
 import uuid
-from native_pc_config import adapt_configuration, serialize_configuration
+from native_pc_config import adapt_configuration, serialize_configuration, adapt_peer_network
 
 
 def regular_tree(root):
@@ -44,7 +44,7 @@ def basic_entries(text):
     return '\n'.join(entries) + '\n'
 
 
-def offline_snapshot(destination, mounts, source_config, discovery_args, source_caddy, source_environment, source_pki, source_command, source_image, ensure_offline=lambda: None, source_images=None, local_authentication="basic"):
+def offline_snapshot(destination, mounts, source_config, discovery_args, source_caddy, source_environment, source_pki, source_command, source_image, ensure_offline=lambda: None, source_images=None, local_authentication="basic", extra_hosts=None):
     """No process control or activation. Publish only a complete new private directory."""
     ensure_offline()
     destination = Path(destination)
@@ -75,6 +75,11 @@ def offline_snapshot(destination, mounts, source_config, discovery_args, source_
     translated_mounts = dict(mounts)
     translated_mounts['/etc/tag-server/certs'] = str(destination / 'certs')
     candidate, layout = adapt_configuration(config, translated_mounts, discovery_args)
+    hosts = None
+    if extra_hosts is not None:
+        trusted = source_data / 'metadata/paired-peers.json'
+        approved = json.loads(trusted.read_text()) if trusted.exists() else []
+        candidate, hosts = adapt_peer_network(candidate, approved, extra_hosts, Path('/etc/hosts').read_text())
     text = serialize_configuration(candidate)
     for workspace in [Path(layout['workspace']), *map(Path, layout['workspace_mounts'].values())]:
         if destination == workspace or workspace in destination.parents:
@@ -97,6 +102,7 @@ def offline_snapshot(destination, mounts, source_config, discovery_args, source_
         shutil.copytree(mounts['/etc/tag-server/certs'], temporary / 'certs')
         runtime = temporary / 'config'; runtime.mkdir(mode=0o700)
         (runtime / 'node.toml').write_text(text)
+        if hosts is not None: (runtime / 'hosts').write_text(hosts)
         (runtime / 'basic.entries').write_text(entries)
         shutil.copyfile(source_environment, runtime / 'peer-admin.env')
         # Container fallback uses NEW state and core.db, preserving native-period writes.

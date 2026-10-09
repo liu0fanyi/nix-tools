@@ -53,7 +53,7 @@ def main():
         containers[NAMES[1]]['Config']['Cmd'], caddy['/etc/caddy/Caddyfile'],
         '/home/liou/.local/share/tag-all/pc/peer-admin.env', Path(pki['/data']) / 'caddy',
         server['Config']['Cmd'], 'sha256:' + server['Image'].removeprefix('sha256:'), ensure_offline=ensure_offline,
-        source_images={name.removeprefix('dufs-plus-pc_').removesuffix('_1'): 'sha256:' + record['Image'].removeprefix('sha256:') for name, record in containers.items()}, local_authentication='loopback')
+        source_images={name.removeprefix('dufs-plus-pc_').removesuffix('_1'): 'sha256:' + record['Image'].removeprefix('sha256:') for name, record in containers.items()}, local_authentication='loopback', extra_hosts=server['HostConfig'].get('ExtraHosts', []))
     print(json.dumps(result, indent=2))
 
 

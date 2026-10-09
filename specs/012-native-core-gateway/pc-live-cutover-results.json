@@ -1,0 +1,60 @@
+{
+  "stage": "T005e",
+  "completed_stage_steps": 1,
+  "total_stage_steps": 3,
+  "remaining_stage_steps": 2,
+  "completed": [
+    "T005e-A offline snapshot and native activation"
+  ],
+  "remaining": [
+    "T005e-B user UI, new-write synchronization and LAN discovery",
+    "T005e-C real login/reboot recovery and fallback verification"
+  ],
+  "activated": true,
+  "initial_candidate_system": "/nix/store/wrj4rwilqm90dywg8bi5jj5h99nlrnj8-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "current_system": "/nix/store/zbi6i5wcp2fxii753pw19m1y9yg0hqlz-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "verified_home_generation": "/nix/store/hgc15qkpgam9b2db3x9g4avmagzxm473-home-manager-generation",
+  "offline_snapshot": "/home/liou/.local/share/tag-all/pc-native",
+  "sqlite_integrity_user_reported": true,
+  "source_database_overwritten": false,
+  "original_five_containers": "exited",
+  "persistent_user_units": true,
+  "autostart_enabled": true,
+  "source_unit_registration_manifest": "/home/liou/.local/share/tag-all/pc-native/config/user-unit-registration.json",
+  "ordinary_host_update_removed_trial_units_observed": true,
+  "recovered_without_reverting_unrelated_host_configuration": true,
+  "hosts_mapping": "private read-only bind for core only, old container ExtraHosts preserved",
+  "sync_target": "existing approved HTTPS origin",
+  "signature_policy": "preserved false, not forced or relaxed from source",
+  "sync_manual_pull_push_status": 200,
+  "sync_manual_changes": {
+    "pulled": 0,
+    "pushed": 0
+  },
+  "live_checks": [
+    "PC HTTP entry 200",
+    "native guard and stopped original containers",
+    "48 tags and both PC/NUC locations readable",
+    "approved NUC pairing and trusted TLS identity",
+    "mapped source file byte equality",
+    "PDF 2-page info and JPEG render",
+    "EPUB MuPDF page render",
+    "final PC-NUC pull/push sync 200",
+    "persistent unit FragmentPath, target enabled and default target Wants"
+  ],
+  "configuration_regression_cases": 24,
+  "synthetic_combination_cases_previously_passed": 9,
+  "synthetic_generated_guard_cases_previously_passed": 8,
+  "user_files_changed_by_smoke": false,
+  "owned_sample_files_removed": true,
+  "temporary_debug_and_runtime_unit_links_removed": true,
+  "nuc_deployment_changed": false,
+  "real_reboot_verified": false,
+  "user_ui_verified": false,
+  "production_container_fallback_recreation_verified": false,
+  "limits": [
+    "successful sync had no new test tag/web mutation; new-write UI check remains",
+    "enabled is not proof of actual reboot",
+    "signed mode was briefly tested then restored to original policy; final sync uses existing policy"
+  ]
+}

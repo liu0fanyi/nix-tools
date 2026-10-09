@@ -103,3 +103,43 @@ def serialize_configuration(config):
     if tomllib.loads(text) != config:
         raise ValueError('TOML serialization must preserve every configuration field')
     return text
+
+
+def adapt_peer_network(config, approved, extra_hosts, system_hosts):
+    """Preserve container DNS aliases and use only unambiguous approved origins."""
+    import re
+    candidate = deepcopy(config)
+    lines = []
+    aliases = {}
+    for item in extra_hosts:
+        host, address = item.rsplit(':', 1)
+        if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9.-]*', host):
+            raise ValueError('Unsafe container host alias')
+        address = str(IPv4Address(address))
+        if host in aliases and aliases[host] != address:
+            raise ValueError('Conflicting container host aliases')
+        aliases[host] = address
+    for host, address in aliases.items():
+        for line in system_hosts.splitlines():
+            parts = line.split('#', 1)[0].split()
+            if len(parts) > 1 and host in parts[1:] and parts[0] != address:
+                raise ValueError('Container alias conflicts with existing hosts')
+        lines.append(address + ' ' + host)
+    for peer in candidate.get('sync', {}).get('peers', []):
+        old = peer if isinstance(peer, str) else peer['url']
+        parsed = urlsplit(old)
+        if parsed.username is not None: continue  # Never discard explicit credentials.
+        matches = [entry for entry in approved
+                   if urlsplit(entry['url']).hostname == parsed.hostname
+                   and (not isinstance(peer, dict) or not peer.get('node_id')
+                        or peer['node_id'] == entry['identity']['node_id'])]
+        if len(matches) > 1: raise ValueError('Ambiguous approved peer origin')
+        if not matches: continue
+        origin = urlsplit(matches[0]['url'])
+        if origin.scheme != 'https' or origin.username is not None or origin.password is not None or origin.query or origin.fragment or origin.path not in ('', '/'):
+            raise ValueError('Approved peer must be an explicit HTTPS origin')
+        origin.port
+        if isinstance(peer, str):
+            candidate['sync']['peers'][candidate['sync']['peers'].index(peer)] = matches[0]['url']
+        else: peer['url'] = matches[0]['url']
+    return candidate, system_hosts.rstrip() + '\n# Preserved PC container peer aliases\n' + '\n'.join(lines) + '\n'

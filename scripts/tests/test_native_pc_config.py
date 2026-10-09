@@ -69,3 +69,23 @@ class ConfigurationAdaptation(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class PeerNetwork(unittest.TestCase):
+    def test_approved_origin_and_hosts_preserve_source_and_signature_policy(self):
+        source = {'sync': {'require_signatures': False, 'peers': ['http://nuc.local:5006/tag-api']}}
+        before = deepcopy(source)
+        approved = [{'url': 'https://nuc.local:5009', 'identity': {'node_id': 'nuc'}}]
+        target, hosts = module.adapt_peer_network(source, approved, ['nuc.local:192.168.1.12'], '127.0.0.1 localhost\n')
+        self.assertEqual(source, before)
+        self.assertEqual(target['sync'], {'require_signatures': False, 'peers': ['https://nuc.local:5009']})
+        self.assertIn('192.168.1.12 nuc.local', hosts)
+
+    def test_invalid_alias_and_conflict_refused(self):
+        for aliases, hosts in [(['nuc.local:invalid'], ''), (['bad host:192.168.1.12'], ''), (['nuc.local:192.168.1.12'], '192.168.1.99 nuc.local')]:
+            with self.assertRaises(ValueError): module.adapt_peer_network({}, [], aliases, hosts)
+
+    def test_unapproved_and_credential_origins_unchanged(self):
+        source = {'sync': {'peers': ['http://unapproved.local:5006', 'http://user:secret@nuc.local:5006']}}
+        target, _ = module.adapt_peer_network(source, [{'url': 'https://nuc.local:5009', 'identity': {'node_id': 'nuc'}}], [], '')
+        self.assertEqual(source, target)
