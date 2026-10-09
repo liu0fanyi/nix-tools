@@ -6,11 +6,18 @@
     "private tags remain isolated from readonly DB",
     "actual selected PDF EPUB and archive worker processing",
     "direct readonly API file write blocked by real OS namespace",
-    "whole target restart preserves private new writes"
+    "whole target restart preserves private new writes",
+    "authenticated device HTTP uses selected PCM worker and real Whisper/model; synthetic source preserved",
+    "fixed legacy CLI reopens BOTH new databases and retains native tags and identities after all native units stop"
   ],
   "owned_units_and_state_cleaned": true,
   "production_services_changed": false,
   "activated": false,
-  "real_model_inference_verified": false,
+  "real_model_inference_verified": true,
+  "device_transcription_http_verified": true,
+  "synthetic_voice_only": true,
+  "model_sha256": "ae85e4a935d7a567bd102fe55afc16bb595bdb618e11b2fc7591bc08120411bb",
+  "legacy_binary_sha256": "d729c3a764ca182cf2fd1aa01bf15f2f59f71a8f60df8abfdc3e833d8d66fa51",
+  "both_new_databases_reopened": true,
   "container_socket_access_verified": false
 }

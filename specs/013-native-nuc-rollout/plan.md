@@ -49,14 +49,14 @@ workspace采用ReadOnlyPaths/BindReadOnlyPaths，无DUFS写权限。每区DB、j
 运行期env转换保留秘密值、转换模型和Git路径，拒绝自定义程序/危险覆盖；4项回归通过。
 10项现有拓扑/入口门槛复验通过。实际Caddy解析和临时双Unix HTTP转发通过，无TCP新入口。
 
-构建中的只读复制权限和HM属性路径问题已修正，失败不计通过。当前沙盒systemd-analyze
-缺basic.target，未完成管理器验收；实际生成单元运行、容器socket访问、外网/Authelia规则
-及真实模型识别归N3。生产迁移、环境文件生成、socket目录准备和旧writer互斥归N4。
+构建中的只读复制权限和HM属性路径问题已修正，失败不计通过。静态systemd-analyze
+曾因沙盒缺basic.target无法完成，已由N3实际八单元管理器运行及重启验收覆盖；
+容器socket访问、完整入口契约及真实模型识别证据见下文。生产迁移、环境文件生成、socket目录准备和旧writer互斥归N4。
 N2是候选实现完成，不是cutover_ready；当前未停NUC生产服务。
 
 ## N3 当前隔离证据
 
-[runtime-results.json](runtime-results.json)：实际用户管理器运行生成单元，六项通过；
+[runtime-results.json](runtime-results.json)：实际用户管理器运行生成单元，八项通过；
 同一固定主程序/工具镜像，双区文件与DB独立，私有写入成功，只读DUFS PUT拒绝，
 绕过网关直接调用只读API写文本亦被OS namespace拒绝。PDF/EPUB/解压真实处理和
 整套target重启后新标签保持；临时单元、runtime、workspace已核对清理。
@@ -69,8 +69,37 @@ socket可连接；无密码拒绝、只读POST405且未到upstream、完整外�
 
 [whisper-inference-results.json](whisper-inference-results.json)：从NUC只读复制190085487字节
 模型到PC私有夹具，摘要与NUC一致；现用Whisper1.8.6真实识别合成英语，命中预期句子。
-无用户录音读取、模型不入store/发行包；当前仅CLI推理，最终设备转写HTTP属于N3-E。
+无用户录音读取、模型不入store/发行包；该报告只证明CLI推理，设备HTTP另见下文N3-E。
 
 测试脚本二进制误读、Caddy文件能力/临时CA目录/Host重定向及客户端3秒超时均已定位修正，
 失败不算通过。超时遗留worker仅在自有VFS、固定image/任务名前缀/本次输入挂载核对后回收。
-当前N3尚未完成，下一项为N3-D；后续N3-E转写HTTP和N3-F旧CLI回退分列，不扩大原阶段结束条件。
+N3六项现已全部通过；下一项N4，不扩大原阶段结束条件。
+
+
+## N3-D/E/F 收尾与边界
+
+[peer-results.json](peer-results.json)：固定完整后端和NUC完整入口路由，经临时真实CA/TLS、
+私有Unix bridge完成发现夹具/申请同意、双向批准、签名同步与远端文本/stream读取。
+不信任CA、错误指纹、单边批准、无签名、重放、坏签名及撤销均拒绝；重启保留身份与信任。
+LAN仅限定loopback；原Host规则保持（已包含localhost），不借PC裁剪网关替代NUC入口。
+Authelia上游在本测试故意指向不可用本地地址，管理内容仍不能匿名读取；真实登录归N5。
+
+runtime报告第七项验证设备Bearer认证、合成中文音频上传、容器PCM处理和真实Whisper推理；
+使用现网模型的只读测试副本，返回非空识别文本，不代表语音准确率测试。
+第八项在全部原生单元确认停止后让已验收旧CLI打开新DB，分别读到双区原生新增标签。
+主区启动生成的实际身份摘要不变，只读区保持不配对；未恢复旧DB或操作生产数据。
+生产回退仍需N4工具与N5实际部署验收，不能把隔离夹具等同生产回退完成。
+
+失败尝试不计通过：临时单元缺OpenSSL、启动等待偏短、测试Host改写误触发origin重定向、
+配对夹具缺管理token、sync关闭时identity HTTP按契约403，均修正测试配置/断言。
+中途一次合成PDF渲染非200未保留响应，追加有限状态/错误诊断后串行完整八项通过；
+尚不能给该单次失败断言后端根因，不把重跑成功写成已定位生产PDF故障。
+临时单元/独立runtime/数据均已清理；只读核对NUC九个原生产容器全部仍运行。
+
+## 下一阶段 N4 固定交付
+
+N4仍为一项阶段，结束要求不变：固定闭包/镜像传输与摘要核对、离线双区DB/metadata/CA快照、
+原容器与native启动互斥、完整入口socket挂载，以及可dry-run的切换/保留新状态回退入口。
+停服必须等待并确认全部应用单元/容器停止，不只检查target命令返回。
+N4准备不要求用户停编辑；真实停服仅在N5文件已保存关闭的确认之后。
+当前总阶段3/6，剩余N4切换工具、N5实际切换与入口同步验收、N6持久恢复与收尾三项。

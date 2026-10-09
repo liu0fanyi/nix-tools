@@ -14,6 +14,8 @@ import sys
 import tempfile
 import time
 import uuid
+import urllib.request
+import urllib.error
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'scripts'))
@@ -41,11 +43,23 @@ def exercise(candidate):
         work=root/role;work.mkdir(mode=0o700);(work/'proof.md').write_text(role+' original\n')
         for rel in [role,role+'/state',role+'/config',role+'/git-home']:(state/rel).mkdir(mode=0o700)
         config=state/role/'config/node.toml'
-        config.write_text('[node]\nid="synthetic-'+role+'-'+uuid.uuid4().hex+'"\n[discovery]\nenabled=false\n[sync]\nenabled=false\n')
+        config.write_text('[node]\nid="synthetic-'+role+'-'+uuid.uuid4().hex+'"\n[discovery]\nenabled=false\n[sync]\nenabled=false\n[pairing]\nenabled='+("true" if role=="private" else "false")+'\n')
         config.chmod(0o600)
-        env=state/role/'config/service.env';env.write_text('');env.chmod(0o600)
+        env=state/role/'config/service.env';env.write_text('TAG_PEER_ADMIN_TOKEN='+uuid.uuid4().hex+'\n' if role=='private' else '');env.chmod(0o600)
     (root/'private/media').mkdir();(root/'media').mkdir();(root/'models').mkdir();(root/'writing-git').mkdir(mode=0o700)
     (state/'sockets').mkdir(mode=0o700)
+    model=Path('/data/project/tag-all/.devenv/nuc-model-check/model.bin')
+    model_hash=hashlib.sha256(model.read_bytes()).hexdigest()
+    assert model_hash=='ae85e4a935d7a567bd102fe55afc16bb595bdb618e11b2fc7591bc08120411bb'
+    shutil.copyfile(model,root/'models/ggml-small-q5_1.bin');(root/'models/ggml-small-q5_1.bin').chmod(0o400)
+    # Generated speech only; no recording path is accepted by this gate.
+    run(['/nix/store/hqdalp6vsk179jd2ysxb33q7vyy3sisz-espeak-ng-1.52.0.1-unstable-2025-09-09/bin/espeak-ng',
+         '-v','cmn','-s','130','-w',str(root/'voice.wav'),'你好，这是本地语音识别测试。今天我们测试文件上传。'])
+    voice=(root/'voice.wav').read_bytes()
+    legacy=Path('/nix/store/6fqry14ldg45lvxkh4y7wsfgc60zzpa4-tag-private-tested-artifacts/app/tag-server')
+    legacy_hash=hashlib.sha256(legacy.read_bytes()).hexdigest()
+    assert legacy_hash=='d729c3a764ca182cf2fd1aa01bf15f2f59f71a8f60df8abfdc3e833d8d66fa51'
+    fallback=None
     private_port,readonly_port=port(),port();assert private_port!=readonly_port
     mapping={'/home/liou/.local/share/tag-all/nuc-native':str(state),'/home/liou/.local/share/whisper.cpp/models':str(root/'models'),
              '/home/liou/.config/dufs-plus/secrets/writing-git':str(root/'writing-git'),
@@ -84,7 +98,7 @@ def exercise(candidate):
             link.symlink_to(target);links.append((link,target))
         run(['systemctl','--user','daemon-reload'])
         run(['systemctl','--user','start',names['tag-native-nuc.target']],timeout=300)
-        for _ in range(250):
+        for _ in range(1200):
             if all((state/'sockets'/(role+'-api.sock')).is_socket() for role in ['private','readonly']):
                 try:
                     for role in ['private','readonly']:
@@ -114,8 +128,8 @@ def exercise(candidate):
         assert b'nuc-runtime-persist' not in request('readonly','api','/tags')[1]
         cases.append('private tags remain isolated from readonly DB')
         status,data=request('private','api','/v1/pdf/info?path=book.pdf');assert status==200 and json.loads(data)['total_pages']==1
-        status,data=request('private','api','/pdf/render?path=book.pdf&page=1&width=120');assert status==200 and data[:2]==b'\xff\xd8'
-        status,data=request('private','api','/v1/epub/page?path=book.epub&layout=mupdf_v1&spine_index=0&chapter_page=1');assert status==200 and data[:2]==b'\xff\xd8'
+        status,data=request('private','api','/pdf/render?path=book.pdf&page=1&width=120');assert status==200 and data[:2]==b'\xff\xd8',(status,data[:800])
+        status,data=request('private','api','/v1/epub/page?path=book.epub&layout=mupdf_v1&spine_index=0&chapter_page=1');assert status==200 and data[:2]==b'\xff\xd8',(status,data[:800])
         status,data=request('private','api','/items/extract',{'path':'extract.zip'},'POST');assert status==200,(status,data)
         assert (root/'private/extract/proof.md').read_text()=='synthetic extracted'
         cases.append('actual selected PDF EPUB and archive worker processing')
@@ -134,7 +148,58 @@ def exercise(candidate):
             time.sleep(.1)
         else:raise RuntimeError('Restart lost private state')
         cases.append('whole target restart preserves private new writes')
+        base='http://127.0.0.1:'+str(private_port)
+        def http(path, body=None, headers=None):
+            req=urllib.request.Request(base+path,body,headers or {})
+            with urllib.request.urlopen(req,timeout=90) as response:return response.status,json.loads(response.read())
+        caps=http('/v1/capabilities')[1]['capabilities']
+        assert caps['transcription_local']['ready'],caps['transcription_local']
+        _,session=http('/device-sessions',json.dumps({'label':'synthetic-nuc-http','scopes':['transcriptions']}).encode(),
+                       {'Content-Type':'application/json','x-dufs-device-provisioning':'1'})
+        boundary=uuid.uuid4().hex
+        body=(f'--{boundary}\r\nContent-Disposition: form-data; name="idempotency_key"\r\n\r\n{boundary}\r\n'
+              f'--{boundary}\r\nContent-Disposition: form-data; name="audio"; filename="synthetic.wav"\r\n'
+              'Content-Type: application/octet-stream\r\n\r\n').encode()+voice+f'\r\n--{boundary}--\r\n'.encode()
+        headers={'Content-Type':'multipart/form-data; boundary='+boundary,'Authorization':'Bearer '+session['token']}
+        status,data=http('/v1/device/transcriptions',body,headers);assert status==202
+        job=data['job'];deadline=time.monotonic()+240
+        while True:
+            job=http('/v1/device/transcriptions/'+job['id'],headers={'Authorization':headers['Authorization']})[1]['job']
+            if job['status'] in ['done','failed']:break
+            assert time.monotonic()<deadline,'Synthetic device transcription timed out'
+            time.sleep(.5)
+        assert job['status']=='done' and job['text'].strip(),job
+        originals=list((state/'private/state/metadata/transcriptions/audio').glob(job['id']+'.*'))
+        assert len(originals)==1 and originals[0].read_bytes()==voice
+        assert hashlib.sha256(model.read_bytes()).hexdigest()==model_hash
+        cases.append('authenticated device HTTP uses selected PCM worker and real Whisper/model; synthetic source preserved')
+        for role in ['private','readonly']:
+            status,_=request(role,'api','/tags',{'name':'new-'+role+'-rollback'},'POST');assert status==201
+        run(['systemctl','--user','stop',*names.values()],timeout=300)
+        for name in names.values():assert run(['systemctl','--user','is-active',name],False).stdout.strip() not in ['active','activating','deactivating']
+        for role in ['private','readonly']:
+            metadata=state/role/'state/metadata'
+            identity={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in metadata.glob('peer-identity*')}
+            assert bool(identity)==(role=='private'),'Private identity must exist; readonly must not gain pairing'
+            legacy_port=port()
+            with (root/('legacy-'+role+'.log')).open('wb') as log:
+                fallback=subprocess.Popen([str(legacy),'--database',str(state/role/'state/core.db'),
+                    '--metadata-dir',str(metadata),'--workspace',str(root/role),'--config',str(state/role/'config/node.toml'),
+                    '--disable-sync','--addr','127.0.0.1:'+str(legacy_port)],stdout=log,stderr=log)
+            for _ in range(150):
+                assert fallback.poll() is None,'Owned legacy CLI exited'
+                try:
+                    with urllib.request.urlopen('http://127.0.0.1:'+str(legacy_port)+'/tags',timeout=3) as response:
+                        data=response.read()
+                    if ('new-'+role+'-rollback').encode() in data:break
+                except OSError:pass
+                time.sleep(.1)
+            else:raise RuntimeError('Legacy failed to reopen new '+role+' state')
+            fallback.terminate();assert fallback.wait(timeout=15)==0;fallback=None
+            assert identity=={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in metadata.glob('peer-identity*')}
+        cases.append('fixed legacy CLI reopens BOTH new databases and retains native tags and identities after all native units stop')
     finally:
+        if fallback is not None and fallback.poll() is None:fallback.terminate();fallback.wait(timeout=15)
         run(['systemctl','--user','stop',*names.values()],False)
         for name in names.values():assert run(['systemctl','--user','is-active',name],False).stdout.strip() not in ['active','activating','deactivating']
         run(['systemctl','--user','reset-failed',*names.values()],False)
@@ -156,7 +221,7 @@ def exercise(candidate):
                 assert not run(engine+['ps','-aq']).stdout.strip()
                 run(engine+['unshare',sys.executable,'-c','import pathlib,shutil,sys;p=pathlib.Path(sys.argv[1]);assert p.parent==pathlib.Path(sys.argv[2]) and p.name=="tools" and not p.is_symlink();shutil.rmtree(p)',str(runtime),str(runtime.parent)])
         shutil.rmtree(root)
-    return {'candidate':str(candidate),'cases':cases,'owned_units_and_state_cleaned':True,'production_services_changed':False,'activated':False,'real_model_inference_verified':False,'container_socket_access_verified':False}
+    return {'candidate':str(candidate),'cases':cases,'owned_units_and_state_cleaned':True,'production_services_changed':False,'activated':False,'real_model_inference_verified':True,'device_transcription_http_verified':True,'synthetic_voice_only':True,'model_sha256':model_hash,'legacy_binary_sha256':legacy_hash,'both_new_databases_reopened':True,'container_socket_access_verified':False}
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('candidate',type=Path);args=parser.parse_args()
