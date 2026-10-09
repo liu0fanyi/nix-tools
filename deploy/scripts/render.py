@@ -1325,6 +1325,9 @@ def install_runtime_compose_assets(
 
 
 def render(config_path: Path, output: Path) -> None:
+    control = output / "native-nuc-control"
+    if control.exists() or control.is_symlink():
+        raise ConfigError("Native NUC installation owns runtime files; use native cutover management")
     config = tomllib.loads(config_path.read_text(encoding="utf-8"))
     validate(config)
 
@@ -1500,7 +1503,11 @@ def render(config_path: Path, output: Path) -> None:
             ';; esac\n'
         )
     compose_control.write_text(
-        "#!/bin/sh\nset -eu\n" + mount_guard + "exec "
+        "#!/bin/sh\nset -eu\n" + mount_guard + (
+            "if [ -e " + shlex.quote(str(output / "native-nuc-control"))
+            + " ] || [ -L " + shlex.quote(str(output / "native-nuc-control")) + " ]; then\n"
+            + "  exec " + shlex.quote(str(output / "native-nuc-control")) + ' compose "$@"\nfi\n'
+        ) + "exec "
         + shlex.join(compose_command)
         + ' "$@"\n',
         encoding="utf-8",

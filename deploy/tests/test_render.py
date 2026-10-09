@@ -95,6 +95,24 @@ class RenderTests(unittest.TestCase):
         output = root / "generated"
         return config, output, temp
 
+    def test_native_control_survives_manage_and_blocks_legacy_render(self) -> None:
+        import manage
+        config, output, temp = self.prepare("home-ipv6-cdn")
+        self.addCleanup(temp.cleanup)
+        render.render(config, output)
+        control = output / "native-nuc-control"
+        control.write_text("#!/bin/sh\nexit 1\n")
+        original = (output / "Caddyfile").read_bytes()
+        with self.assertRaisesRegex(render.ConfigError, "Native NUC"):
+            render.render(config, output)
+        manage.ensure_rendered(config, output)
+        self.assertEqual((output / "Caddyfile").read_bytes(), original)
+        self.assertEqual(manage.compose_argv(output, ["up", "-d"]),
+                         [str(output / "compose-control"), "up", "-d"])
+        script = (output / "compose-control").read_text()
+        self.assertIn(str(control), script)
+        self.assertLess(script.index("findmnt"), script.index(str(control)))
+
     def test_home_profile(self) -> None:
         config, output, temp = self.prepare("home-ipv6-cdn")
         self.addCleanup(temp.cleanup)

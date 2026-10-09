@@ -43,11 +43,16 @@ def load_config(path: Path) -> dict[str, Any]:
 
 
 def ensure_rendered(config_path: Path, output: Path) -> dict[str, Any]:
-    renderer.render(config_path.resolve(), output.resolve())
+    control = output / "native-nuc-control"
+    if not (control.exists() or control.is_symlink()):
+        renderer.render(config_path.resolve(), output.resolve())
     return load_config(config_path)
 
 
 def compose_argv(output: Path, action: list[str]) -> list[str]:
+    control = output / "native-nuc-control"
+    if control.exists() or control.is_symlink():
+        return [str(output / "compose-control"), *action]
     files_path = output / "compose-files.txt"
     files = [
         Path(line)

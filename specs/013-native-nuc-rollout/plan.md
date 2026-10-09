@@ -126,6 +126,34 @@ NAR字节合计1138947880（不是本轮实际网络传输量）。本机权威�
 不是生成新身份，继续禁用sync/pairing/discovery且不添加私人管理token或Git凭证。
 
 互斥纯模块已覆盖五旧应用writer和八native单元，固定完整九容器库存、源镜像与私有标志权限；
-container模式拒绝旧DB挂载或旧数据库命令。尚未接入持久启动链路，不据此声称能够防止生产重启恢复。
+container模式拒绝旧DB挂载或旧数据库命令。当时尚未接入持久启动链路；现接入代码及隔离实际验收见下方N4-C，生产注册仍归N5。
 N4-C必须把守卫接到每个官方原生/容器启动入口，N4-D把离线模块接到真正可预演的控制入口；
 首次生产离线备份仍归N5，编辑安全确认之前不停止现网。
+
+## N4-C 启动接入验收
+
+[startup-results.json](startup-results.json) 对应冻结脚本，92项启动/快照/发布/管理回归通过，
+六组实际临时systemd用户单元验收通过；容器库存使用合成数据，不读取生产DB。
+七服务分别追加ExecStartPre并Requires/After保留Compose入口；不覆盖已有环境检查或服务主体隔离。
+守卫独立以既有用户在宿主命名空间执行（+前缀不使用户单元变成root），实测uid保持1000、
+七个服务主体仍有独立PrivateUsers。宿主库存查询固定HOME/XDG/PATH/bus，避免核心Git HOME或
+工具容器socket使查询误入另一存储。共享启动检查可并行，容器动作/迁移采用排他锁；竞争拒绝。
+
+Compose开机、manage up/recreate均经过受控入口；native只允许明确保留的四服务，up带--no-deps，
+down只停止保留容器，不删除整套库存。拒绝隐式依赖启动、旧writer、未知参数和restart；
+需要重启保留入口时采用明确stop/start。只读查询仍可用。render不能覆盖已由native控制的runtime，
+旧infra/tag-server/all发布在构建/传输/激活前拒绝；前端独立发布和Aliyun流程不变。
+回退模式拒绝任何native单元仍运行或旧DB挂载，普通管理不重建回退容器，交给N4-D专门入口。
+
+只读核对发现NUC另有Podman开机恢复入口，五个旧应用当前restart policy均unless-stopped。
+native守卫必须同时检查它们均停止且策略为no，阻止绕过Compose的自动恢复；
+真实策略修改归N4-D控制/N5执行，保留四容器策略不变，不能仅靠停止Compose服务。
+实际注册、持久模式/锁文件和新入口安装统一在N5确认编辑安全后执行，当前生产入口未替换。
+测试临时单元精确清理，原九容器仍运行；最新候选控制目录见preparation-results.json，
+闭包仍为同一N3候选，模块已传输并核验，但不是生产切换。
+
+N4现在完成3/4、剩余1项N4-D：可预演的切换/新状态回退控制及集成验收。
+控制需持久transition屏障、单独操作锁和startup读写锁，不能持有startup排他锁等待
+会调用precheck的systemd启动（否则死锁）；停止全部八原生单元后才允许回退writer。
+并固定完整Caddy仅改四upstream和socket只读挂载、范围内重建Caddy、新DB回退命令。
+D通过才结束N4；总阶段仍3/6、剩余N4/N5/N6，不新增结束条件。

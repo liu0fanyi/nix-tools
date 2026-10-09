@@ -16,7 +16,7 @@ class Guard(unittest.TestCase):
         for service in REPLACE+KEEP:
             role='readonly' if service=='tag-server-readonly' else 'private'
             name=PREFIX+service+'_1'
-            self.records[name]={'Name':name,'Image':'a'*64,'Config':{'Labels':{'io.podman.compose.project':'dufs-plus'},'Cmd':['--database','/data/core.db']},'State':{'Running':service in KEEP},
+            self.records[name]={'Name':name,'Image':'a'*64,'Config':{'Labels':{'io.podman.compose.project':'dufs-plus'},'Cmd':['--database','/data/core.db']},'State':{'Running':service in KEEP},'HostConfig':{'RestartPolicy':{'Name':'no' if service in REPLACE else 'unless-stopped'}},
                 'Mounts':[{'Type':'bind','Destination':'/data','Source':str(self.root/role/'state')}]}
         self.units=dict.fromkeys(UNITS,'inactive')
         (self.root/'ready').write_text('offline-double-snapshot-complete\n');(self.root/'ready').chmod(0o600)
@@ -46,6 +46,10 @@ class Guard(unittest.TestCase):
         with self.assertRaises(ValueError):validate('native',self.root,records,self.units)
         (self.root/'container-mode').write_text('explicit-container-fallback\n');(self.root/'container-mode').chmod(0o600)
         with self.assertRaises(ValueError):validate('native',self.root,self.records,self.units)
+    def test_auto_restart_bypass_refused(self):
+        for service in REPLACE:
+            records=copy.deepcopy(self.records);records[PREFIX+service+'_1']['HostConfig']['RestartPolicy']['Name']='unless-stopped'
+            with self.assertRaisesRegex(ValueError,'auto-restart'):validate('native',self.root,records,self.units)
     def test_changed_retained_or_application_image_refused(self):
         for name in self.records:
             records=copy.deepcopy(self.records);records[name]['Image']='b'*64

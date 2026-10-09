@@ -225,6 +225,10 @@ print(digests[manifest[0]["Config"]])
             raise ValueError('--tag-packaging nix requires tag-server or all')
         if app and (self.target != 'nuc' or component != 'frontend'):
             raise ValueError('--frontend-app is only supported for nuc frontend')
+        if self.target == 'nuc' and component in {'infra','tag-server','all'}:
+            self.remote_run(['python3','-c',
+                'from pathlib import Path; p=Path("/home/liou/.local/share/dufs-plus/runtime/home/native-nuc-control"); '
+                'assert not (p.exists() or p.is_symlink()), "Native NUC is managed by the native cutover controller; legacy activation refused"'])
         if component == 'runtime-images':
             self.runtime_images()
             return

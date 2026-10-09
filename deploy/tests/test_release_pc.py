@@ -156,6 +156,16 @@ class ReleaseTests(unittest.TestCase):
         self.assertNotIn('47.93.153.102', plan)
         self.assertLess(plan.index('backup'), plan.index('gzip -dc'))
 
+    def test_native_guard_precedes_legacy_build_and_runtime_mutations(self):
+        release = Release('nuc')
+        with patch.object(release, 'remote_run', side_effect=RuntimeError('native mode')) as guard, \
+             patch.object(release, 'build_tag') as build, patch.object(release, 'manage') as manage, \
+             patch.object(release, 'sync_config') as sync:
+            with self.assertRaisesRegex(RuntimeError, 'native mode'):
+                release.execute('all', Path('/unused'), Path('/unused'))
+            self.assertIn('native-nuc-control', guard.call_args.args[0][-1])
+            build.assert_not_called(); manage.assert_not_called(); sync.assert_not_called()
+
     def test_nix_invalid_target_or_component_does_not_execute(self):
         for target, component in [('aliyun', 'tag-server'), ('nuc', 'infra'), ('nuc', 'frontend'), ('nuc', 'runtime-images')]:
             with contextlib.redirect_stdout(io.StringIO()), patch('subprocess.run', side_effect=AssertionError):

@@ -32,6 +32,7 @@ def validate(mode,root,records,units,*,source_images=None):
     if mode=='native':
         if marker.exists() or marker.is_symlink():raise ValueError('Container mode blocks native startup')
         if any(records[PREFIX+name+'_1']['State']['Running'] for name in REPLACE):raise ValueError('Old application writer still running')
+        if any(records[PREFIX+name+'_1']['HostConfig']['RestartPolicy']['Name']!='no' for name in REPLACE):raise ValueError('Old application auto-restart must be disabled before native startup')
     elif mode=='container':
         private_file(marker)
         if marker.is_symlink() or not marker.is_file() or marker.read_text()!='explicit-container-fallback\n':raise ValueError('Explicit container fallback required')

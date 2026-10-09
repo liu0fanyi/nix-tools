@@ -17,7 +17,7 @@ HOST='liou@nuc.local'
 SSH=['ssh','-F','/home/liou/.ssh/config',HOST]
 REMOTE='/home/liou/.local/share/tag-all/nuc-native-release'
 CONTROLS=['native_nuc_bundle.py','native_nuc_snapshot.py','native_nuc_guard.py','native_nuc_plan.py',
-          'native_nuc_runtime.py','native_pc_snapshot.py','native_pc_config.py']
+          'native_nuc_runtime.py','native_pc_snapshot.py','native_pc_config.py','native_nuc_startup.py']
 
 
 def run(argv,**options):
