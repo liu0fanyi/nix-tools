@@ -243,11 +243,12 @@ def render_recipe(recipe):
     return '''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'''+esc(recipe['title'])+'''</title><style>body{margin:0;background:#f5f3ee;color:#282d28;font:17px/1.8 system-ui,sans-serif}main{max-width:850px;margin:auto;padding:26px}h1{font-size:32px}img{display:block;width:100%;max-height:390px;object-fit:contain;border-radius:12px;background:#eee}a{color:#476833}li{margin:12px 0}small,.meta{color:#687166;font-size:14px}details{margin-top:28px;background:#fff;padding:14px;border-radius:8px}section{background:white;padding:12px 24px;margin:20px 0;border-radius:10px}</style><main><nav><a href="../../index.html">← 菜谱目录</a> · <a href="../../player-guide.html">原视频键盘浏览</a></nav><h1>'''+esc(recipe['title'])+'''</h1><p class="meta">'''+esc(source['author'])+''' · AI 字幕整理</p><img src="cover.jpg" alt="原视频封面"><p><a target="_blank" rel="noopener noreferrer" href="'''+esc(source['url'])+'''">观看原视频 ↗</a></p><section><h2>材料</h2><ul>'''+ingredients+'''</ul></section><section><h2>制作过程</h2><ol>'''+steps+'''</ol></section>'''+notes+'''<p class="meta">用量未明确时保留未知。时间链接是原视频位置，不是烹饪时长。<a href="recipe.json">菜谱 JSON</a></p></main></html>'''
 
 
-EVENTS={'prepared':'字幕和封面已就绪','recovered':'已恢复并发布保存结果','skipped':'没有中文AI字幕，跳过','waiting_for_ai':'缓存已满，等待AI整理','sources_finished':'来源队列已结束','stopped':'任务已停止','failed':'任务失败，已停止','extracting':'开始AI字幕整理','publishing':'开始校验和发布','published':'菜谱发布完成','waiting_for_subtitles':'等待下一份字幕','finished':'AI队列已处理完毕'}
-REASONS={'cover_decode':'封面图片解码失败','rate_limited':'平台限流或风控','authentication':'登录或认证失败','timeout':'请求超时','disk_full':'磁盘空间不足','model_error':'模型调用失败','invalid_result':'AI结果未通过校验','unknown':'任务发生错误，详情留本地日志'}
+EVENTS={'retry_wait':'模型连接故障，等待自动重试','prepared':'字幕和封面已就绪','recovered':'已恢复并发布保存结果','skipped':'没有中文AI字幕，跳过','waiting_for_ai':'缓存已满，等待AI整理','sources_finished':'来源队列已结束','stopped':'任务已停止','failed':'任务失败，已停止','extracting':'开始AI字幕整理','publishing':'开始校验和发布','published':'菜谱发布完成','waiting_for_subtitles':'等待下一份字幕','finished':'AI队列已处理完毕'}
+REASONS={'routing_unavailable':'Codex服务路由连接失败','cover_decode':'封面图片解码失败','rate_limited':'平台限流或风控','authentication':'登录或认证失败','timeout':'请求超时','disk_full':'磁盘空间不足','model_error':'模型调用失败','invalid_result':'AI结果未通过校验','unknown':'任务发生错误，详情留本地日志'}
 
 def failure_code(value):
     text=str(value).lower()
+    if 'workspace routing discovery failed' in text:return 'routing_unavailable'
     if 'truncated' in text or 'cannot identify image' in text:return 'cover_decode'
     if any(x in text for x in ('http 412','http 429','status code 412','status code 429')):return 'rate_limited'
     if any(x in text for x in ('unauthorized','login','http 401','authentication')):return 'authentication'
@@ -321,8 +322,15 @@ def progress(root):
     ai_marker=f.safe(Path(root)/'ai-worker.json',Path(root));ai={'active':ai_active,'state':'not_configured'}
     if ai_marker.exists():
         data=f.batch.load(ai_marker);phase=data.get('state');ai['last_activity_at']=event_time(data.get('updated_at'))
-        allowed={'extracting','publishing','published','waiting_for_subtitles','failed','finished','stopped'}
+        allowed={'retry_wait','extracting','publishing','published','waiting_for_subtitles','failed','finished','stopped'}
         ai['state']=phase if phase in allowed and (ai_active or phase in {'failed','finished','stopped'}) else 'stopped'
+        code=data.get('error_code')
+        if isinstance(code,str) and code in REASONS:ai['failure_reason']=REASONS[code]
+        if ai_active and phase=='retry_wait':
+            for key in ('retry_count','retry_limit'):
+                value=data.get(key)
+                if isinstance(value,int) and not isinstance(value,bool) and 0<value<=3:ai[key]=value
+            ai['next_retry_at']=event_time(data.get('next_retry_at'))
         model=data.get('model')
         if isinstance(model,str) and len(model)<=120:ai['model']=model
         vid=data.get('id')

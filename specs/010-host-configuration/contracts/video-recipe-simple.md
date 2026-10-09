@@ -43,3 +43,10 @@ GET `/progress.html`显示已生成菜谱与来源处理两条进度条、publis
 ### 进度事件白名单
 
 progress新增events（至多80项）：stage、phase、video_id、time和受控message，旧记录时间可null；每阶段日志读取量≤64KiB，不直接暴露日志路径或全文。health为state/reason/last_progress_at；采集停止且仍有来源排队即blocked，即使AI进程活着。collector/ai的last_activity_at是状态报告时间，不得当作菜谱推进时间。错误正文仍只留本地，页面只显示固定类别，日志文本禁止按HTML插入。
+
+
+### 明确路由故障的有限重试
+
+未完成尝试拒绝重复的唯一自动例外：完整events.jsonl（≤2MiB）只有thread.started、turn.started、包含固定路由错误的error及error类型item.completed，最后为确切turn.failed/workspace routing discovery failed，且无answer.json/response.json。未知/损坏/截断事件、推理/答案/工具/usage均不准入。每任务最多3次额外请求，30/60/120秒退避，ai-work/<id>/routing-attempts保存原started、stdout、stderr和失败信息；上限跨重启保留。不得删除旧记录来绕过上限。其他失败继续按原停止规则。
+
+AI状态新增retry_wait；API白名单提供failure_reason受控字符串、retry_count/retry_limit（1–3）、next_retry_at。对应event为固定等待重试文案。等待保持活锁、检查停止标记，重试不改变published或真实进展时间。重试用尽显示受控路由连接故障并停止，真实详情仍只在本地。
