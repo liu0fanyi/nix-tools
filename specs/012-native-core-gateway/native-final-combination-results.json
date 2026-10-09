@@ -5,9 +5,9 @@
   "remaining_stage_steps": 0,
   "remaining_pre_switch_macro_items": [],
   "cutover_ready": true,
-  "actual_toplevel": "/nix/store/fmq90ylvlz8vcpiis2sm2064sws0ssc4-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
-  "actual_home_generation": "/nix/store/g9m9gmpqvx3g2iq2dn6wfliqkn2ir04v-home-manager-generation",
-  "actual_host_source_snapshot": "/nix/store/zip2sd5i9l6pyym9361h0m1lvppddnm6-source",
+  "actual_toplevel": "/nix/store/wlga3rj8y4n4z6k1qqp0394ws9x1p0yp-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "actual_home_generation": "/nix/store/5wgv3715x4ikxh9lgz5cqr2h56fv7281-home-manager-generation",
+  "actual_host_source_snapshot": "/nix/store/z5x73n7yjjp0l1d0smm603j9pxcm0rri-source",
   "combination_gate": {
     "cases": [
       "nonprivate_existing_executor_parent_rejected_before_db_without_permission_changes",
@@ -603,7 +603,7 @@
   "binary_unchanged": true,
   "production_fixed_containers_unchanged": true,
   "combination_log_sha256": "cdd75917e411abcd7e9b4b6ad3a41b58c65a2a1e2a312429f9d0d563e6169e46",
-  "host_build_log_sha256": "398b47ef76cd90f31b420feac82e071e68fb88646e0ff3d1dcde69ce0f4c4228",
+  "host_build_log_sha256": "3b4e05d798dcdea3ba8a5894ff03d7033e2cb226de1d4b6e3410929aac4b3e73",
   "configuration_test_log_sha256": "7b02c012e2b668214bced789cae1baa26987ca251c5a903ab958e2b8f15d4ceb",
   "default_native_configuration_disabled": true,
   "source_data_or_credentials_read": false,
@@ -614,5 +614,16 @@
     "actual production container recreation is not exercised; actual legacy CLI new-state compatibility and prior Compose overlay/guard evidence are combined",
     "real LAN/PC-NUC discovery and sync, real login/boot, installed Firefox/Zen and user data are T005e",
     "missing production speech model is preserved; no real transcription recognition claimed"
-  ]
+  ],
+  "tested_host_generation_before_independent_configuration_refresh": "/nix/store/g9m9gmpqvx3g2iq2dn6wfliqkn2ir04v-home-manager-generation",
+  "native_service_units_unchanged_after_host_configuration_refresh": {
+    "tag-all-core.service": "863d434d8db0231081622be8e371f943f382dfdd9916360988565cf7d1f266e0",
+    "tag-all-tools.service": "841743e44e435c9c71fb1701b54b2bbf874c193c74a83e01ac0609e9b5c13468",
+    "tag-native-files.service": "5357a472500abbcbe06417f1d7ad122fe1a209cce834b005908681efbf263006",
+    "tag-native-workspace.service": "fd69e5551c174ef876dafd64b6e5f168dda950b2219c99a86cc537e2dacf19b2",
+    "tag-native-stack.target": "7942389d5c5bb00d5a12bf82342d4484879d65c656e12eff547d634f226e037b",
+    "pc-private-node-restore.service": "cd41453631d70eb02eb6d194e712d2f7318ea0b2cda9cb3374fde686215acfb1"
+  },
+  "current_nix_inputs_match_fixed_host_snapshot": true,
+  "combination_evidence_reused_for_identical_native_units": true
 }
