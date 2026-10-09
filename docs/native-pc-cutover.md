@@ -1,14 +1,14 @@
 # PC 原生服务切换与回退
 
-**当前不可执行生产切换：S2 已通过，S3.6 已通过，S3.7 最终组合验收尚未通过。**
-本文给出通过所有关卡后由用户执行的顺序。Agent 不执行 switch、离线生产迁移或停止现用容器。
+**切换前准备已通过：S3.7 完成 3/3，固定候选可由用户执行试用切换。**
+本文给出用户执行的顺序。Agent 不执行 switch、离线生产迁移或停止现用容器。
 
 ## 固定入口与产物
 
 - `tests/native-pc-host.nix` 扩展实际 `/home/liou/nix-tools` 的 liu-bigpc 配置。
 - `nixos/modules/native-pc-candidate.nix` 仅由候选入口导入；默认主机配置不启用原生服务。
-- 系统与 Home Manager 精确路径以 [宿主预演报告](../specs/012-native-core-gateway/native-full-install-results.json) 为准。
-  本机 `/data/project/tag-all/.devenv/native-full-toplevel`、`/data/project/tag-all/.devenv/native-full-home` 是自有 GC 根，不是活动系统 profile。
+- 系统与 Home Manager 精确路径以 [宿主预演报告](../specs/012-native-core-gateway/native-final-combination-results.json) 为准。
+  本机 `/data/project/tag-all/.devenv/native-final-toplevel`、`/data/project/tag-all/.devenv/native-final-home` 是自有 GC 根，不是活动系统 profile。
 - 状态固定为 `/home/liou/.local/share/tag-all/pc-native/`；源 `pc/` 保留，绝不自动回写或覆盖。
 - 构建包含主仓已有未提交主机配置；固定产物通过不等于把这些无关修改提交了。
   主机配置、产品模块或前端变动后须重新构建完整候选和 HM，并更新报告再交付。
@@ -21,7 +21,9 @@
 完整候选的 tag-all-tools.service 从固定 Nix store 归档准备专用 rootless VFS 镜像，
 校验 SHA/ID 后通知后端启动；不使用默认 Podman 存储。目录为 pc-native/tools，
 四类处理日志位于 pc-native/executors。无需手工安装 FFmpeg/MuPDF/解压工具，
-Git/OpenSSH 由原生包提供；没有新增转写模型。停止整个 target 先停业务再停工具，
+Git/OpenSSH 由原生包提供；没有新增转写模型。首次启动包装会创建 executors 私有父目录；已有不私有目录拒绝，绝不自动改权限。
+完整工具模式下网关使用 Wants/After，工具故障时保留认证入口，上游未恢复时返回失败；
+核心仍 BindsTo 工具，target Upholds 自动维护四个服务。停止整个 target 先停业务再停工具，
 镜像与日志保留用于恢复，不执行 prune/reset。原生产容器仍用原存储及回退流程。
 
 ## 已验证的保护
@@ -39,7 +41,7 @@ Git/OpenSSH 由原生包提供；没有新增转写模型。停止整个 target 
 
 ## 所有切换前关卡通过后的用户顺序
 
-以下 shell 示例仅用于交付审查，**S3 未通过时不执行**。在 `/home/liou/nix-tools` 使用 Bash。
+以下命令仅由用户在保存编辑内容后执行；证据只覆盖固定候选，源镜像或配置改变须重新核对。在 `/home/liou/nix-tools` 使用 Bash。
 
 1. 保存编辑内容，核对 S1–S3 全部通过，固定报告中的候选系统/HM和源镜像。
    先记录运行系统与当前 system profile 的路径，保留它们的 GC 根；不要删除任何源备份。
@@ -79,7 +81,7 @@ Git/OpenSSH 由原生包提供；没有新增转写模型。停止整个 target 
    printf '%s\n' "$profile_before" > "$native_state/config/profile-before-cutover"
    nix-store --add-root "$native_state/config/system-before-gc-root" --indirect --realise "$system_before"
    nix-store --add-root "$native_state/config/profile-before-gc-root" --indirect --realise "$profile_before"
-   candidate_system=$(python3 -c 'import json; print(json.load(open("specs/012-native-core-gateway/native-full-install-results.json"))["actual_toplevel"])')
+   candidate_system=$(python3 -c 'import json; print(json.load(open("specs/012-native-core-gateway/native-final-combination-results.json"))["actual_toplevel"])')
    ```
 
    确认 candidate_system 仍为报告中已验证的 liu-bigpc store path，不是另一主机。
@@ -159,14 +161,19 @@ Git/OpenSSH 由原生包提供；没有新增转写模型。停止整个 target 
 - `python3 -m unittest discover -s scripts/tests -p 'test_native_pc*.py'`：配置、离线快照与模式守卫。
 - `check-native-pc-rollback.py`：PyYAML + podman-compose，仅合成凭证/DB与实际模板解析，不启动容器。
 - `check-native-pc-guard-runtime.py --generation <generation> --output <report>`：真实生成命令，
-  六个自有临时 systemd 单元；Podman及原生状态均用合成桩；临时单元自动收集、fixture精确清理。
+  八个自有临时 systemd 单元；Podman及原生状态均用合成桩；临时单元自动收集、fixture精确清理。
 - 还必须构建完整实际 toplevel 与对应 HM，核对生成的固定名称/守卫/自动启动条件。
 - 真实停机、离线生产复制、激活、真实开机及 LAN 发现属于用户后续验收，未由合成结果替代。
 
-## S3 PDF 候选边界
+## 固定最终候选与真实验收边界
 
-`tests/native-pc-host.nix` 显式 `processing=true` 可构建新增工作区/PDF 配置，
-镜像/状态/socket 参数来自已固定的产品证据；默认仍是原 core 候选。
-PDF 包装和系统/HM 构建已通过，不代表所有媒体兼容，也不代表默认 Podman 已有工具镜像。
-此候选尚未激活或通过全部 S3，不用于用户切换；仍等待完整工具接入、实际单元运行、
-镜像生命周期、启动互斥和回退复验。切换命令中的最终产物仅在 S3 通过后更新。
+最终实际系统/HM和产品包以 native-final-combination-results.json 为准；不要继续使用历史
+PDF-only/S3.6 产物。`tests/native-pc-host.nix` 必须显式 processing=true，默认仍为纯核心候选。
+工具归档、镜像和主程序摘要均固定；运行时独立 VFS，不要求默认 Podman 提前导入工具镜像。
+准备阶段 9 项组合、8 项生成互斥守卫、20 项配置/快照/守卫回归通过。
+实际旧发行 CLI 已在全部原生服务和工具停止后读取新状态，保留原生期间新写入；
+真实容器实体重建由此前 Compose overlay 与守卫证据补充，未在生产执行。
+
+下一阶段 T005e 固定三项：用户离线准备及候选激活；真实入口/文件阅读处理/PC–NUC同步发现；
+登录与重启恢复及真实回退核验。真实系统启动、用户 profile、LAN/NUC 数据不是合成验收结果。
+不要把准备阶段通过写成生产已切换或用户已验收。

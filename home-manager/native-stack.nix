@@ -56,7 +56,14 @@ in {
     systemd.user.services.tag-all-tools = lib.mkIf (cfg.toolRuntime != null) { Unit.PartOf = [ "tag-native-stack.target" ]; };
     systemd.user.services.tag-native-files.Unit.PartOf = [ "tag-native-stack.target" ];
     systemd.user.services.tag-native-workspace = {
-      Unit.PartOf = [ "tag-native-stack.target" ];
+      Unit = {
+        PartOf = [ "tag-native-stack.target" ];
+        # Keep the authenticated gateway available while BindsTo restarts core
+        # after a tools outage. Requires would stop it during the queued stop
+        # transaction, where target Upholds cannot enqueue a conflicting start.
+        Requires = lib.mkIf (cfg.toolRuntime != null) (lib.mkForce []);
+        Wants = lib.mkIf (cfg.toolRuntime != null) [ "tag-all-core.service" "tag-native-files.service" ];
+      };
       Install.WantedBy = lib.mkForce [];
     };
     assertions = [

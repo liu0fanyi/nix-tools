@@ -166,3 +166,15 @@ Constitution Check：本机固定制品与原 tester 规则保持；纯核心依
 Constitution Check：规格仍以 tag-all 024 为权威，不在基础设施建立另一套范围；
 无外部参考/gitlink、无生产 DB/私钥读取，专用工具存储与资料镜像均按白名单核验。
 下一项 S3.7 固定 A/B/C；只有全部通过才交付用户切换，当前 cutover_ready=false。
+
+## 最终组合交付状态
+
+S3.7 A/B/C 完成 3/3，切换前准备剩余 0。
+[native-final-combination-results.json](native-final-combination-results.json) 固定实际系统/HM、
+完整包和静态前端资产。9 项组合、8 项实际守卫、20 项配置/快照/守卫回归通过。
+完整工具模式下 gateway 保留认证与守卫，以 Wants/After 连接核心/文件服务；
+工具故障时核心仍 BindsTo，gateway 不因停止事务冲突永久离线；target Upholds 维护四子服务。
+首次 executors 父目录由产品包装在全部参数校验后准备，既有不私有路径不修权限而拒绝。
+无 Rust 改动、无外部参考/gitlink 变更，不改生产容器/DB/CA/认证/模型/活动 profile。
+cutover_ready=true 是固定候选切换前门槛通过；activated=false。真实 Compose 容器重建、
+LAN、PC–NUC、登录开机由 tasks.md T005e 的三项用户验收完成，不再增加开发前置。

@@ -57,7 +57,11 @@ class StartupGuard(unittest.TestCase):
             for state in ['active', 'activating', 'deactivating', 'unknown', '']:
                 with self.subTest(name=name, state=state):
                     units = self.units | {name: state}
-                    with self.assertRaises(ValueError): validate('container', self.fixture.dest, self.records, units)
+                    if name == 'tag-all-tools.service' and state == 'unknown':
+                        # The optional tools unit is absent in the legacy core-only candidate.
+                        validate('container', self.fixture.dest, self.records, units)
+                    else:
+                        with self.assertRaises(ValueError): validate('container', self.fixture.dest, self.records, units)
 
     def test_old_database_ca_workspace_or_command_is_refused(self):
         self.container_mode()
