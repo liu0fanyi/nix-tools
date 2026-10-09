@@ -1,0 +1,22 @@
+{
+  "candidate": "/nix/store/49gihkvq010kiscjjvcgzmbll7yklvps-tag-all-native-nuc-candidate",
+  "whisper_package": "/nix/store/1f88pagy5lyp0gafms7x02pzgc70aiq0-tag-all-native-whisper-1.8.6",
+  "whisper_cli_sha256": "3cba995f23d06abfb91fd93a34f05abd841adc0998e81aa188f1d17072b2e003",
+  "checks": [
+    "eight unit files and instance dependencies",
+    "separate DB/tool states",
+    "readonly OS protection and disabled sync",
+    "private-only Git/Whisper selection",
+    "exact Whisper CLI, musl libraries and real help",
+    "Unix-only bridge listeners",
+    "real private and readonly Unix HTTP routing"
+  ],
+  "production_services_changed": false,
+  "real_model_inference_verified": false,
+  "container_socket_access_verified": false,
+  "activated": false,
+  "cutover_ready": false,
+  "unit_manager_verification": "Not passed here: sandbox systemd-analyze could not find basic.target; actual generated user units must run in N3.",
+  "runtime_environment_tests": 4,
+  "existing_topology_ingress_tests": 10
+}

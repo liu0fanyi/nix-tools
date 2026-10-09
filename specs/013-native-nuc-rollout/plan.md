@@ -36,3 +36,20 @@ PC 包缺 Whisper CLI，不能直接宣称完整兼容，补齐属于 N2。
 缺模型映射和只读区Git私钥。scripts/native_nuc_ingress.py仅替换四个固定上游token；
 从home.toml生成的完整Caddy候选逐字保留其余规则。10项单元测试通过。
 尚未运行Caddy实际解析、容器socket访问或生产切换；双实例和Whisper仍待N2完成。
+
+## N2 候选装配完成
+
+[candidate-results.json](candidate-results.json) 固定已构建的独立候选八个用户单元
+（双区 core/tools/files、Unix bridge及target），不安装或启用系统/HM配置。
+主区配置同步、媒体映射、专用Git HOME与只读模型；只读区禁用同步，不挂Git凭证，
+workspace采用ReadOnlyPaths/BindReadOnlyPaths，无DUFS写权限。每区DB、journal和tool runtime独立。
+
+固定Whisper1.8.6原CLI及musl动态库字节/链接与023制品一致；--help真实运行成功，
+未读用户模型或音频，不代表真实识别通过。用产品锁包装，不重编译Rust或换推理版本。
+运行期env转换保留秘密值、转换模型和Git路径，拒绝自定义程序/危险覆盖；4项回归通过。
+10项现有拓扑/入口门槛复验通过。实际Caddy解析和临时双Unix HTTP转发通过，无TCP新入口。
+
+构建中的只读复制权限和HM属性路径问题已修正，失败不计通过。当前沙盒systemd-analyze
+缺basic.target，未完成管理器验收；实际生成单元运行、容器socket访问、外网/Authelia规则
+及真实模型识别归N3。生产迁移、环境文件生成、socket目录准备和旧writer互斥归N4。
+N2是候选实现完成，不是cutover_ready；当前未停NUC生产服务。
