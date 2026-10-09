@@ -1,0 +1,16 @@
+{
+  "candidate": "/nix/store/49gihkvq010kiscjjvcgzmbll7yklvps-tag-all-native-nuc-candidate",
+  "cases": [
+    "actual generated eight-unit target starts and both APIs respond",
+    "actual private DUFS writes; readonly DUFS rejects PUT and source remains",
+    "private tags remain isolated from readonly DB",
+    "actual selected PDF EPUB and archive worker processing",
+    "direct readonly API file write blocked by real OS namespace",
+    "whole target restart preserves private new writes"
+  ],
+  "owned_units_and_state_cleaned": true,
+  "production_services_changed": false,
+  "activated": false,
+  "real_model_inference_verified": false,
+  "container_socket_access_verified": false
+}

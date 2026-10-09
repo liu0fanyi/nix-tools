@@ -53,3 +53,24 @@ workspace采用ReadOnlyPaths/BindReadOnlyPaths，无DUFS写权限。每区DB、j
 缺basic.target，未完成管理器验收；实际生成单元运行、容器socket访问、外网/Authelia规则
 及真实模型识别归N3。生产迁移、环境文件生成、socket目录准备和旧writer互斥归N4。
 N2是候选实现完成，不是cutover_ready；当前未停NUC生产服务。
+
+## N3 当前隔离证据
+
+[runtime-results.json](runtime-results.json)：实际用户管理器运行生成单元，六项通过；
+同一固定主程序/工具镜像，双区文件与DB独立，私有写入成功，只读DUFS PUT拒绝，
+绕过网关直接调用只读API写文本亦被OS namespace拒绝。PDF/EPUB/解压真实处理和
+整套target重启后新标签保持；临时单元、runtime、workspace已核对清理。
+
+[container-ingress-results.json](container-ingress-results.json)：同一现网Caddy完整ID，
+自有rootless VFS、无网络、只读根，仅测试CA/config tmpfs可写。容器实际只读挂载Unix
+socket可连接；无密码拒绝、只读POST405且未到upstream、完整外网路由经合成授权检查。
+终端及EdgeOne规则保留。仅scope测试端口/TLS传输及Authelia upstream，未验证真实公网TLS/登录。
+固定镜像内置NET_BIND_SERVICE需显式保留；其余cap删除，不改变生产能力或配置。
+
+[whisper-inference-results.json](whisper-inference-results.json)：从NUC只读复制190085487字节
+模型到PC私有夹具，摘要与NUC一致；现用Whisper1.8.6真实识别合成英语，命中预期句子。
+无用户录音读取、模型不入store/发行包；当前仅CLI推理，最终设备转写HTTP属于N3-E。
+
+测试脚本二进制误读、Caddy文件能力/临时CA目录/Host重定向及客户端3秒超时均已定位修正，
+失败不算通过。超时遗留worker仅在自有VFS、固定image/任务名前缀/本次输入挂载核对后回收。
+当前N3尚未完成，下一项为N3-D；后续N3-E转写HTTP和N3-F旧CLI回退分列，不扩大原阶段结束条件。

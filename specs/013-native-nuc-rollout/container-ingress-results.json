@@ -1,0 +1,14 @@
+{
+  "caddy_image": "2d8b1708bf8008935c0e2a9b6564f7f080cf9a73af3b27718f286230449b7101",
+  "cases": [
+    "container readonly socket mount connects; LAN Basic auth required",
+    "readonly password gate and mutation 405 before upstream",
+    "full external origin routes deny unauthenticated and forward through auth gate",
+    "terminal and EdgeOne trusted proxy rules retained"
+  ],
+  "container_socket_access_verified": true,
+  "auth_fixture": "synthetic auth service; real Authelia production unchanged",
+  "tls_handshake_verified": false,
+  "production_services_changed": false,
+  "owned_container_and_runtime_cleaned": true
+}

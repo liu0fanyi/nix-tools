@@ -1,0 +1,15 @@
+{
+  "whisper_package": "/nix/store/1f88pagy5lyp0gafms7x02pzgc70aiq0-tag-all-native-whisper-1.8.6",
+  "model_sha256": "ae85e4a935d7a567bd102fe55afc16bb595bdb618e11b2fc7591bc08120411bb",
+  "model_bytes": 190085487,
+  "synthetic_voice_only": true,
+  "recognized_text": "Hello. This is a test of local speech recognition.\n The quick brown fox jumps over the lazy dog.",
+  "real_model_inference_verified": true,
+  "production_recordings_read": false,
+  "model_preserved": true,
+  "generated_audio_cleaned": true,
+  "production_services_changed": false,
+  "scope": "native CLI; final device transcription HTTP requires separate gate",
+  "source_model_digest_verified": true,
+  "source_model_copied_read_only": true
+}
