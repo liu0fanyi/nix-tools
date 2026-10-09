@@ -50,3 +50,10 @@ progress新增events（至多80项）：stage、phase、video_id、time和受控
 未完成尝试拒绝重复的唯一自动例外：完整events.jsonl（≤2MiB）只有thread.started、turn.started、包含固定路由错误的error及error类型item.completed，最后为确切turn.failed/workspace routing discovery failed，且无answer.json/response.json。未知/损坏/截断事件、推理/答案/工具/usage均不准入。每任务最多3次额外请求，30/60/120秒退避，ai-work/<id>/routing-attempts保存原started、stdout、stderr和失败信息；上限跨重启保留。不得删除旧记录来绕过上限。其他失败继续按原停止规则。
 
 AI状态新增retry_wait；API白名单提供failure_reason受控字符串、retry_count/retry_limit（1–3）、next_retry_at。对应event为固定等待重试文案。等待保持活锁、检查停止标记，重试不改变published或真实进展时间。重试用尽显示受控路由连接故障并停止，真实详情仍只在本地。
+
+
+### 截断封面响应的低频重取
+
+fetch_cover仅对严格解码抛出的image file is truncated进行三次额外GET，间隔15/30/60秒，添加Cache-Control:no-cache，但不保证CDN绕过缓存。损坏数据不保存，最终必须完整解码再转JPEG；不得放宽Pillow截断检查。HTTP风控/认证、网络异常、10MiB超限或其他未知解码错误直接按原失败逻辑停止。额外请求每次校验原站HTTPS地址/重定向，不涉及视频或模型。
+
+新增来源事件cover_retry_wait，包含合法BV ID及时间，前端仅显示固定“封面响应不完整，等待低频重新获取”。重试不增加published或来源完成计数；超过上限仍failed并停下。仅针对当前prepare的有限重取，不自动重置已持久失败任务或删除输入。

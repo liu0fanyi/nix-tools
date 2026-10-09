@@ -47,15 +47,26 @@ class ImageRedirect(urllib.request.HTTPRedirectHandler):
         return super().redirect_request(req,fp,code,msg,headers,newurl)
 
 
-def fetch_cover(url):
+COVER_RETRY_DELAYS=(15,30,60)
+
+def fetch_cover(url,vid=None):
     url=cover_url(url)
-    request=urllib.request.Request(url,headers={'Referer':'https://www.bilibili.com/','User-Agent':'Mozilla/5.0'})
-    with urllib.request.build_opener(ImageRedirect).open(request,timeout=30) as response:
-        data=response.read(10*1024*1024+1)
-    if len(data)>10*1024*1024:raise ValueError('cover exceeds 10 MiB')
-    with Image.open(io.BytesIO(data)) as image:
-        image.load();output=io.BytesIO();image.convert('RGB').save(output,format='JPEG',quality=92)
-    return output.getvalue()
+    for attempt in range(len(COVER_RETRY_DELAYS)+1):
+        request=urllib.request.Request(url,headers={'Referer':'https://www.bilibili.com/','User-Agent':'Mozilla/5.0','Cache-Control':'no-cache'})
+        with urllib.request.build_opener(ImageRedirect).open(request,timeout=30) as response:
+            data=response.read(10*1024*1024+1)
+        if len(data)>10*1024*1024:raise ValueError('cover exceeds 10 MiB')
+        try:
+            with Image.open(io.BytesIO(data)) as image:
+                image.load();output=io.BytesIO();image.convert('RGB').save(output,format='JPEG',quality=92)
+            return output.getvalue()
+        except OSError as error:
+            # A truncated image is never accepted or saved. Retry only this
+            # specific read-only image response, not auth/rate/network errors.
+            if 'image file is truncated' not in str(error).lower() or attempt==len(COVER_RETRY_DELAYS):raise
+            delay=COVER_RETRY_DELAYS[attempt]
+            print(json.dumps({'phase':'cover_retry_wait','id':vid,'retry_count':attempt+1,'retry_limit':len(COVER_RETRY_DELAYS),'next_retry_at':time.time()+delay,'updated_at':time.time()}),flush=True)
+            time.sleep(delay)
 
 
 def atomic_bytes(path,data):
@@ -127,7 +138,7 @@ class Simple:
         cover=base/'cover.jpg'
         source_marker=base/'source.json'
         if not source_marker.exists():
-            atomic_bytes(cover,fetch_cover(minimal['thumbnail']))
+            atomic_bytes(cover,fetch_cover(minimal['thumbnail'],vid=vid))
             f.immutable(source_marker,{'video_id':vid,'cover_sha256':f.batch.digest(cover),'cover_url':minimal['thumbnail']})
         saved=f.batch.load(source_marker)
         if saved['video_id']!=vid or f.batch.digest(f.batch.file(cover))!=saved['cover_sha256']:raise ValueError('cover content changed')
@@ -243,7 +254,7 @@ def render_recipe(recipe):
     return '''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'''+esc(recipe['title'])+'''</title><style>body{margin:0;background:#f5f3ee;color:#282d28;font:17px/1.8 system-ui,sans-serif}main{max-width:850px;margin:auto;padding:26px}h1{font-size:32px}img{display:block;width:100%;max-height:390px;object-fit:contain;border-radius:12px;background:#eee}a{color:#476833}li{margin:12px 0}small,.meta{color:#687166;font-size:14px}details{margin-top:28px;background:#fff;padding:14px;border-radius:8px}section{background:white;padding:12px 24px;margin:20px 0;border-radius:10px}</style><main><nav><a href="../../index.html">← 菜谱目录</a> · <a href="../../player-guide.html">原视频键盘浏览</a></nav><h1>'''+esc(recipe['title'])+'''</h1><p class="meta">'''+esc(source['author'])+''' · AI 字幕整理</p><img src="cover.jpg" alt="原视频封面"><p><a target="_blank" rel="noopener noreferrer" href="'''+esc(source['url'])+'''">观看原视频 ↗</a></p><section><h2>材料</h2><ul>'''+ingredients+'''</ul></section><section><h2>制作过程</h2><ol>'''+steps+'''</ol></section>'''+notes+'''<p class="meta">用量未明确时保留未知。时间链接是原视频位置，不是烹饪时长。<a href="recipe.json">菜谱 JSON</a></p></main></html>'''
 
 
-EVENTS={'retry_wait':'模型连接故障，等待自动重试','prepared':'字幕和封面已就绪','recovered':'已恢复并发布保存结果','skipped':'没有中文AI字幕，跳过','waiting_for_ai':'缓存已满，等待AI整理','sources_finished':'来源队列已结束','stopped':'任务已停止','failed':'任务失败，已停止','extracting':'开始AI字幕整理','publishing':'开始校验和发布','published':'菜谱发布完成','waiting_for_subtitles':'等待下一份字幕','finished':'AI队列已处理完毕'}
+EVENTS={'cover_retry_wait':'封面响应不完整，等待低频重新获取','retry_wait':'模型连接故障，等待自动重试','prepared':'字幕和封面已就绪','recovered':'已恢复并发布保存结果','skipped':'没有中文AI字幕，跳过','waiting_for_ai':'缓存已满，等待AI整理','sources_finished':'来源队列已结束','stopped':'任务已停止','failed':'任务失败，已停止','extracting':'开始AI字幕整理','publishing':'开始校验和发布','published':'菜谱发布完成','waiting_for_subtitles':'等待下一份字幕','finished':'AI队列已处理完毕'}
 REASONS={'routing_unavailable':'Codex服务路由连接失败','cover_decode':'封面图片解码失败','rate_limited':'平台限流或风控','authentication':'登录或认证失败','timeout':'请求超时','disk_full':'磁盘空间不足','model_error':'模型调用失败','invalid_result':'AI结果未通过校验','unknown':'任务发生错误，详情留本地日志'}
 
 def failure_code(value):

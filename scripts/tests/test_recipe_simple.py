@@ -72,6 +72,29 @@ class SimpleChecks(unittest.TestCase):
         self.assertEqual(self.app.status()['total'],1)
         m.f.atomic(self.manifest,[{'id':f'BVBulk{i}','title':'菜','author':'人'} for i in range(4200)])
         self.assertEqual(self.app.add(self.manifest)['total'],4201)
+    def cover_response(self,data):
+        response=mock.MagicMock();response.__enter__.return_value.read.return_value=data
+        return response
+    def test_truncated_cover_refetched_and_strictly_decoded(self):
+        opener=mock.Mock();opener.open.side_effect=[self.cover_response(self.cover[:-10]),self.cover_response(self.cover)]
+        with mock.patch.object(m.urllib.request,'build_opener',return_value=opener),mock.patch.object(m.time,'sleep') as sleep:
+            result=m.fetch_cover('https://i0.hdslb.com/x.jpg',vid='BVTest123')
+        self.assertEqual(opener.open.call_count,2);sleep.assert_called_once_with(15)
+        with Image.open(io.BytesIO(result)) as image:image.load();self.assertEqual(image.size,(32,20))
+    def test_truncated_cover_retry_limit_and_other_errors_stop(self):
+        opener=mock.Mock();opener.open.return_value=self.cover_response(self.cover[:-10])
+        with mock.patch.object(m.urllib.request,'build_opener',return_value=opener),mock.patch.object(m.time,'sleep') as sleep:
+            with self.assertRaisesRegex(OSError,'truncated'):m.fetch_cover('https://i0.hdslb.com/x.jpg')
+        self.assertEqual(opener.open.call_count,4);self.assertEqual([c.args[0] for c in sleep.call_args_list],[15,30,60])
+        for error in (m.urllib.error.HTTPError('https://i0.hdslb.com/x.jpg',412,'blocked',{},None),TimeoutError('timeout')):
+            opener.reset_mock();opener.open.side_effect=error
+            with mock.patch.object(m.urllib.request,'build_opener',return_value=opener),mock.patch.object(m.time,'sleep') as sleep:
+                with self.assertRaises(type(error)):m.fetch_cover('https://i0.hdslb.com/x.jpg')
+                self.assertEqual(opener.open.call_count,1);sleep.assert_not_called()
+        opener.reset_mock();opener.open.side_effect=None;opener.open.return_value=self.cover_response(b'not an image')
+        with mock.patch.object(m.urllib.request,'build_opener',return_value=opener),mock.patch.object(m.time,'sleep') as sleep:
+            with self.assertRaises(OSError):m.fetch_cover('https://i0.hdslb.com/x.jpg')
+            self.assertEqual(opener.open.call_count,1);sleep.assert_not_called()
     def test_cover_hosts_and_https_upgrade(self):
         self.assertEqual(m.cover_url('http://i0.hdslb.com/x.jpg'),'https://i0.hdslb.com/x.jpg')
         for url in ['https://hdslb.com.evil/x','file:///tmp/x','https://127.0.0.1/x','https://i0.hdslb.com:8080/x','https://user@i0.hdslb.com/x']:
