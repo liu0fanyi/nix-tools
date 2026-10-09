@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "target": "nuc",
+  "activated": false,
+  "cutover_ready": false,
+  "read_only_plan": true,
+  "containers": [
+    {
+      "name": "dufs-plus_tag-server_1",
+      "image": "b4245b0aa73222ddb4b2ac0c26c823a3e6319d2cc7feb3db7b683bfc36a1efee",
+      "action": "replace"
+    },
+    {
+      "name": "dufs-plus_tag-server-readonly_1",
+      "image": "b4245b0aa73222ddb4b2ac0c26c823a3e6319d2cc7feb3db7b683bfc36a1efee",
+      "action": "replace"
+    },
+    {
+      "name": "dufs-plus_dufs_1",
+      "image": "94d0e6750455e22e897235d022249e22af4300ce1d5f2e22a4986c12eb7d31f2",
+      "action": "replace"
+    },
+    {
+      "name": "dufs-plus_dufs-readonly_1",
+      "image": "94d0e6750455e22e897235d022249e22af4300ce1d5f2e22a4986c12eb7d31f2",
+      "action": "replace"
+    },
+    {
+      "name": "dufs-plus_tag-peer-discovery_1",
+      "image": "b4245b0aa73222ddb4b2ac0c26c823a3e6319d2cc7feb3db7b683bfc36a1efee",
+      "action": "replace"
+    },
+    {
+      "name": "dufs-plus_caddy_1",
+      "image": "2d8b1708bf8008935c0e2a9b6564f7f080cf9a73af3b27718f286230449b7101",
+      "action": "retain"
+    },
+    {
+      "name": "dufs-plus_authelia_1",
+      "image": "4a87c7d1276f351a9d2b2139a676bb9aba16692825c858523c9c002744d0aa59",
+      "action": "retain"
+    },
+    {
+      "name": "dufs-plus_readonly-gateway_1",
+      "image": "474673f0b9e7cd2c791bccbda569d78fe3d3e0e53c2217d6655bdf10b609d7b3",
+      "action": "retain"
+    },
+    {
+      "name": "dufs-plus_ddns-go_1",
+      "image": "07ce5a5e5873121e0457ecdacd31332b03b2af57ad89a10118521d882a4ac127",
+      "action": "retain"
+    }
+  ],
+  "instances": [
+    {
+      "role": "private",
+      "workspace": "/home/liou/dufs-lan",
+      "source_state": "/home/liou/dufs-lan/.dufs_plus_state",
+      "workspace_read_only": false,
+      "sync": "preserve",
+      "models": "/home/liou/.local/share/whisper.cpp/models"
+    },
+    {
+      "role": "readonly",
+      "workspace": "/home/liou/dufs",
+      "source_state": "/home/liou/dufs/.dufs_plus_state",
+      "workspace_read_only": true,
+      "sync": "disabled",
+      "models": null
+    }
+  ],
+  "remaining_adaptations": [
+    "dual-instance units and isolated states",
+    "private Unix bridge and unchanged ingress guards",
+    "NUC Whisper inference and runtime Git credentials"
+  ]
+}
