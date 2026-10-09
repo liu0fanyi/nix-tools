@@ -1,5 +1,5 @@
 # Read-only candidate factory. Imported only by the preflight build, never automatically.
-{ tagAllSource, corePackage, frontendRoot, pdfContainer ? null }:
+{ tagAllSource, corePackage, frontendRoot, pdfContainer ? null, processingContainers ? null, toolRuntime ? null }:
 { config, lib, pkgs, ... }:
 let
   guard = mode: "${pkgs.python3}/bin/python3 ${../../scripts/native_pc_mode_guard.py} --mode ${mode} --podman ${pkgs.podman}/bin/podman --systemctl ${pkgs.systemd}/bin/systemctl";
@@ -11,7 +11,7 @@ in {
     services.tag-native-stack = {
       enable = true;
       package = corePackage;
-      inherit frontendRoot pdfContainer;
+      inherit frontendRoot pdfContainer processingContainers toolRuntime;
       nodeId = "pc";
       workspace = "/home/liou/dufs-lan";
       workspaceMounts.project = "/data/project";
@@ -42,6 +42,10 @@ in {
       tag-native-workspace.Unit.After = [ "podman.socket" ];
       tag-native-workspace.Unit.Wants = [ "podman.socket" ];
       tag-all-core.Service.ExecCondition = guard "native";
+      tag-all-tools = lib.mkIf (toolRuntime != null) {
+        Service.ExecCondition = guard "native";
+        Unit.ConditionPathExists = [ (root + "/ready") ("!" + root + "/container-mode") ];
+      };
       tag-native-files.Service.ExecCondition = guard "native";
       tag-native-workspace.Service.ExecCondition = guard "native";
       tag-all-core.Unit.ConditionPathExists = [ (root + "/ready") ("!" + root + "/container-mode") ];

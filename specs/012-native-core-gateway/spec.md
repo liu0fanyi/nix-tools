@@ -90,3 +90,10 @@ Range、Markdown 附件引用与字节、实际 WASM/PDF.js 阅读通过。
 归档/音视频/漫画/Git/音乐/转写等缺工具的能力当前为 dependency_unavailable，不能说全部媒体已恢复。
 下一步接归档/音视频受控执行，逐项补结果与取消/恢复；完整工具就绪后再复验最终候选
 实际单元、互斥、回退与镜像生命周期。真实 PC/NUC 服务保持，现阶段不要求用户停机。
+
+## 当前完整安装候选
+
+S3.6 完成 3/3，产品证据及同一实际主机/HM 固定在
+[native-full-install-results.json](native-full-install-results.json)。完整处理选项、独立工具运行时
+与启动/回退互斥已装配；没有激活。剩余按产品 024 计数：S3.7 最终组合验收，固定3项。
+现用 PC/NUC 不变，cutover_ready=false；历史轻量/PDF 记录不代表当前完整候选。

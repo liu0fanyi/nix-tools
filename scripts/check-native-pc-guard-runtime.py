@@ -72,12 +72,14 @@ def main():
         run('container-native-active', 'container', fixture.records, fixture.units | {UNITS[1]: 'active'}, False)
         changed = copy.deepcopy(fixture.records); changed[NAMES[3]]['Image']='sha256:'+'b'*64
         run('container-other-image', 'container', changed, fixture.units, False)
-        report={'generated_generation': str(args.generation), 'transient_execcondition_cases_passed': 6,
+        run('container-tools-active', 'container', fixture.records, fixture.units | {'tag-all-tools.service': 'active'}, False)
+        run('container-tools-absent-core-only', 'container', fixture.records, fixture.units | {'tag-all-tools.service': 'unknown'}, True)
+        report={'generated_generation': str(args.generation), 'transient_execcondition_cases_passed': 8,
             'private_user_and_mount_namespace': True, 'default_container_restore_is_guarded': True,
             'only_five_fixed_restore_names': True, 'real_container_commands_mutated': False,
             'production_state_read': False, 'activated': False}
         args.output.write_text(json.dumps(report, indent=2)+'\n')
-        print('Six generated ExecCondition cases passed; owned transient units collected')
+        print('Eight generated ExecCondition cases passed; owned transient units collected')
     finally: fixture.doCleanups()
 
 

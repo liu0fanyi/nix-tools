@@ -151,3 +151,18 @@ Constitution Check：本机固定制品与原 tester 规则保持；纯核心依
 归档/音视频/漫画/Git/音乐/转写等缺工具的能力当前为 dependency_unavailable，不能说全部媒体已恢复。
 下一步接归档/音视频受控执行，逐项补结果与取消/恢复；完整工具就绪后再复验最终候选
 实际单元、互斥、回退与镜像生命周期。真实 PC/NUC 服务保持，现阶段不要求用户停机。
+
+## S3.6 完整安装候选已完成，下一项 S3.7
+
+本轮实际入口继续由 native-pc-host 扩展当前主机，不 import 到默认主机配置。
+完整包和四类执行器来自 tag-all 同一冻结 CLI/工具归档；native-stack 转发产品权威选项，
+工具单元与后端一起受 ready/旧容器停止守卫及 target 维护。回退守卫包含工具单元，
+旧纯核心无该单元时兼容 unknown，其余单元继续要求 inactive/failed。
+
+实际 toplevel/HM 从同一不可变主机源码快照构建。用户已有 staged/未提交配置保留，
+只提交本阶段候选/守卫/合成测试与规格，不执行激活或迁移。产品/运行时7项与生成
+守卫8项通过；证据见 [native-full-install-results.json](native-full-install-results.json)。
+
+Constitution Check：规格仍以 tag-all 024 为权威，不在基础设施建立另一套范围；
+无外部参考/gitlink、无生产 DB/私钥读取，专用工具存储与资料镜像均按白名单核验。
+下一项 S3.7 固定 A/B/C；只有全部通过才交付用户切换，当前 cutover_ready=false。

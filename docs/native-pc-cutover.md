@@ -1,14 +1,14 @@
 # PC 原生服务切换与回退
 
-**当前不可执行生产切换：S2 已通过，S3 文件/媒体兼容尚未通过。**
+**当前不可执行生产切换：S2 已通过，S3.6 已通过，S3.7 最终组合验收尚未通过。**
 本文给出通过所有关卡后由用户执行的顺序。Agent 不执行 switch、离线生产迁移或停止现用容器。
 
 ## 固定入口与产物
 
 - `tests/native-pc-host.nix` 扩展实际 `/home/liou/nix-tools` 的 liu-bigpc 配置。
 - `nixos/modules/native-pc-candidate.nix` 仅由候选入口导入；默认主机配置不启用原生服务。
-- 系统与 Home Manager 精确路径以 [宿主预演报告](../specs/012-native-core-gateway/host-preflight-results.json) 为准。
-  本机 `.devenv/native-pc-final-system`、`.devenv/native-pc-final-home` 是自有 GC 根，不是活动系统 profile。
+- 系统与 Home Manager 精确路径以 [宿主预演报告](../specs/012-native-core-gateway/native-full-install-results.json) 为准。
+  本机 `/data/project/tag-all/.devenv/native-full-toplevel`、`/data/project/tag-all/.devenv/native-full-home` 是自有 GC 根，不是活动系统 profile。
 - 状态固定为 `/home/liou/.local/share/tag-all/pc-native/`；源 `pc/` 保留，绝不自动回写或覆盖。
 - 构建包含主仓已有未提交主机配置；固定产物通过不等于把这些无关修改提交了。
   主机配置、产品模块或前端变动后须重新构建完整候选和 HM，并更新报告再交付。
@@ -16,13 +16,21 @@
 本阶段是固定候选的试用切换。普通 `rerun.nu liou --host liu-bigpc` 使用默认主机配置，
 会撤掉候选模块；原生试用期间升级系统须重新构建本候选入口，不能把普通 rerun 当成候选升级。
 
+## 工具装配
+
+完整候选的 tag-all-tools.service 从固定 Nix store 归档准备专用 rootless VFS 镜像，
+校验 SHA/ID 后通知后端启动；不使用默认 Podman 存储。目录为 pc-native/tools，
+四类处理日志位于 pc-native/executors。无需手工安装 FFmpeg/MuPDF/解压工具，
+Git/OpenSSH 由原生包提供；没有新增转写模型。停止整个 target 先停业务再停工具，
+镜像与日志保留用于恢复，不执行 prune/reset。原生产容器仍用原存储及回退流程。
+
 ## 已验证的保护
 
 - `ready` 必须来自完整离线快照，数据库、状态目录及原 CA 根/中间证书与密钥必须为当前用户所有、私有、非 symlink。缺失 CA 拒绝启动，避免生成不同身份。
-- 原生 target 和三个服务要求 ready 且无 `container-mode`。三个实际服务的 ExecCondition
+- 原生 target 和后端/文件/网关/工具服务要求 ready 且无 `container-mode`。各实际服务的 ExecCondition
   通过本机 Podman socket 确认固定五个容器均已停止；API 不可读也拒绝启动。
 - 候选的 `pc-private-node-restore` 只在 ready 与 container-mode 同时存在时参与默认启动。
-  其 ExecCondition 核对四个原生单元停止、五个容器身份及固定镜像、新数据库/CA/证书/工作区挂载。
+  其 ExecCondition 核对 target、后端/文件/网关及工具单元停止、五个容器身份及固定镜像、新数据库/CA/证书/工作区挂载。
   ExecStart 只启动以下五个固定名称；不再按项目标签批量启动可能指向旧状态的容器。
 - 回退 overlay 使用新 `data/core.db`、新 metadata、复制的 CA/信任证书与认证环境，分别固定五个源镜像；核心与发现镜像不要求相同。
 - 合成 [回退合并报告](../specs/012-native-core-gateway/rollback-merge-results.json)、
@@ -71,7 +79,7 @@
    printf '%s\n' "$profile_before" > "$native_state/config/profile-before-cutover"
    nix-store --add-root "$native_state/config/system-before-gc-root" --indirect --realise "$system_before"
    nix-store --add-root "$native_state/config/profile-before-gc-root" --indirect --realise "$profile_before"
-   candidate_system=$(python3 -c 'import json; print(json.load(open("specs/012-native-core-gateway/host-preflight-results.json"))["actual_toplevel"])')
+   candidate_system=$(python3 -c 'import json; print(json.load(open("specs/012-native-core-gateway/native-full-install-results.json"))["actual_toplevel"])')
    ```
 
    确认 candidate_system 仍为报告中已验证的 liu-bigpc store path，不是另一主机。
@@ -93,15 +101,15 @@
 
 回退继续使用候选系统的守卫单元；不先退回没有此守卫的旧系统。
 
-1. 停原生 target 与恢复单元，确认 target、core、files、workspace 全部 inactive/failed：
+1. 停原生 target 与恢复单元，确认 target、core、files、workspace、tools 全部 inactive/failed：
 
    ```bash
    systemctl --user stop tag-native-stack.target pc-private-node-restore.service
    systemctl --user is-active tag-native-stack.target tag-all-core.service \
-     tag-native-files.service tag-native-workspace.service
+     tag-native-files.service tag-native-workspace.service tag-all-tools.service
    ```
 
-   如果任何单元仍为 active/activating/deactivating，不继续。只停止 target 会连带停止三个 PartOf 子单元；
+   如果任何单元仍为 active/activating/deactivating，不继续。只停止 target 会连带停止后端/文件/网关/工具四个 PartOf 子单元；
    必须检查实际结果，不把命令返回成功当作全部 writer 已停。
 2. 用私有权限写明回退模式，阻止原生重新启动：
 

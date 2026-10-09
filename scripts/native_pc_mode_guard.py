@@ -11,7 +11,7 @@ import subprocess
 
 ROOT = Path('/home/liou/.local/share/tag-all/pc-native')
 NAMES = ['dufs-plus-pc_tag-server_1', 'dufs-plus-pc_peer-discovery_1', 'dufs-plus-pc_peer-gateway_1', 'dufs-plus-pc_caddy_1', 'dufs-plus-pc_dufs_1']
-UNITS = ['tag-native-stack.target', 'tag-all-core.service', 'tag-native-files.service', 'tag-native-workspace.service']
+UNITS = ['tag-native-stack.target', 'tag-all-core.service', 'tag-native-files.service', 'tag-native-workspace.service', 'tag-all-tools.service']
 
 
 def private_regular(path):
@@ -57,8 +57,8 @@ def validate(mode, root, records, units=None):
             raise ValueError('All fixed source containers must be stopped before native startup')
         return
     private_regular(marker)
-    if units is None or set(units) != set(UNITS) or any(status not in {'inactive', 'failed'} for status in units.values()):
-        raise ValueError('Native target and all three services must be stopped before container startup')
+    if units is None or set(units) != set(UNITS) or any(status not in ({'inactive', 'failed', 'unknown'} if name == 'tag-all-tools.service' else {'inactive', 'failed'}) for name, status in units.items()):
+        raise ValueError('Native target, backend/files/gateway and optional tools must be stopped before container startup')
     for name in NAMES:
         service = name.removeprefix('dufs-plus-pc_').removesuffix('_1')
         record = records[name]
