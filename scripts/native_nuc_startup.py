@@ -53,8 +53,10 @@ def compose_action(mode,args):
 
 def unit_dropins(guard_command):
     command=shlex.join([*guard_command,'native-check']).replace('%','%%')
-    # Keep each existing ExecStartPre, mount namespace, credentials and dependencies.
-    result={name:'[Unit]\nRequires=dufs-plus-compose.service\nAfter=dufs-plus-compose.service\n[Service]\nExecStartPre=+'+command+'\n' for name in UNITS if name.endswith('.service')}
+    # Delegate each fresh check to the host user manager. '+' with writable BindPaths
+    # cannot set up the namespace in a rootless user service. Keep service isolation.
+    delegate='/run/current-system/sw/bin/env HOME=/home/liou XDG_RUNTIME_DIR=/run/user/1000 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus /run/current-system/sw/bin/systemd-run --user --wait --pipe --collect --quiet '
+    result={name:'[Unit]\nRequires=dufs-plus-compose.service\nAfter=dufs-plus-compose.service\n[Service]\nExecStartPre='+delegate+command+'\n' for name in UNITS if name.endswith('.service')}
     result['tag-native-nuc.target']='[Unit]\nRequires=dufs-plus-compose.service\nAfter=dufs-plus-compose.service\n'
     return result
 

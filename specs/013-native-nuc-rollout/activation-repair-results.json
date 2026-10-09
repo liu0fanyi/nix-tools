@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "first_cutover": "double offline snapshot and guarded registration completed; private services failed before application execution with 226/NAMESPACE",
+  "fallback": "nine original containers running against migrated state, never old DB restoration",
+  "mode": "container",
+  "both_migrated_sqlite_quick_check": true,
+  "unauthenticated_lan": {
+    "5006": 401,
+    "5008": 401
+  },
+  "root_cause": "ExecStartPre=+ in rootless user service with writable BindPaths; writable mount alone succeeds, combination fails",
+  "correction": "fresh precheck delegated through host user systemd-run; service retains PrivateUsers and BindPaths",
+  "native_nuc_regressions": 64,
+  "actual_systemd_groups": 6,
+  "prepared_release": "/home/liou/.local/share/tag-all/nuc-native-release/cbf74f6a7faa051f8167d1de57824c26d4ae34b9a4efbb92645aa7f9a4869c25",
+  "candidate": "/nix/store/49gihkvq010kiscjjvcgzmbll7yklvps-tag-all-native-nuc-candidate",
+  "retry_activation_executed": false,
+  "auto_review_rejection": "second interruption requires fresh user confirmation after fallback",
+  "input_sha256": {
+    "scripts/native_nuc_startup.py": "704f4f6761157c6e8aaf565c6906a5a3c5395cf92a24b0627fc2817789b7a58f",
+    "scripts/native_nuc_switch.py": "9b883064b2784e213c7e269a07f84c31c9818aeff9b03014e12eb8c85d89d5ea",
+    "scripts/native-nuc-switch.py": "c1e91fa01d7cb5bc721c7c493b74a008ba4c737c8bea8845f53f68821eb3f80d",
+    "scripts/check-native-nuc-startup.py": "56587b73e08fec1cfc32b979ca2a27174de7129522c038ff479211f3ec8261f1",
+    "scripts/tests/test_native_nuc_switch.py": "9ee63b8fff2bb8a40e6ff79225f69c446a631d4ad12ee06defafff943d30fdf3"
+  }
+}

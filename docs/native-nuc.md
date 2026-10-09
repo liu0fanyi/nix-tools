@@ -62,3 +62,15 @@ python3 scripts/check-native-nuc-switch-compose.py
 
 Compose门槛用独立rootless VFS和随机容器项目，真实双版本CLI和合成数据；不接生产数据库。
 报告 `.devenv/native-nuc-switch-compose-results.json`；与真实systemd门槛及N3入口契约组合验收。
+
+## 首次失败回退后的再次切换
+
+若当前journal为container-active且九容器已改用新状态，不再运行--activate或再次快照。
+重新确认编辑安全后使用最新已核验receipt：
+
+```bash
+python3 scripts/native-nuc-switch.py --resume --editors-closed
+```
+
+此入口仅重用两份当前core.db，不恢复源DB；失败仍保留journal并明确诊断。
+本次守卫修正将precheck委托宿主用户管理器，避免+执行方式与读写BindPaths组合失败。

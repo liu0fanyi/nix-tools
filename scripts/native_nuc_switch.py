@@ -214,6 +214,43 @@ class Controller:
             records,units=self.inventory();validate('native',self.root,records,units,source_images=self.source_images)
             if any(v!='active' for v in units.values()):raise ValueError('All eight native units must be active')
             self.phase('native-active');return {'mode':'native','activated':True,'old_databases_restored':False,'all_native_units_active':True}
+    def resume_migrated(self):
+        """Re-enter native mode after reviewed fallback, using both current migrated DBs."""
+        with self.operation():
+            private_file(self.journal)
+            if json.loads(self.journal.read_text())['phase']!='container-active':raise ValueError('Reviewed active new-state fallback required')
+            self.check_inputs();records,units=self.inventory()
+            validate('container',self.root,records,units,source_images=self.source_images)
+            original=(self.root/'backup/Caddyfile').read_bytes()
+            if (self.runtime/'Caddyfile').read_bytes()!=original:raise ValueError('Unexpected fallback ingress edits')
+            for name in UNITS:
+                if digest(Path(self.manifest['candidate'])/'lib/systemd/user'/name)!=self.manifest['units'][name]:raise ValueError('Candidate unit changed')
+                if (self.units_dir/name).resolve()!=Path(self.manifest['candidate'])/'lib/systemd/user'/name:raise ValueError('Registered unit changed')
+            self.mode('transition');self.phase('resuming-migrated')
+            for service in REPLACE:self.run(['podman','stop','--time','60',PREFIX+service+'_1'])
+            self.wait_stopped();self.verify_offline()
+            for service in REPLACE:self.run(['podman','update','--restart=no',PREFIX+service+'_1'])
+            hook=self.runtime/'native-nuc-control'
+            atomic_file(hook,'#!/bin/sh\nset -eu\nexec '+shlex.join([self.python,str(self.release/'native_nuc_startup.py')])+' "$@"\n',0o700)
+            for name,text in unit_dropins([self.python,str(self.release/'native_nuc_startup.py')]).items():
+                dest=self.units_dir/(name+'.d')/'native-startup.conf';private_file(dest)
+                atomic_file(self.saved/('previous-'+name+'.conf'),dest.read_bytes())
+                atomic_file(dest,text)
+            marker=self.root/'container-mode';private_file(marker)
+            if marker.read_text()!='explicit-container-fallback\n':raise ValueError('Explicit migrated fallback marker required')
+            marker.unlink()
+            files=[*self.base_files(),self.root/'config-native.json']
+            self.caddy(original,adapt_ingress(original.decode())[0].encode(),files)
+            self.run(['systemctl','--user','daemon-reload']);self.run(['systemctl','--user','enable','tag-native-nuc.target'])
+            self.phase('native-starting',native_may_have_written=True);self.mode('native')
+            self.run(['systemctl','--user','reset-failed',*UNITS],check=False)
+            self.run(['systemctl','--user','start','tag-native-nuc.target'])
+            for attempt in range(60):
+                records,units=self.inventory();validate('native',self.root,records,units,source_images=self.source_images)
+                if all(value=='active' for value in units.values()):break
+                time.sleep(1)
+            else:raise ValueError('Native resume did not become active')
+            self.phase('native-active');return {'mode':'native','activated':True,'both_existing_migrated_databases_reused':True,'source_resnapshot':False,'all_native_units_active':True}
     def rollback(self):
         with self.operation():
             private_file(self.journal)
@@ -255,15 +292,15 @@ def load_release(release):
 def main():
     import argparse
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('release',type=Path)
-    action=parser.add_mutually_exclusive_group();action.add_argument('--activate',action='store_true');action.add_argument('--rollback',action='store_true')
+    action=parser.add_mutually_exclusive_group();action.add_argument('--activate',action='store_true');action.add_argument('--rollback',action='store_true');action.add_argument('--resume',action='store_true')
     parser.add_argument('--editors-closed',action='store_true',help='Explicit acknowledgement before interruption')
     args=parser.parse_args()
     def run(argv,check=True,capture_output=True):return subprocess.run(argv,check=check,capture_output=capture_output,text=True,timeout=300,env=host_environment(os.environ))
     try:
         manifest,config=load_release(args.release);controller=Controller(args.release,manifest,config,run)
-        if args.activate or args.rollback:
+        if args.activate or args.rollback or args.resume:
             if not args.editors_closed:raise ValueError('Save and close editors before activation or fallback')
-            result=controller.activate() if args.activate else controller.rollback()
+            result=controller.activate() if args.activate else controller.resume_migrated() if args.resume else controller.rollback()
         else:result=controller.plan()
         print(json.dumps(result,indent=2));return 0
     except (ValueError,KeyError,OSError,subprocess.SubprocessError) as error:

@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "cases": [
+    "real target boot starts seven guarded services and only four retained containers",
+    "guard runs as existing user in host namespace; seven actual service user namespaces remain isolated",
+    "each of five old application writers blocks all seven native service starts",
+    "persistent transition blocks both startup paths",
+    "native target recovers after blockers clear",
+    "fallback requires every native unit stopped and new state mounts"
+  ],
+  "real_user_manager": true,
+  "old_container_inventory": "synthetic only",
+  "temporary_units_cleaned": true,
+  "production_units_installed": false,
+  "production_services_changed": false,
+  "input_sha256": {
+    "scripts/native_nuc_startup.py": "704f4f6761157c6e8aaf565c6906a5a3c5395cf92a24b0627fc2817789b7a58f",
+    "scripts/native_nuc_guard.py": "36aa6ebefaebc5464991720d0f7be63d8378c8809b5824806093e51c2db8b66c",
+    "scripts/check-native-nuc-startup.py": "56587b73e08fec1cfc32b979ca2a27174de7129522c038ff479211f3ec8261f1",
+    "deploy/scripts/render.py": "9efd07c5a633cee754ffd8fecf42e4fdad4d83fbc2593058150d7a71dee28a0d",
+    "deploy/scripts/manage.py": "e62d38818f29663ff912a31645da2aca55a43cd7fd86b7cac325641b2b515838",
+    "deploy/scripts/release_pc.py": "a44c22394822e7177117b78e0a5cbcdcde665afbd3187477f97f34725d2b1a36"
+  }
+}

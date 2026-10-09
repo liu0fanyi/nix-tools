@@ -38,6 +38,7 @@ class Startup(Guard):
         for name,text in drops.items():
             if name.endswith('.service'):
                 self.assertIn('ExecStartPre=',text);self.assertIn('native-check',text)
+                self.assertNotIn('ExecStartPre=+',text);self.assertIn('systemd-run --user --wait',text)
                 self.assertNotIn('ExecStartPre=\n',text)
         self.assertIn('Requires=dufs-plus-compose.service',drops['tag-native-nuc.target'])
     def test_native_boot_starts_only_four_keepers_without_dependencies(self):

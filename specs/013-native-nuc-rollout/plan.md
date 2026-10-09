@@ -198,3 +198,27 @@ N5按既有要求依次完成：重新确认NUC编辑已保存关闭；运行固
 先诊断再明确执行新状态回退，不用旧发布或旧DB恢复绕过屏障。
 N6核对实际用户服务注册、linger/开机入口与恢复守卫，固定真实结果/限制并提交推送和镜像。
 不新增阶段，不执行NUC NixOS switch，不因准备通过跳过编辑安全确认。
+
+## N5 首次切换与守卫修正（尚未完成）
+
+用户已确认编辑安全，首次实际切换完成双区离线快照、单元注册和Caddy入口适配；
+主区核心/文件服务在ExecStartPre前后报226/NAMESPACE，未进入正常应用启动。
+立即通过固定回退入口停止八原生单元，使原九容器恢复运行，三份/data挂载均改用迁移后状态，
+两个core.db quick_check通过，LAN主区/只读API匿名401；没有恢复旧数据库。
+不把九容器恢复等同完整业务验收，真实认证访问和PC–NUC同步仍待原生重新切换后验证。
+
+[activation-repair-results.json](activation-repair-results.json)记录真实阶段及只读核对；
+[startup-repair-results.json](startup-repair-results.json)记录修正后六组真实systemd场景。
+真实NUC对照仅执行true：BindPaths单独通过，BindPaths结合ExecStartPre=+失败。
+因此原因是rootless宿主precheck执行方式与读写mount namespace组合，不能归因于媒体目录损坏。
+此前隔离启动守卫门槛只有BindReadOnlyPaths，遗漏了这个组合；现追加实际BindPaths回归。
+守卫改为每次通过用户管理器启动独立宿主检查，仍逐服务检查、仍保留原服务PrivateUsers/挂载。
+64项本机迁移/启动回归及六组实际systemd通过；原静态API/工具制品未变化。
+
+显式resume只接受container-active和完整新状态挂载；停止旧应用后保留当前双区DB，
+更新受控启动drop-in与入口再启原生，不调用snapshot，回归已禁止再次快照。
+修正控制目录cbf74f6a7faa051f8167d1de57824c26d4ae34b9a4efbb92645aa7f9a4869c25
+已私有传输/摘要核验，保留原始release、备份、journal及同一候选GC root。
+自动审批拒绝回退后的第二次停服，要求新的编辑安全/切换确认；未绕过或执行二次激活。
+当前N5未完成，内部剩余2步：确认后从新状态回退重新切换；真实HTTP认证/双区/公网与同步验收。
+整个NUC阶段仍4/6，剩余N5/N6；N6持久恢复与结果收尾不提前勾选。

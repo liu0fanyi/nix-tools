@@ -53,10 +53,11 @@ def main():
             ' return subprocess.run(argv,check=check,capture_output=capture_output,text=True,timeout=20)\n'
             'with (root/"guard-namespaces.jsonl").open("a") as file:file.write(json.dumps({"uid":__import__("os").getuid(),"namespace":__import__("os").readlink("/proc/self/ns/user")})+"\\n")\n'
             'try:sys.exit(dispatch(config,sys.argv[1:],invoke))\nexcept Exception as e:print(type(e).__name__+": "+str(e),file=sys.stderr);sys.exit(1)\n')
+        (root/'media-source').mkdir();(root/'media-target').mkdir()
         drops=unit_dropins([sys.executable,str(driver)])
         for original,name in mapping.items():
             if original.endswith('.service'):
-                write(name,'[Unit]\nPartOf='+mapping['tag-native-nuc.target']+'\n[Service]\nPrivateUsers=yes\nBindReadOnlyPaths='+str(root/'readonly-workspace')+'\nExecStart=/run/current-system/sw/bin/sleep 600\n'+drops[original].replace('dufs-plus-compose.service',keeper))
+                write(name,'[Unit]\nPartOf='+mapping['tag-native-nuc.target']+'\n[Service]\nPrivateUsers=yes\nBindReadOnlyPaths='+str(root/'readonly-workspace')+'\nBindPaths='+str(root/'media-source')+':'+str(root/'media-target')+'\nExecStart=/run/current-system/sw/bin/sleep 600\n'+drops[original].replace('dufs-plus-compose.service',keeper))
             else:
                 write(name,'[Unit]\nWants='+' '.join(n for n in mapping.values() if n.endswith('.service'))+'\n'+drops[original].replace('dufs-plus-compose.service',keeper))
         write(keeper,'[Service]\nType=oneshot\nRemainAfterExit=yes\nExecStart='+shlex.join([sys.executable,str(driver),'compose','up','-d'])+'\n')

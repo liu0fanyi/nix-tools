@@ -99,6 +99,8 @@ class Switch(unittest.TestCase):
         bad=dict(receipt,prepared_release='/tmp/elsewhere')
         with self.assertRaises(ValueError):module.command(bad)
         self.assertIn('--activate --editors-closed',module.command(receipt,activate=True,editors_closed=True)[-1])
+        with self.assertRaises(ValueError):module.command(receipt,resume=True)
+        self.assertIn('--resume --editors-closed',module.command(receipt,resume=True,editors_closed=True)[-1])
 
     def test_dry_run_has_no_filesystem_or_service_mutation(self):
         (self.runtime/'compose-files.txt').chmod(0o664)
@@ -120,6 +122,16 @@ class Switch(unittest.TestCase):
             self.assertEqual((self.dest/r/'state/metadata/identity').read_text(),r+'-identity')
         self.assertEqual((self.dest/'backup/pki/root.key').read_text(),'synthetic-ca')
         self.assertEqual(json.loads(self.controller.journal.read_text())['phase'],'container-active')
+    def test_resume_reuses_both_current_databases_without_snapshot(self):
+        self.controller.activate();self.controller.rollback()
+        with patch('native_nuc_switch.snapshot',side_effect=AssertionError('must not snapshot')):
+            result=self.controller.resume_migrated()
+        self.assertTrue(result['both_existing_migrated_databases_reused'])
+        self.assertFalse(result['source_resnapshot'])
+        self.assertFalse((self.dest/'container-mode').exists())
+        for role in ['private','readonly']:
+            with closing(sqlite3.connect(self.dest/role/'state/core.db')) as db:
+                self.assertIn(('native-new-write',),db.execute('SELECT name FROM fixture').fetchall())
     def test_failure_after_possible_native_writes_never_reopens_source(self):
         self.fail=lambda a:a[:3]==['systemctl','--user','start']
         with self.assertRaises(subprocess.CalledProcessError):self.controller.activate()
