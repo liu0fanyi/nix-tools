@@ -87,6 +87,38 @@ class RequiredMountTests(unittest.TestCase):
             )
 
 
+class NativeDatabaseSelectionTests(unittest.TestCase):
+    def test_backup_and_preflight_choose_both_migrated_databases(self):
+        import json
+        with tempfile.TemporaryDirectory() as temp_name:
+            root = Path(temp_name);root.chmod(0o700)
+            output = root / 'runtime';output.mkdir()
+            (output / 'native-nuc-control').write_text('fixture hook')
+            descriptor = output / 'native-nuc-control.json'
+            descriptor.write_text(json.dumps({'root': str(root)}));descriptor.chmod(0o600)
+            ready = root / 'ready';ready.write_text('offline-double-snapshot-complete\n');ready.chmod(0o600)
+            paths=[]
+            for role in ('private', 'readonly'):
+                database = root / role / 'state/core.db';database.parent.mkdir(parents=True)
+                database.write_bytes(b'fixture');database.chmod(0o600);paths.append(database)
+            with mock.patch.object(manage, 'NATIVE_NUC_STATE', root):
+                self.assertEqual(manage.tag_database_paths({}, output), tuple(paths))
+                paths[1].unlink();paths[1].symlink_to(paths[0])
+                with self.assertRaises(manage.renderer.ConfigError):manage.tag_database_paths({}, output)
+
+    def test_legacy_database_selection_remains_original(self):
+        with tempfile.TemporaryDirectory() as temp_name:
+            config={'paths': {'tag_data':'/legacy/private','readonly_tag_data':'/legacy/readonly'}}
+            self.assertEqual(manage.tag_database_paths(config,Path(temp_name)),
+                             (Path('/legacy/private/tag_all.db'),Path('/legacy/readonly/tag_all.db')))
+
+    def test_public_legacy_instance_has_no_readonly_database(self):
+        with tempfile.TemporaryDirectory() as temp_name:
+            config = manage.load_config(Path(__file__).resolve().parents[1] / 'instances/aliyun.toml')
+            self.assertFalse(config['features']['readonly'])
+            self.assertEqual(manage.tag_database_paths(config, Path(temp_name)),
+                             (Path(config['paths']['tag_data']) / 'tag_all.db', None))
+
 class BackupRetentionTests(unittest.TestCase):
     def test_prune_backups_keeps_latest_timestamped_directories(self) -> None:
         with tempfile.TemporaryDirectory() as temp_name:

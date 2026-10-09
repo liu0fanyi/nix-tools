@@ -1,0 +1,58 @@
+{
+  "target": "nuc",
+  "dry_run": true,
+  "candidate": "/nix/store/49gihkvq010kiscjjvcgzmbll7yklvps-tag-all-native-nuc-candidate",
+  "root": "/home/liou/.local/share/tag-all/nuc-native",
+  "stop_applications": [
+    "tag-server",
+    "tag-server-readonly",
+    "dufs",
+    "dufs-readonly",
+    "tag-peer-discovery"
+  ],
+  "retain_ingress": [
+    "caddy",
+    "authelia",
+    "readonly-gateway",
+    "ddns-go"
+  ],
+  "actions": [
+    "install fail-closed startup barrier",
+    "disable old application auto-restart; stop all five",
+    "offline double snapshot with metadata/CA",
+    "register guarded native units",
+    "adapt four Caddy upstreams and readonly socket bind",
+    "start and verify all native services",
+    "explicit rollback stops all eight units and opens both new core.db files"
+  ],
+  "source_database_read": false,
+  "production_changes": false,
+  "schema_version": 1,
+  "unit_regressions": {
+    "native_nuc": 63,
+    "manage": 10,
+    "render": 12,
+    "release_pc": 19,
+    "total": 104
+  },
+  "controller_process_gate": "synthetic command runner with actual SQLite/files/journal/locks",
+  "actual_gates": {
+    "systemd": "native-nuc-startup-results.json",
+    "compose": "native-nuc-switch-compose-results.json"
+  },
+  "prepared_manifest_sha256": "6f8295b316ef9f6ad643b5b213cb55ffe8e25c3dd2fc8e70c533a49e80e4f50f",
+  "input_sha256": {
+    "scripts/native_nuc_switch.py": "24a5b81a3f574c206ae749355d0c8dcfb8be2152cd7d399381ad80af36cb2bb5",
+    "scripts/native-nuc-switch.py": "e84eb60036dcb8c95dbdda52167861820bdde21f6e1583d5b77121efc4f9c81a",
+    "scripts/native-nuc-prepare.py": "6f0ccfca88db641f14c50846a8b7b5e5f08b811cd08bfac187a5b0284ea4cd62",
+    "scripts/tests/test_native_nuc_switch.py": "0806ac1134af4819ba9647a345b698c13a07d1f9a1f8cdde8fc1d7959b9672db",
+    "deploy/scripts/manage.py": "e62d38818f29663ff912a31645da2aca55a43cd7fd86b7cac325641b2b515838",
+    "deploy/tests/test_manage.py": "57651f0f0c6ece6f9110b1a3e9498718e0db40c28d5b0bcb75e184c75cf2dbe3"
+  },
+  "production_activation": false,
+  "limitations": [
+    "Real production Authelia login/public TLS and PC\u2013NUC new-write sync are N5 gates",
+    "Early pre-snapshot failure retains barrier and journal; explicit reviewed recovery required, no automatic old writer restart",
+    "Active service state alone is not HTTP readiness; live HTTP verification required immediately after N5 activation"
+  ]
+}

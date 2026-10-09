@@ -26,8 +26,9 @@ def compose_action(mode,args):
         return args
     if mode not in {'native','container'}:raise ValueError('Transition blocks startup and container changes')
     if mode=='container':
-        # Recreating fallback from legacy compose inputs would reopen the old DB.
-        # Explicit fallback creation is solely owned by the cutover controller.
+        # Boot resumes already-created new-state services; it never recreates old mounts.
+        if args in [['up','-d'],['up','-d','--no-deps']]:return ['start',*REPLACE,*KEEP]
+        if args==['down']:return ['stop',*REPLACE,*KEEP]
         if args[0] not in {'start','stop'} or any(a not in REPLACE+KEEP for a in args[1:]):
             raise ValueError('Fallback recreation requires explicit cutover controller')
         return args if len(args)>1 else [args[0],*REPLACE,*KEEP]

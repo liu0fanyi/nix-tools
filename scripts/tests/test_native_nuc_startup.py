@@ -69,7 +69,7 @@ class Startup(Guard):
             self.units[unit]='inactive'
         self.records[PREFIX+'tag-server_1']['Mounts'][0]['Source']='/old/db'
         with self.assertRaises(ValueError):dispatch(self.config,['compose','start'],self.invoke)
-        with self.assertRaises(ValueError):dispatch(self.config,['compose','up','-d'],self.invoke)
+        with self.assertRaises(ValueError):dispatch(self.config,['compose','up','-d','--force-recreate'],self.invoke)
     def test_native_down_preserves_containers_and_forbidden_actions_rejected(self):
         self.assertEqual(compose_action('native',['down']),['stop',*KEEP])
         for args in [['up','-d','tag-server'],['up','-d','--remove-orphans'],['run','caddy'],['restart'],['up','-d','-d'],['start','caddy','caddy']]:

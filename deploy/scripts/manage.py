@@ -75,6 +75,33 @@ def compose_argv(output: Path, action: list[str]) -> list[str]:
     return argv
 
 
+NATIVE_NUC_STATE = Path('/home/liou/.local/share/tag-all/nuc-native')
+
+
+def tag_database_paths(config: dict[str, Any], output: Path) -> tuple[Path, Path | None]:
+    control = output / 'native-nuc-control'
+    if not (control.exists() or control.is_symlink()):
+        return (Path(config['paths']['tag_data']) / 'tag_all.db',
+                Path(config['paths']['readonly_tag_data']) / 'tag_all.db'
+                if config['paths'].get('readonly_tag_data') else None)
+    def private(path):
+        if path.is_symlink() or not path.is_file() or path.stat().st_uid != os.getuid() or path.stat().st_mode & 0o777 != 0o600:
+            raise renderer.ConfigError('Native runtime file must be private, regular and owned')
+    descriptor = output / 'native-nuc-control.json';private(descriptor)
+    root = Path(json.loads(descriptor.read_text())['root'])
+    if root != NATIVE_NUC_STATE or root.is_symlink() or root.stat().st_uid != os.getuid() or root.stat().st_mode & 0o777 != 0o700:
+        raise renderer.ConfigError('Fixed private native NUC state required')
+    ready = root / 'ready';private(ready)
+    if ready.read_text() != 'offline-double-snapshot-complete\n':
+        raise renderer.ConfigError('Complete migrated state required')
+    databases = tuple(root / role / 'state/core.db' for role in ('private', 'readonly'))
+    for path in databases:
+        if path.parent.is_symlink() or path.parent.parent.is_symlink():
+            raise renderer.ConfigError('Native state directories must be regular')
+        private(path)
+    return databases
+
+
 def mode_is_private(path: Path) -> bool:
     return path.stat().st_mode & 0o077 == 0
 
@@ -210,12 +237,14 @@ def preflight(config_path: Path, output: Path) -> int:
                 f"{readonly_metadata}"
             )
 
+    tag_db, readonly_tag_db = tag_database_paths(config, output)
     expected_files = [
-        Path(paths["tag_data"]) / "tag_all.db",
+        tag_db,
         Path(paths["dist"]) / "index.html",
     ]
     if features["readonly"]:
-        expected_files.append(Path(paths["readonly_tag_data"]) / "tag_all.db")
+        if readonly_tag_db is not None:
+            expected_files.append(readonly_tag_db)
     if features["authelia"]:
         expected_files.append(Path(paths["authelia_data"]) / "db.sqlite3")
     if profile == "home-ipv6-cdn":
@@ -280,7 +309,7 @@ def preflight(config_path: Path, output: Path) -> int:
         if image.endswith(":latest"):
             warnings.append(f"[images].{name} is not version pinned: {image}")
 
-    db_path = Path(paths["tag_data"]) / "tag_all.db"
+    db_path, readonly_tag_db = tag_database_paths(config, output)
     if db_path.is_file():
         try:
             connection = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
@@ -292,8 +321,7 @@ def preflight(config_path: Path, output: Path) -> int:
             errors.append(f"unable to check Tag SQLite: {error}")
 
     if features["readonly"]:
-        readonly_tag_db = Path(paths["readonly_tag_data"]) / "tag_all.db"
-        if readonly_tag_db.is_file():
+        if readonly_tag_db is not None and readonly_tag_db.is_file():
             try:
                 connection = sqlite3.connect(
                     f"file:{readonly_tag_db}?mode=ro", uri=True
@@ -376,21 +404,34 @@ def backup(
         destination_root = DEFAULT_STATE_DIR / "backups" / deployment_name
     stamp = time.strftime("%Y%m%d-%H%M%S") + f"-{time.time_ns() % 1_000_000_000:09d}"
     destination = destination_root / stamp
+    features = renderer.table(config, "features")
+    tag_db, readonly_tag_db = tag_database_paths(config, output)
     destination.mkdir(parents=True, mode=0o700)
     destination.chmod(0o700)
-
-    features = renderer.table(config, "features")
-    tag_db = Path(paths["tag_data"]) / "tag_all.db"
     sqlite_backup(tag_db, destination / "tag_all.db")
     if features["readonly"]:
-        readonly_tag_db = Path(paths["readonly_tag_data"]) / "tag_all.db"
-        if readonly_tag_db.is_file():
+        if readonly_tag_db is not None and readonly_tag_db.is_file():
             sqlite_backup(
                 readonly_tag_db, destination / "readonly_tag_all.db"
             )
     if features["authelia"]:
         authelia_db = Path(paths["authelia_data"]) / "db.sqlite3"
         sqlite_backup(authelia_db, destination / "authelia.db.sqlite3")
+
+    if tag_db.name == 'core.db':
+        for role, database in [('private', tag_db), ('readonly', readonly_tag_db)]:
+            if database is None:
+                continue
+            metadata = database.parent / 'metadata'
+            if metadata.is_symlink():
+                raise renderer.ConfigError('Refusing linked native metadata backup')
+            if metadata.is_dir():
+                for member in metadata.rglob('*'):
+                    if member.is_symlink() or not (member.is_file() or member.is_dir()):
+                        raise renderer.ConfigError('Refusing linked or special native metadata backup')
+                shutil.copytree(metadata, destination / ('native-' + role + '-metadata'), symlinks=False)
+        for path in destination.rglob('*'):
+            path.chmod(0o700 if path.is_dir() else 0o600)
 
     sidecar_archive = destination / "sidecars.tar.gz"
     with tarfile.open(sidecar_archive, "w:gz") as archive:
@@ -426,6 +467,7 @@ def backup(
     ]
     manifest = {
         "created_at": stamp,
+        "tag_database_sources": {"private": str(tag_db), "readonly": str(readonly_tag_db) if readonly_tag_db is not None else None},
         "profile": renderer.table(config, "deployment")["profile"],
         "files": {
             str(path.relative_to(destination)): {

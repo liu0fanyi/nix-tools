@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "cases": [
+    "actual old CLI containers stop before offline snapshot; both source DB hashes recorded",
+    "real scoped Caddy recreation retains all prior binds, adds readonly socket bind, keeps other ingress IDs and does not start old apps",
+    "both fixed actual native CLIs write new tags to migrated databases and stop",
+    "actual no-start fallback create merges new state bind and core.db command; readonly workspace remains OS readonly; ingress untouched",
+    "actual old container CLIs reopen both migrated databases with native tags; original source DBs and metadata proof unchanged"
+  ],
+  "source_runtime": "owned rootless VFS only",
+  "old_cli_sha256": "d729c3a764ca182cf2fd1aa01bf15f2f59f71a8f60df8abfdc3e833d8d66fa51",
+  "native_cli_sha256": "c6907e9829ddb1c49dcf0271b6c573616b42a5e72a40b4055935143cab73b659",
+  "compose_provider": "/nix/store/nhfv47alw8661fwg67z1qflyk8y7jg4x-podman-compose-1.6.0/bin/podman-compose",
+  "both_new_databases_reopened": true,
+  "readonly_workspace_preserved": true,
+  "owned_containers_and_runtime_cleaned": true,
+  "production_services_changed": false,
+  "input_sha256": {
+    "check-native-nuc-switch-compose.py": "97bb6576f0aa631be10cc767011ac863c8a38fc34d271291df9b4db0eb9fd10e",
+    "native_nuc_switch.py": "24a5b81a3f574c206ae749355d0c8dcfb8be2152cd7d399381ad80af36cb2bb5",
+    "native_nuc_snapshot.py": "c35744dcc23c9ad9c59490cf942fb0220d8e3362c7e68eeceec95ee0e850dbd8",
+    "native_nuc_guard.py": "36aa6ebefaebc5464991720d0f7be63d8378c8809b5824806093e51c2db8b66c",
+    "native_nuc_startup.py": "77a13ad0bb24bb6852edae49dd3886ca10a4d9597a3408e6095fd5b3ddf97621",
+    "tests/test_native_nuc_switch.py": "0806ac1134af4819ba9647a345b698c13a07d1f9a1f8cdde8fc1d7959b9672db"
+  }
+}

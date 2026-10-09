@@ -16,8 +16,9 @@ ROOT=Path(__file__).resolve().parents[1]
 HOST='liou@nuc.local'
 SSH=['ssh','-F','/home/liou/.ssh/config',HOST]
 REMOTE='/home/liou/.local/share/tag-all/nuc-native-release'
-CONTROLS=['native_nuc_bundle.py','native_nuc_snapshot.py','native_nuc_guard.py','native_nuc_plan.py',
-          'native_nuc_runtime.py','native_pc_snapshot.py','native_pc_config.py','native_nuc_startup.py']
+CONTROLS={name:ROOT/'scripts'/name for name in ['native_nuc_bundle.py','native_nuc_snapshot.py','native_nuc_guard.py','native_nuc_plan.py',
+          'native_nuc_runtime.py','native_pc_snapshot.py','native_pc_config.py','native_nuc_startup.py','native_nuc_switch.py','native_nuc_ingress.py']}
+CONTROLS.update({name:ROOT/'deploy/scripts'/name for name in ['manage.py','render.py']})
 
 
 def run(argv,**options):
@@ -38,7 +39,7 @@ def main():
     parser.add_argument('--prepare',action='store_true',help='Copy fixed closure and private control bundle; never stop production')
     args=parser.parse_args()
     manifest=load_manifest();manifest['closure']=closure(manifest['candidate'])
-    manifest['controls']={name:hashlib.sha256((ROOT/'scripts'/name).read_bytes()).hexdigest() for name in CONTROLS}
+    manifest['controls']={name:hashlib.sha256(source.read_bytes()).hexdigest() for name,source in CONTROLS.items()}
     # Bind the assembly input without copying user secrets or runtime directories.
     instance=ROOT/'deploy/instances/home.toml';manifest['instance_sha256']=hashlib.sha256(instance.read_bytes()).hexdigest()
     data=json.dumps(manifest,sort_keys=True,indent=2)+'\n'
@@ -66,7 +67,7 @@ def main():
     remote_python("import os,pathlib,sys;p=pathlib.Path(sys.argv[1]);assert not p.exists() and not p.is_symlink();p.parent.mkdir(mode=0o700,parents=True,exist_ok=True);assert not p.parent.is_symlink();p.mkdir(mode=0o700)",destination)
     with tempfile.TemporaryDirectory(prefix='nuc-release-') as temporary:
         local=Path(temporary);(local/'manifest.json').write_text(data);(local/'manifest.json').chmod(0o600)
-        files=[local/'manifest.json',instance,*[ROOT/'scripts'/name for name in CONTROLS]]
+        files=[local/'manifest.json',instance,*CONTROLS.values()]
         # Exact allowlist, no directory recursion/delete/source/private runtime data.
         run(['scp','-F','/home/liou/.ssh/config',*[str(p) for p in files],HOST+':'+destination+'/'])
     remote_python("import hashlib,json,pathlib,sys;p=pathlib.Path(sys.argv[1]);m=json.loads((p/'manifest.json').read_text());expected={**m['controls'],'home.toml':m['instance_sha256']};assert set(q.name for q in p.iterdir())==set(expected)|{'manifest.json'};assert hashlib.sha256((p/'manifest.json').read_bytes()).hexdigest()==sys.argv[2];[(q.chmod(0o600)) for q in p.iterdir()];assert all(hashlib.sha256((p/n).read_bytes()).hexdigest()==h for n,h in expected.items())",destination,report['manifest_sha256'])

@@ -152,8 +152,49 @@ native守卫必须同时检查它们均停止且策略为no，阻止绕过Compos
 测试临时单元精确清理，原九容器仍运行；最新候选控制目录见preparation-results.json，
 闭包仍为同一N3候选，模块已传输并核验，但不是生产切换。
 
-N4现在完成3/4、剩余1项N4-D：可预演的切换/新状态回退控制及集成验收。
+N4-C完成时为3/4；N4-D现已通过，见下节固定切换与回退证据。
 控制需持久transition屏障、单独操作锁和startup读写锁，不能持有startup排他锁等待
 会调用precheck的systemd启动（否则死锁）；停止全部八原生单元后才允许回退writer。
 并固定完整Caddy仅改四upstream和socket只读挂载、范围内重建Caddy、新DB回退命令。
 D通过才结束N4；总阶段仍3/6、剩余N4/N5/N6，不新增结束条件。
+
+## N4-D 完成：固定切换与保留新状态回退
+
+[switch-results.json](switch-results.json) 记录104项回归及NUC默认只读预演通过。
+[switch-compose-results.json](switch-compose-results.json) 记录实际Podman Compose 1.6.0和双版本CLI门槛；
+[startup-results.json](startup-results.json) 已用最终启动输入复验六组实际临时systemd场景。
+控制器默认只读，明确activate/rollback且确认编辑安全才改变生产。操作锁和持久journal防止重复快照；
+先安装transition屏障，逐个停止五应用，等待全部停止，再关闭它们的自动恢复。
+离线双区快照同时保留metadata/CA/配置；注册八单元与逐服务守卫，Caddy只改四upstream，
+只在原Caddy上追加只读socket挂载并范围内重建；其余三入口容器不重建。
+
+控制器集成门槛使用合成进程驱动，但真实SQLite/文件/锁/journal；实际Compose门槛使用自有
+rootless VFS和随机项目，两个真实旧CLI停止后迁移，两个固定原生CLI写入新标签，
+再用真实Compose create-only/no-start构造回退并核对新挂载和core.db命令，旧CLI重开双区读到新标签。
+原库摘要、metadata证明、只读workspace挂载和其他入口容器ID保持，临时资源已清理。
+实际Compose门槛的Caddy容器只验证挂载/重建范围；认证、转发和TLS沿用N3入口门槛，
+不能据此声称真实公网或Authelia生产登录已验收。
+
+回退停止并核对全部八native单元后，固定旧镜像打开两份迁移后的core.db；不恢复旧库。
+原Caddy文本逐字恢复，用户新改动则拒绝覆盖。container开机up转为start已有新状态容器，
+普通管理不得重建旧挂载；native管理只允许保留入口。备份/preflight选择迁移后数据库和metadata，
+Aliyun无只读实例仍兼容，不改变Aliyun部署。生产Compose路径列表原权限664，只读预演允许
+当前用户所有的普通列表；正式切换私有备份后将相同内容发布为600，凭证始终要求600。
+
+失败试验发现并修正Compose长格式volume不能按目的地覆盖的兼容问题，采用短格式并实际
+检查合并后的Mounts；更新restart策略放在停止之后，避免rootless运行中资源更新错误。
+失败不自动恢复旧writer；快照前失败需依据私有journal明确诊断恢复，不宣称自动事务回滚。
+服务active只说明进程启动，真实HTTP就绪与数据同步必须立即在N5验证。
+
+最新[preparation-results.json](preparation-results.json)对应12个控制文件、同一199路径候选闭包；
+固定私有release摘要6f8295b316ef9f6ad643b5b213cb55ffe8e25c3dd2fc8e70c533a49e80e4f50f。
+默认现网预演核对九容器、源命令/挂载、配置摘要、磁盘和单元冲突通过；没有读取生产DB、
+安装生产单元或停服。N4四项全部通过，剩余N5/N6两项。
+
+## 下一步及实际切换边界
+
+N5按既有要求依次完成：重新确认NUC编辑已保存关闭；运行固定activate完成离线迁移；
+立即核对主区/只读API与文件入口、LAN/公网认证及PC–NUC新写入同步。遇失败保留journal，
+先诊断再明确执行新状态回退，不用旧发布或旧DB恢复绕过屏障。
+N6核对实际用户服务注册、linger/开机入口与恢复守卫，固定真实结果/限制并提交推送和镜像。
+不新增阶段，不执行NUC NixOS switch，不因准备通过跳过编辑安全确认。
