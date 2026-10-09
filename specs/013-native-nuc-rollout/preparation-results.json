@@ -1,0 +1,16 @@
+{
+  "manifest_sha256": "35ec4c1a7f56a5e8b1e720886522eb11b6944b923ae18bd3da52e7df9519ed32",
+  "candidate": "/nix/store/49gihkvq010kiscjjvcgzmbll7yklvps-tag-all-native-nuc-candidate",
+  "closure_paths": 199,
+  "closure_nar_bytes": 1138947880,
+  "destination": "/home/liou/.local/share/tag-all/nuc-native-release",
+  "activated": false,
+  "production_services_changed": false,
+  "source_database_read": false,
+  "own_artifact_import": "existing trusted liou user; explicit per-copy import; system trust policy unchanged",
+  "dry_run": false,
+  "prepared_release": "/home/liou/.local/share/tag-all/nuc-native-release/35ec4c1a7f56a5e8b1e720886522eb11b6944b923ae18bd3da52e7df9519ed32",
+  "remote_closure_verified": true,
+  "control_files_verified": true,
+  "remote_gc_root_verified": true
+}

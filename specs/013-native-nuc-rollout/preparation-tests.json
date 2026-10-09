@@ -1,0 +1,13 @@
+{
+  "test_total": 31,
+  "new_snapshot_cases": 9,
+  "new_guard_cases": 6,
+  "new_closure_cases": 2,
+  "existing_topology_ingress_environment_cases": 14,
+  "all_passed": true,
+  "synthetic_database_and_credentials_only": true,
+  "production_database_copied": false,
+  "mutual_start_guard_installed": false,
+  "production_cutover_entry_available": false,
+  "activated": false
+}

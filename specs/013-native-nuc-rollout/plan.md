@@ -35,7 +35,7 @@ PC 包缺 Whisper CLI，不能直接宣称完整兼容，补齐属于 N2。
 环境变量/命令/凭证。scripts/native_nuc_plan.py拒绝缺实例、浮动镜像、只读可写、
 缺模型映射和只读区Git私钥。scripts/native_nuc_ingress.py仅替换四个固定上游token；
 从home.toml生成的完整Caddy候选逐字保留其余规则。10项单元测试通过。
-尚未运行Caddy实际解析、容器socket访问或生产切换；双实例和Whisper仍待N2完成。
+N2装配与N3隔离验收已完成；生产切换仍未执行，不能把早期拓扑报告当实际部署结果。
 
 ## N2 候选装配完成
 
@@ -103,3 +103,29 @@ N4仍为一项阶段，结束要求不变：固定闭包/镜像传输与摘要�
 停服必须等待并确认全部应用单元/容器停止，不只检查target命令返回。
 N4准备不要求用户停编辑；真实停服仅在N5文件已保存关闭的确认之后。
 当前总阶段3/6，剩余N4切换工具、N5实际切换与入口同步验收、N6持久恢复与收尾三项。
+
+
+## N4-A/B 已实现与接入边界
+
+[preparation-results.json](preparation-results.json) 固定本次已验收候选：199个store路径，
+NAR字节合计1138947880（不是本轮实际网络传输量）。本机权威构建，NUC只接收；
+传输前复核九个源容器的完整镜像、角色与挂载，核验远端全部NAR hash/size和精确控制文件摘要。
+候选以manifest摘要命名，700目录/600文件，GC root只有明确指向该固定候选的受控symlink。
+不安装单元、不读取生产DB、不传模型/密钥，不改变原四入口或认证配置。
+
+第一次复制因本机自建制品无受信任签名被NUC拒绝，失败不计通过。
+只读核对NUC既有trusted-users包含liou后，使用仅本次nix copy的--no-check-sigs显式导入自建制品；
+不改系统require-sigs、trusted-public-keys或trusted-users，不跳过SSH主机密钥/TLS验证。
+通过SSH传输后逐项NAR与字节摘要核验；这一做法不意味着已把制品发布到Cachix。
+
+[preparation-tests.json](preparation-tests.json)：31项通过（17项新增、14项已有）。
+离线模块在任何源状态遍历之前和原子发布之前调用停止守卫；两区一起用SQLite backup并检查integrity。
+保留metadata（含配对/CA）、原Caddy/config备份和环境语义，模型仅路径引用；拒绝命令展开、
+未知可执行覆盖、链接、损坏数据库、served mount内状态、writer重启、CA/config变化与已有目的地。
+主区将外置发现改为同一native主进程接管广播，保留id/HTTPS地址/IP/接口；只读保留旧默认node id nuc，
+不是生成新身份，继续禁用sync/pairing/discovery且不添加私人管理token或Git凭证。
+
+互斥纯模块已覆盖五旧应用writer和八native单元，固定完整九容器库存、源镜像与私有标志权限；
+container模式拒绝旧DB挂载或旧数据库命令。尚未接入持久启动链路，不据此声称能够防止生产重启恢复。
+N4-C必须把守卫接到每个官方原生/容器启动入口，N4-D把离线模块接到真正可预演的控制入口；
+首次生产离线备份仍归N5，编辑安全确认之前不停止现网。
