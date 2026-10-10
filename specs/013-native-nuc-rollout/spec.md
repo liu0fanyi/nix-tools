@@ -18,9 +18,9 @@ NUC原生迁移六项已完成，剩余0项；自动验收证据见 [live-result
 原生应用由PC的Nix包装交付；当前四类worker共享固定Alpine/Containerfile工具镜像，
 存入Nix store仅用于固定分发，不代表dockerTools构建。四个保留入口容器未改构建来源。
 历史023曾部署完整Nix后端，但已被原生API替换；当前工具镜像不能由旧部署状态推断。
-下一优先产品方案为 `/data/project/tag-all/specs/027-application-entry-boundary/`，固定E1–E5共5项；
+下一优先产品方案为 `/data/project/tag-all/specs/027-application-entry-boundary/`，固定E1–E5共5项，配套装配归 [014](../014-application-entry-boundary/spec.md)；
 随后是 `/data/project/tag-all/specs/026-nix-processing-images/`，固定F1–F5共5项。
 基础设施只负责将来明确的原生工具更新/回退，不调用被原生模式守卫禁止的旧容器发布流程。
 本013仍6/6完成，剩余0；本次只整理规格，无生产配置或制品变更。
 
-027旨在tag-all承担本地应用入口，Caddy保留公网代理/TLS/Authelia接入和其他站点；私人节点TLS辅助单独核对，不随网页入口移除。实施前按027补基础设施配套契约，不取消既有认证边界。
+027旨在tag-all承担本地应用入口，Caddy保留公网代理/TLS/Authelia接入和其他站点；私人节点TLS辅助单独核对，不随网页入口移除。基础设施配套契约现已登记014，按027实施，不取消既有认证边界。
