@@ -27,7 +27,7 @@
     "authelia_first_factor_status": "OK",
     "public_after_first_factor": "second factor required; returned login HTML, not API JSON"
   },
-  "public_second_factor_manual_acceptance": "pending",
+  "public_second_factor_manual_acceptance": "passed: user confirmed files and tags display normally and tag filtering works",
   "sync": {
     "NUC new tag reaches PC": true,
     "PC new tag reaches NUC": true,
@@ -50,7 +50,6 @@
     "real_systemd_groups": 6
   },
   "limitations": [
-    "Full public two-factor authenticated UI acceptance requires user browser; first-factor session is intentionally insufficient",
     "Actual NUC reboot not performed; enabled boot configuration, startup guards and core restart validated",
     "Future snapshot automation includes peer-network adaptation; current live correction was applied privately from inspected source aliases and approved pairing, without resnapshot"
   ],
@@ -61,5 +60,17 @@
     "scripts/tests/test_native_nuc_network.py": "3de559969e431065a435b892da2b0ee7fc167f9faba5877cfefdad57cb776c11",
     "scripts/tests/test_native_nuc_switch.py": "eb4360cd46c1b40ba7cb1d868052a080a1aa7ae0183bafda84169c5afc4f4f25",
     "scripts/tests/test_native_nuc_snapshot.py": "27056e72987eba712bdf733f86742d97afe14c40c6d43e6b87e92ae61cf4c6c5"
+  },
+  "manual_acceptance_scope": {
+    "source": "user browser acceptance",
+    "files_display": true,
+    "tags_display": true,
+    "tag_filtering": true,
+    "public_write_operations_tested": false
+  },
+  "stage_completion": {
+    "completed": 6,
+    "total": 6,
+    "remaining": 0
   }
 }
