@@ -27,6 +27,10 @@ check-application-nuc tag_all dufs_plus whisper:
 check-application-update tag_all:
     python3 scripts/check-application-update.py "$1"
 
+# E4.a: real TLS, two-factor sessions and fixed readonly gateway; owned transient unit only.
+check-application-trust tag_all:
+    python3 scripts/check-application-trust.py "$1"
+
 # 固定 PC 节点只读预演，无 --apply。
 plan-native-pc:
     python3 scripts/plan-native-pc.py

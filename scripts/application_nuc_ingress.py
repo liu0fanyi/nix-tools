@@ -58,6 +58,9 @@ def candidate_ingress(original, config):
         if header.startswith('https://nuc.local:5009,'):
             record('private')
             domain=config['domains'];auth=render.auth_routes(domain['public'],peer_identity_exempt=True)
+            # The application external socket requires authenticated identity even for OPTIONS.
+            # Keep same-origin preflight on the web authentication chain; peer/device exclusions remain.
+            auth=auth.replace('@not_options {\n    not method OPTIONS\n', '@browser_auth {\n').replace('forward_auth @not_options', 'forward_auth @browser_auth')
             auth,errors=auth.split('handle_errors {',1)
             errors='handle_errors {'+errors
             clear='\n'.join('request_header -'+name for name in UNTRUSTED)
