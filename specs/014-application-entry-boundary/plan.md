@@ -16,7 +16,7 @@
 - E4：最终服务/路由/认证/来源/只读/独立应用/新DB回退组合验证。
 - E5：范围内预演、传输、激活与真实验收，失败保留新状态；PC系统switch用户执行，NUC无系统switch。
 
-当前2/5、剩余E3/E4/E5三项，下一步E3.c NUC候选；不重复将两仓各5项相加。
+当前2/5、剩余E3/E4/E5三项，下一步E3.d NUC候选；不重复将两仓各5项相加。
 
 ## E3展开与当前边界
 
@@ -24,7 +24,7 @@
 E3.a已在产品仓通过同一E2二进制、真实包装/DUFS/独立工具运行时、socket日志及实际用户服务SIGKILL重启、
 合成Home Manager generation和纯核心兼容检查。证据为产品027/entry-package-results.json。
 PC模块已加入显式应用模式，默认旧模式和生产配置仍未变；c须保留Authelia/其他站点。
-E3内部2/4、剩余2项，下一步c；不以产品包装检查代替本仓完整候选或E4组合。
+E3内部3/4、剩余1项，下一步d；不以产品包装检查代替本仓完整候选或E4组合。
 
 ## E3.b PC候选已验收
 
@@ -39,3 +39,27 @@ typed角色与路径授权由产品Rust承担。应用Requires文件/处理服�
 首次测试误写默认Caddy autosave已按用户明确授权从现用显式配置重建，历史字节不可恢复；
 现用服务用不同XDG与显式配置，未重启。最终检查已隔离XDG。
 E3内部2/4、剩余NUC候选及更新/回退预演两项；E4最终认证/只读组合不提前计完成。
+
+## E3.c候选与当前结束位置
+
+`just check-application-nuc /data/project/tag-all /data/project/dufs-plus <固定Whisper包>`
+构建应用/旧默认候选，校验7/8单元及私有/只读依赖、凭据/模型/应用隔离；
+10项生成拒绝测试和6项实际Caddy代理检查通过。代理使用合成认证/Unix后端及临时HTTP，
+不代替E4真实Authelia/TLS/Tagall组合。Caddy adapt对照保留TLS、可信代理策略及非本项站点。
+双栈实际应用包装、API默认及入口HM生成在产品仓复验通过；Rust未改、复用E2完整tester二进制。
+
+5006由主区应用接管；5008原有HTTP/HTTPS共端口必须保留HAProxy：
+HTTP指向固定host.containers.internal:18182认证只读应用，TLS仍指向Caddy5443受信readonly-web。
+候选profile替换输入（不叠加ports），删除Caddy发布5006，保留只读5008与私人5009；
+HAProxy固定host-gateway解析，应用18182只允许原容器/loopback来源及客户端5008 Host。
+5009保留Authelia、设备/peer及真实来源限制，只委托固定私有socket；不复制业务路由。
+身份头在显式route中先清理后认证；只读认证身份不再同时被header_up删除。
+独立应用仍由各自dist发布，通过只读绑定到工作区外固定根，不改发布归属。
+
+E3内部3/4，剩余1项E3.d：固定候选库存、运行期600配置/700父目录与应用绑定目标、
+完整Compose及HAProxy合并预演、更新/回退保持最新DB和身份；本项不激活服务。
+整体2/5，剩余E3/E4/E5。E4保留真实认证/TLS/OPTIONS、只读命名空间/终端/独立应用验证。
+产品027/entry-nuc-candidate-results.json为跨仓固定证据；生产服务、配置和数据未改变。
+
+E3.d完整输入核对还须移除Caddy旧管理员环境加载及不再需要的管理员秘密挂载，
+保持原Authelia/Basic/TLS秘密；不得用仅替换Caddyfile宣称最终组合已准备完成。

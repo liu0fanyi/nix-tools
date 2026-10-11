@@ -19,6 +19,10 @@ check-native-stack-runtime tag_all dufs_plus:
 check-application-pc tag_all dufs_plus:
     python3 scripts/check-application-pc.py "$1" "$2"
 
+# E3.c: generated NUC dual entry and transport gates; no production activation.
+check-application-nuc tag_all dufs_plus whisper:
+    python3 scripts/check-application-nuc.py "$1" "$2" "$3"
+
 # 固定 PC 节点只读预演，无 --apply。
 plan-native-pc:
     python3 scripts/plan-native-pc.py
