@@ -15,6 +15,10 @@ check-native-migration tag_all:
 check-native-stack-runtime tag_all dufs_plus:
     python3 scripts/check-native-stack-runtime.py "$1" "$2"
 
+# E3.b: full candidate + synthetic TLS/guards; no service or system activation.
+check-application-pc tag_all dufs_plus:
+    python3 scripts/check-application-pc.py "$1" "$2"
+
 # 固定 PC 节点只读预演，无 --apply。
 plan-native-pc:
     python3 scripts/plan-native-pc.py

@@ -1,5 +1,5 @@
 # Read-only candidate factory. Imported only by the preflight build, never automatically.
-{ tagAllSource, corePackage, frontendRoot, pdfContainer ? null, processingContainers ? null, toolRuntime ? null }:
+{ tagAllSource, corePackage, frontendRoot, pdfContainer ? null, processingContainers ? null, toolRuntime ? null, applicationEntry ? false }:
 { config, lib, pkgs, ... }:
 let
   guard = mode: "${pkgs.python3}/bin/python3 ${../../scripts/native_pc_mode_guard.py} --mode ${mode} --podman ${pkgs.podman}/bin/podman --systemctl ${pkgs.systemd}/bin/systemctl";
@@ -11,6 +11,9 @@ in {
     services.tag-native-stack = {
       enable = true;
       package = corePackage;
+      inherit applicationEntry;
+      entryConfigurationFile = if applicationEntry then root + "/config/application-entry.toml" else null;
+      peerSocket = if applicationEntry then root + "/sockets/peer.sock" else null;
       inherit frontendRoot pdfContainer processingContainers toolRuntime;
       nodeId = "pc";
       workspace = "/home/liou/dufs-lan";
@@ -33,6 +36,7 @@ in {
         allowedNetworks = [ "192.168.1.0/24" ];
       };
     };
+    services.tag-native-workspace.fileSocket = lib.mkIf applicationEntry (root + "/sockets/files.sock");
     services.tag-all-core.stateDirectory = root + "/data";
     # Candidate activation alone cannot create an empty replacement database.
     systemd.user.targets.tag-native-stack.Unit.ConditionPathExists = [ (root + "/ready") ("!" + root + "/container-mode") ];

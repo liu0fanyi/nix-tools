@@ -4,7 +4,8 @@ let
   cfg = config.services.tag-native-workspace;
   gateway = import ../packages/native-workspace.nix {
     inherit pkgs;
-    inherit (cfg) frontendRoot authFile fileSocket gatewayPort corePort localAuthentication;
+    inherit (cfg) frontendRoot authFile fileSocket gatewayPort corePort localAuthentication applicationEntry;
+    peerSocket = if cfg.applicationEntry then cfg.peerSocket else null;
     peer = if cfg.peer.enable then cfg.peer else null;
     peerAdministration = cfg.administratorEnvironmentFile != null;
   };
@@ -13,6 +14,8 @@ let
 in {
   options.services.tag-native-workspace = {
     enable = lib.mkEnableOption "isolated authenticated native workspace gateway";
+    applicationEntry = lib.mkEnableOption "application-owned HTTP with Caddy private TLS only";
+    peerSocket = lib.mkOption { type = lib.types.nullOr lib.types.str; default = null; };
     frontendRoot = lib.mkOption { type = lib.types.path; description = "Previously built dufs-plus dist, immutable in production."; };
     workspace = lib.mkOption { type = lib.types.str; description = "Explicit existing workspace, matching native core."; };
     authFile = lib.mkOption { type = lib.types.str; description = "Runtime private Caddy basic_auth entries; never copied to the Nix store."; };
@@ -41,7 +44,18 @@ in {
     privateKeyFile = lib.mkOption { type = lib.types.str; default = ""; };
   };
   config = lib.mkIf cfg.enable {
-    assertions = lib.optionals cfg.peer.enable [
+    assertions = lib.optionals cfg.applicationEntry [
+      { assertion = cfg.peer.enable && cfg.peerSocket != null;
+        message = "TLS-only gateway requires an explicit private peer socket."; }
+      { assertion = cfg.peerSocket != null && lib.hasPrefix "/" cfg.peerSocket
+          && builtins.stringLength cfg.peerSocket < 108
+          && cfg.peerSocket != cfg.fileSocket
+          && !(lib.hasPrefix "/nix/store/" cfg.peerSocket)
+          && cfg.peerSocket != cfg.workspace
+          && !(lib.hasPrefix (cfg.workspace + "/") cfg.peerSocket)
+          && !(lib.any (c: lib.hasInfix c cfg.peerSocket) [ "\n" "\r" "\"" "\\" "{" "}" " " ]);
+        message = "Application peer socket must be a distinct safe private runtime path."; }
+    ] ++ lib.optionals cfg.peer.enable [
       { assertion = lib.all (port: cfg.peer.port != port) [ cfg.corePort cfg.gatewayPort ];
         message = "Native peer entry requires a separate TLS port."; }
       { assertion = lib.match "[a-zA-Z0-9][a-zA-Z0-9.-]*" cfg.peer.serverName != null
@@ -65,7 +79,7 @@ in {
     ] ++ [
       { assertion = builtins.stringLength cfg.fileSocket < 108;
         message = "Native DUFS Unix socket path must fit the Linux 107-byte limit."; }
-      { assertion = cfg.gatewayPort != cfg.corePort;
+      { assertion = cfg.applicationEntry || cfg.gatewayPort != cfg.corePort;
         message = "Native gateway and core require distinct loopback ports."; }
       { assertion = lib.hasPrefix "/" cfg.workspace && lib.hasPrefix "/" cfg.authFile;
         message = "Native workspace/auth file must be explicit absolute paths."; }
@@ -107,14 +121,14 @@ in {
     };
     systemd.user.services.tag-native-workspace = {
       Unit = {
-        Description = "Native workspace authenticated gateway";
+        Description = if cfg.applicationEntry then "Private peer TLS transport" else "Native workspace authenticated gateway";
         Requires = [ "tag-all-core.service" "tag-native-files.service" ];
         After = [ "tag-all-core.service" "tag-native-files.service" ];
       };
       Service = {
-        EnvironmentFile = lib.mkIf (cfg.administratorEnvironmentFile != null)
+        EnvironmentFile = lib.mkIf (!cfg.applicationEntry && cfg.administratorEnvironmentFile != null)
           (lib.escapeShellArg (lib.replaceStrings [ "%" ] [ "%%" ] cfg.administratorEnvironmentFile));
-        ExecStartPre = [ (command [ (pkgs.writeShellScript "native-workspace-auth-check" ''
+        ExecStartPre = lib.optionals (!cfg.applicationEntry) [ (command [ (pkgs.writeShellScript "native-workspace-auth-check" ''
           set -eu
           file=${lib.escapeShellArg cfg.authFile}
           test -f "$file" && test ! -L "$file"

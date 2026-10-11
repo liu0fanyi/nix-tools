@@ -1,5 +1,5 @@
 # Trusted gateway configuration; upstreams are fixed loopback core and private Unix DUFS socket, never URL input.
-{ pkgs, frontendRoot, authFile, fileSocket, gatewayPort ? 18006, corePort ? 18081, peer ? null, peerAdministration ? false, localAuthentication ? "basic" }:
+{ pkgs, frontendRoot, authFile, fileSocket, gatewayPort ? 18006, corePort ? 18081, peer ? null, peerAdministration ? false, localAuthentication ? "basic", applicationEntry ? false, peerSocket ? null }:
 let
   config = pkgs.writeText "tag-native-workspace.Caddyfile" ''
     {
@@ -10,6 +10,7 @@ let
         storage file_system "${peer.storageDirectory}"
       '' else "auto_https off"}
     }
+    ${if applicationEntry then "" else ''
     http://127.0.0.1:${toString gatewayPort} {
       bind 127.0.0.1
       route {
@@ -73,7 +74,8 @@ let
         }
       }
     }
-    ${if peer == null then "" else import ./native-peer-site.nix { inherit peer corePort; }}
+    ''}
+    ${if peer == null then "" else import ./native-peer-site.nix { inherit peer corePort peerSocket; }}
   '';
 in {
   inherit config;

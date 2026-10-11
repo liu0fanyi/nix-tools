@@ -8,6 +8,9 @@ in {
   imports = [ (tagAllSource + "/nix/home-manager-core.nix") ./native-workspace.nix ];
   options.services.tag-native-stack = {
     enable = lib.mkEnableOption "authenticated native core and file workspace trial";
+    applicationEntry = lib.mkEnableOption "application-owned PC HTTP entry (candidate only)";
+    entryConfigurationFile = lib.mkOption { type = lib.types.nullOr lib.types.str; default = null; };
+    peerSocket = lib.mkOption { type = lib.types.nullOr lib.types.str; default = null; };
     package = lib.mkOption { type = lib.types.package; };
     pdfContainer = import (tagAllSource + "/nix/pdf-container-option.nix") { inherit lib; };
     processingContainers = import (tagAllSource + "/nix/processing-containers-option.nix") { inherit lib; };
@@ -32,11 +35,18 @@ in {
     services.tag-all-core = {
       enable = true;
       inherit (cfg) package pdfContainer processingContainers toolRuntime workspace nodeId configurationFile syncMode environmentFile workspaceMounts;
-      port = cfg.corePort;
+      port = if cfg.applicationEntry then cfg.gatewayPort else cfg.corePort;
+      applicationEntry = lib.mkIf cfg.applicationEntry {
+        enable = true;
+        frontendRoot = cfg.frontendRoot;
+        fileSocket = config.services.tag-native-workspace.fileSocket;
+        configurationFile = cfg.entryConfigurationFile;
+        authenticationFile = if cfg.localAuthentication == "basic" then cfg.authFile else null;
+      };
     };
     services.tag-native-workspace = {
       enable = true;
-      inherit (cfg) frontendRoot workspace authFile corePort gatewayPort localAuthentication;
+      inherit (cfg) frontendRoot workspace authFile corePort gatewayPort localAuthentication applicationEntry peerSocket;
       peer = cfg.peer;
       administratorEnvironmentFile = cfg.environmentFile;
       workspaceBindPaths = mappings.paths;
@@ -51,7 +61,11 @@ in {
       Install.WantedBy = [ "default.target" ];
     };
     systemd.user.services.tag-all-core = {
-      Unit.PartOf = [ "tag-native-stack.target" ];
+      Unit = {
+        PartOf = [ "tag-native-stack.target" ];
+        Requires = lib.mkIf cfg.applicationEntry [ "tag-native-files.service" ];
+        After = lib.mkIf cfg.applicationEntry [ "tag-native-files.service" ];
+      };
       Install.WantedBy = lib.mkForce [];
     };
     systemd.user.services.tag-all-tools = lib.mkIf (cfg.toolRuntime != null) { Unit.PartOf = [ "tag-native-stack.target" ]; };
@@ -68,11 +82,13 @@ in {
       Install.WantedBy = lib.mkForce [];
     };
     assertions = [
+      { assertion = !cfg.applicationEntry || cfg.entryConfigurationFile != null;
+        message = "Application entry requires an explicit private runtime configuration."; }
       { assertion = !(config.services.tag-native-workspace.peer.enable) || (cfg.syncMode == "configured" && cfg.environmentFile != null);
         message = "Native peer entry requires explicit configured core mode and private administrator environment."; }
       { assertion = config.services.tag-all-core.workspace == config.services.tag-native-workspace.workspace;
         message = "Native core and files must serve the same workspace."; }
-      { assertion = config.services.tag-all-core.port == config.services.tag-native-workspace.corePort;
+      { assertion = cfg.applicationEntry || config.services.tag-all-core.port == config.services.tag-native-workspace.corePort;
         message = "Native gateway must target the configured core port."; }
     ];
   };
