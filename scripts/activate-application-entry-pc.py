@@ -2,6 +2,8 @@
 """PC entry cutover: read-only by default; --apply/--rollback are user terminal actions."""
 import argparse
 import json
+import http.client
+import time
 import os
 from pathlib import Path
 import socket
@@ -65,6 +67,22 @@ def stopped():
             probe.bind(('0.0.0.0',port))
 
 
+def wait_ready():
+    deadline=time.monotonic()+30
+    while True:
+        try:
+            if any(value!='active' for value in status().values()):raise ValueError('PC dependencies not active')
+            connection=http.client.HTTPConnection('127.0.0.1',5006,timeout=3)
+            try:
+                connection.request('GET','/tag-api/tags');response=connection.getresponse();response.read()
+                if response.status!=200:raise ValueError('PC application API not ready')
+            finally:connection.close()
+            return
+        except (ValueError,OSError,http.client.HTTPException):
+            if time.monotonic()>=deadline:raise ValueError('PC application did not become ready')
+            time.sleep(.3)
+
+
 def execute(proof,target,rollback):
     run(['sudo','-v'])
     preflight(rollback)
@@ -105,7 +123,7 @@ def execute(proof,target,rollback):
         run(['systemctl','--user','daemon-reload'])
         run(['systemctl','--user','reset-failed',*UNITS])
         run(['systemctl','--user','start',UNITS[0]])
-        if any(value!='active' for value in status().values()):raise ValueError('PC stack did not recover')
+        wait_ready()
         transaction.phase('rolled-back-current-state' if rollback else 'activated-awaiting-P3')
         print('PC: stack active; return to chat for live acceptance',flush=True)
     except BaseException:

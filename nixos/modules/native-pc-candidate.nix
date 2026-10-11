@@ -5,6 +5,8 @@ let
   guard = mode: "${pkgs.python3}/bin/python3 ${../../scripts/native_pc_mode_guard.py} --mode ${mode} --podman ${pkgs.podman}/bin/podman --systemctl ${pkgs.systemd}/bin/systemctl";
   root = "/home/liou/.local/share/tag-all/pc-native";
 in {
+  # Cold rootless API startup requires the NixOS setuid UID/GID wrappers.
+  systemd.user.services.podman.path = [ "/run/wrappers" ];
   assertions = [ { assertion = config.networking.hostName == "liu-bigpc" && config.users.users.liou.uid == 1000; message = "Native PC candidate is limited to liu-bigpc user liou uid 1000."; } ];
   home-manager.users.liou = {
     imports = [ (import ../../home-manager/native-stack.nix { inherit tagAllSource; }) ];
@@ -50,6 +52,7 @@ in {
       tag-all-core.Service.ExecCondition = guard "native";
       tag-all-tools = lib.mkIf (toolRuntime != null) {
         Service.ExecCondition = guard "native";
+        Service.ExecStartPre = "${pkgs.python3}/bin/python3 ${../../scripts/native_tool_boot_guard.py} --state ${toolRuntime.stateDirectory}";
         Unit.ConditionPathExists = [ (root + "/ready") ("!" + root + "/container-mode") ];
       };
       tag-native-files.Service.ExecCondition = guard "native";
