@@ -23,6 +23,10 @@ check-application-pc tag_all dufs_plus:
 check-application-nuc tag_all dufs_plus whisper:
     python3 scripts/check-application-nuc.py "$1" "$2" "$3"
 
+# E3.d: immutable candidate/configuration and state-preserving rehearsal only.
+check-application-update tag_all:
+    python3 scripts/check-application-update.py "$1"
+
 # 固定 PC 节点只读预演，无 --apply。
 plan-native-pc:
     python3 scripts/plan-native-pc.py
