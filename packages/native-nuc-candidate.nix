@@ -13,7 +13,7 @@ let
   entryConfiguration = role: let private = role == "private"; port = if private then 5006 else 5008; in {
     lan = true;
     authorities = map (host: "${host}:${toString port}") [ "nuc.local" "nuc" "192.168.1.12" "localhost" "127.0.0.1" "[::1]" ];
-    allowed_sources = (lib.optionals private [ "192.168.0.0/16" "10.0.0.0/8" ]) ++ [ "172.16.0.0/12" "127.0.0.0/8" "::1/128" ];
+    allowed_sources = (if private then [ "192.168.0.0/16" "10.0.0.0/8" "172.16.0.0/12" ] else [ "10.89.50.0/24" ]) ++ [ "127.0.0.0/8" "::1/128" ];
     device_profile = if private then "lan" else "disabled";
     peer_on_lan = private;
     external_socket = "${stateRoot}/sockets/${role}-web.sock";

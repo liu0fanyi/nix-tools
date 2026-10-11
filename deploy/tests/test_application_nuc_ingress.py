@@ -31,7 +31,7 @@ class EntryTests(unittest.TestCase):
             with self.subTest(text=text[-40:]), self.assertRaises(ValueError):
                 entry.candidate_ingress(text, self.config)
     def test_unknown_profile_ports_or_missing_auth_rejected(self):
-        for section,key,value in [('deployment','profile','vps-direct'),('ports','lan',5106),('features','authelia',False),('features','readonly',False),('domains','public','unexpected.invalid')]:
+        for section,key,value in [('deployment','profile','vps-direct'),('ports','lan',5106),('features','authelia',False),('features','readonly',False),('domains','public','unexpected.invalid'),('security','container_subnet','10.99.0.0/24')]:
             config=copy.deepcopy(self.config);config[section][key]=value
             with self.subTest(key=key), self.assertRaises(ValueError): entry.candidate_ingress(self.original, config)
     def test_unexpected_business_reference_rejected(self):

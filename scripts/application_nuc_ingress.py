@@ -44,6 +44,8 @@ def candidate_ingress(original, config):
     expected_domains = {'public':'nas.wttliou.top','origin':'home.wttliou.top','readonly_public':'workcdn.wttliou.top','readonly_origin':'work.wttliou.top'}
     if any(config['domains'].get(key) != value for key,value in expected_domains.items()) or config['domains'].get('aliases'):
         raise ValueError('Candidate authority templates require fixed NUC domains')
+    if config['security']['container_subnet'] != '10.89.50.0/24':
+        raise ValueError('Candidate readonly transport requires the fixed NUC container subnet')
     cidrs = ' '.join(str(ipaddress.ip_network(n)) for n in config['security']['lan_cidrs'])
     output=[]; seen=set(); retained=[]
     def record(name):

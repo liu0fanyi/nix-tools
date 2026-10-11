@@ -197,7 +197,7 @@ for role,workspace,port in [('private','/home/liou/dufs-lan',5006),('readonly','
         assert 'https://work.wttliou.top:5008' in config['external_origins']
         for name in ['applications','peer_socket','terminal_socket']: assert name not in config
         assert 'DUFS_WHISPER' not in core and 'git-home' not in core
-        assert '192.168.0.0/16' not in config['allowed_sources']
+        assert config['allowed_sources']==['10.89.50.0/24','127.0.0.0/8','::1/128']
 cases.append('generated_dual_instances_auth_readonly_dependencies_apps_and_secrets_isolation')
 systemd = Path(subprocess.check_output(['readlink','-f','/run/current-system/sw/bin/systemd-analyze'],text=True).strip())
 unit_defaults = systemd.parent.parent/'example/systemd/user'
