@@ -3,6 +3,7 @@
 import argparse
 from contextlib import ExitStack
 import json
+import http.client
 import os
 from pathlib import Path
 import socket
@@ -12,9 +13,12 @@ import sys
 import tarfile
 import time
 from application_entry_transaction import ConfigurationTransaction, atomic, backup_state, create_lock, digest, exclusive, offline_states, private
+from application_entry_provider import verify as provider_overrides
 from native_nuc_startup import host_environment, load_control, read_inventory, lock, ROOT, CONTROL
 from native_nuc_bundle import UNITS
 from native_nuc_guard import validate
+from application_entry_startup import configure as configure_startup
+configure_startup()
 
 RUNTIME = CONTROL.parent
 RELEASES = Path('/home/liou/.local/share/tag-all/application-entry-releases')
@@ -23,16 +27,22 @@ NEW_UNITS = set(UNITS) - {'tag-nuc-bridge.service'}
 ENTRIES = {'private-' + n: ROOT / 'private/config' / n for n in ['application-entry.toml', 'basic.entries']}
 ENTRIES.update({'readonly-' + n: ROOT / 'readonly/config' / n for n in ['application-entry.toml', 'basic.entries']})
 ENTRIES.update({n: RUNTIME / n for n in ['Caddyfile', 'haproxy.readonly.cfg', 'application-compose.json', 'native-nuc-control.json']})
+FAILURE_FILE = None
 PKI = [Path('/home/liou/.local/share/caddy'), Path('/home/liou/.local/share/caddy-container-config')]
 
 
 def run(argv, check=True, capture_output=True):
-    return subprocess.run(argv, check=check, capture_output=capture_output, text=True, timeout=300, env=host_environment(os.environ))
+    try:
+        return subprocess.run(argv, check=check, capture_output=capture_output, text=True, timeout=300, env=host_environment(os.environ))
+    except subprocess.CalledProcessError as error:
+        if FAILURE_FILE:
+            atomic(FAILURE_FILE, json.dumps({'command':argv,'exit':error.returncode,'stdout':error.stdout,'stderr':error.stderr}))
+        raise
 
 
 def legacy_transport(path):
     path = Path(path); info = path.lstat()
-    # Existing non-secret HAProxy routing file is 644; new reviewed config is 600.
+    # Only the non-secret HAProxy routing mount is 644 for the image UID.
     if not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid() or stat.S_IMODE(info.st_mode) not in {0o600,0o644}:
         raise ValueError('Unexpected legacy HAProxy file ownership/mode')
     return path.read_text()
@@ -100,6 +110,7 @@ def preflight(release, expected, rollback=False):
 
 def replacements(release, manifest):
     result = {path: {'kind':'file', 'source':str(release / name), 'sha256':manifest['files'][name]} for name,path in ENTRIES.items()}
+    result[RUNTIME / 'haproxy.readonly.cfg']['mode'] = 0o644
     result.update({UNIT_DIR / name: {'kind':'symlink', 'target':str(Path(manifest['candidate']) / 'lib/systemd/user' / name)} for name in NEW_UNITS})
     result[UNIT_DIR / 'tag-nuc-bridge.service'] = {'kind':'absent'}
     return result
@@ -133,17 +144,34 @@ def stopped():
     for name in ['caddy','readonly-gateway','dufs','dufs-readonly','tag-server','tag-server-readonly','tag-peer-discovery']:
         item = container('dufs-plus_' + name + '_1', allow_missing=name in {'caddy','readonly-gateway'})
         if item and item['State']['Running']: raise ValueError('Conflicting listeners or old writers still running')
-    for port in [5006, 5008, 5009, 18182]:
+    released_ports([5006, 5008, 5009, 18182])
+
+
+def released_ports(ports):
+    for port in ports:
         with socket.socket(socket.AF_INET6) as probe:
+            # TIME_WAIT is not a listener. A live listener still refuses bind.
+            probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             probe.bind(('::', port))
+
+
+def stop_container(name):
+    result = run(['podman','stop',name],check=False)
+    if result.returncode == 0: return
+    item = container(name)
+    known = result.returncode == 125 and 'conmon exited prematurely' in result.stderr and 'conmon process killed' in result.stderr
+    if not (known and item['State']['Running'] is False and item['State'].get('Pid') == 0):
+        raise ValueError('Container stop failed without confirmed zero-PID exit')
 
 
 def stop_stack():
     # The target must stop before members; otherwise Upholds may restart a writer.
     run(['systemctl','--user','stop','tag-native-nuc.target'])
-    run(['systemctl','--user','stop', *sorted(set(UNITS) - {'tag-native-nuc.target'})])
+    statuses = unit_status()
+    members = [n for n in sorted(set(UNITS) - {'tag-native-nuc.target'}) if statuses[n] != 'unknown']
+    run(['systemctl','--user','stop', *members])
     for name in ['dufs-plus_caddy_1','dufs-plus_readonly-gateway_1']:
-        if container(name, allow_missing=True): run(['podman','stop',name])
+        if container(name, allow_missing=True): stop_container(name)
     stopped()
 
 
@@ -151,34 +179,84 @@ def set_mode(value):
     with lock(ROOT / 'startup.lock'): atomic(ROOT / 'startup-mode', value + '\n')
 
 
+def verify_ingress():
+    # Running=True alone can hide a crashing non-root HAProxy process.
+    deadline = time.monotonic() + 20
+    while True:
+        try:
+            for port in [5006, 5008]:
+                connection = http.client.HTTPConnection('127.0.0.1', port, timeout=3)
+                try:
+                    connection.request('GET', '/tag-api/tags', headers={'Host': 'nuc.local:' + str(port)})
+                    response = connection.getresponse(); response.read()
+                    if response.status != 401 or not response.getheader('WWW-Authenticate', '').startswith('Basic'):
+                        raise ValueError('Expected native authentication challenge missing')
+                finally: connection.close()
+            return
+        except (OSError, http.client.HTTPException, ValueError):
+            if time.monotonic() >= deadline:
+                raise ValueError('Native main/readonly ingress failed HTTP readiness')
+            time.sleep(1)
+
+
 def start_stack(transaction, rollback=False):
     run(['systemctl','--user','daemon-reload'])
     run(['systemctl','--user','reset-failed',*sorted(UNITS)], check=False)
-    # Release the persistent barrier only after the full configuration transaction.
+    # The persistent startup guard inspects all original names. Create reviewed
+    # ingress containers without starting them before checking native services.
+    control = load_control()
+    keep = {n:container('dufs-plus_' + n + '_1')['Id'] for n in ['authelia','ddns-go']}
+    run([*control['compose'],'up','--no-start','--no-deps','--force-recreate','caddy','readonly-gateway'])
+    records, status = read_inventory(run)
+    if any(records['dufs-plus_' + n + '_1']['Id'] != before for n,before in keep.items()): raise ValueError('Unowned ingress container recreated')
+    validate('native', ROOT, records, status, source_images=control['source_images'])
+    # Release the persistent barrier only after configuration and guard inventory.
     load_control()
     set_mode('native')
     run(['systemctl','--user','start','tag-native-nuc.target'])
     deadline = time.monotonic() + 60
     expected = set(UNITS) if rollback else NEW_UNITS
     while True:
-        _, status = read_inventory(run)
+        status = unit_status()
         if all(status[n] == 'active' for n in expected): break
         if time.monotonic() >= deadline: raise ValueError('Native target did not become healthy')
         time.sleep(1)
     control = load_control()
-    run([*control['compose'],'up','-d','--no-deps','--force-recreate','caddy','readonly-gateway'])
+    run([*control['compose'],'up','-d','--no-deps','caddy','readonly-gateway'])
     records, status = read_inventory(run)
     validate('native', ROOT, records, status, source_images=control['source_images'])
     if not all(records['dufs-plus_' + n + '_1']['State']['Running'] for n in ['caddy','readonly-gateway','authelia','ddns-go']):
         raise ValueError('Retained ingress unavailable')
+    verify_ingress()
     transaction.phase('rolled-back-current-state' if rollback else 'activated-awaiting-P3')
 
 
-def execute(release, manifest, rollback=False, verify_inputs=lambda: None):
+def execute(release, manifest, rollback=False, verify_inputs=lambda: None, resume=False):
     desired = replacements(release, manifest)
     transaction = ConfigurationTransaction(release / 'p2', desired)
+    installed_resume = False
     if rollback: transaction.load()
+    elif resume:
+        value = transaction.load()
+        if value['phase'] != 'failed-use-explicit-current-state-rollback': raise ValueError('Failed transaction required for resume')
+        if (transaction.directory / 'offline-backup.json').exists():
+            transaction.verify_after(provider_overrides(release,RUNTIME,transaction))
+            backup = json.loads(private(transaction.directory / 'offline-backup.json').read_text())
+            if backup.get('restore_allowed') is not False: raise ValueError('Backup state policy changed')
+            for role, record in backup['states'].items():
+                for name, key in [('core.db','database_backup_sha256'),('state.tar','metadata_archive_sha256')]:
+                    if digest(private(transaction.directory / ('backup-' + role) / name)) != record[key]: raise ValueError('Offline backup changed')
+            if digest(private(transaction.directory / 'caddy-state.tar')) != backup['pki_sha256']: raise ValueError('Offline PKI backup changed')
+            installed_resume = True
+        else:
+            if set(p.name for p in transaction.directory.iterdir()) != {'before','journal.json'}: raise ValueError('Partial backup cannot resume automatically')
+            transaction.verify_before()
+            if digest(CONTROL) != manifest['startup_control_before_sha256']: raise ValueError('Pre-backup startup control changed')
+        load_control()
+        if not installed_resume: stopped()
     else: transaction.create(desired)
+    global FAILURE_FILE
+    FAILURE_FILE = release / 'p2-failed-command.json'
     with exclusive(ROOT / 'startup.lock'):
         verify_inputs()
         atomic(ROOT / 'startup-mode', 'transition\n')
@@ -187,7 +265,7 @@ def execute(release, manifest, rollback=False, verify_inputs=lambda: None):
         stop_stack()
         states = [ROOT / role / 'state' for role in ['private','readonly']]
         with offline_states(states, stopped):
-            if not rollback:
+            if not rollback and not installed_resume:
                 receipts = {role: backup_state(ROOT / role / 'state', release / 'p2' / ('backup-' + role)) for role in ['private','readonly']}
                 archive = release / 'p2/caddy-state.tar'
                 with tarfile.open(archive, 'x', dereference=False) as out:
@@ -202,7 +280,7 @@ def execute(release, manifest, rollback=False, verify_inputs=lambda: None):
                     path = apps / name
                     if path.exists(): private(path, True)
                     else: path.mkdir(mode=0o700)
-            transaction.install(rollback=rollback)
+            if not installed_resume: transaction.install(rollback=rollback)
         start_stack(transaction, rollback)
     except BaseException:
         # Fail closed. Recovery is explicit and always uses the newest state.
@@ -216,17 +294,17 @@ def execute(release, manifest, rollback=False, verify_inputs=lambda: None):
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('release');parser.add_argument('--manifest-sha256',required=True)
-    group=parser.add_mutually_exclusive_group();group.add_argument('--apply',action='store_true');group.add_argument('--rollback',action='store_true')
+    group=parser.add_mutually_exclusive_group();group.add_argument('--apply',action='store_true');group.add_argument('--rollback',action='store_true');group.add_argument('--resume',action='store_true')
     parser.add_argument('--editors-saved',action='store_true')
     opts=parser.parse_args();release=Path(opts.release)
-    if (opts.apply or opts.rollback) and not opts.editors_saved: raise ValueError('Fresh saved-editor confirmation required')
-    if opts.apply or opts.rollback:
+    if (opts.apply or opts.rollback or opts.resume) and not opts.editors_saved: raise ValueError('Fresh saved-editor confirmation required')
+    if opts.apply or opts.rollback or opts.resume:
         # Controller-wide lock remains held; startup checks use a different lock.
         control_lock = RELEASES / 'cutover.lock'
         create_lock(control_lock)
         with exclusive(control_lock):
-            manifest=preflight(release,opts.manifest_sha256,opts.rollback)
-            execute(release,manifest,opts.rollback,verify_inputs=lambda:preflight(release,opts.manifest_sha256,opts.rollback))
+            manifest=preflight(release,opts.manifest_sha256,opts.rollback or opts.resume)
+            execute(release,manifest,opts.rollback,verify_inputs=lambda:preflight(release,opts.manifest_sha256,opts.rollback or opts.resume),resume=opts.resume)
     else:
         with lock(ROOT / 'startup.lock', shared=True):
             manifest=preflight(release,opts.manifest_sha256)

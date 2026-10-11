@@ -138,6 +138,30 @@ class ConfigurationTransaction:
         return value
     def phase(self, name):
         value = self.load(); value['phase'] = name; self.save(value)
+    def verify_before(self):
+        value = self.load()
+        for name, record in value['records'].items():
+            path = Path(name); before = record['before']
+            if before['kind'] == 'file':
+                if path.is_symlink() or not path.is_file() or digest(path) != before['sha256'] or stat.S_IMODE(path.stat().st_mode) != before['mode']:
+                    raise ValueError('Pre-backup input changed')
+            elif before['kind'] == 'symlink':
+                if not path.is_symlink() or os.readlink(path) != before['target']: raise ValueError('Pre-backup unit changed')
+            elif before['kind'] == 'absent':
+                if path.exists() or path.is_symlink(): raise ValueError('Unexpected pre-backup destination')
+            else: raise ValueError('Unknown pre-backup kind')
+
+    def verify_after(self, overrides=None):
+        for name, record in self.load()['records'].items():
+            path = Path(name); after = (overrides or {}).get(name, record['after'])
+            if after['kind'] == 'file':
+                if path.is_symlink() or not path.is_file() or path.stat().st_uid != os.getuid() or stat.S_IMODE(path.stat().st_mode) != after.get('mode', 0o600) or digest(path) != after['sha256']: raise ValueError('Installed configuration changed')
+            elif after['kind'] == 'symlink':
+                if not path.is_symlink() or os.readlink(path) != after['target']: raise ValueError('Installed unit changed')
+            elif after['kind'] == 'absent':
+                if path.exists() or path.is_symlink(): raise ValueError('Removed destination returned')
+            else: raise ValueError('Unknown installed kind')
+
     def install(self, rollback=False):
         value = self.load()
         for name, record in value['records'].items():

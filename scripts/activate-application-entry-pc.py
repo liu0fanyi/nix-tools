@@ -60,7 +60,9 @@ def preflight(rollback=False):
 def stopped():
     if any(value not in {'inactive','failed'} for value in status().values()):raise ValueError('PC native units still running')
     for port in [5006,5009]:
-        with socket.socket() as probe:probe.bind(('0.0.0.0',port))
+        with socket.socket() as probe:
+            probe.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
+            probe.bind(('0.0.0.0',port))
 
 
 def execute(proof,target,rollback):

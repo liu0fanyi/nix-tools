@@ -12,6 +12,7 @@ import subprocess
 import tempfile
 import tomllib
 import uuid
+from application_entry_provider import compatible_readonly_source
 from application_entry_release import application_compose, rebind_startup_control, digest, ROOTS, RUNTIME
 from application_nuc_ingress import candidate_ingress, candidate_readonly_transport
 from native_nuc_ingress import adapt_ingress
@@ -132,6 +133,7 @@ print(json.dumps({'control':control,'control_sha256':hashlib.sha256((runtime/'na
     reviewed={RUNTIME+'/'+name:hashlib.sha256(value.encode()).hexdigest() for name,value in contents.items()}
     for role in ['private','readonly']:
         for name,value in [('application-entry.toml',(Path(candidate)/(role+'-entry.toml')).read_text()),('basic.entries',auth)]:
+            if role == 'readonly' and name == 'application-entry.toml': value = compatible_readonly_source(value)
             contents[role+'-'+name]=value
             reviewed[ROOTS['nuc']+'/'+role+'/config/'+name]=hashlib.sha256(value.encode()).hexdigest()
     control=rebind_startup_control(live['control'],reviewed)
