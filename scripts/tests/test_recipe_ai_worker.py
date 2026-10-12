@@ -126,3 +126,44 @@ class WorkerChecks(unittest.TestCase):
    observed.append(m.progress(self.root)['ai']);(self.root/'ai.stop').touch()
   with mock.patch.object(w.time,'sleep',sleep),mock.patch.object(w.subprocess,'Popen',side_effect=AssertionError('stop forbids model')):w.worker(self.root,once=True)
   self.assertEqual(observed[0]['state'],'retry_wait');self.assertEqual(observed[0]['retry_count'],1);self.assertIn('连接失败',observed[0]['failure_reason']);self.assertTrue((d/'routing-attempts/1/started.json').exists())
+
+ def capacity_events(self):
+  return [{'type':'thread.started'},{'type':'turn.started'},{'type':'error','message':w.CAPACITY_ERROR},{'type':'turn.failed','error':{'message':w.CAPACITY_ERROR}}]
+ def test_capacity_then_success(self):
+  response=self.ready();calls=[]
+  class Fake:
+   pid=123
+   def __init__(inner,cmd,**kw):inner.cmd=cmd;inner.out=kw['stdout'];inner.returncode=1 if not calls else 0;calls.append(inner)
+   def communicate(inner,prompt,timeout):
+    if inner.returncode:inner.out.write(('\n'.join(json.dumps(e) for e in self.capacity_events())+'\n').encode());inner.out.flush()
+    else:Path(inner.cmd[inner.cmd.index('--output-last-message')+1]).write_text(json.dumps(response['result']))
+  with mock.patch.object(w.subprocess,'Popen',Fake),mock.patch.object(w,'CAPACITY_DELAYS',(0,0,0)):w.worker(self.root,once=True)
+  self.assertEqual(len(calls),2);self.assertTrue((self.root/'ai-work/BVTest123/capacity-attempts/1/events.jsonl').exists())
+  self.app=m.Simple(self.root,read_only=True);self.assertEqual(self.app.status()['counts'],{'published':1})
+ def test_capacity_limit_survives_restart(self):
+  self.ready();calls=[]
+  class Fake:
+   pid=123;returncode=1
+   def __init__(inner,cmd,**kw):inner.out=kw['stdout'];calls.append(inner)
+   def communicate(inner,prompt,timeout):inner.out.write(('\n'.join(json.dumps(e) for e in self.capacity_events())+'\n').encode());inner.out.flush()
+  with mock.patch.object(w.subprocess,'Popen',Fake),mock.patch.object(w,'CAPACITY_DELAYS',(0,0,0)):
+   with self.assertRaisesRegex(ValueError,'retry limit'):w.worker(self.root,once=True)
+   self.assertEqual(len(calls),4)
+   with self.assertRaisesRegex(ValueError,'retry limit'):w.worker(self.root,once=True)
+   self.assertEqual(len(calls),4)
+  self.assertEqual(m.f.batch.load(self.root/'ai-worker.json')['error_code'],'model_capacity')
+ def test_capacity_guard_rejects_unknown_and_inference(self):
+  self.ready();d=self.root/'ai-work/BVTest123';d.mkdir(parents=True);good=self.capacity_events()
+  for events in (good[:-1],good+[{'type':'turn.completed','usage':{}}],good[:-1]+[{'type':'item.completed','item':{'type':'reasoning'}}]+good[-1:],[*good[:-1],{'type':'turn.failed','error':{'message':'quota exceeded'}}]):
+   (d/'events.jsonl').write_text('\n'.join(json.dumps(e) for e in events));self.assertIsNone(w.transient_reason(d))
+  (d/'events.jsonl').write_text('\n'.join(json.dumps(e) for e in good));self.assertEqual(w.transient_reason(d),'model_capacity')
+  (d/'answer.json').write_text('{}');self.assertIsNone(w.transient_reason(d))
+ def test_capacity_wait_persisted_across_stop_and_restart(self):
+  self.ready();d=self.root/'ai-work/BVTest123';d.mkdir(parents=True)
+  packet=m.f.batch.load(self.root/'tasks/BVTest123/packet.json');m.f.atomic(d/'started.json',{'input_sha256':packet['input_sha256']})
+  (d/'events.jsonl').write_text('\n'.join(json.dumps(e) for e in self.capacity_events()));observed=[]
+  def sleep(seconds):observed.append(m.progress(self.root)['ai']);(self.root/'ai.stop').touch()
+  with mock.patch.object(w.time,'sleep',sleep),mock.patch.object(w.subprocess,'Popen',side_effect=AssertionError('no call during wait')):
+   w.worker(self.root,once=True);schedule=(d/'retry-wait.json').read_bytes();(self.root/'ai.stop').unlink();w.worker(self.root,once=True)
+  self.assertEqual((d/'retry-wait.json').read_bytes(),schedule);self.assertEqual(len(list((d/'capacity-attempts').iterdir())),1)
+  self.assertEqual(observed[0]['failure_reason'],'模型服务容量已满');self.assertEqual(observed[1]['next_retry_at'],observed[0]['next_retry_at'])

@@ -254,11 +254,12 @@ def render_recipe(recipe):
     return '''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'''+esc(recipe['title'])+'''</title><style>body{margin:0;background:#f5f3ee;color:#282d28;font:17px/1.8 system-ui,sans-serif}main{max-width:850px;margin:auto;padding:26px}h1{font-size:32px}img{display:block;width:100%;max-height:390px;object-fit:contain;border-radius:12px;background:#eee}a{color:#476833}li{margin:12px 0}small,.meta{color:#687166;font-size:14px}details{margin-top:28px;background:#fff;padding:14px;border-radius:8px}section{background:white;padding:12px 24px;margin:20px 0;border-radius:10px}</style><main><nav><a href="../../index.html">← 菜谱目录</a> · <a href="../../player-guide.html">原视频键盘浏览</a></nav><h1>'''+esc(recipe['title'])+'''</h1><p class="meta">'''+esc(source['author'])+''' · AI 字幕整理</p><img src="cover.jpg" alt="原视频封面"><p><a target="_blank" rel="noopener noreferrer" href="'''+esc(source['url'])+'''">观看原视频 ↗</a></p><section><h2>材料</h2><ul>'''+ingredients+'''</ul></section><section><h2>制作过程</h2><ol>'''+steps+'''</ol></section>'''+notes+'''<p class="meta">用量未明确时保留未知。时间链接是原视频位置，不是烹饪时长。<a href="recipe.json">菜谱 JSON</a></p></main></html>'''
 
 
-EVENTS={'cover_retry_wait':'封面响应不完整，等待低频重新获取','retry_wait':'模型连接故障，等待自动重试','prepared':'字幕和封面已就绪','recovered':'已恢复并发布保存结果','skipped':'没有中文AI字幕，跳过','waiting_for_ai':'缓存已满，等待AI整理','sources_finished':'来源队列已结束','stopped':'任务已停止','failed':'任务失败，已停止','extracting':'开始AI字幕整理','publishing':'开始校验和发布','published':'菜谱发布完成','waiting_for_subtitles':'等待下一份字幕','finished':'AI队列已处理完毕'}
-REASONS={'routing_unavailable':'Codex服务路由连接失败','cover_decode':'封面图片解码失败','rate_limited':'平台限流或风控','authentication':'登录或认证失败','timeout':'请求超时','disk_full':'磁盘空间不足','model_error':'模型调用失败','invalid_result':'AI结果未通过校验','unknown':'任务发生错误，详情留本地日志'}
+EVENTS={'cover_retry_wait':'封面响应不完整，等待低频重新获取','retry_wait':'模型暂不可用，等待自动重试','prepared':'字幕和封面已就绪','recovered':'已恢复并发布保存结果','skipped':'没有中文AI字幕，跳过','waiting_for_ai':'缓存已满，等待AI整理','sources_finished':'来源队列已结束','stopped':'任务已停止','failed':'任务失败，已停止','extracting':'开始AI字幕整理','publishing':'开始校验和发布','published':'菜谱发布完成','waiting_for_subtitles':'等待下一份字幕','finished':'AI队列已处理完毕'}
+REASONS={'model_capacity':'模型服务容量已满','routing_unavailable':'Codex服务路由连接失败','cover_decode':'封面图片解码失败','rate_limited':'平台限流或风控','authentication':'登录或认证失败','timeout':'请求超时','disk_full':'磁盘空间不足','model_error':'模型调用失败','invalid_result':'AI结果未通过校验','unknown':'任务发生错误，详情留本地日志'}
 
 def failure_code(value):
     text=str(value).lower()
+    if 'selected model is at capacity' in text:return 'model_capacity'
     if 'workspace routing discovery failed' in text:return 'routing_unavailable'
     if 'truncated' in text or 'cannot identify image' in text:return 'cover_decode'
     if any(x in text for x in ('http 412','http 429','status code 412','status code 429')):return 'rate_limited'
@@ -291,7 +292,7 @@ def recent_events(root):
             if not isinstance(phase,str) or phase not in EVENTS:continue
             vid=data.get('id');vid=vid if isinstance(vid,str) and re.fullmatch(r'BV[A-Za-z0-9]+',vid) else None
             code=data.get('error_code')
-            reason=(code if isinstance(code,str) and code in REASONS else failure_code(data.get('error',''))) if phase=='failed' else None
+            reason=(code if isinstance(code,str) and code in REASONS else failure_code(data.get('error',''))) if phase in {'failed','retry_wait'} else None
             row={'stage':stage,'phase':phase,'video_id':vid,'time':event_time(data.get('updated_at')),'message':EVENTS[phase]+('：'+REASONS[reason] if reason else '')}
             if compact and all(compact[-1][k]==row[k] for k in ('phase','video_id','message')):compact[-1]=row
             else:compact.append(row)
