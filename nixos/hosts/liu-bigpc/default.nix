@@ -3,6 +3,7 @@
 {
   imports = [
     ./hardware-configuration.nix
+    ../../modules/pc-native-service-registration.nix
     # 数位笔"侧键+划动=滚轮"手势守护进程（systemd 系统服务；该文件顶部记录了
     # 为什么不能用 home-manager 用户服务）
     ../../modules/pen-scroll.nix

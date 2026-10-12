@@ -13,3 +13,7 @@ PC只管理tag-all-core.service，NUC只管理tag-nuc-private-core.service和tag
 部署仍由本机nix-tools负责；服务器只接收固定闭包和运行，不编译、不导入凭据、无需更换现用工具镜像。浏览器仍走私有Release/Cachix，不擅自关闭旧窗口或迁移用户profile。
 
 现用target的Upholds会立即重启已停core。prepare同时绑定target原fragment、全部drop-in及保活成员；事务在/run/user/1000/systemd/user.control/<固定target>创建700目录内600的自有临时target副本，仅移除对应core的Upholds，保留其他单元保活与所有其他配置。systemd依赖列表不能通过空drop-in清除，故不得以空Upholds=声称停用。临时副本内容和原源摘要均核验，正常/失败结束删除并重载，恢复原保活；SIGKILL后explicit rollback识别同一自有副本并恢复。禁止停整个target或扩大停服到文件/工具服务，未知override拒绝。
+
+## 普通PC系统更新的注册保留
+
+liu-bigpc普通flake必须保留五个已验原生应用单元和default.target.wants链接。nixos/modules/pc-native-service-registration.nix声明固定应用入口模板，Home Manager在linkGeneration与reloadSystemd之后按ready存在且container-mode不存在恢复target；各服务原模式守卫继续有效。不得重新启用旧容器、重跑迁移、覆盖80-tag-version或boot守卫、创建新数据库。候选单元字节及钩子排序必须从实际Home Manager生成物验证，普通系统完整构建不能代替实际激活成功核验。源generation的“未移除”备用链接不是普通HM已经持久管理服务的证据；由用户执行系统switch，Agent只修复明确归属注册并恢复服务。

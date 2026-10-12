@@ -1,0 +1,16 @@
+{
+  "cause": "ordinary HM generation omitted native units; prior fallback registration used pre-application-entry templates",
+  "scoped_existing_registration_restored": true,
+  "five_native_units_active": true,
+  "tags_http_status": 200,
+  "locations_http_status": 200,
+  "native_container_mode_guard_preserved": true,
+  "data_and_version_overrides_unchanged": true,
+  "ordinary_system_candidate": "/nix/store/zvspx7zdshhjgxw6b6d8rfk28m8fnk80-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "home_candidate": "/nix/store/9gsq9qmlh1wy9zd3ll5ylbishjn19z9v-home-manager-generation",
+  "five_native_templates_match_verified_entry_generation": true,
+  "default_target_link_verified": true,
+  "restore_hook_after_reload_verified": true,
+  "system_switch_by_agent": false,
+  "remaining": "user switches fixed liu-bigpc configuration and confirms HM activation and native services"
+}
