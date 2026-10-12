@@ -11,3 +11,5 @@ PC只管理tag-all-core.service，NUC只管理tag-nuc-private-core.service和tag
 持全局更新锁；停对应core后取得原instance.lock并离线备份当前SQLite和metadata，保留数据库inode；备份从不自动恢复。安装配置后只重载用户单元并启动对应core，核对真实运行程序与原认证/HTTP入口。正常回退、失败回退、断电/控制器被杀后的显式回退均继续使用当前数据；只认可本事务明确的before/after字节，未知修改拒绝覆盖。无法回退时保留备份与journal、作用域core保持停止并报告。
 
 部署仍由本机nix-tools负责；服务器只接收固定闭包和运行，不编译、不导入凭据、无需更换现用工具镜像。浏览器仍走私有Release/Cachix，不擅自关闭旧窗口或迁移用户profile。
+
+现用target的Upholds会立即重启已停core。prepare同时绑定target原fragment、全部drop-in及保活成员；事务在/run/user/1000/systemd/user.control/<固定target>创建700目录内600的自有临时target副本，仅移除对应core的Upholds，保留其他单元保活与所有其他配置。systemd依赖列表不能通过空drop-in清除，故不得以空Upholds=声称停用。临时副本内容和原源摘要均核验，正常/失败结束删除并重载，恢复原保活；SIGKILL后explicit rollback识别同一自有副本并恢复。禁止停整个target或扩大停服到文件/工具服务，未知override拒绝。

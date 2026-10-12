@@ -30,6 +30,9 @@ unit_root = Path('/home/liou/.config/systemd/user')
 owner = uuid.uuid4().hex
 unit = 'tag-release-030-fixture-' + owner + '.service'
 tools_unit = 'tag-release-030-tools-' + owner + '.service'
+target = 'tag-release-030-upholds-' + owner + '.target'
+target_link = unit_root / target
+assert not target_link.exists() and not target_link.is_symlink()
 link = unit_root / unit
 assert not (link.exists() or link.is_symlink())
 owned_dir = unit_root / (unit + '.d')
@@ -61,7 +64,10 @@ with tempfile.TemporaryDirectory(prefix='native-release-fixture-', dir=ROOT / '.
     source.write_text('[Unit]\nDescription=Owned native release fixture\n[Service]\nType=simple\nRestart=no\nUMask=0077\nEnvironment=RUST_BACKTRACE=1\nEnvironment=DUFS_WHISPER_CLI=/missing-fixture-cli DUFS_WHISPER_MODEL=/missing-fixture-model DUFS_FFMPEG=/missing-fixture-ffmpeg\nExecStart=' + shlex.join(argv) + '\n')
     source.write_text(source.read_text().replace('ExecStart=', '\n'.join(environment) + '\nExecStart=', 1))
     source.chmod(0o600)
-    scope = Scope('fixture', (unit,), (state,), (connection,), ((port, '/tag-api/tags', 200),), root / 'releases', unit_root)
+    target_source = root / 'fixture.target'
+    target_source.write_text('[Unit]\nDescription=Owned actual uphold fixture\nWants=' + unit + '\nUpholds=' + unit + '\n')
+    target_source.chmod(0o600)
+    scope = Scope('fixture', (unit,), (state,), (connection,), ((port, '/tag-api/tags', 200),), root / 'releases', unit_root, target)
     manager = Manager(scope)
 
     def api(name=None):
@@ -86,6 +92,7 @@ with tempfile.TemporaryDirectory(prefix='native-release-fixture-', dir=ROOT / '.
             assert files.poll() is None and time.monotonic() < deadline
             time.sleep(.05)
         link.symlink_to(source)
+        target_link.symlink_to(target_source)
         manager.run(['systemctl', '--user', 'daemon-reload'])
         manager.run(['systemd-run', '--user', '--collect', '--unit=' + tools_unit,
                      '--property=Type=notify', '--property=NotifyAccess=main', '--property=TimeoutStartSec=180',
@@ -93,7 +100,7 @@ with tempfile.TemporaryDirectory(prefix='native-release-fixture-', dir=ROOT / '.
                      '--state', str(root / 'tools'), '--workspace', str(workspace),
                      '--archive', packaging['tool_archive'], '--archive-sha256', packaging['archive_sha256'],
                      '--image', packaging['image_id']])
-        manager.run(['systemctl', '--user', 'start', unit]); manager.ready(old)
+        manager.run(['systemctl', '--user', 'start', target]); manager.ready(old)
         api('before-update')
         inode = (state / 'core.db').stat().st_ino
         release = manager.prepare(new, new_front)
@@ -124,7 +131,7 @@ with tempfile.TemporaryDirectory(prefix='native-release-fixture-', dir=ROOT / '.
 
         release = manager.prepare(new, new_front)
         interrupted = root / 'interrupt.py'
-        interrupted.write_text('import os,signal,sys\nfrom pathlib import Path\nsys.path.insert(0,' + repr(str(manager_dir)) + ')\nfrom native_application_release import Scope,Manager\ns=Scope("fixture",(' + repr(unit) + ',),(Path(' + repr(str(state)) + '),),(),((' + str(port) + ',"/tag-api/tags",200),),Path(' + repr(str(scope.release_root)) + '),Path(' + repr(str(unit_root)) + '))\nManager(s).change(Path(' + repr(str(release)) + '),editors_saved=True,after_install=lambda:os.kill(os.getpid(),signal.SIGKILL))\n')
+        interrupted.write_text('import os,signal,sys\nfrom pathlib import Path\nsys.path.insert(0,' + repr(str(manager_dir)) + ')\nfrom native_application_release import Scope,Manager\ns=Scope("fixture",(' + repr(unit) + ',),(Path(' + repr(str(state)) + '),),(),((' + str(port) + ',"/tag-api/tags",200),),Path(' + repr(str(scope.release_root)) + '),Path(' + repr(str(unit_root)) + '),' + repr(target) + ')\nManager(s).change(Path(' + repr(str(release)) + '),editors_saved=True,after_install=lambda:os.kill(os.getpid(),signal.SIGKILL))\n')
         result = subprocess.run([sys.executable, str(interrupted)], capture_output=True)
         assert result.returncode == -signal.SIGKILL, result.stderr[-500:]
         manager.stopped()
@@ -154,6 +161,9 @@ with tempfile.TemporaryDirectory(prefix='native-release-fixture-', dir=ROOT / '.
         assert manager.properties(unit)['ActiveState'] == 'active'
         cases.append('active_queue_refused_without_stopping_current_service')
     finally:
+        manager.run(['systemctl', '--user', 'stop', target])
+        assert target_link.is_symlink() and target_link.resolve() == target_source
+        target_link.unlink()
         manager.run(['systemctl', '--user', 'stop', unit])
         assert link.is_symlink() and link.resolve() == source
         link.unlink()
@@ -175,7 +185,7 @@ with tempfile.TemporaryDirectory(prefix='native-release-fixture-', dir=ROOT / '.
             files.terminate(); files.wait(timeout=10)
         cleanup = True
 
-result = {'cases': cases, 'actual_old_and_new_packaged_programs': True, 'actual_owned_user_unit': True,
+result = {'cases': cases, 'actual_old_and_new_packaged_programs': True, 'actual_owned_user_unit': True, 'actual_upholds_target_and_interrupted_recovery': True,
           'latest_writes_retained_on_rollback': True, 'database_inode_preserved': True,
           'owned_units_and_files_cleaned': cleanup, 'production_access': False, 'production_activated': False,
           'manager_package': str(MANAGER_PACKAGE), 'old_package': str(old), 'new_package': str(new)}

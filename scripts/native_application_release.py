@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Hash-bound native application updates; configuration rollback never restores data."""
+from contextlib import contextmanager
 from dataclasses import dataclass
 import argparse
 import hashlib
@@ -29,6 +30,7 @@ class Scope:
     probes: tuple
     release_root: Path
     unit_root: Path
+    uphold_target: str | None = None
 
 
 def fixed_scope(name):
@@ -41,12 +43,12 @@ def fixed_scope(name):
         root = data / 'pc-native'
         return Scope(name, ('tag-all-core.service',), (root / 'data',),
                      ('unix://' + str(root / 'tools/runtime.sock'),), ((5006, '/tag-api/tags', 200),),
-                     data / 'native-version-releases', unit_root)
+                     data / 'native-version-releases', unit_root, 'tag-native-stack.target')
     root = data / 'nuc-native'
     return Scope(name, ('tag-nuc-private-core.service', 'tag-nuc-readonly-core.service'),
                  tuple(root / role / 'state' for role in ('private', 'readonly')),
                  tuple('unix://' + str(root / role / 'tools/runtime.sock') for role in ('private', 'readonly')),
-                 ((5006, '/', 401), (5008, '/', 401)), data / 'native-version-releases', unit_root)
+                 ((5006, '/', 401), (5008, '/', 401)), data / 'native-version-releases', unit_root, 'tag-native-nuc.target')
 
 
 def execute(argv):
@@ -172,6 +174,62 @@ class Manager:
             except (OSError, ValueError, KeyError, http.client.HTTPException): time.sleep(.2)
         raise ValueError('Native application did not become ready')
 
+    def uphold_path(self):
+        runtime = Path('/run/user/' + str(os.getuid()) + '/systemd/user.control')
+        return runtime / self.scope.uphold_target
+
+    def uphold_binding(self):
+        if not self.scope.uphold_target: return None
+        props = self.run(['systemctl', '--user', 'show', self.scope.uphold_target,
+                          '-p', 'ActiveState', '-p', 'Upholds', '-p', 'FragmentPath', '-p', 'DropInPaths'])
+        values = dict(line.split('=', 1) for line in props.splitlines() if '=' in line)
+        if values['ActiveState'] != 'active': raise ValueError('Existing uphold target must be active')
+        paths = [Path(values['FragmentPath']), *map(Path, shlex.split(values.get('DropInPaths', '')))]
+        owned = self.uphold_path()
+        sources = {str(path): digest(path) for path in paths if path != owned}
+        return {'target': self.scope.uphold_target, 'fragment': values['FragmentPath'], 'sources': sources,
+                'units': sorted(values.get('Upholds', '').split())}
+
+    @contextmanager
+    def suspend_upholding(self, plan):
+        expected = plan.get('upholding')
+        if not self.scope.uphold_target:
+            if expected is not None: raise ValueError('Unexpected uphold target')
+            yield
+            return
+        if not expected or expected['target'] != self.scope.uphold_target:
+            raise ValueError('Prepared uphold target binding required')
+        path = self.uphold_path()
+        retained = sorted(set(expected['units']) - set(self.scope.units))
+        fragment = Path(expected['fragment'])
+        if any(digest(Path(source)) != sha for source, sha in expected['sources'].items()):
+            raise ValueError('Original uphold sources drifted')
+        lines = fragment.read_text().splitlines(keepends=True)
+        content = HEADER + ''.join(('Upholds=' + ' '.join(sorted(set(line.split('=', 1)[1].split()) - set(self.scope.units))) + '\n')
+                                  if line.startswith('Upholds=') else line for line in lines)
+        current = self.uphold_binding()
+        original_sources = dict(expected['sources'])
+        if current['fragment'] == str(path): original_sources.pop(str(fragment))
+        elif current['fragment'] != str(fragment): raise ValueError('Unknown uphold unit override')
+        if current['sources'] != original_sources or current['units'] not in (expected['units'], retained):
+            raise ValueError('Uphold target drifted')
+        if path.exists() or path.is_symlink():
+            if private(path).read_text() != content: raise ValueError('Unknown uphold inhibition refused')
+        else:
+            if current['units'] != expected['units']: raise ValueError('Unowned uphold inhibition refused')
+            if not path.parent.exists(): path.parent.mkdir(parents=True, mode=0o700)
+            private(path.parent, True)
+            atomic(path, content)
+        self.run(['systemctl', '--user', 'daemon-reload'])
+        try:
+            if self.uphold_binding()['units'] != retained: raise ValueError('Core uphold inhibition failed')
+            yield
+        finally:
+            if private(path).read_text() != content: raise ValueError('Uphold inhibition changed')
+            path.unlink()
+            self.run(['systemctl', '--user', 'daemon-reload'])
+            if self.uphold_binding() != expected: raise ValueError('Original upholding did not recover')
+
     def stopped(self):
         if any(self.properties(unit)['ActiveState'] not in ('inactive', 'failed') for unit in self.scope.units):
             raise ValueError('All scoped core writers must be stopped')
@@ -183,6 +241,8 @@ class Manager:
                 raise ValueError('Existing immutable Nix output required')
         if (package / 'share/tag-all/application-entry').read_text() != 'enabled\n': raise ValueError('Application entry package required')
         self.ready(); self.tasks_idle()
+        if self.scope.uphold_target and self.uphold_path().exists(): raise ValueError('Recover interrupted update before preparing another')
+        upholding = self.uphold_binding()
         inputs, commands, previous = {}, {}, []
         for unit in self.scope.units:
             inputs[unit] = self.unit_input(unit)
@@ -190,7 +250,7 @@ class Manager:
             previous.extend(old)
         pointer = self.scope.release_root / 'current.json'
         if pointer.is_symlink(): raise ValueError('Version pointer symlink refused')
-        return {'scope': self.scope.name, 'units': inputs, 'commands': commands, 'package': str(package),
+        return {'scope': self.scope.name, 'upholding': upholding, 'units': inputs, 'commands': commands, 'package': str(package),
                 'binary_sha256': digest(package / 'libexec/tag-server-workspace'), 'frontend': str(frontend),
                 'frontend_sha256': fingerprint(frontend), 'previous_outputs': sorted(set(previous)),
                 'pointer_before': digest(private(pointer)) if pointer.exists() else None,
@@ -306,40 +366,41 @@ class Manager:
                     if not target.parent.exists(): target.parent.mkdir(mode=0o700)
                     if target.parent.is_symlink() or target.parent.stat().st_uid != os.getuid() or target.parent.stat().st_mode & 0o022: raise ValueError('Unsafe managed drop-in directory')
                 transaction.create(replacements); transaction.verify_before()
-            changed = False
-            self.run(['systemctl', '--user', 'stop', *self.scope.units])
-            try:
-                with offline_states(self.scope.states, self.stopped):
-                    self.tasks_idle()
-                    backup = release / ('rollback-backup-' + str(time.time_ns()) if rollback else 'backup')
-                    backup.mkdir(mode=0o700)
-                    states = [backup_state(state, backup / str(index)) for index, state in enumerate(self.scope.states)]
-                    atomic(backup / 'results.json', json.dumps(states, indent=2) + '\n')
-                    transaction.phase('backed-up' if not rollback else 'rolling-back')
-                    changed = True
-                    if not rollback: transaction.phase('installing')
-                    transaction.install(rollback=rollback)
-                    if rollback: transaction.verify_before()
-                    else: transaction.verify_after()
-                    if after_install: after_install()
-                self.run(['systemctl', '--user', 'daemon-reload'])
-                self.run(['systemctl', '--user', 'start', *self.scope.units])
-                self.ready(None if rollback else Path(plan['package']))
-                if after_start: after_start()
-                if any((state / 'core.db').stat().st_ino != record['database_inode'] for state, record in zip(self.scope.states, states)):
-                    raise ValueError('Current database inode changed')
-                transaction.phase('rolled-back' if rollback else 'activated')
-                return {'phase': 'rolled-back' if rollback else 'activated', 'manifest': release.name, 'backup': str(backup), 'database_restored': False}
-            except Exception:
+            with self.suspend_upholding(plan):
+                changed = False
                 self.run(['systemctl', '--user', 'stop', *self.scope.units])
-                self.stopped()
-                if changed:
-                    if rollback: transaction.phase('rollback-failed'); raise
-                    transaction.install(rollback=True); transaction.verify_before()
-                self.run(['systemctl', '--user', 'daemon-reload'])
-                self.run(['systemctl', '--user', 'start', *self.scope.units])
-                self.ready(); transaction.phase('failed-old-program-restored-current-data')
-                raise
+                try:
+                    with offline_states(self.scope.states, self.stopped):
+                        self.tasks_idle()
+                        backup = release / ('rollback-backup-' + str(time.time_ns()) if rollback else 'backup')
+                        backup.mkdir(mode=0o700)
+                        states = [backup_state(state, backup / str(index)) for index, state in enumerate(self.scope.states)]
+                        atomic(backup / 'results.json', json.dumps(states, indent=2) + '\n')
+                        transaction.phase('backed-up' if not rollback else 'rolling-back')
+                        changed = True
+                        if not rollback: transaction.phase('installing')
+                        transaction.install(rollback=rollback)
+                        if rollback: transaction.verify_before()
+                        else: transaction.verify_after()
+                        if after_install: after_install()
+                    self.run(['systemctl', '--user', 'daemon-reload'])
+                    self.run(['systemctl', '--user', 'start', *self.scope.units])
+                    self.ready(None if rollback else Path(plan['package']))
+                    if after_start: after_start()
+                    if any((state / 'core.db').stat().st_ino != record['database_inode'] for state, record in zip(self.scope.states, states)):
+                        raise ValueError('Current database inode changed')
+                    transaction.phase('rolled-back' if rollback else 'activated')
+                    return {'phase': 'rolled-back' if rollback else 'activated', 'manifest': release.name, 'backup': str(backup), 'database_restored': False}
+                except Exception:
+                    self.run(['systemctl', '--user', 'stop', *self.scope.units])
+                    self.stopped()
+                    if changed:
+                        if rollback: transaction.phase('rollback-failed'); raise
+                        transaction.install(rollback=True); transaction.verify_before()
+                    self.run(['systemctl', '--user', 'daemon-reload'])
+                    self.run(['systemctl', '--user', 'start', *self.scope.units])
+                    self.ready(); transaction.phase('failed-old-program-restored-current-data')
+                    raise
 
 
 def main():
