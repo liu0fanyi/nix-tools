@@ -77,3 +77,9 @@ check-native-peer-renewal tag_all dufs_plus:
 # Adapted synthetic TOML; malformed discovery rejected before any broadcast.
 check-native-config-runtime tag_all:
     python3 scripts/check-native-config-runtime.py {{tag_all}}
+
+# Hash-bound native application update; preview by default, explicit saved-editor apply.
+native-release target *args:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    python3 scripts/native_application_release.py --scope "$1" "${@:2}"
