@@ -173,9 +173,9 @@ class Simple:
         except Exception as exc:self.update(vid,'failed',str(exc));raise
         return self.status()
     def prepare_pending(self,max_pending):
-        if max_pending<1:raise ValueError('max_pending must be positive')
+        if max_pending<0:raise ValueError('max_pending must be nonnegative')
         pending=self.db.execute("SELECT count(*) FROM jobs WHERE state='waiting_extract'").fetchone()[0]
-        if pending>=max_pending:return {'phase':'waiting_for_ai','pending':pending}
+        if max_pending and pending>=max_pending:return {'phase':'waiting_for_ai','pending':pending}
         row=self.db.execute("SELECT * FROM jobs WHERE state='queued' ORDER BY rowid LIMIT 1").fetchone()
         if not row:return {'phase':'sources_finished','pending':pending}
         vid=row['id']
@@ -320,9 +320,9 @@ def progress(root):
         collector['last_activity_at']=event_time(data.get('updated_at'))
         for key in ('max_pending','interval'):
             value=data.get(key)
-            if isinstance(value,int) and not isinstance(value,bool) and value>0:collector[key]=value
+            if isinstance(value,int) and not isinstance(value,bool) and (value>=0 if key=='max_pending' else value>0):collector[key]=value
     pending=counts['waiting_extract']
-    if active:state='waiting_for_ai' if pending>=collector.get('max_pending',10) else 'collecting'
+    if active:state='waiting_for_ai' if collector.get('max_pending',10)>0 and pending>=collector.get('max_pending',10) else 'collecting'
     elif source_snapshot.get('phase')=='failed':state='failed'
     elif counts['queued']==0:state='sources_finished'
     else:state='stopped'
@@ -385,8 +385,8 @@ def serve(root,port):
     print(f'http://127.0.0.1:{server.server_port}/index.html',flush=True);server.serve_forever()
 
 
-def collect(root,max_pending=10,interval=60,watch=False):
-    if max_pending<1 or interval<30:raise ValueError('max_pending >= 1 and interval >= 30 required')
+def collect(root,max_pending=0,interval=60,watch=False):
+    if max_pending<0 or interval<30:raise ValueError('max_pending >= 0 and interval >= 30 required')
     root=f.safe(root,root)
     lock=f.safe(root/'.collector.lock',root).open('a')
     try:
@@ -413,7 +413,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--root',type=Path,required=True);sub=parser.add_subparsers(dest='command',required=True)
     init=sub.add_parser('init');init.add_argument('--browser');add=sub.add_parser('add');add.add_argument('manifest',type=Path)
     sub.add_parser('next');sub.add_parser('status');imp=sub.add_parser('import');imp.add_argument('response',type=Path)
-    collector=sub.add_parser('collect');collector.add_argument('--max-pending',type=int,default=10);collector.add_argument('--interval',type=int,default=60);collector.add_argument('--watch',action='store_true')
+    collector=sub.add_parser('collect');collector.add_argument('--max-pending',type=int,default=0,help='0: unlimited subtitle/cover queue (default); positive: optional pending limit');collector.add_argument('--interval',type=int,default=60);collector.add_argument('--watch',action='store_true')
     retry=sub.add_parser('retry');retry.add_argument('--job',required=True);sub.add_parser('rebuild');preview=sub.add_parser('serve');preview.add_argument('--port',type=int,default=8765)
     ai=sub.add_parser('ai');ai.add_argument('--model',default='gpt-6.1-sol');ai.add_argument('--once',action='store_true');ai.add_argument('--timeout',type=int,default=600)
     args=parser.parse_args()

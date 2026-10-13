@@ -259,3 +259,6 @@ Constitution Check：既有工具/契约/规格归属不变；运行报告与原
 
 
 U2 容量恢复沿用严格事件检查与真实锁，独立capacity-attempts保留三次限额；retry-wait.json保存等待期限，重启等待剩余时间。进度显示容量错误和下一次时间，保留原模型，不扩大数据范围。合成覆盖成功、上限/重启、拒绝未知推理和暂停等待。
+
+
+U2 collect默认max_pending=0表示不限，progress保留零值并显示collecting；工坊调度在AI受阻但源可推进时仍启动单采集器，AI未完成保护不变。合成验证无AI积压超过10条直至源结束及AI故障只启动采集；实际消费者保持不动，在源任务边界切换现有collector。Constitution Check：原私有数据/低频/真实锁/无视频约束保持，不引入参考源码，不改系统。

@@ -192,4 +192,20 @@ class SimpleChecks(unittest.TestCase):
         m.f.atomic(self.root/'ai-worker.json',{'state':'waiting_for_subtitles','updated_at':2500})
         p=m.progress(self.root);self.assertIsNone(p['events'][0]['time']);self.assertEqual(p['health']['last_progress_at'],1500)
 
+    def test_unlimited_collection_continues_without_ai_and_reports_collecting(self):
+        self.prepare()
+        entries=[{**self.entry,'id':'BVQueue'+str(n)} for n in range(12)]
+        m.f.atomic(self.manifest,entries);self.app.add(self.manifest)
+        with mock.patch.object(self.app,'prepare') as prepare:
+            for _ in entries:self.assertEqual(self.app.prepare_pending(0)['phase'],'prepared')
+            self.assertEqual(prepare.call_count,12)
+            self.assertEqual(self.app.prepare_pending(0)['phase'],'sources_finished')
+        self.assertEqual(self.app.status()['counts'],{'waiting_extract':13})
+        m.f.atomic(self.root/'collector.json',{'max_pending':0,'interval':60})
+        with (self.root/'.collector.lock').open('a') as lock:
+            m.fcntl.flock(lock,m.fcntl.LOCK_EX|m.fcntl.LOCK_NB)
+            self.assertEqual(m.progress(self.root)['collector']['state'],'collecting')
+            self.assertEqual(m.progress(self.root)['collector']['max_pending'],0)
+        with self.assertRaisesRegex(ValueError,'nonnegative'):self.app.prepare_pending(-1)
+
 if __name__=='__main__':unittest.main()

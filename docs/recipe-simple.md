@@ -153,3 +153,6 @@ rm -f /home/liou/Downloads/菜谱精简库-老东北美食/collect.stop
 
 
 封面下载响应明确截断时，采集器会保留严格解码检查，并最多低频重取3次（15、30、60秒）；日志页显示“封面响应不完整，等待低频重新获取”。不接受残缺图片，不下载视频，也不重复AI整理。仍损坏则记failed并停止；HTTP风控、认证和网络错误继续停止，不自动加密集重试。
+
+
+字幕和封面采集默认不限待AI数量：`recipe-simple --root <ROOT> collect --max-pending 0 --interval 60 --watch`。AI停止或积压不影响采集；磁盘不足和采集故障仍停止。正数 `--max-pending` 可用于主动限制。
