@@ -335,3 +335,5 @@ P2完成、剩余0；总体4/5，E5当前2/3，剩余1项P3真实验收与收尾
 H2已验证：五单元active，位置与标签API200。仅替换原注册收据绑定的.local/share单元链接，旧映射另存，现有80-tag-version覆盖保留；无数据库迁移、备份恢复或旧容器启动。H3剩余1步，完成完整普通系统构建后由用户切换并核验。
 
 H3候选已验证：普通系统完整构建通过，五个原生单元与已验应用入口模板逐字节一致，默认启动链接存在，恢复钩子在reloadSystemd之后且受ready/container-mode保护。结果见pc-native-registration-results.json。当前故障修复剩余1步H3实际用户切换与确认；Agent未执行系统switch，当前五服务及API已恢复。
+
+浏览器nix.33发行已批准并完成，实际PC系统候选与保留原生服务的HM注册共同核验通过；见[tag-browser-nix33-install-results.json](tag-browser-nix33-install-results.json)。仅浏览器输入锁定项进入本次提交，其他既有宿主改动保留。H3仍待用户普通终端switch后的运行核验，与浏览器018的W3人工收尾一并执行，不新增阶段计数。
