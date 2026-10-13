@@ -1,0 +1,18 @@
+{
+  "system_candidate": "/nix/store/9msblddbgdswyahcqfpkydx7r2fmqf7j-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "home_candidate": "/nix/store/9gsq9qmlh1wy9zd3ll5ylbishjn19z9v-home-manager-generation",
+  "browser_binary": "/nix/store/rbl03mwz1x5sgzn4dizhix6ljs5jmyyv-tag-browser-0.1.0",
+  "browser_source_revision": "9fcb40e28dd0d18a0818bcb682e174e4abc4367e",
+  "changed_lock_nodes": [
+    "tag-browser-src"
+  ],
+  "five_native_templates_verified": true,
+  "default_target_link_verified": true,
+  "restore_after_reload_verified": true,
+  "system_switch_by_agent": false,
+  "system_menu_binary_and_release_version_verified": true,
+  "release": "v0.1.0-nix.35",
+  "github_workflow": 38354343962,
+  "cachix_verified": true,
+  "remaining": "用户切换系统并重开浏览器验收；H3原生服务运行核验仍待切换后完成"
+}
