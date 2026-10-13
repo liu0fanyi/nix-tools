@@ -341,3 +341,5 @@ H3候选已验证：普通系统完整构建通过，五个原生单元与已验
 浏览器nix.34发行已批准并完成，实际PC系统候选与保留原生服务的HM注册共同核验通过；见[tag-browser-nix34-install-results.json](tag-browser-nix34-install-results.json)。仅浏览器输入锁定项进入本次提交，其他既有宿主改动保留。H3仍待用户普通终端switch后的运行核验，与浏览器020的U4试用交付一并执行，不新增阶段计数。
 
 浏览器nix.35发行已批准并完成，实际PC系统候选与保留原生服务的HM注册共同核验通过；见[tag-browser-nix35-install-results.json](tag-browser-nix35-install-results.json)。仅浏览器输入锁定项进入本次提交，其他既有宿主改动保留。H3仍待用户普通终端switch后的运行核验，与浏览器020的I3修正试用交付一并执行，不新增阶段计数。
+
+浏览器nix.36发行已批准并完成，实际PC系统候选与保留原生服务的HM注册共同核验通过；见[tag-browser-nix36-install-results.json](tag-browser-nix36-install-results.json)。仅浏览器输入锁定项进入本次提交，其他既有宿主改动保留。H3仍待用户普通终端switch后的运行核验，与浏览器020的T3共用工具交付一并执行，不新增阶段计数。
