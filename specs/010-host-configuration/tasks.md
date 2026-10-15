@@ -607,4 +607,4 @@ U2 采集解耦补充：取消字幕/封面默认待AI上限，独立连续低�
 
 - [x] 在 liu-bigpc 增加仅测试板可访问的 TCP 15090、UDP 18000–18101 声明式规则。
 - [x] 完整 toplevel/Home Manager 构建及规则求值验证，镜像规格。
-- [ ] 用户手动 rerun 后验证板端 SIP 注册与 RTP 媒体。
+- [x] 用户手动 rerun 后验证板端 SIP 注册与 RTP 媒体。本地四编码及 G.722 EQ 短测通过，产品侧证据见 esp32-p4-sip/specs/010-rtp-adf-codec/。
