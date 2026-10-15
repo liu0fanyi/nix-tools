@@ -24,7 +24,7 @@
     "chatgpt-deb": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-lCsjBhLEBoFF8VsGYxy37c6hSlVjXGeuniqVi8PAoOQ=",
+        "narHash": "sha256-yhRbmXrQpIpVOKHniKBq2VbEsPStpKUcJ7pWnmcB3Xs=",
         "type": "file",
         "url": "https://persistent.oaistatic.com/codex-app-prod/linux/deb/latest/chatgpt_amd64.deb"
       },
