@@ -1,0 +1,20 @@
+{
+  "system_candidate": "/nix/store/rivbra7vw8cd5wnq29hvag3qlz80ib4f-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "home_candidate": "/nix/store/rf1g2d2s3999nb713p45rysfffnplv2r-home-manager-generation",
+  "browser_binary": "/nix/store/i6kqjyhwx9vqbhxkps0sw7nsff6cm812-tag-browser-0.1.0",
+  "browser_source_revision": "9c29d74e187072b2c20a4c884249e86d9f2901e3",
+  "changed_lock_nodes": [
+    "tag-browser-src"
+  ],
+  "five_native_templates_verified": true,
+  "default_target_link_verified": true,
+  "restore_after_reload_verified": true,
+  "system_menu_binary_and_release_version_verified": true,
+  "system_switch_by_agent": false,
+  "release": "v0.1.0-nix.38",
+  "github_workflow": 38756427813,
+  "cachix_verified": true,
+  "workflow_creates_pin": false,
+  "existing_user_changes_preserved": true,
+  "remaining": "CR3 用户普通终端rerun后关闭旧窗口重开，确认nix.38与紧凑筛选栏；Agent未执行switch"
+}
