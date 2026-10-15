@@ -262,3 +262,7 @@ U2 容量恢复沿用严格事件检查与真实锁，独立capacity-attempts保
 
 
 U2 collect默认max_pending=0表示不限，progress保留零值并显示collecting；工坊调度在AI受阻但源可推进时仍启动单采集器，AI未完成保护不变。合成验证无AI积压超过10条直至源结束及AI故障只启动采集；实际消费者保持不动，在源任务边界切换现有collector。Constitution Check：原私有数据/低频/真实锁/无视频约束保持，不引入参考源码，不改系统。
+
+## SIP 测试端口实施
+
+复用 liu-bigpc 主机的 networking.firewall.extraCommands，增加限定源地址、目标地址和 eno1 的两条规则。只读求值检查规则及完整 toplevel/Home Manager 构建；用户执行 rerun 后再检查板端注册和媒体。符合工作区与本仓 constitution：不引入外部参考，不改变资料来源分层，不代用户 switch。
