@@ -349,3 +349,5 @@ H3候选已验证：普通系统完整构建通过，五个原生单元与已验
 浏览器nix.38紧凑筛选栏补发已完成：私有Release/CI/Cachix、完整liu-bigpc候选、菜单版本与五个原生服务注册均核验通过；见[tag-browser-nix38-install-results.json](tag-browser-nix38-install-results.json)。此后端修复已在原生版本事务中完成，浏览器发行不重新切换PC/NUC服务。仅浏览器锁定节点与本条安装证据进入提交，原有用户修改/暂存均保留。对应产品020的CR1/CR2完成，剩1步CR3由用户普通终端rerun并重开确认，Agent未执行系统switch。
 
 浏览器 nix.39 共享 Rust 滚动发行已完成：私有 Release/CI/Cachix、完整 liu-bigpc 候选、菜单版本与五个原生服务注册均核验通过；见 [tag-browser-nix39-install-results.json](tag-browser-nix39-install-results.json)。PC/NUC 前端已按本轮保存关闭确认经原生事务激活，后端保持现用版本。仅浏览器锁定节点与安装证据进入本次提交，既有用户修改/暂存均保留。跨仓交付以 dufs-client-rs/004 的 R1/R2 为准：用户普通终端 rerun 重开及三组试用尚未执行，不新增阶段计数。
+
+浏览器 nix.40 操作控制器和共享 Rust 操作模型发行已完成：私有 Release/CI/Cachix、完整 liu-bigpc 候选、菜单版本与五个原生服务注册均核验通过；见 [tag-browser-nix40-install-results.json](tag-browser-nix40-install-results.json)。PC/NUC 前端已按本轮保存关闭确认经原生事务激活，后端保持现用版本。仅浏览器锁定节点与安装证据进入本次提交，既有用户修改/暂存均保留。跨仓发行计数以 dufs-client-rs/005 的 P1–P3 为准；用户普通终端 rerun 重开及试用另列，不新增开发项。
