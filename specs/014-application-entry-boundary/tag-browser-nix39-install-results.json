@@ -1,0 +1,20 @@
+{
+  "system_candidate": "/nix/store/5qydw3p1g71k9wazzzsiv71zmkqv2qbq-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "home_candidate": "/nix/store/rf1g2d2s3999nb713p45rysfffnplv2r-home-manager-generation",
+  "browser_binary": "/nix/store/vfj0zlsmnznbwyj4ajnklhkpqpjar2f9-tag-browser-0.1.0",
+  "browser_source_revision": "d33dd4bc1f31d603a8422b5e555c129fbce37241",
+  "changed_lock_nodes": [
+    "tag-browser-src"
+  ],
+  "five_native_templates_verified": true,
+  "default_target_link_verified": true,
+  "restore_after_reload_verified": true,
+  "system_menu_binary_and_release_version_verified": true,
+  "system_switch_by_agent": false,
+  "release": "v0.1.0-nix.39",
+  "github_workflow": 38844625039,
+  "cachix_verified": true,
+  "workflow_creates_pin": false,
+  "existing_user_changes_preserved": true,
+  "remaining": "共享滚动交付 R1 尚待用户普通终端 rerun 并重开确认 nix.39；R2 三组试用未执行；Agent 未执行 switch"
+}
