@@ -266,3 +266,6 @@ U2 collect默认max_pending=0表示不限，progress保留零值并显示collect
 ## SIP 测试端口实施
 
 复用 liu-bigpc 主机的 networking.firewall.extraCommands，增加限定源地址、目标地址和 eno1 的两条规则。只读求值检查规则及完整 toplevel/Home Manager 构建；用户执行 rerun 后再检查板端注册和媒体。符合工作区与本仓 constitution：不引入外部参考，不改变资料来源分层，不代用户 switch。
+
+
+U2 parse_srt对原有效输入不改，仅新增末尾小幅舍入分支；通过4毫秒实测形态、完整原件不变、此前合法值保持以及40毫秒越界拒绝的合成回归和19项精简回归，再恢复已有失败检查点。

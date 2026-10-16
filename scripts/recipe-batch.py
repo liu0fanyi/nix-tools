@@ -116,6 +116,10 @@ def parse_srt(path, duration):
         if len(times) != 2:
             raise ValueError('invalid SRT timing')
         start, end = map(seconds, times)
+        # Platform subtitle centiseconds can round a few ms beyond metadata.
+        # Preserve all previously valid cues; clip only this tiny new overrun.
+        if duration + .001 < end <= duration + .010:
+            end = duration
         if not 0 <= start < end <= duration + .001:
             raise ValueError('SRT cue outside video')
         cues.append({'id': int(lines[0]), 'start': start, 'end': end, 'text': '\n'.join(lines[2:])})
