@@ -1,0 +1,20 @@
+{
+  "system_candidate": "/nix/store/lhyjxy75jlv88kr2xhpp1308x6dkr1iw-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "home_candidate": "/nix/store/rf1g2d2s3999nb713p45rysfffnplv2r-home-manager-generation",
+  "browser_binary": "/nix/store/wffz0inxrqxbwgdffmi6ppkxwkd1r4bl-tag-browser-0.1.0",
+  "browser_source_revision": "22c03245716ff2d2ea3e23df2e8c532a488d9ee3",
+  "changed_lock_nodes": [
+    "tag-browser-src"
+  ],
+  "five_native_templates_verified": true,
+  "default_target_link_verified": true,
+  "restore_after_reload_verified": true,
+  "system_menu_binary_and_release_version_verified": true,
+  "system_switch_by_agent": false,
+  "release": "v0.1.0-nix.42",
+  "github_workflow": 39025346167,
+  "cachix_verified": true,
+  "workflow_creates_pin": false,
+  "existing_user_changes_preserved": true,
+  "remaining": "发行与安装候选已核验；用户普通终端 rerun 重开确认 nix.42 和后续试用尚未执行；Agent 未执行 switch"
+}
