@@ -108,7 +108,8 @@ def parse_srt(path, duration):
         return int(match[1]) * 3600 + int(match[2]) * 60 + int(match[3]) + int(match[4]) / 1000
     cues = []
     text = Path(path).read_text(encoding='utf-8-sig').replace('\r\n', '\n')
-    for block in re.split(r'\n\s*\n', text.strip()):
+    blocks = re.split(r'\n\s*\n', text.strip())
+    for index, block in enumerate(blocks):
         lines = block.splitlines()
         if len(lines) < 3 or not lines[0].isdigit():
             raise ValueError('invalid SRT cue')
@@ -118,7 +119,8 @@ def parse_srt(path, duration):
         start, end = map(seconds, times)
         # Platform subtitle centiseconds can round a few ms beyond metadata.
         # Preserve all previously valid cues; clip only this tiny new overrun.
-        if duration + .001 < end <= duration + .010:
+        if (duration + .001 < end <= duration + .010 or
+                index == len(blocks) - 1 and duration + .010 < end <= duration + .050):
             end = duration
         if not 0 <= start < end <= duration + .001:
             raise ValueError('SRT cue outside video')
