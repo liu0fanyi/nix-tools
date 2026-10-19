@@ -359,3 +359,5 @@ H3候选已验证：普通系统完整构建通过，五个原生单元与已验
 浏览器 nix.43 统一目录树发行已完成：私有 Release/CI/Cachix、完整 liu-bigpc 系统/HM 候选、菜单版本和五个原生服务注册均核验通过，见 [tag-browser-nix43-install-results.json](tag-browser-nix43-install-results.json)。工作区/Web/当前窗口页面共用树，提供全部收起；本次消费者变更仅浏览器锁定节点与安装证据，已有暂存和未暂存修改均保留。本轮 PC/NUC 前端通过既有原生事务独立更新，后端与认证代理不变；事务和实际资源证据在 dufs-plus/023。跨仓固定发布计数以 tag-browser/025 P1–P3 为准；实际系统切换和重开验收由用户执行。
 
 浏览器 nix.44 统一搜索发行已完成：私有 Release/CI/Cachix、完整 liu-bigpc 系统/HM 候选、菜单版本和五个原生服务注册均核验通过，见 [tag-browser-nix44-install-results.json](tag-browser-nix44-install-results.json)。收藏、当前窗口和所属节点文件搜索共用固定Rust匹配，同时交付侧栏控件精简；本次消费者变更仅浏览器锁定节点与安装证据，已有暂存和未暂存修改均保留。本轮 PC/NUC 前后端通过既有原生事务更新，认证代理不变；事务和实际资源证据在 dufs-plus/024与tag-all/032。跨仓固定发布计数以 tag-browser/026 D1–D2 为准；实际系统切换和重开验收由用户执行。
+
+浏览器 nix.45 目录展开响应发行已完成：私有 Release/CI/Cachix、完整 liu-bigpc 系统/HM 候选、菜单版本和五个原生服务注册均核验通过，见 [tag-browser-nix45-install-results.json](tag-browser-nix45-install-results.json)。目录返回即显示、标签独立补齐，普通收起复用有界窗口缓存，无关工作区不重投影；本次消费者变更仅浏览器锁定节点与安装证据，已有暂存和未暂存修改均保留。本轮 PC/NUC 前端通过既有原生事务更新，认证代理不变；事务和实际资源证据在 dufs-plus/023。跨仓固定发布计数以 tag-browser/025 RP1–RP3 为准；实际系统切换和重开验收由用户执行。
