@@ -1,0 +1,20 @@
+{
+  "system_candidate": "/nix/store/5h7hw6qcgdlr2kqyfczkc4q3m6xirv70-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "home_candidate": "/nix/store/0i09gkw18y6v3yhb5bwjly2bnpig88ca-home-manager-generation",
+  "browser_binary": "/nix/store/91fwzrfx7cmpxrbhlmfgf57sw6ah9062-tag-browser-0.1.0",
+  "browser_source_revision": "dcc258ff5aea4628a491df92e5f25d6a2af093a4",
+  "changed_lock_nodes": [
+    "tag-browser-src"
+  ],
+  "five_native_templates_verified": true,
+  "default_target_link_verified": true,
+  "restore_after_reload_verified": true,
+  "system_menu_binary_and_release_version_verified": true,
+  "system_switch_by_agent": false,
+  "release": "v0.1.0-nix.44",
+  "github_workflow": 39184767317,
+  "cachix_verified": true,
+  "workflow_creates_pin": false,
+  "existing_user_changes_preserved": true,
+  "remaining": "完整系统/HM候选已核验；用户普通终端 rerun 和关闭旧窗口重开试用尚未执行；Agent 未执行 switch"
+}
