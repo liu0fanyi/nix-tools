@@ -367,3 +367,5 @@ H3候选已验证：普通系统完整构建通过，五个原生单元与已验
 浏览器 nix.47 搜索覆盖原因提示补正已发行：私有Release/CI/Cachix精确输出、29份包内资源、完整liu-bigpc系统/HM候选、菜单版本与五个原生服务注册均核验，见[tag-browser-nix47-install-results.json](tag-browser-nix47-install-results.json)。本次仅更新tag-browser-src与本项安装证据，原有暂存/未暂存改动保持；不创建Pin，不执行系统switch。待办颜色与菜单外关闭已由dufs-plus025独立完成PC/NUC前端切换；浏览器系统安装和关闭旧窗口重开验收仍由用户执行。
 
 浏览器 nix.48 侧栏精简与完整索引兼容补正已发行：私有Release/CI/Cachix精确输出、29份包内资源、完整liu-bigpc系统/HM候选、菜单版本与五个原生服务注册均核验，见[tag-browser-nix48-install-results.json](tag-browser-nix48-install-results.json)。本次仅更新tag-browser-src与本项安装证据，原有暂存/未暂存改动保持；不创建Pin，不执行系统switch。本轮不切换PC/NUC原生服务；浏览器系统安装和关闭旧窗口重开验收仍由用户执行。
+
+浏览器 nix.49 跨工作区首次勾选修复已发行：私有Release/CI/Cachix精确输出、29份包内资源、完整liu-bigpc系统/HM候选、菜单版本与五个原生服务注册均核验，见[tag-browser-nix49-install-results.json](tag-browser-nix49-install-results.json)。本次仅更新tag-browser-src与本项安装证据，原有暂存/未暂存改动保持；不创建Pin，不执行系统switch。本轮不切换PC/NUC原生服务；浏览器系统安装和关闭旧窗口重开验收仍由用户执行。
