@@ -231,7 +231,10 @@ class Flow:
                 immutable(marker, {'id': vid, 'status': 'skipped', 'reason': 'no_ai_zh_subtitles'})
             else:
                 if not srt.is_file(): raise ValueError('AI track advertised but subtitle download missing')
-                cues = batch.parse_srt(batch.file(srt), duration)
+                repairs = []
+                cues = batch.parse_srt(batch.file(srt), duration, clip_final=True, timing_repairs=repairs)
+                if repairs:
+                    immutable(directory / 'timing-normalization.json', {'id': vid, 'source_sha256': batch.digest(srt), 'duration': duration, 'repairs': repairs})
                 immutable(marker, {'id': vid, 'status': 'available', 'language': 'ai-zh',
                                    'origin': 'platform', 'generation': 'ai', 'duration': duration,
                                    'cue_count': len(cues), 'sha256': batch.digest(srt)})
@@ -243,7 +246,7 @@ class Flow:
             raise NoAISubtitles('no_ai_zh_subtitles')
         if set(result) != {'id','status','language','origin','generation','duration','cue_count','sha256'} or result.get('status') != 'available' or result.get('language') != 'ai-zh' or result.get('origin') != 'platform' or result.get('generation') != 'ai' or not batch.finite(result.get('duration')) or result['duration'] <= 0 or type(result.get('cue_count')) is not int or batch.digest(batch.file(srt)) != result.get('sha256'):
             raise ValueError('AI subtitle receipt or content changed')
-        if len(batch.parse_srt(srt, result['duration'])) != result['cue_count']:
+        if len(batch.parse_srt(srt, result['duration'], clip_final=True)) != result['cue_count']:
             raise ValueError('AI subtitle cue count changed')
         return srt
 

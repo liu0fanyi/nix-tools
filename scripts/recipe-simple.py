@@ -145,7 +145,7 @@ class Simple:
         with Image.open(cover) as image:image.verify()
         f.atomic(base/'source.info.json',minimal)
         source={'video_id':vid,'url':'https://www.bilibili.com/video/'+vid,'title':entry['title'],'author':entry['author'],'duration':receipt['duration'],'subtitle_origin':'platform-ai-zh','subtitle_sha256':receipt['sha256'],'cover_sha256':saved['cover_sha256']}
-        payload={'source':source,'transcript':f.batch.parse_srt(srt,receipt['duration']),'prompt':PROMPT,'result_schema':f.batch.load(SCHEMA)}
+        payload={'source':source,'transcript':f.batch.parse_srt(srt,receipt['duration'],clip_final=True),'prompt':PROMPT,'result_schema':f.batch.load(SCHEMA)}
         digest=f.batch.sha(payload);packet={'version':1,'task_id':vid+'-'+digest[:16],'input_sha256':digest,**payload}
         path=self.packet(vid);f.durable_mkdir(path.parent)
         if path.exists():
@@ -157,7 +157,7 @@ class Simple:
         if packet.get('task_id')!=vid+'-'+packet['input_sha256'][:16] or f.batch.sha(payload)!=packet['input_sha256'] or packet['source']['video_id']!=vid or packet['result_schema']!=f.batch.load(SCHEMA) or packet['prompt']!=PROMPT:raise ValueError('task input changed or obsolete')
         base=f.safe(self.root/'platform-subtitles'/vid,self.root);source=packet['source']
         if f.batch.digest(f.batch.file(base/'source.ai-zh.srt'))!=source['subtitle_sha256'] or f.batch.digest(f.batch.file(base/'cover.jpg'))!=source['cover_sha256']:raise ValueError('subtitle or cover input changed')
-        if f.batch.parse_srt(base/'source.ai-zh.srt',source['duration'])!=packet['transcript']:raise ValueError('transcript changed')
+        if f.batch.parse_srt(base/'source.ai-zh.srt',source['duration'],clip_final=True)!=packet['transcript']:raise ValueError('transcript changed')
         return packet
     def next(self):
         row=self.db.execute("SELECT * FROM jobs WHERE state IN ('queued','waiting_extract') ORDER BY rowid LIMIT 1").fetchone()
@@ -255,10 +255,11 @@ def render_recipe(recipe):
 
 
 EVENTS={'cover_retry_wait':'封面响应不完整，等待低频重新获取','retry_wait':'模型暂不可用，等待自动重试','prepared':'字幕和封面已就绪','recovered':'已恢复并发布保存结果','skipped':'没有中文AI字幕，跳过','waiting_for_ai':'缓存已满，等待AI整理','sources_finished':'来源队列已结束','stopped':'任务已停止','failed':'任务失败，已停止','extracting':'开始AI字幕整理','publishing':'开始校验和发布','published':'菜谱发布完成','waiting_for_subtitles':'等待下一份字幕','finished':'AI队列已处理完毕'}
-REASONS={'model_capacity':'模型服务容量已满','routing_unavailable':'Codex服务路由连接失败','cover_decode':'封面图片解码失败','rate_limited':'平台限流或风控','authentication':'登录或认证失败','timeout':'请求超时','disk_full':'磁盘空间不足','model_error':'模型调用失败','invalid_result':'AI结果未通过校验','unknown':'任务发生错误，详情留本地日志'}
+REASONS={'subtitle_timing':'平台字幕时间轴异常','model_capacity':'模型服务容量已满','routing_unavailable':'Codex服务路由连接失败','cover_decode':'封面图片解码失败','rate_limited':'平台限流或风控','authentication':'登录或认证失败','timeout':'请求超时','disk_full':'磁盘空间不足','model_error':'模型调用失败','invalid_result':'AI结果未通过校验','unknown':'任务发生错误，详情留本地日志'}
 
 def failure_code(value):
     text=str(value).lower()
+    if 'srt cue outside video' in text or 'invalid srt' in text:return 'subtitle_timing'
     if 'selected model is at capacity' in text:return 'model_capacity'
     if 'workspace routing discovery failed' in text:return 'routing_unavailable'
     if 'truncated' in text or 'cannot identify image' in text:return 'cover_decode'

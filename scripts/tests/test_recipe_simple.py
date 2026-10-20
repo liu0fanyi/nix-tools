@@ -208,4 +208,19 @@ class SimpleChecks(unittest.TestCase):
             self.assertEqual(m.progress(self.root)['collector']['max_pending'],0)
         with self.assertRaisesRegex(ValueError,'nonnegative'):self.app.prepare_pending(-1)
 
+    def test_platform_tail_receipt_and_packet_verification_share_normalization(self):
+        def platform_tail(vid,kind,command):
+            log=self.platform(vid,kind,command)
+            base=self.root/'platform-subtitles'/vid
+            data=m.f.batch.load(base/'source.info.json');data['duration']=2.4;m.f.atomic(base/'source.info.json',data)
+            return log
+        with mock.patch.object(self.app,'log_command',side_effect=platform_tail),mock.patch.object(m,'fetch_cover',return_value=self.cover):
+            self.assertEqual(self.app.next()['counts'],{'waiting_extract':1})
+        packet=self.app.verify_packet(self.entry['id'])
+        self.assertEqual(packet['transcript'][-1]['end'],2.4)
+        report=m.f.batch.load(self.root/'platform-subtitles'/self.entry['id']/'timing-normalization.json')
+        self.assertEqual(report['repairs'][0]['original_end'],2.5)
+        self.assertEqual(report['source_sha256'],packet['source']['subtitle_sha256'])
+        self.assertEqual(m.failure_code('SRT cue outside video'),'subtitle_timing')
+
 if __name__=='__main__':unittest.main()

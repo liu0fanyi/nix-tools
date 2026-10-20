@@ -100,7 +100,7 @@ def verify(folder):
         raise ValueError('checkpoint was modified: ' + str(folder))
 
 
-def parse_srt(path, duration):
+def parse_srt(path, duration, *, clip_final=False, timing_repairs=None):
     def seconds(text):
         match = re.fullmatch(r'(\d{2,}):(\d{2}):(\d{2})[,.](\d{3})', text.strip())
         if not match or int(match[2]) >= 60 or int(match[3]) >= 60:
@@ -117,6 +117,10 @@ def parse_srt(path, duration):
         if len(times) != 2:
             raise ValueError('invalid SRT timing')
         start, end = map(seconds, times)
+        original_end = end
+        # Opt-in only for platform captions: display cannot continue past EOF.
+        if clip_final and index == len(blocks) - 1 and 0 <= start < duration and end > duration + .001:
+            end = duration
         # Platform subtitle centiseconds can round a few ms beyond metadata.
         # Preserve all previously valid cues; clip only this tiny new overrun.
         if (duration + .001 < end <= duration + .010 or
@@ -124,6 +128,8 @@ def parse_srt(path, duration):
             end = duration
         if not 0 <= start < end <= duration + .001:
             raise ValueError('SRT cue outside video')
+        if timing_repairs is not None and end != original_end:
+            timing_repairs.append({'cue_id': int(lines[0]), 'start': start, 'original_end': original_end, 'end': end})
         cues.append({'id': int(lines[0]), 'start': start, 'end': end, 'text': '\n'.join(lines[2:])})
     if not cues or len({c['id'] for c in cues}) != len(cues) or any(a['start'] > b['start'] for a, b in zip(cues, cues[1:])):
         raise ValueError('empty, duplicated or out-of-order SRT cues')
