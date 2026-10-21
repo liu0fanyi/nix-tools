@@ -3,6 +3,8 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    # 仅为 gh、KiCad 提供独立锁定的新包，不整体刷新系统基线。
+    tool-updates.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     # 百度网盘官方 Linux 客户端仍需 gtkmm2；当前 unstable 已移除该库。
     nixpkgs-gtkmm2.url = "github:NixOS/nixpkgs/nixos-26.05";
     home-manager = {

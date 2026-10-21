@@ -1,12 +1,12 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 {
   home.packages = [
-    pkgs.kicad
+    inputs.tool-updates.legacyPackages.${pkgs.stdenv.hostPlatform.system}.kicad
     (pkgs.callPackage ../packages/lceda-pro.nix {
-      scaleFactor = config.features.niri.primaryOutputScale;
+      scaleFactor = config.features.desktopScaling.scale;
     })
     (pkgs.callPackage ../packages/jlc-assistant.nix {
-      scaleFactor = config.features.niri.primaryOutputScale;
+      scaleFactor = config.features.desktopScaling.scale;
     })
   ];
 }

@@ -1,5 +1,15 @@
 # 技术方案
 
+本文保留方案演进；当前状态见 [任务导航](tasks.md#当前状态导航2026-10-21-整理)。早期 FreeCAD 1.1.3、Antigravity 2.22.0 与系统 nixpkgs KiCad 方案分别由 AG、AC、AG 更新替代，实际版本以锁定配置为准。
+
+默认浏览器通过home.nix的xdg.mimeApps明确指定zen.desktop；Codex资产打包时移除官方desktop中的普通http/https协议支持，保留codex深链接。实机xdg查询与HM生成mimeapps、桌面入口均核对，现有非浏览器关联合并保留。说明见docs/default-browser.md。
+
+Antigravity 更新仅刷新 antigravity-nix 锁定节点，沿用 autoPatchelf 主应用与 agy CLI。2026-10-10 锁定 bb5f514a1efaa377f823e5c41d957cb5c9f2d579，对应主应用2.22.0和CLI1.3.2。验证包内版本、CLI实际版本、完整toplevel/HM、命令与桌面入口以及激活备份选项，再由用户手动应用；流程见 docs/antigravity-update.md。
+
+liu-bigpc 的 Niri 会话通过 fcitx5-x11-reconnect 用户服务等待 X 显示断线，再重启 Fcitx5 重建候选 UI 和旧 fcitx4 上下文。仅调用 OpenX11Connection 无法恢复实机上已经失去显示分组的微信上下文；服务读取会话 DISPLAY，正常显示期间阻塞等待，避免周期重启。独立总线与 Xvfb 用于断线回归，不操纵真实桌面的显示服务器；用户手动应用，说明见 docs/input-method-recovery.md。
+
+桌面大字由 `home-manager/nix_modules/desktop-scaling.nix` 提供，默认只在 liu-bigpc 的 Niri 会话启用；公共倍率继承 primaryOutputScale=1.5。xsettingsd 发布144 DPI，启动前 xrdb 合并 Xft.dpi，连接会话 DISPLAY 触发 satellite 按需启动，失败重试。Qt 原生 Wayland 不注入全局倍率；微信仅自身基础 DPI 固定96并保留倍率，QCAD/Sioyek 启用自动 DPI；EDA、下单助手、Codex、向日葵 CEF 启动参数读取同一倍率。FreeCAD 使用官方固定xcb后端直接读取统一 DPI。用户真实桌面验收与独立 satellite 上的 PySide6 DPR 检查分开记录，清单见 docs/desktop-scaling.md。
+
 FreeCAD 在 `home.nix` 与 Blender 并列声明，通过 `packages/freecad-bin.nix` 固定官方 1.1.3 AppImage 与 SHA-256，使用 appimageTools 包装。当前 nixpkgs 源码包未命中完整缓存，为避免长时间编译 IFC/FreeCAD 改用同版本官方二进制。验证完整 toplevel、HM generation 和命令/desktop 入口，不执行 switch。
 
 EDA 使用独立 `home-manager/nix_modules/eda.nix` 模块；KiCad 来自锁定 nixpkgs，
@@ -271,7 +281,59 @@ U2 collect默认max_pending=0表示不限，progress保留零值并显示collect
 U2 parse_srt对原有效输入不改，仅新增末尾小幅舍入分支；通过4毫秒实测形态、完整原件不变、此前合法值保持以及40毫秒越界拒绝的合成回归和19项精简回归，再恢复已有失败检查点。
 
 
+## 优先工具版本更新（阶段 AC）
+
+仅刷新 Codex、Zen、Antigravity 的独立 flake 输入，保持 nixpkgs 不变。Cursor 通过 code-cursor.overrideAttrs 固定官方 AppImage 的版本、哈希、提取路径，保留原打包及启动参数；uv 使用固定官方 musl 发行包并核对上游 SHA256，通过 programs.uv.package 提供 uv/uvx 及 shell completion。Zen 1.23.3b 上游下载哈希与实际文件不符，按官方 Release asset.digest 覆盖 src 并继续固定哈希校验，按 Gecko 158 选择 ffmpeg_9。完整 toplevel 与 activationPackage 构建后验证版本、入口、hm-backup 和设备权限选项；用户手动 switch 与 GUI 实测为 AC3，不将构建当实际生效。
+
+
+## 系统资源历史记录（阶段 AD）
+
+仅 liu-bigpc 启用锁定 nixpkgs 的 programs.atop：atop、atopacct 及每日轮转。
+通过 /etc/default/atop 设置 LOGINTERVAL=5、LOGGENERATIONS=7（atoprc interval 只作交互默认），
+文件变动触发服务重启。日志目录 0700、记录服务 UMask=0077；不启用额外网络内核模块或
+GPU 采集器。核对合成服务的 ExecStart、记账和轮转、内核 TASKSTATS/BSD_PROCESS_ACCT/PSI，
+构建完整 toplevel 和 Home Manager generation；隔离录制/回放验证格式与 5 秒间隔。
+Constitution Check：PC 构建、无需外部参考仓库，不改远端运行服务；仅规格/文档镜像至
+固定 NUC 目录，实际监控数据留本机；不代用户 switch。
+
+
 U2 基于真实24毫秒末尾误差，仅扩展最后一个SRT块的裁切范围至50毫秒；先边界及19项精简回归，再在AI等待字幕的空闲检查点重载消费者和采集器。保留原文件与输入摘要，不更改视频时长或删除任务。
 
 
+## 嘉立创 EDA 禁用完整转储（阶段 AE）
+
+在 FHS 内部最终 exec 前对 RLIMIT_CORE 的软、硬限制均设置为 0，设置失败则不启动。
+硬限制由子进程继承，普通应用无法将其重新调大；systemd-coredump 尊重此限制，
+保留崩溃元数据日志但不采集完整镜像。保持原缩放参数及 argv 转发。
+完整 liu-bigpc toplevel/HM generation 构建并核对生成启动器、desktop 和设备权限；
+用隔离替代程序验证实际启动链中的内核限制和子进程继承，不对真实 EDA 制造崩溃。
+Constitution Check：仅 PC 构建，本机应用启动配置变更，不更改全局转储、远端服务或
+当前应用进程；文档规格按固定目录镜像，无外部参考源码引入，不代用户 switch。
+
+
+## 多日资源历史排查（阶段 AF）
+
+用户导出CPU/cpu/MEM/SWP/PAG/PSI/DSK后，按atop2.13本地手册解析。
+排除RESET后的开机累计首帧；PSI微秒字段已经是区间增量，按实际interval归一，
+CPU计数不重复计入guest，swap按真实页大小换算，磁盘按忙碌毫秒和扇区换算。
+按5秒样本阈值筛选候选时段，汇总并明确阈值窗口和完整窗口的不同；通过
+atopsar的CPU/磁盘/内存前三进程归属，必要时再导出短窗口详细进程。
+Constitution Check：仅PC只读分析，运行数据留本机/tmp，不引入参考仓库、不调参或
+停服、不执行switch；去隐私后的文档/规格按固定NUC目录镜像。
+
+
+## 四项安全与稳定性更新（阶段 AG）
+
+FreeCAD 更新现有 freecad-bin.nix 的 AppImage 版本与官方 SHA256。新增 tool-updates nixpkgs 输入，只选取 gh、kicad，保持原系统 nixpkgs 与既有应用输入逐节点不变；优先使用官方 Nix 二进制缓存，先检查版本与构建计划。pnpm 渠道仅12.9.0，改用官方 @pnpm/exe.linux-x64-musl@12.14.0 平台包及 registry 的 SHA512，并保留四个命令别名与补全。home.nix 选择 gh/pnpm，eda.nix 选择完整 kicad 包，避免全局 overlay 传播更新。验证完整 toplevel/HM、命令及桌面入口，使用临时目录验证 CAD CLI 与 pnpm 的本地操作，核对 HM 备份及系统设备权限。AG3 由用户手动 switch 后进行真实 GUI 与工程验收。
+
+
 U2 parse_srt新增clip_final与timing_repairs显式选项，仅平台AI字幕提取/回执校验、精简任务生成及发布前复核共同启用。独立timing-normalization.json保留原始摘要与修正，不改变严格回执字段或已发布任务。时间轴错误单独分类subtitle_timing；未改为自动忽略来源失败，也未添加开机/崩溃守护。
+
+
+## 桌面配置补登记（阶段 AH）
+
+向日葵由 packages/sunlogin.nix 与 nixos/modules/sunlogin.nix 提供，复用锁定的 GTK2/GConf 输入；仅 liu-bigpc 开启服务。qBittorrent 独立 HM 模块在首次激活时写入配置，后续不覆盖；普通网页和磁力关联由 HM 合并。mihomo 进程识别开关在 home.nix，直连规则保留 git-crypt 保护。
+
+Sioyek 用 xcb 和统一 DPI 包装；Gnumeric 沿用锁定包。mpv 模块写入 input.conf 和 Lua 剪贴板脚本。MIME 检查由 rerun 在应用前调用，显式 --apply 才修改源码，核心锚点拒绝吸收外部覆盖；动态配置设置 force 避免激活冲突。
+
+Constitution Check：仅 PC 构建，不代用户 switch、不启动远控连接、不下载媒体；私密配置只提交加密对象，文档镜像限定 NUC 白名单目录。核对完整系统/HM、生成入口与脚本，真实 GUI 单列 AH3。

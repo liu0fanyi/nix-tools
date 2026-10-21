@@ -44,6 +44,9 @@ let
     '';
   };
   launcher = writeShellScript "lceda-pro-launcher" ''
+    # Inherited by Electron and its children. Hard zero prevents the app from
+    # raising the soft limit again; systemd-coredump skips the memory image.
+    ulimit -S -H -c 0 || exit 1
     exec "${files}/opt/lceda-pro/lceda-pro" \
       ${lib.optionalString (scaleFactor != null) "--force-device-scale-factor=${toString scaleFactor}"} \
       "$@"

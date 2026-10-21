@@ -1,6 +1,29 @@
-{ pkgs, lib, config, ... }:
+{ pkgs, lib, config, isNixOS ? false, osConfig ? null, ... }:
 let
   cfg = config.features.fcitx5;
+  recoverX11 = isNixOS && osConfig != null
+    && osConfig.networking.hostName == "liu-bigpc" && config.features.niri.enable;
+  x11Watch = pkgs.writeShellApplication {
+    name = "fcitx5-x11-watch";
+    runtimeInputs = [ pkgs.glib pkgs.xprop pkgs.systemd ];
+    text = ''
+      : "''${DISPLAY:?The graphical session must export DISPLAY}"
+      # Ensure the initial connection exists before monitoring its lifetime.
+      if ! reply=$(gdbus call --session --dest org.fcitx.Fcitx5 --object-path /controller \
+        --method org.fcitx.Fcitx.Controller1.OpenX11Connection "$DISPLAY" 2>&1); then
+        case "$reply" in
+          *"X11 connection already exists."*) ;;
+          *) printf '%s\n' "$reply" >&2; exit 1 ;;
+        esac
+      fi
+      # Reopening X11 alone leaves existing fcitx4 contexts without a group.
+      # Restart the daemon after a disconnect so Qt clients recreate them.
+      # PartOf restarts this helper too; normal service stop kills the wait
+      # without executing the recovery command below.
+      xprop -spy -root XIM_SERVERS || true
+      systemctl --user --no-block try-restart fcitx5-daemon.service
+    '';
+  };
   rimeDefaultConfig = pkgs.writeText "rime-default.custom.yaml" ''
     patch:
       __include: rime_ice_suggestion:/
@@ -81,6 +104,21 @@ in
     # 固定时间戳会让它错误复用旧 build。服务启动前将配置物化为普通文件，
     # 再使用当前 addons 合成目录进行增量部署。
     systemd.user.services.fcitx5-daemon.Service.ExecStartPre = [ rimeDeploy ];
+
+    systemd.user.services.fcitx5-x11-reconnect = lib.mkIf recoverX11 {
+      Unit = {
+        Description = "Restore Fcitx5 X11 candidate UI after XWayland reconnects";
+        Requires = [ "fcitx5-daemon.service" ];
+        After = [ "fcitx5-daemon.service" "graphical-session-pre.target" ];
+        PartOf = [ "fcitx5-daemon.service" "graphical-session.target" ];
+      };
+      Service = {
+        ExecStart = "${x11Watch}/bin/fcitx5-x11-watch";
+        Restart = "always";
+        RestartSec = "3s";
+      };
+      Install.WantedBy = [ "graphical-session.target" "fcitx5-daemon.service" ];
+    };
 
     # i18n.inputMethod 已生成 fcitx5-daemon.service；屏蔽包内 XDG autostart，
     # 避免登录时两个实例争抢 org.fcitx.Fcitx5，导致新配置无法加载。

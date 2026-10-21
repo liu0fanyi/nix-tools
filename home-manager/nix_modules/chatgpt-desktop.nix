@@ -2,6 +2,7 @@
   inputs,
   lib,
   pkgs,
+  config,
   ...
 }:
 
@@ -33,6 +34,11 @@ let
   # Prefer native Wayland for per-output scaling, while retaining X11 support
   # for standalone Home Manager profiles launched outside a Wayland session.
   chatgptLauncher = pkgs.writeShellScript "chatgpt-launcher" ''
+    # An absolute Chromium scale, not a multiplier on Wayland output scaling.
+    # Also keeps this app readable on the 100% secondary output.
+    ${lib.optionalString config.features.desktopScaling.enable ''
+      set -- --force-device-scale-factor=${toString config.features.desktopScaling.scale} "$@"
+    ''}
     if [ -n "''${WAYLAND_DISPLAY:-}" ]; then
       exec ${chatgptFiles}/bin/chatgpt --ozone-platform=wayland "$@"
     fi
@@ -115,6 +121,11 @@ let
       mkdir -p "$out/share/applications" "$out/share/pixmaps" \
         "$out/share/icons/hicolor/256x256/apps"
       cp -a unpacked/usr/share/applications/. "$out/share/applications/"
+      # The vendor entry claims generic web URLs; keep Codex deep links but
+      # let the real browser handle http(s), including MIME fallback lookup.
+      substituteInPlace "$out/share/applications/chatgpt.desktop" \
+        --replace-fail 'x-scheme-handler/http;' "" \
+        --replace-fail 'x-scheme-handler/https;' ""
       cp -a unpacked/usr/share/pixmaps/. "$out/share/pixmaps/"
       install -Dm644 unpacked/usr/share/pixmaps/chatgpt.png \
         "$out/share/icons/hicolor/256x256/apps/chatgpt.png"

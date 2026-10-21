@@ -1,5 +1,20 @@
 # 任务
 
+## 当前状态导航（2026-10-21 整理）
+
+本文件保留历次构建和验收证据；日期较早的“未 switch”只描述当时状态，不能覆盖后续记录，也不能作为当前系统尚未激活的证明。没有明确实机证据的事项继续待验收。
+
+| 范围 | 当前入口与剩余事项 |
+| --- | --- |
+| Tag Browser | 当前候选版为 nix.49；新发行安装证据与待验收事项见 [014 任务](../014-application-entry-boundary/tasks.md)，010 中 nix.1–31 为历史记录，不要求逐版重新安装。 |
+| 菜谱 | 当前采用精简流程；阶段 U 剩 U2 全量处理、U3 最终核验。旧 OCR/视觉选图/独立复审流程仅保留历史与工具维护背景，不再作为精简全库运行前置条件。 |
+| 桌面配置 | Y3 缩放、Z3 输入法恢复、AB3 默认浏览器仍待实机确认；不能仅凭后来执行过 switch 自动勾选。 |
+| 工具更新 | AA 的旧版 Antigravity 安装验收已被 AC3 替代；AC3、AG3 各保留一项当前应用验收，版本以锁定配置为准。 |
+| 资源诊断 | AD、AF 已完成，各剩 0 项；AE3 仍待重开 EDA 并核对进程 core 限制。 |
+| 本轮补登记 | 向日葵、磁力下载、文档工具、mpv 和 MIME 增量维护统一见阶段 AH；规格整理与提交见阶段 AI。 |
+
+截图编辑的当前入口是 Screen Mark；录屏用 Fn+O/Shift+Fn+O，编辑器为 Screen Cut。下文 Satty、Avidemux 及旧录屏组合属于演进记录，被替代方案的待验收备注不计入当前任务。
+
 ## Tag Browser 私有候选版系统安装
 
 - [x] 将 Tag Browser 独立 flake 的私有 `stable` 提交锁入 `flake.lock`，仅 `liu-bigpc` 引用其浏览器包。
@@ -270,13 +285,13 @@ T011 保持待用户验收。
 
 - [x] 仅 liu-bigpc 加入 Satty，保留原截图键，增加 Shift+Print 框选后编辑。
 - [x] 验证完整 toplevel、Home Manager generation、生成 KDL 与脚本依赖；Satty 0.22.0 来自缓存，脚本 ShellCheck 和 Niri validate 通过，安装命令及 HM 激活目标一致。
-- [ ] 用户手动 switch 后实测 Shift+Fn+I、标注复制/保存及取消行为。
+历史待验收：Satty 标注复制/保存及取消；现已改用 Screen Mark，后续按其专项验收追踪。
 
 ## wf-recorder 快捷键录屏
 
 - [x] 仅 liu-bigpc 添加 wf-recorder 和 Ctrl+Shift+Print 开始/停止框选录屏，保留截图快捷键。
 - [x] wf-recorder 0.6.0：完整系统/HM、KDL 和 ShellCheck 通过；9 项不捕获桌面的控制检查通过，合成视频确认奇数尺寸补齐后 H.264/yuv420p 编码有效，命令及 HM 激活目标核对；真实画面/性能留待用户验收。
-- [ ] 用户 switch 后验证 Ctrl+Shift+Fn+I、取消、通知、MP4 播放及 CPU 占用。
+历史待验收：旧 Ctrl+Shift+Fn+I 入口；当前 Fn+O 按“HHKB右手Fn区录屏”验收，播放与性能按现行录屏流程检查。
 
 ## 录屏后复制文件
 
@@ -304,7 +319,7 @@ T011 保持待用户验收。
 - [x] 完整系统/HM、ShellCheck、Niri validate、HM激活目标与4项隔离配置检查通过；
   独立Xvfb加载9.166秒录屏副本正常退出，帧缓冲截图目视确认画面和Lavcodec/RGB。
   仅写临时HOME，未修改用户当前偏好、未切换系统、未捕获用户桌面。
-- [ ] 用户手动switch后关闭旧编辑器并重开视频，验证当前Niri会话中的预览和剪辑。
+历史待验收：Avidemux 预览和剪辑；录屏编辑器现为 Screen Cut，不再要求验收旧接线。
 
 - [x] v0.1.0-nix.27 已锁定私人 stable f55bed647022a53edc9547bbfa9510196ab64bf7：紧凑原生后退/刷新/前进。CI 37097191342、本机、Release/Cachix 精确输出 /nix/store/kkqb2kyqxvqwqq3vsjssn8xwx8cfwpak-tag-browser-0.1.0 一致，缓存命中与预取通过。完整系统 /nix/store/6brxrs87p668iad3xkyvwk6afr6xg2xh-nixos-system-liu-bigpc-26.11.20260922.b6c98e9 和 Home Manager /nix/store/ibkqmbdcw1b27a751zz1qbidwsa1ics2-home-manager-generation 构建通过。保留工作树既有 AGENTS、home.nix 和其他依赖更新，只提交浏览器锁输入与本条发行状态；未执行用户系统 switch。NUC 前端图片粘贴新鲜位置校验已部署，实际剪贴板待用户验收，详情以 dufs-plus 009 为准。
 
@@ -316,7 +331,7 @@ T011 保持待用户验收。
 ## 截图/录屏快捷键统一
 - [x] 检查现有键位，改录屏为Cmd+S/Cmd+Shift+S，截图保留Fn+I/Shift+Fn+I；手册与规格同步。
 - [x] 校验最终KDL的快捷键唯一性和动作、Niri validate、完整系统/HM构建；镜像与提交。
-- [ ] 用户应用配置后验证实际键盘截图、录屏与录完自动编辑。
+历史待验收：Cmd+S 录屏组合；已由下节 Fn+O/Shift+Fn+O 替代。
 
 验收：最终126个Niri绑定无重复；Print/Shift+Print/Ctrl+Print/Alt+Print保留，
 Mod+S与Mod+Shift+S正确映射普通/--edit录屏，旧录屏组合已移除。
@@ -370,11 +385,11 @@ HM 3kzmsikh4r3xzqq9kmy3gc2mhnylma0x构建通过，home-path命令及desktop Exec
 - [x] 私有 nix.28 已锁定 Tag Browser d090045a1233ccc5e4f783738acdee813c4e51b3，修复原生导航按钮悬停多余背景。67 项 Node、750 项 Firefox、最终包 5 个多窗口恢复场景及隔离包装器版本启动通过；CI 37123646286 成功，PC/Release/Cachix 精确输出 /nix/store/4c7w0fp52hlwbrp7mnj2bdy3ivdzhrrj-tag-browser-0.1.0 一致，缓存签名导入与验证通过。完整系统 /nix/store/a0ji9jsl8zjlgqbhcdvi43khlp9a1sr9-nixos-system-liu-bigpc-26.11.20260922.b6c98e9 和 Home Manager /nix/store/xdjymz1d21s68z0082c2p9cw8b8g6cr1-home-manager-generation 构建通过，实际系统浏览器路径和激活备份设置核对。只更新浏览器锁节点，保留 AGENTS、home.nix 与其他输入的既有修改；Agent 不执行 switch。用户普通终端执行 nu rerun.nu liou --host liu-bigpc，正常关闭旧窗口再重开确认 nix.28。
 
 
-## 当前 Tag Browser nix.29 发布
+## Tag Browser nix.29 发布（历史）
 
 - [x] 锁定私人 stable 66a0b28ff8119fca593f96e734d2b1dc2c209425，默认启用 Firefox 原生兼容 token，修复 Bilibili 浏览器过低跳转。67 项 Node、778 项 Firefox 检查、最终包 5 个多窗口恢复场景通过；CI 37131641915 成功，PC/Release/Cachix 精确输出 /nix/store/krx6h0rdgq803r76pz5zrdsvx38yb5vw-tag-browser-0.1.0 一致，缓存命中和签名验证通过。
 - [x] 完整系统 /nix/store/lx962ngr6y98vx7sdkzx8zhqcizpa4il-nixos-system-liu-bigpc-26.11.20260922.b6c98e9 与 Home Manager /nix/store/xdjymz1d21s68z0082c2p9cw8b8g6cr1-home-manager-generation 构建通过，系统浏览器及桌面入口核对。仅更新浏览器锁节点与本段状态，保留既有 AGENTS、home.nix、其他锁节点修改；未执行 switch。
-- [ ] 用户在普通终端运行 `nu rerun.nu liou --host liu-bigpc`，正常关闭旧窗口后重新打开，确认 app nix.29 并访问 Bilibili 首页和实际视频。
+历史待验收：nix.29 的版本显示与 Bilibili 实机操作；后续版本安装按 014 追踪，不要求回装 nix.29。
 
 ## Screen Mark 截图编辑器与共享绘画核心
 
@@ -392,7 +407,7 @@ HM 3kzmsikh4r3xzqq9kmy3gc2mhnylma0x构建通过，home-path命令及desktop Exec
 
 - [x] 固定 product stable 74c8d27676bc39fcbfd94844b77c3c3eb32e00b9；本机、Release、Cachix 输出 /nix/store/bnx9dp6xpf6y0iakx3mgx9ai5cy6cvzv-tag-browser-0.1.0 一致，缓存受信任签名通过。71 项 Node 和 783 项 Firefox 检查通过，多窗口标签刷新、重复名称反馈已发行；dufs-plus 列表定位修复独立部署 NUC。
 - [x] 完整 liu-bigpc toplevel 与 Home Manager generation 构建通过；系统浏览器命令解析到新包。只更新 tag-browser-src 输入，保留既有 antigravity-nix、chatgpt-deb、codex-cli-nix 锁定和 AGENTS/home.nix 改动；不执行 switch。
-- [ ] 用户在普通终端激活后关闭旧浏览器，确认 nix.30，验收两窗口标签可见与实际 PDF 定位。产品验收权威源仍为 tag-browser 010、dufs-plus 001；本仓只管理安装。
+历史待验收：nix.30 的两窗口标签与 PDF 定位；后续版本安装按 014 追踪，产品专项仍以 tag-browser 010、dufs-plus 001 为准。
 
 ## YouTube 视频下载工具
 
@@ -467,7 +482,7 @@ P1真实子代理验收：十道1814cue、166事实、157食材、54步；162张
 
 - [x] 输入改用自有 product-stable，固定 `88c3cab2d49322d0c2e198f57f7250d8ee1cf040`；旧 stable 不再承载现行产品开发。私有 Release/本机/Cachix 输出 `/nix/store/6xc0mnfz4piy09gffzl0grvycw3lbysa-tag-browser-0.1.0` 一致，归档 SHA256、缓存命中、预取及签名核验通过，CI 37457364836 成功。
 - [x] 完整系统 `/nix/store/92cw19q6frsal7gw5brgfhm8mhjp6ga5-nixos-system-liu-bigpc-26.11.20260922.b6c98e9` 与 Home Manager `/nix/store/ga0drr27wpxgk8pm2carlpn0ihx9462f-home-manager-generation` 构建通过；系统浏览器命令指向 nix.31，hm-backup 设置保持。只提交浏览器输入及本条安装状态，保留其他锁节点和 AGENTS/home.nix 改动。
-- [ ] 用户普通终端执行 `nu rerun.nu liou --host liu-bigpc`，正常关闭旧窗口后确认 nix.31；不由 Agent 执行 switch。真实 PDF 观察按 tag-all 019 P01–P03，产品实现已完成五条固定关卡，不扩大安装验收范围。
+历史待验收：nix.31 安装与窗口版本；后续安装按 014 追踪，真实 PDF 观察仍按 tag-all 019 P01–P03，不要求回装旧版。
 
 ### 串行生命周期与视频释放
 
@@ -598,6 +613,42 @@ U2恢复验证：14项消费者及16项精简回归通过；隔离Zen验证真�
 U2封面恢复补充：截断图片响应增加三次低频重取，保持严格解码、原站地址和体积限制，损坏响应不保存；未扩大风控/认证/网络错误重试。18项精简回归通过，新增真实合成JPEG截断后恢复、持续失败上限及412/超时/未知格式不重试。原进度页显示受控来源重试事件，实际故障身份/数量/审计只留私有ROOT，U2/U3仍未完成。
 
 
+### 桌面应用统一大字（阶段 Y）
+
+- [x] Y1：核对实际显示器缩放、相关应用后端与既有微信/EDA设置，形成统一入口及应用清单。
+- [x] Y2：配置XSETTINGS/Xft DPI和独立应用参数，防止重复倍率，完整toplevel/HM构建及隔离FreeCAD Qt探针通过，镜像文档。
+- [ ] Y3：用户手动switch后重开FreeCAD、向日葵、Codex与EDA，确认主屏字体可读且微信未重复放大。
+
+2026-10-09：主屏150%/副屏100%实测，当前Codex主进程原生Wayland，FreeCAD/微信为XWayland。独立satellite显示的XSETTINGS为144 DPI，FreeCAD自带Qt6默认及微信基础DPI96+倍率1.5组合的DPR均为1.5；完整系统与Home Manager构建通过，未执行switch或重开用户应用。阶段Y按Y1–Y3计数，剩余1项Y3实机生效与字号确认。向日葵自带CEF参数实际效果仍待Y3，不把构建或探针等同所有真实界面验收。
+
+
+### 输入法候选窗断线恢复（阶段 Z）
+
+- [x] Z1：确认Fcitx的X11断线及微信上下文失去显示分组，重连无效后重启输入法，用户确认候选词恢复且微信未关闭。
+- [x] Z2：增加仅liu-bigpc/Niri启用的事件等待恢复服务，验证正常已连接状态不触发恢复、隔离真实Xvfb断线触发恢复；完整toplevel/HM构建、服务路径及hm-backup核对通过，镜像文档。
+- [ ] Z3：用户手动switch后确认恢复服务正常运行，后续复发时核对自动恢复及其他应用症状。
+
+2026-10-09：OpenX11Connection仅恢复候选UI不能重新分组旧fcitx4上下文；实际重启Fcitx后用户确认恢复。最终脚本容忍已有X11连接，xprop阻塞等待断线再请求重启；独立总线/Xvfb/Fcitx回归使用标记替代systemctl，未操作真实显示服务器。系统与HM构建通过，未执行switch。阶段Z剩余1项Z3，其他应用偶发问题尚未逐项实测；阶段Y字号仍待用户应用后验收。
+
+
+### Antigravity 更新（阶段 AA）
+
+- [x] AA1：检查当前安装与上游锁定，仅更新antigravity-nix，主应用2.18.1→2.22.0、CLI1.2.14→1.3.2。
+- [x] AA2：完整liu-bigpc toplevel及HM generation构建通过；包内版本、CLI实际执行、HM命令、桌面入口和hm-backup核对完成，镜像更新文档。
+历史待验收 AA3：2.22.0 的安装窗口确认已由阶段 AC 的 2.24.0/CLI 1.4.0 更新替代，实机验收统一追踪 AC3；不宣称旧版已验收。
+
+2026-10-10：锁定bb5f514a1efaa377f823e5c41d957cb5c9f2d579，应用app.asar元数据2.22.0，agy --version输出1.3.2；仅antigravity-nix锁定节点变化，未执行switch或关闭用户应用。阶段 AA 的旧版实机验收已转由 AC3 追踪，不再单列重复安装任务。
+
+
+### 默认浏览器修复（阶段 AB）
+
+- [x] AB1：诊断官方Codex desktop声明普通http/https与未指定默认浏览器造成的回退；即时恢复Zen，验证Codex深链接及磁力关联保留。
+- [x] AB2：声明式固定Zen并过滤Codex普通网页协议；完整toplevel/HM构建、生成关联及desktop检查通过，备份冲突预防与文档镜像完成。
+- [ ] AB3：用户手动switch后确认持久配置，当前会话已恢复不依赖switch。
+
+2026-10-10：四类网页默认关联均为zen.desktop，生成Codex入口只保留专用codex URL及既有文件支持。原MIME配置和旧HM备份均保留；未执行switch。阶段AB剩余1项AB3持久生效确认。
+
+
 U2容量恢复补充：明确未输出内容的模型容量拒绝增加三次额外请求，等待5/10/20分钟；原始事件归档，重试次数与等待期限跨重启保留。页面显示容量原因、次数及计划时间；未知/超时/额度/残缺或推理事件仍停止。18项消费者和18项精简回归通过；真实恢复报告仅留Downloads。U2全量处理与U3最终核验保持未完成。
 
 
@@ -615,7 +666,133 @@ U2 采集解耦补充：取消字幕/封面默认待AI上限，独立连续低�
 U2 字幕舍入恢复验收：平台4毫秒尾部误差保留原件、解析裁到视频时长；1组边界回归及19项精简回归通过。真实输入摘要、结果和当前数量仅留Downloads；U2全量处理与U3最终核验仍未完成。
 
 
+### 优先工具更新（阶段 AC）
+
+- [x] AC1：核对安装与上游版本，固定 Codex CLI 0.163.0、Zen 1.23.3b、Cursor 3.25.6、Antigravity 2.24.0/CLI 1.4.0 和 uv 0.13.1；保持系统 nixpkgs 及其他工具输入不变。
+- [x] AC2：完整 liu-bigpc toplevel/HM generation 构建，核对命令、包内版本、桌面入口、HM 激活环境和既有系统设备权限；文档镜像。
+- [ ] AC3：用户在普通终端手动 switch，任务结束后重开相关应用，确认实际版本及登录、输入法、浏览器媒体和工具基本操作。
+
+2026-10-18：升级按用户指定的五项优先工具进行；Antigravity 主应用与 CLI 同步更新。Cursor 复用原 Nix 打包与 Wayland/fcitx5 参数，仅覆盖官方固定版本 AppImage；uv 使用核对官方 SHA256 的 musl 静态二进制，继续由 programs.uv 管理。独立输入仅 codex-cli-nix、zen-browser、antigravity-nix 及 Codex 的 flake-utils 依赖变化。Zen 上游哈希错误已按官方 Release asset.digest 核对后覆盖，Gecko 158 保留 ffmpeg_9 包装。完整系统 `/nix/store/960lw1dpjyrlpn9hwnclkb1p56dcln60-nixos-system-liu-bigpc-26.11.20260922.b6c98e9` 与 HM `/nix/store/0i09gkw18y6v3yhb5bwjly2bnpig88ca-home-manager-generation` 构建通过；全部 CLI、Cursor package.json、Antigravity app.asar、桌面入口、激活脚本、hm-backup、用户服务路径与系统设备权限核对完成，uv/uvx 及临时项目初始化通过。构建包含工作区已有配置，未执行 switch 或重开 GUI。阶段 AC 剩余1项 AC3：用户手动应用及真实界面验收。构建/核对报告保存在 `/tmp/tool-upgrade-*-20261018*`。
+
+
+### 系统资源历史记录（阶段 AD）
+
+- [x] AD1：核对现有资源指标和锁定 atop 模块，配置仅 liu-bigpc 的 5 秒采样、7 天保留及本地日志权限。
+- [x] AD2：完整 toplevel/HM 构建，核对后台服务、轮转/记账和内核支持，隔离录制回放，补充并镜像文档。
+- [x] AD3：用户手动 switch 后确认服务正常、日志持续增长，下一次卡顿记录时刻并回看对应进程。
+
+2026-10-18：锁定 atop 2.13.0；后台通过 /etc/default/atop 读取 5 秒间隔、7 天保留参数，
+保留上游每日轮转/记账，日志目录 0700、UMask=0077。完整系统
+`/nix/store/99im529qywapg3p32m5d2ws1s3yn2zin-nixos-system-liu-bigpc-26.11.20260922.b6c98e9`
+及 HM `/nix/store/0i09gkw18y6v3yhb5bwjly2bnpig88ca-home-manager-generation` 构建通过。
+核对合成服务及 drop-in、开机依赖、轮转和配置重启触发；内核 PSI、TASKSTATS、
+TASK_DELAY_ACCT、TASK_IO_ACCOUNTING、BSD_PROCESS_ACCT 均为 y；HOME_MANAGER_BACKUP_EXT、
+pen-scroll ExecStart/input/uinput 组和内核 uinput 保持正确。隔离宿主录制三帧，
+回放确认后两帧均为 5 秒，含进程、磁盘、PSI 与换页数据；非 root 探针不能代替系统
+服务完整权限验收。日志保留按上游 mtime/每日清理语义，约 8–9 个日期文件，文档已注明。
+构建与探针证据仅留 `/tmp/resource-history-*-20261018*`，不随文档同步。
+当日未执行 switch，AD3 当时待验收；最终状态以后文 2026-10-20 AD3 完成记录为准。
+
+
+2026-10-18 AD3 生效核对：用户手动 rerun 后，当前系统为已验证的 99im529… generation。
+atop、atopacct、atop-rotate.timer 均 active，atop 实际命令行为
+`atop -w /var/log/atop/atop_20261018 5`，配置 LOGINTERVAL=5、LOGGENERATIONS=7，
+服务零重启、启动日志无错误，服务 I/O 统计已显示写入。会话无 root 读取权限，
+未直接打开 0700 日志目录内文件；以实际进程和服务写入计数核对记录运行。
+当日 AD3 的应用与后台记录已核验，回放当时待真实事件；已由下文 2026-10-20 记录闭环。
+
+
 U2 末尾帧级误差恢复：2组边界测试与19项精简回归通过，覆盖24毫秒恢复、原件不变、60毫秒/非末条拒绝。真实恢复审计与结果仅留Downloads；U2全量处理和U3最终核验仍未完成。
 
 
+2026-10-20 AD3 真实卡顿初查（09:24–09:28，本机 CST）：监控服务持续 active，
+今日历史文件由实际进程以 5 秒间隔写入。可读 journal 记录 09:24:13 lceda-pro
+TRAP 与 wechat SEGV；两个 systemd-coredump 实例随后持续写盘，EDA 对应实例累计
+写入超过 20GiB，单次实时 vmstat 显示约 200–310MiB/s 写入、30–38% iowait，
+I/O PSI full 最近一分钟约 37–39%，桌面多个进程为 D 等待，系统盘 94%→95%。
+当前内存可用约 20GiB，内存压力低，存在换入但不能仅凭 swap 已用量判断原因。
+主要嫌疑为崩溃转储引发的 I/O 拥塞；崩溃起因及卡顿前的其他负载尚未确定。
+当前会话不能 sudo，既有 SSH 本机身份也未通过认证，无法直接读取 root 专属历史；
+已请用户导出指定时段系统/进程报告至仅用户可读的 /tmp 文件，等待历史回放。
+当时 AD3 尚未勾选，最终状态见下文完成记录；本次初查未终止转储、关闭应用、清理磁盘或修改系统配置。
+
+
+2026-10-20 AD3 完成：用户导出 root 专属 09:15–09:28 系统报告及
+09:23–09:28 进程报告（末尾受导出时刻限制），真实回放验证通过。
+以 09:24:14 为分界，系统盘平均忙碌度 12.8%→87.0%，I/O PSI full 平均
+2.0%→42.7%；进程报告中 EDA 对应转储累计约 32GiB 写盘（进程区间统计），
+systemd 最终计费 30.7G 写入、12.3G 读取、6.1G 内存峰值，09:29:13 达 5 分钟
+运行上限自动终止；微信转储 09:28:39 完成。差异属统计窗口/计费口径，不将其
+视为同一精确字节值。确定本次主要卡顿机制为转储引起的 I/O 拥塞，崩溃根因未定。
+atop 系统/进程历史可关联到事件，阶段 AD 剩余 0 项；转储限额改进及应用崩溃
+调查不扩大本阶段验收范围。实际原始报告仍留本机 /tmp，不镜像运行数据。
+
+
+### 嘉立创 EDA 禁用完整转储（阶段 AE）
+
+- [x] AE1：核对 systemd 的 RLIMIT_CORE 行为，仅在 EDA 启动器设置软硬 core 限制为 0。
+- [x] AE2：完整系统/HM 构建，隔离核对启动链的限制、继承及参数保留，更新并镜像文档。
+- [ ] AE3：用户手动 switch，保存工程后完全退出并重开 EDA，确认新主程序及子进程 core 限制为 0。
+
+
+2026-10-20 AE2 完成：完整系统
+`/nix/store/50k8ajaq3bj9vxlxkhzxfr82rcm9pfsa-nixos-system-liu-bigpc-26.11.20260922.b6c98e9`
+及 HM `/nix/store/wvay46pv9h1asyrbs8qcqcy4lz5kj0ff-home-manager-generation` 构建通过。
+隔离替代二进制运行真实 FHS 启动链，软硬RLIMIT_CORE均为0，无法调高硬上限，
+子进程继承为0，150%缩放、带空格参数和URI转发均保留。desktop仍指向包装命令，
+全局coredump配置无变化，hm-backup、pen-scroll路径与input/uinput组和内核uinput
+核对正确。证据留本机 `/tmp/eda-no-core-*-20261020*`，文档/规格按固定目录镜像。
+未执行switch、重开真实EDA或故意崩溃真实应用。阶段AE剩余1项AE3：用户手动应用
+后保存工程并完全重开，核对新主程序及子进程资源限制。
+
+
+### 多日资源历史排查（阶段 AF）
+
+- [x] AF1：解析三日全部已导出系统指标，排除累计首帧，定位磁盘、CPU和换页异常窗口。
+- [x] AF2：分析异常时段进程归属，区分确认事实、相关性和仍待验证的原因。
+- [x] AF3：输出多类问题及优先处理建议，记录覆盖范围和限制，镜像结论文档。
+
+
+2026-10-20 AF 完成：已分析全部三日导出的26136个有效系统区间（36.3小时），
+核对atop2.13字段定义，排除RESET开机累计首帧；区间PSI不再差分，CPU不重复
+计入guest，页/扇区与间隔换算正确。进程前三报告三日CPU/mem/dsk三个分段均完整。
+确认多次rustc并行编译造成CPU近全满；02:11和08:32两段低CPU高机械盘忙碌
+窗口分别由PID1639442、2460506的rg持续进入磁盘前三，与I/O full约67%、65%
+相吻合。08:42换页窗口有rustc约28%驻留内存，内存阻塞与编译相关，尚未核对
+cgroup限制及具体任务；不宣称已定位每一次用户感知卡顿或证明所有原因。
+报告记录完整覆盖范围、代表时段、统计方法和搜索/构建/内存调查优先级，未改变
+运行配置或停止任务；进程命令/具体搜索路径归属仍未知，不以推测替代证据。
+资料仅留本机/tmp，去隐私的结论并入docs/resource-history.md并镜像。
+阶段AF剩余0项；落实调优和验证收益需后续按用户要求进行，不扩充本阶段验收项。
+
+
+### 四项安全与稳定性工具更新（阶段 AG）
+
+- [x] AG1：固定 FreeCAD 1.1.4、GitHub CLI 2.102.0、pnpm 12.14.0、KiCad 10.0.7 的来源与版本，仅为 gh/KiCad 引入独立工具包输入，pnpm 固定官方平台包，保留系统与其他应用锁定。
+- [x] AG2：完整 liu-bigpc toplevel/HM generation 构建，核对实际版本、基本离线操作、桌面入口、相关服务与设备权限及 HM 激活备份选项，镜像文档。
+- [ ] AG3：用户在普通终端手动 switch，完成当前任务后重开 FreeCAD/KiCad，确认版本、工程打开/保存、输入法、缩放与 KiCad 3D 视图。
+
+2026-10-20：用户指定更新四项。FreeCAD 延续固定官方 Linux AppImage，校验官方 Release asset.digest；gh/KiCad 仅消费独立 tool-updates 输入，pnpm 12.14.0 固定官方 npm 平台包及 dist.integrity SHA512，不整体刷新系统 nixpkgs、不升级 Podman、npm 或其他工具。完整系统 `/nix/store/lfqd67qf36fkq6y9rv86i8x5g7ca6lpm-nixos-system-liu-bigpc-26.11.20260922.b6c98e9` 与 HM `/nix/store/lsmvj6ksqb9bvsdvhlgr706q86radhaz-home-manager-generation` 构建通过。四项版本、命令与桌面入口核对正确；临时 HOME/缓存/运行目录下，pnpm 离线安装和读端预先关闭的 stdout 管道回归通过（退出0，无异常转储），KiCad CLI 空原理图 SVG 导出通过，FreeCAD 控制台新建/保存/重开 FCStd 与 STEP 导出通过。HM 激活脚本/hm-backup、输入法恢复与缩放服务路径、pen-scroll/input/uinput/内核模块核对完成，MIME 无外部脱离改动。构建包含工作区已有配置；Agent 未执行 switch，也未操作用户工程或重启应用。阶段 AG 剩余1项 AG3：用户手动应用与真实窗口验收。构建、配置和探针报告在 `/tmp/tool-fixes-*-20261020*`。
+
+
 U2 平台AI末尾规范化验收：3组边界与20项精简回归通过，覆盖227毫秒尾部恢复、来源摘要/原件不变、回执/任务/复核一致，以及非末尾/起点越界拒绝。原后台于空闲检查点重载，真实输入和审计只留Downloads；U2全量处理与U3最终核验仍未完成。
+
+
+### 桌面配置补登记（阶段 AH）
+
+- [x] AH1：登记工作区已有的向日葵、qBittorrent、文档查看工具、mpv 快捷键及 MIME 增量维护；明确主机范围与实机验收边界。
+- [x] AH2：核对完整 liu-bigpc toplevel/HM 构建与生成配置，验证 MIME 脚本、配置差异和文档镜像。
+- [ ] AH3：用户应用后确认向日葵启动/登录/远端连接、qBittorrent 关联/订阅/直连、Sioyek/Gnumeric 打开文件及 mpv 字幕/截图复制；MIME 合法新增关联按需吸收，不凭构建勾选桌面操作。
+
+AH 汇总此前未进入规格的现有实现，不新增远控账号、无人值守策略或媒体下载。向日葵作为被控端的 Niri 支持未经验证，不作为当前“PC 主控其他电脑”用途的完成条件。具体安装与兼容性见 docs/sunlogin-client.md、docs/magnet-download.md；mpv 模块跟随现有 Home Manager 导入，并非仅 liu-bigpc 启用。
+
+### 规格整理与提交（阶段 AI）
+
+- [x] AI1：盘点 33 个原有未提交文件，补齐 010 中遗漏的配置范围、现行任务导航与历史替代关系，保留真实待验收事项。
+- [x] AI2：完成必要核验与固定目录镜像，记录检查结果及限制，提交当前工作区改动并确认 Git 状态。
+
+
+2026-10-21 AH2 核对：完整系统 `/nix/store/8s1s07qaq5aikmyvrv9n7mqvl3wx7h1x-nixos-system-liu-bigpc-26.11.20260922.b6c98e9` 与 HM `/nix/store/lsmvj6ksqb9bvsdvhlgr706q86radhaz-home-manager-generation` 构建通过。生成的输入法恢复单元 ExecStart、向日葵入口、150% 缩放、八项 MIME 锚点、hm-backup、pen-scroll/input/uinput 与内核模块均核对；隔离临时文件验证合法 PDF 关联吸收、核心协议覆盖拒绝，不改真实桌面。git-crypt 暂存对象确认加密，差异空白检查通过；规格/文档固定目录镜像及 checksum 复核通过。未执行 switch、重开应用或远控连接。阶段 AH 剩 1 项 AH3：用户实际桌面验收。
+
+
+2026-10-21 AI2 核验边界：部署回归 112 项通过；原有 test_backup_failure_never_activates 漏 mock，调用真实 SSH 失败，排除后单列记录，未修改部署实现。直接运行脚本全套时缺 jsonschema/Pillow；补齐锁定临时环境后完整回归在限定时间内未结束，不宣称全套通过。完整系统/HM 构建、生成服务与 MIME 隔离检查均通过；本轮仅整理规格、清理脚本行尾空白并收录已有改动，不扩展功能。当前 33 个文件作为一次本地提交归档；未推送或执行系统切换。阶段 AI 共两项，提交收尾后剩余 0；阶段 AH 仍剩 AH3 实机验收。

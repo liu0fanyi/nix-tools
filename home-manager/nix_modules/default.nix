@@ -3,6 +3,7 @@
   imports = [
     ./eda.nix
     ./baidunetdisk.nix
+    ./qbittorrent.nix
     ./helix.nix
     ./alacritty.nix
     ./sakura.nix
@@ -10,6 +11,7 @@
     ./full.nix
     ./podman.nix
     ./niri.nix
+    ./desktop-scaling.nix
     # mako 通知守护进程配置（通知统一自动消失，不常驻）
     ./mako.nix
     # clipboard-sync systemd user service（homebox/nuc 共享）
@@ -20,7 +22,11 @@
     ./anydesk.nix
     # Google Antigravity 2.0 + CLI（jacopone/antigravity-nix，unfree 官方二进制）
     ./antigravity.nix
+    # mpv 播放器快捷键（Ctrl+c 复制字幕、Ctrl+s 截图至剪贴板）
+    ./mpv.nix
     # wayland need newer linux try later
     # ./rustdesk.nix
+    # Cursor AI 代码编辑器（官方 Electron/VSCode AppImage 二进制与 Wayland/fcitx5 支持）
+    ./cursor.nix
   ];
 }

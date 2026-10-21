@@ -6,10 +6,10 @@
 }:
 let
   pname = "freecad";
-  version = "1.1.3";
+  version = "1.1.4";
   src = fetchurl {
     url = "https://github.com/FreeCAD/FreeCAD/releases/download/${version}/FreeCAD_${version}-Linux-x86_64-py311.AppImage";
-    sha256 = "3a853eb69ee595f779f2255dbf80a765926981d8ff68903cefee4dfb03a8f5ef";
+    sha256 = "f6dc6ba676e5ac96a565ebc8d657232f94c6158e85b4352141bd1a46f6b43434";
   };
   contents = appimageTools.extract { inherit pname version src; };
   desktop = makeDesktopItem {

@@ -89,6 +89,13 @@ def main [
         error make { msg: "--install-bootloader 仅适用于 NixOS system 部署" }
     }
 
+    # 动态软链接状态与 MIME 关联核对：
+    # 检查外部应用是否修改了 ~/.config/mimeapps.list，拦截非法劫持并提示增量合法项反哺
+    let sync_mime = ($env.PWD | path join "scripts" "sync-mimeapps.py")
+    if ($sync_mime | path exists) {
+        python3 $sync_mime
+    }
+
     # Desktop binaries pinned in Cachix (including Screen Cut) use fetchClosure.
     $env.NIX_CONFIG = (($env.NIX_CONFIG? | default "") + "\nextra-experimental-features = fetch-closure\n")
 

@@ -103,6 +103,63 @@ devenv shell -- just manage <操作>                   # NUC 运维管理入口
      未立项内容并入 `todos/a-杂鱼整理.md`；详见工作区 `AGENTS.md`，不要再写回这三个文件。
    - 不得向 xiaoqiang 专用的 `/home/liou/dufs/` 重建本工程文档。容器发布流程不变。
 
+## PC 磁盘清理
+
+清理规范、保护清单与操作记录统一维护在仓库 `AGENTS.md` 第七节。先定位占用并检查活跃进程，再清理已确认的临时目录和构建残留；保留交叉编译镜像、生产基础镜像、当前发布镜像与运行容器。
+
+
+- 2026-10-11（只读盘点，未清理）：系统盘 `/dev/sdc4` 423G，已用372G（93%），
+  剩余29G；数据盘 `/data` 49%，不属于系统盘清理范围。
+  1. Codex 插件临时目录合计约21G，663个 staging 中650个超过一小时，旧目录
+     实测21,805,518,848字节（20.3GiB）；lsof未发现打开文件。候选清理仅限旧
+     staging，保留正式openai-bundled、最近一小时目录以及6.5G聊天sessions。
+  2. Podman 镜像总占用180GB，184个独立镜像中70个无标签；176个buildah
+     working-container均为Storage且PID=0，未发现活跃构建。先清理核对后的
+     残留工作容器，再仅image prune；177.9GB“可回收”包含需要保留的镜像，
+     不能视为实际释放量。保留SSD201/RK3506、生产镜像与全部原有标签；
+     另外5个退出容器属于dufs-plus-pc服务，不能用container/system prune删掉。
+  3. 次级缓存：codex-runtimes1.8G（未发现打开文件）、uv1.7G、Gradle caches1.8G；
+     只作为可重下载候选，浏览器缓存约2.6G需等浏览器退出。Downloads18G、
+     微信文件2G、聊天记录等个人数据不列为自动清理对象。此轮仅查询和记录。
+  4. 系统journal约3.9G，可按保留期/上限收缩而非全删；/tmp共6.5G，其中
+     sip-media-timeout-target2.3G有CACHEDIR.TAG及debug构建目录，未发现打开文件；
+     sunlogin解包目录257M及已安装包的DEB80M可重取，解包目录未发现打开文件。
+     其余临时目录未逐项确认，不整批删除/tmp。Nix store深层扫描耗时已停止，
+     本轮未估算Nix历史代可释放量，也未运行GC。
+
+
+- 2026-10-11（用户授权清理）：系统盘实测由93%降至48%，
+  已用约371.7GiB→188.6GiB，可用空间约29G→213G，系统占用下降
+  约183.1GiB。
+  1. 删除650个超过一小时、无打开文件的Codex插件staging临时目录，
+     先恢复候选内部写权限；正式openai-bundled与近期目录保留，聊天记录未动。
+  2. 确认无活跃构建，删除176个Storage/PID0的buildah工作容器，
+     然后仅执行podman image prune -f。镜像总占用180GB→21.48GB；
+     清理后逐项核对全部124个原有镜像标签及ID、
+     5个原有服务容器ID/状态/镜像/退出码不变，
+     SSD201/RK3506、生产镜像保留。未执行system/container prune、-a或卷清理。
+  3. 仅处理上述两类已建议且获授权的残留，未清其他缓存、日志、/tmp、
+     Nix历史代、源码或个人资料。候选/前后镜像容器快照与审计保存在/tmp的
+     disk-clean-*-20261011文件，最终报告disk-clean-report-20261011.json。
+
+- 2026-10-20（用户授权清理）：排查09:24起严重卡顿，确认EDA/微信崩溃后的
+  转储引发系统盘I/O拥塞。EDA转储09:29:13达5分钟运行上限自动结束（systemd
+  计费写入30.7G），未人为终止应用或转储。系统盘最紧张时97%、约15G可用；
+  清理前基线为89%（约354.4GiB已用），结束为66%（约262.0GiB已用、139GiB可用）。
+  本轮期间实测占用下降约92.4GiB；转储结束后的临时空间回收和外部活动同期发生，
+  不能将全部降幅归因于删除操作。
+  1. 确认无打开文件，删除337个超过一小时的openai-bundled.staging临时目录，
+     先恢复候选内部写权限；保留正式目录、最近一小时目录及聊天记录。
+  2. 确认无活跃构建，删除415个Storage/PID0的working-container，再仅执行
+     podman image prune -f；镜像占用79.82GB→23.67GB。全部141个原有镜像标签
+     及ID、5个原有服务容器的ID/名称/状态/镜像/退出码均核对不变，SSD201/RK3506
+     与生产镜像保留。现存服务容器均退出，未删除或重启。
+  3. 通过现有宿主Podman socket执行，未运行migrate/reset、system/container prune、
+     -a或卷清理；未动Nix历史代、源码、数据盘和个人文件，也未删除atop历史或
+     崩溃证据。审计与前后快照保存在/tmp/disk-clean-*-20261020*，最终报告
+     /tmp/disk-clean-report-20261020.json；实际卡顿进程报告仅留本机。
+
+
 ## Clip 规格归属
 
 按用户绑定维护决定，clipboard-sync 子模块的功能规格统一位于本仓库 specs/005-clipboard-core、006-clipboard-reliability、007-clipboard-release。子模块只留手册与指向本仓库的入口，代码/Git/构建保持独立。其他产品仍在各自仓库管理规格。本规则明确恢复既有父仓库规格归属，不恢复已经取消的 dsh Web 或 Clip 2 分钟过期需求。

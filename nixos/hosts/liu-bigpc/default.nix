@@ -1,4 +1,4 @@
-{ lib, pkgs, inputs, ... }:
+{ config, lib, pkgs, inputs, ... }:
 
 {
   imports = [
@@ -7,9 +7,30 @@
     # 数位笔"侧键+划动=滚轮"手势守护进程（systemd 系统服务；该文件顶部记录了
     # 为什么不能用 home-manager 用户服务）
     ../../modules/pen-scroll.nix
+    # 向日葵个人版客户端及其官方所需的系统守护进程。
+    ../../modules/sunlogin.nix
   ];
 
   networking.hostName = "liu-bigpc";
+
+  # Replay stalls with per-process CPU/memory/I/O and system PSI history.
+  # atoprc only controls interactive defaults; the recorder reads default/atop.
+  programs.atop = {
+    enable = true;
+    atopService.enable = true;
+    atopacctService.enable = true;
+    atopRotateTimer.enable = true;
+    settings.interval = 5;
+  };
+  environment.etc."default/atop".text = ''
+    LOGINTERVAL=5
+    LOGGENERATIONS=7
+    LOGPATH=/var/log/atop
+  '';
+  systemd.services.atop = {
+    restartTriggers = [ config.environment.etc."default/atop".source ];
+    serviceConfig.UMask = "0077";
+  };
 
   # Rootless Podman compose containers stop with the user manager. Restore only
   # this host's existing private PC node after login; do not recreate volumes,
@@ -145,6 +166,8 @@
 
   # The data filesystem roots should remain writable by the primary user.
   systemd.tmpfiles.rules = [
+    # Logs include process names; keep them local and readable only by root.
+    "d /var/log/atop 0700 root root -"
     "d /data 0755 liou users -"
     "d /data-ssd 0755 liou users -"
   ];

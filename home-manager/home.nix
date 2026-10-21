@@ -8,21 +8,89 @@
   ...
 }:
 let
-  # Zen 的 flake 只给 wrapFirefox 传了 pname，没有启用 withFFmpeg，因此 libavcodec
-  # 从未进入 wrapper 的 LD_LIBRARY_PATH。浏览器是用 dlopen 按 soname 在运行时加载
-  # ffmpeg 的，所以缺失时表现为 H.264/AAC 无法解码、站点提示“不支持 HTML5 视频”，
-  # 而单个 ffmpeg 版本装了也没有用（它不在搜索路径里）。
-  #
-  # 另外 wrapFirefox 用 browser.version 与 Firefox 的 153.1 阈值比较来挑选 ffmpeg。
-  # Zen 在此暴露的是自身版本 1.22.1b，永远低于该阈值，会被误判成旧浏览器；
-  # 实际内核是 Gecko 155（application.ini 的 MinVersion/MaxVersion=155.0.1），
-  # 应使用 ffmpeg_9（libavcodec.so.63）。这里按内核版本显式修正该属性，
-  # 只用于 ffmpeg 选择，不重建浏览器本体（unwrapped 派生不变，仅重新包装）。
+  scaling = config.features.desktopScaling;
+  toolPkgs = inputs.tool-updates.legacyPackages.${pkgs.stdenv.hostPlatform.system};
+  qtX11Flags = lib.optionalString scaling.enable ''
+    --set QT_AUTO_SCREEN_SCALE_FACTOR 1 \
+    --set QT_SCALE_FACTOR_ROUNDING_POLICY PassThrough
+  '';
+  # pnpm 官方 npm 平台包；SHA512 对应 registry.npmjs.org 的 dist.integrity。
+  # 固定原生 12.14.0，避免独立 nixpkgs 渠道较旧的 12.9.0 漏掉所需修复。
+  pnpmPackage = pkgs.stdenvNoCC.mkDerivation {
+    pname = "pnpm";
+    version = "12.14.0";
+    src = pkgs.fetchurl {
+      url = "https://registry.npmjs.org/@pnpm/exe.linux-x64-musl/-/exe.linux-x64-musl-12.14.0.tgz";
+      hash = "sha512-btZiZ2Ot0llKK1ndSfA5i3IRX7/S0VrmzseNH/BJ4c+Cady+S81H6vvU1zByggHMyqQhC8OgxO5PiIY7D9bH0Q==";
+    };
+    nativeBuildInputs = [ pkgs.installShellFiles pkgs.makeWrapper ];
+    dontConfigure = true;
+    dontBuild = true;
+    dontStrip = true;
+    installPhase = ''
+      runHook preInstall
+      install -Dm755 pnpm "$out/bin/pnpm"
+      makeWrapper "$out/bin/pnpm" "$out/bin/pnpx" --add-flag dlx
+      ln -s pnpm "$out/bin/pn"
+      ln -s pnpx "$out/bin/pnx"
+      "$out/bin/pnpm" completion bash > pnpm.bash
+      "$out/bin/pnpm" completion fish > pnpm.fish
+      "$out/bin/pnpm" completion zsh > pnpm.zsh
+      installShellCompletion pnpm.{bash,fish,zsh}
+      install -Dm644 LICENSE "$out/share/licenses/pnpm/LICENSE"
+      install -Dm644 THIRD-PARTY-NOTICES.md "$out/share/licenses/pnpm/THIRD-PARTY-NOTICES.md"
+      runHook postInstall
+    '';
+    passthru.majorVersion = "12";
+    meta = pkgs.pnpm.meta // {
+      platforms = [ "x86_64-linux" ];
+      sourceProvenance = [ lib.sourceTypes.binaryNativeCode ];
+      changelog = "https://github.com/pnpm/pnpm/releases/tag/v12.14.0";
+    };
+  };
+  # 单独更新 uv 官方静态发行包，避免刷新系统 nixpkgs 或本机编译 Rust。
+  # 固定版本及下载哈希；programs.uv 仍管理现有工具与 Python 配置。
+  uvPackage = pkgs.stdenvNoCC.mkDerivation {
+    pname = "uv";
+    version = "0.13.1";
+    src = pkgs.fetchurl {
+      url = "https://github.com/astral-sh/uv/releases/download/0.13.1/uv-x86_64-unknown-linux-musl.tar.gz";
+      hash = "sha256-bIYECo8EWrmtyePsTNr6A/0A6amI7SvyiXHH/C0N69A=";
+    };
+    nativeBuildInputs = [ pkgs.installShellFiles ];
+    dontConfigure = true;
+    dontBuild = true;
+    installPhase = ''
+      runHook preInstall
+      install -Dm755 uv "$out/bin/uv"
+      install -Dm755 uvx "$out/bin/uvx"
+      installShellCompletion --cmd uv \
+        --bash <($out/bin/uv generate-shell-completion bash) \
+        --fish <($out/bin/uv generate-shell-completion fish) \
+        --zsh <($out/bin/uv generate-shell-completion zsh)
+      runHook postInstall
+    '';
+    meta = pkgs.uv.meta // {
+      platforms = [ "x86_64-linux" ];
+      sourceProvenance = [ lib.sourceTypes.binaryNativeCode ];
+      changelog = "https://github.com/astral-sh/uv/releases/tag/0.13.1";
+    };
+  };
+  # Zen 上游 1.23.3b 的 flake 下载哈希错误；本次下载的摘要已与官方
+  # GitHub Release asset.digest 核对。固定官方摘要，不跳过 Nix 校验。
+  zenUnwrapped = inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.zen-browser-unwrapped.overrideAttrs (old: {
+    src = pkgs.fetchurl {
+      url = "https://github.com/zen-browser/desktop/releases/download/${old.version}/zen.linux-x86_64.tar.xz";
+      hash = "sha256-uyBF0+IWVNQP6EElAJLurf0sH8gx7vtQkiJ3PIvcoUk=";
+    };
+  });
+  # Zen 的上游包装未启用 FFmpeg，且会用 Zen 自身版本选择解码库。
+  # 本次核心为 Gecko 158；显式提供核心版本和 withFFmpeg，选择 ffmpeg_9。
   zenBrowser = pkgs.wrapFirefox (
-    inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.zen-browser-unwrapped
+    zenUnwrapped
     // {
       withFFmpeg = true;
-      version = "155.0";
+      version = "158.0";
     }
   ) {
     pname = "zen-browser";
@@ -62,6 +130,21 @@ in
   # 启用 XDG MIME 类型关联
   # 原理：让 Nix 安的应用能正确处理文件类型关联（如双击文件时用正确的程序打开）
   xdg.mime.enable = true;
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = {
+      "x-scheme-handler/http" = [ "zen.desktop" ];
+      "x-scheme-handler/https" = [ "zen.desktop" ];
+      "text/html" = [ "zen.desktop" ];
+      "application/xhtml+xml" = [ "zen.desktop" ];
+      "x-scheme-handler/codex" = [ "chatgpt.desktop" ];
+      "x-scheme-handler/baiduyunguanjia" = [ "baidunetdisk.desktop" ];
+    };
+  };
+
+  # 强制接管 mimeapps.list，避免桌面应用/浏览器修改后在下一次 HM 激活时
+  # 因已存在 .hm-backup 而触发 "would be clobbered by backing up" 报错中断。
+  xdg.configFile."mimeapps.list".force = true;
 
   # 非 NixOS（standalone）时允许 unfree 包。
   # NixOS 集成（useGlobalPkgs = true）下完全不定义 nixpkgs.config：
@@ -123,17 +206,28 @@ in
       devenv
       # 轻量级 Word 文档查看与编辑器（支持 .docx）。
       abiword
+      # 轻量级电子表格查看与编辑器（支持 .xlsx）。
+      gnumeric
       # 二维 CAD：检查 DXF；Qt5 在当前 Niri 环境使用 XWayland。
       (symlinkJoin {
         name = "qcad-desktop";
         paths = [ qcad ];
         nativeBuildInputs = [ makeWrapper ];
         postBuild = ''
-          wrapProgram "$out/bin/qcad" --set QT_QPA_PLATFORM xcb
+          wrapProgram "$out/bin/qcad" --set QT_QPA_PLATFORM xcb ${qtX11Flags}
         '';
       })
-      # 轻量级 PDF 阅读器。
-      mupdf
+      # 基于 MuPDF 的现代化 PDF 阅读器（支持目录大纲搜索、双视图跳转与文档平滑导航）。
+      # NVIDIA 显卡 + Niri 混成器下，Qt6 的 QOpenGLWidget 在原生 Wayland EGL 上下文初始化失败（3009 错误），
+      # 包装指定走 XWayland (xcb) 平台即可正常渲染。
+      (symlinkJoin {
+        name = "sioyek-wrapped";
+        paths = [ sioyek ];
+        nativeBuildInputs = [ makeWrapper ];
+        postBuild = ''
+          wrapProgram "$out/bin/sioyek" --set QT_QPA_PLATFORM xcb ${qtX11Flags}
+        '';
+      })
       # 轻量级音视频播放器，原生支持 Wayland。
       mpv
       # Blender 3D 建模/渲染/导出（dsh-blender 等插件依赖 blender 可执行文件；
@@ -158,11 +252,12 @@ in
         nativeBuildInputs = [ makeWrapper ];
         postBuild = ''
           wrapProgram "$out/bin/wechat" \
-            --set QT_SCALE_FACTOR ${toString config.features.niri.primaryOutputScale}
+            --set QT_SCALE_FACTOR ${toString scaling.scale} \
+            ${lib.optionalString scaling.enable "--set QT_FONT_DPI 96"}
         '';
       })
       # GitHub CLI（创建/推送仓库、管理 issues 等）
-      gh
+      toolPkgs.gh
       ## 解压工具（zip/7z/rar 等通用格式；tar/gzip/xz 系统已有）
       unzip
       zip
@@ -172,9 +267,8 @@ in
       # just：任务运行器（clipboard-sync 构建/分发/部署用，见 clipboard-sync/Justfile）
       just
       # pnpm：dsh profile 插件管理工具（`dsh plugin --profile web ...` 转发到 pnpm，
-      # 见 ensureDshLatest 下方注释）。由 nix 声明式管理，跟随 flake.lock 的
-      # nixpkgs 升级；不复用 restore-secrets.sh 的 npm -g 安装（避免双份冲突）。
-      pnpm
+      # 见 ensureDshLatest 下方注释）。由 Nix 固定官方平台包，不与 npm -g 重复安装。
+      pnpmPackage
       # Cross-device encrypted credential vault and its sync daemon.
       keepassxc
       syncthing
@@ -362,6 +456,7 @@ in
   # 纯 python 工具；版本不 pin 时每次 activation 自动 upgrade 到最新。
   programs.uv = {
     enable = true;
+    package = uvPackage;
     tool.packages = [
       "specify-cli"
     ];
@@ -822,6 +917,8 @@ in
     text = ''
       external-controller: 127.0.0.1:9090
       mixed-port: 7897
+      # 本机 BT 下载直连规则需要识别 Nix 包装后的进程。
+      find-process-mode: always
     '';
   };
 

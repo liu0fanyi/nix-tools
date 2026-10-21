@@ -3,7 +3,20 @@
 Host development configuration and the container deployment control plane for
 DUFS Plus.
 
+PC 磁盘清理规范、保护清单与操作记录见 [AGENTS.md 第七节](AGENTS.md#七pc-磁盘清理统一入口)。
+
 ## Home Manager
+
+卡顿时的资源历史记录、进程回放与排查方法见 [系统资源历史](docs/resource-history.md)。
+
+磁力链接与 BT 下载使用 qBittorrent，国内访问的 Tracker 列表订阅与操作说明见 [磁力下载](docs/magnet-download.md)。
+
+`liu-bigpc` 向日葵个人版的安装、服务检查和 Niri 桌面兼容性说明见 [向日葵远程控制](docs/sunlogin-client.md)。
+
+混合缩放屏幕下的 XWayland 大字、应用清单和统一 150% 设置见 [桌面应用缩放](docs/desktop-scaling.md)。
+微信能输入拼音但无候选词的实机诊断与断线恢复配置见 [输入法候选窗恢复](docs/input-method-recovery.md)。
+常用工具（FreeCAD、gh、pnpm、KiCad，以及 Codex CLI、Zen、Cursor、Antigravity、uv）的版本锁定、验证及应用方式见 [工具更新记录](docs/antigravity-update.md)。
+普通网页链接固定由 Zen 打开，配置与诊断见 [默认浏览器](docs/default-browser.md)。
 
 视频与音频下载使用 `yt-dlp`，命令和更新方式见 [视频下载](docs/video-download.md)；画面字幕的本地批量提取与续跑见 [字幕 OCR](docs/subtitle-ocr.md)。 字幕生成图文菜谱的规则、固定构建工具与十道菜试验见 [菜谱处理规范](docs/video-recipe-workflow.md)，全库食材名称审阅及搜索重建见 [食材词典工具](docs/recipe-ingredients.md)，可续跑任务队列与 AI 任务包交换见 [菜谱批处理](docs/recipe-batch.md)，串行下载、任务交换与验收后释放视频见 [串行流程](docs/recipe-flow.md)。
 

@@ -137,6 +137,16 @@ Agent 在用户 switch 前必须**只读**验证到用户实际会走的那一�
    凡是用 evdev uinput 的脚本，重试逻辑必须显式覆盖该类型；并且应当在
    **抓取真实设备之前**先构造虚拟设备，避免失败时把用户设备 grab 住。
 
+5. **软链接分类、核心劫持防护与外部改动反哺规范（MIME 关联/输入法等）。**
+   - **两类软链接划分**：
+     - *静态开发配置*（Shell/Helix/Alacritty/Niri/Waybar/Git 等）：由 Nix 声明单向控制，外部应用绝不修改，直接软链接即可。
+     - *运行时动态配置*（`~/.config/mimeapps.list`、`~/.config/fcitx5/profile`）：外部应用（桌面、浏览器、输入法设置等）在运行时可能切断软链接写成普通文件。必须设 `force = true` 避免 switch 中断。
+   - **核心协议强制劫持（Anchor Protection）**：
+     - `http/https/html` 强制固定为 `zen.desktop`；`magnet/bittorrent` 强制固定为 `org.qbittorrent.qBittorrent.desktop`；`codex://` 锁定为 `chatgpt.desktop`；`baiduyunguanjia://` 锁定为 `baidunetdisk.desktop`。绝对禁止任何外部桌面程序随意篡改这套基线。
+   - **外部合法增量反哺机制**：
+     - 用户在 GUI 里新添加的合法关联（如将新文件类型默认用特定工具打开），严禁在 switch 时静默抹杀。
+     - 仓库提供 `python3 scripts/sync-mimeapps.py` 脚本，可在 switch 前检测脱离软链接的外部变动，拦截非法劫持，并支持 `--apply` 将增量合法项反哺写入 `home-manager/home.nix`。
+
 **验证清单（改动本机系统配置时逐项做）**：求值选项 → 构建 `toplevel` → 构建
 `home-manager-generation` → 确认新用户服务单元 `ExecStart` 指向预期 store 路径 →
 确认 system 侧组/内核模块/udev 规则求值正确。任何一步没做，都不得告诉用户"可以 switch 了"。
@@ -293,11 +303,113 @@ podman image prune -f          # 仅删 <none> 悬空镜像，不动有 tag 的
      四个活跃仓库均存在且 9-13 后仍在提交，确认备份非唯一副本。
      **教训**：这类「清理前备份」目录删除前必须先核对对应活跃仓库是否存在，
      不能只看目录名——含 git bundle 的备份可能是某仓库的唯一历史。
+- 2026-10-01：根分区 69%（274G/423G），执行第一梯队清理，释放约 **143G**
+  （根分区 274G→131G，使用率降至 33%，可用空间升至 271G）：
+  1. `~/.codex/.tmp/bundled-marketplaces/*.staging-*`：3137 个临时安装目录
+     35G→98M（先 `chmod -R u+w` 再删，保留 `openai-bundled`）。
+  2. Podman：清理 273 个 buildah 残留容器（`*-working-container`）并执行
+     `podman image prune -f`，镜像存储由 124G 降至 14.7G，释放约 109G 悬空
+     中间层。严格保留 SSD201/RK3506 交叉编译镜像、生产基础镜像与活跃服务。
+- 2026-10-01（第二轮）：数据盘 `/data` 80%（347G/458G），清理第二梯队构建缓存，
+  释放约 **203G**（`/data` 347G→144G，使用率降至 34%，可用空间升至 291G）：
+  1. ESP-IDF 硬件固件多配置中间编译目录（`.build/`）：清理 13 个工程的 `.build`
+     目录，释放约 **56G**（大头包括 `xiaoqiang/esp32-p4-400m20s` 24G、`esp32-p4-cmt2300a` 14G、`esp32-p4-sip` 8.1G 等）。
+  2. Rust / Tauri 工程构建缓存（`target/`）：严格核对带有 `Cargo.toml` 与 `CACHEDIR.TAG`
+     的 19 个工程 `target/` 目录并予以清理，释放约 **140G**（大头包括 `bevy-game` 75G、
+     `device-bean-mobile` 13G、`tag-all` 8.6G、`xiaoqiang/tauri_config_page` 8.5G、`bevy-sketch` 8.2G、`dufs-plus` 7.9G 等）。
+     排查中特别注意并避开了 C 库硬件平台源码目录（如 `esp32-camera/target`）。
+
+
+- 2026-10-07：系统盘实测由 94%（377G/423G）降至 40%（160G/423G），
+  可用空间由 25G 升至 241G；本轮清理项目约 **172G**：
+  1. Codex `bundled-marketplaces`：确认无打开文件后，清理 1101 个超过一小时的
+     `openai-bundled.staging-*` 临时安装目录（先 `chmod -R u+w`），37G→136M；
+     保留正式 `openai-bundled` 和最近一小时目录。
+  2. Podman：确认没有活跃 buildah/cargo/podman build，删除 144 个 Storage 状态、
+     PID 为 0 的 `*-working-container`，再仅执行 `image prune -f`；镜像大小由
+     154.4GB 降至 19.48GB（约释放 135GB）。清理前后核对**全部原有镜像标签及
+     ID**，SSD201/RK3506、基础镜像、tag-server public/private 均保留，4 个运行
+     容器 ID 与运行状态保持不变，卷未清理。
+  3. 本会话直接调用 Podman 出现 user namespace/re-exec 错误，使用现有宿主服务
+     `podman --remote --url unix:///run/user/1000/podman/podman.sock` 完成查询与清理，
+     未执行 migrate/reset。未动源码、个人文件、数据盘或 Nix 历史 generations；
+     检查期间 Nix store 文件也发生外部删除，因此整体磁盘降幅不全归因于本轮操作。
+
 
 - 2026-10-07（菜谱流程精简）：按用户明确指令，逐文件核对并删除本次 B 站账号
   209 个已下载原视频及 4 份试验输入副本，文件合计 21,139,164,975 字节。
   删除审计留 Downloads；字幕、清单、旧菜谱和派生片段保留，其他课程视频未动。
   后台下载/OCR 已停止，新样稿只取平台 AI 字幕和原封面，不再下载原视频。
+
+
+- 2026-10-11（只读盘点，未清理）：系统盘 `/dev/sdc4` 423G，已用372G（93%），
+  剩余29G；数据盘 `/data` 49%，不属于系统盘清理范围。
+  1. Codex 插件临时目录合计约21G，663个 staging 中650个超过一小时，旧目录
+     实测21,805,518,848字节（20.3GiB）；lsof未发现打开文件。候选清理仅限旧
+     staging，保留正式openai-bundled、最近一小时目录以及6.5G聊天sessions。
+  2. Podman 镜像总占用180GB，184个独立镜像中70个无标签；176个buildah
+     working-container均为Storage且PID=0，未发现活跃构建。先清理核对后的
+     残留工作容器，再仅image prune；177.9GB“可回收”包含需要保留的镜像，
+     不能视为实际释放量。保留SSD201/RK3506、生产镜像与全部原有标签；
+     另外5个退出容器属于dufs-plus-pc服务，不能用container/system prune删掉。
+  3. 次级缓存：codex-runtimes1.8G（未发现打开文件）、uv1.7G、Gradle caches1.8G；
+     只作为可重下载候选，浏览器缓存约2.6G需等浏览器退出。Downloads18G、
+     微信文件2G、聊天记录等个人数据不列为自动清理对象。此轮仅查询和记录。
+  4. 系统journal约3.9G，可按保留期/上限收缩而非全删；/tmp共6.5G，其中
+     sip-media-timeout-target2.3G有CACHEDIR.TAG及debug构建目录，未发现打开文件；
+     sunlogin解包目录257M及已安装包的DEB80M可重取，解包目录未发现打开文件。
+     其余临时目录未逐项确认，不整批删除/tmp。Nix store深层扫描耗时已停止，
+     本轮未估算Nix历史代可释放量，也未运行GC。
+
+
+- 2026-10-11（用户授权清理）：系统盘实测由93%降至48%，
+  已用约371.7GiB→188.6GiB，可用空间约29G→213G，系统占用下降
+  约183.1GiB。
+  1. 删除650个超过一小时、无打开文件的Codex插件staging临时目录，
+     先恢复候选内部写权限；正式openai-bundled与近期目录保留，聊天记录未动。
+  2. 确认无活跃构建，删除176个Storage/PID0的buildah工作容器，
+     然后仅执行podman image prune -f。镜像总占用180GB→21.48GB；
+     清理后逐项核对全部124个原有镜像标签及ID、
+     5个原有服务容器ID/状态/镜像/退出码不变，
+     SSD201/RK3506、生产镜像保留。未执行system/container prune、-a或卷清理。
+  3. 仅处理上述两类已建议且获授权的残留，未清其他缓存、日志、/tmp、
+     Nix历史代、源码或个人资料。候选/前后镜像容器快照与审计保存在/tmp的
+     disk-clean-*-20261011文件，最终报告disk-clean-report-20261011.json。
+
+
+- 2026-10-18（用户授权清理）：系统盘 `/dev/sdd4`（本次设备名）由93%降至61%，
+  已用约369.2GiB→242.7GiB，可用32G→159G，实测释放约126.6GiB。
+  1. 确认无打开文件后，删除1494个超过一小时的插件staging临时目录，先恢复
+     候选内部写权限；`bundled-marketplaces` 约48G→128M，正式安装目录、
+     最近一小时目录与聊天记录保留。
+  2. 确认无活跃buildah/cargo/podman build，删除208个Storage/PID0且名称为
+     working-container的构建残留，再仅执行`podman image prune -f`。
+     镜像占用90.78GB→22.48GB；全部138个原有镜像标签及ID保持不变，
+     SSD201/RK3506与生产镜像保留。5个原有服务容器本次清理前均为退出状态，
+     逐项核对ID、名称、状态、镜像ID、退出码不变，未删除或重启它们。
+  3. 通过现有宿主Podman socket执行，未执行migrate/reset、system/container prune、
+     `-a`或卷清理；未清理Nix历史代、源码、个人文件、数据盘及其他缓存。
+     前后镜像/容器快照、候选和报告保存在`/tmp/disk-clean-*-20261018*`，
+     最终报告为`/tmp/disk-clean-report-20261018.json`。
+
+
+- 2026-10-20（用户授权清理）：排查09:24起严重卡顿，确认EDA/微信崩溃后的
+  转储引发系统盘I/O拥塞。EDA转储09:29:13达5分钟运行上限自动结束（systemd
+  计费写入30.7G），未人为终止应用或转储。系统盘最紧张时97%、约15G可用；
+  清理前基线为89%（约354.4GiB已用），结束为66%（约262.0GiB已用、139GiB可用）。
+  本轮期间实测占用下降约92.4GiB；转储结束后的临时空间回收和外部活动同期发生，
+  不能将全部降幅归因于删除操作。
+  1. 确认无打开文件，删除337个超过一小时的openai-bundled.staging临时目录，
+     先恢复候选内部写权限；保留正式目录、最近一小时目录及聊天记录。
+  2. 确认无活跃构建，删除415个Storage/PID0的working-container，再仅执行
+     podman image prune -f；镜像占用79.82GB→23.67GB。全部141个原有镜像标签
+     及ID、5个原有服务容器的ID/名称/状态/镜像/退出码均核对不变，SSD201/RK3506
+     与生产镜像保留。现存服务容器均退出，未删除或重启。
+  3. 通过现有宿主Podman socket执行，未运行migrate/reset、system/container prune、
+     -a或卷清理；未动Nix历史代、源码、数据盘和个人文件，也未删除atop历史或
+     崩溃证据。审计与前后快照保存在/tmp/disk-clean-*-20261020*，最终报告
+     /tmp/disk-clean-report-20261020.json；实际卡顿进程报告仅留本机。
+
 
 ## Clip 规格归属
 
