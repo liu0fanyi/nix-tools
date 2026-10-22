@@ -318,3 +318,10 @@ podman image prune -f          # 仅删 <none> 悬空镜像，不动有 tag 的
 发现服务检查进程和 CLI，后端检查 HTTP，最后验代理；旧服务镜像不同则在变更前拒绝。
 失败尝试恢复全部目标，单项重建失败不能阻断其余恢复；报告未恢复项，保留数据库备份。
 不自动恢复数据库、认证、模型或前端，不更改原运行用户和挂载属主。
+
+## PC 默认浏览器保持
+
+用户选择 liu-bigpc 默认浏览器为 Tag Browser：该主机模块将 HTTP/HTTPS/HTML/XHTML
+固定为 tag-browser.desktop；其他未安装产品的主机不改变默认。MIME 同步保护遵循
+此用户选择；magnet/bittorrent、codex、baiduyunguanjia 既有锚点保持。
+安装包装须向 Firefox 提供桌面 launcher 身份。系统 switch 仍由用户在普通终端执行。

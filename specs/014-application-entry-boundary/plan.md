@@ -362,3 +362,7 @@ Nix候选生成的Podman PATH和工具ExecStartPre也已只读求值验证；已
 
 P2完成、剩余0；总体4/5，E5当前2/3，剩余1项P3真实验收与收尾。
 下一步可打开Tag Browser试用PC/NUC工作区；不用重复切换脚本。完整阶段在P3验收后关闭。
+
+默认浏览器配套复用 liu-bigpc host 的 HM override，不修改共享 home.nix 的其他主机默认。
+与浏览器007/DB联动核验桌面 Exec 与启动器 MOZ_APP_LAUNCHER 一致。沿用 Constitution
+Check：PC 只读构建完整系统/HM、保留五个原生单元、不执行 switch 或修改用户 profile。

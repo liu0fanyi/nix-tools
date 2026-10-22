@@ -325,3 +325,10 @@ Nix候选生成的Podman PATH和工具ExecStartPre也已只读求值验证；已
 
 P2完成、剩余0；总体4/5，E5当前2/3，剩余1项P3真实验收与收尾。
 下一步可打开Tag Browser试用PC/NUC工作区；不用重复切换脚本。完整阶段在P3验收后关闭。
+
+## PC 默认浏览器配套
+
+仅 liu-bigpc 在安装 Tag Browser 的同一主机模块中声明其为 HTTP/HTTPS/HTML/XHTML
+默认应用，系统升级保持这一用户选择；未安装该产品的其他主机不改变。MIME 保护
+脚本接受 Tag Browser，其他核心协议保护不变。浏览器侧 DB1/DB2 为唯一阶段计数，
+本仓只验证默认声明、实际桌面入口、完整系统/HM 及原生服务保持；switch 由用户执行。
