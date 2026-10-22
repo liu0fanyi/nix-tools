@@ -395,3 +395,5 @@ H3候选已验证：普通系统完整构建通过，五个原生单元与已验
 浏览器 nix.61 Gruvbox Light功能配色已发行：私有Release/CI/Cachix精确输出、46份包内资源、完整liu-bigpc系统/HM候选、菜单版本与五个原生服务注册均核验，见[tag-browser-nix61-install-results.json](tag-browser-nix61-install-results.json)。本次仅更新tag-browser-src与本项安装证据，不创建Pin、不执行系统switch，本次仅浏览器发行，PC/NUC服务未切换；用户在普通终端安装并关闭旧窗口重开验收，唯一样式交付计数归tag-browser010/G3，用户安装确认归027/OP4。
 
 浏览器 nix.62 关闭状态、前后退与顶部对比修复已发行：私有Release/CI/Cachix精确输出、46份包内资源、完整liu-bigpc系统/HM候选、菜单版本与五个原生服务注册均核验，见[tag-browser-nix62-install-results.json](tag-browser-nix62-install-results.json)。本次仅更新tag-browser-src与本项安装证据，不创建Pin、不执行系统switch，PC/NUC配套前端按独立固定事务与本轮保存确认切换，保留后端；用户在普通终端安装并关闭旧窗口重开验收，唯一配套交付计数归tag-browser027/NH2，用户安装确认归027/OP4。
+
+浏览器 nix.63 地址栏身份提示配色补正已发行：私有Release/CI/Cachix精确输出、46份包内资源、完整liu-bigpc系统/HM候选、菜单版本与五个原生服务注册均核验，见[tag-browser-nix63-install-results.json](tag-browser-nix63-install-results.json)。本次仅更新tag-browser-src与本项安装证据，不创建Pin、不执行系统switch，本次仅浏览器发行，PC/NUC服务未切换；用户在普通终端安装并关闭旧窗口重开验收，唯一交付计数归tag-browser010/G6，用户安装确认归027/OP4。
