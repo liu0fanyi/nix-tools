@@ -142,7 +142,7 @@ Agent 在用户 switch 前必须**只读**验证到用户实际会走的那一�
      - *静态开发配置*（Shell/Helix/Alacritty/Niri/Waybar/Git 等）：由 Nix 声明单向控制，外部应用绝不修改，直接软链接即可。
      - *运行时动态配置*（`~/.config/mimeapps.list`、`~/.config/fcitx5/profile`）：外部应用（桌面、浏览器、输入法设置等）在运行时可能切断软链接写成普通文件。必须设 `force = true` 避免 switch 中断。
    - **核心协议强制劫持（Anchor Protection）**：
-     - `http/https/html` 强制固定为 `zen.desktop`；`magnet/bittorrent` 强制固定为 `org.qbittorrent.qBittorrent.desktop`；`codex://` 锁定为 `chatgpt.desktop`；`baiduyunguanjia://` 锁定为 `baidunetdisk.desktop`。绝对禁止任何外部桌面程序随意篡改这套基线。
+     - 当前 PC `liu-bigpc` 的 `http/https/html/xhtml` 固定为用户选择的 `tag-browser.desktop`（其他未安装 Tag Browser 的主机保持原默认浏览器）；`magnet/bittorrent` 强制固定为 `org.qbittorrent.qBittorrent.desktop`；`codex://` 锁定为 `chatgpt.desktop`；`baiduyunguanjia://` 锁定为 `baidunetdisk.desktop`。绝对禁止任何外部桌面程序随意篡改这套基线。
    - **外部合法增量反哺机制**：
      - 用户在 GUI 里新添加的合法关联（如将新文件类型默认用特定工具打开），严禁在 switch 时静默抹杀。
      - 仓库提供 `python3 scripts/sync-mimeapps.py` 脚本，可在 switch 前检测脱离软链接的外部变动，拦截非法劫持，并支持 `--apply` 将增量合法项反哺写入 `home-manager/home.nix`。

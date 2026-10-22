@@ -179,3 +179,9 @@ devenv shell -- just manage <操作>                   # NUC 运维管理入口
 发现服务检查进程和 CLI，后端检查 HTTP，最后验代理；旧服务镜像不同则在变更前拒绝。
 失败尝试恢复全部目标，单项重建失败不能阻断其余恢复；报告未恢复项，保留数据库备份。
 不自动恢复数据库、认证、模型或前端，不更改原运行用户和挂载属主。
+
+## 当前 PC 默认浏览器
+
+用户选择 Tag Browser 为默认浏览器：liu-bigpc 主机模块声明 HTTP、HTTPS、HTML、
+XHTML 为 tag-browser.desktop；其他主机保持原默认浏览器。MIME 同步保护遵守此
+选择，保留 magnet、bittorrent、codex 和 baiduyunguanjia 的既有锚点。

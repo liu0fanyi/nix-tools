@@ -74,6 +74,15 @@
     inputs.tag-browser-src.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
+  # Keep the installed browser as the default across Home Manager activations.
+  # Other hosts retain their existing browser and do not install Tag Browser.
+  home-manager.users.liou.xdg.mimeApps.defaultApplications = {
+    "x-scheme-handler/http" = lib.mkForce [ "tag-browser.desktop" ];
+    "x-scheme-handler/https" = lib.mkForce [ "tag-browser.desktop" ];
+    "text/html" = lib.mkForce [ "tag-browser.desktop" ];
+    "application/xhtml+xml" = lib.mkForce [ "tag-browser.desktop" ];
+  };
+
   nix.settings.experimental-features = lib.mkAfter [ "fetch-closure" ];
 
   # 数位笔"侧键+划动=滚轮"手势需要 uinput 才能合成带滚轮的虚拟笔设备。

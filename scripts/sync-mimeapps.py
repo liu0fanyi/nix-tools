@@ -5,7 +5,7 @@ sync-mimeapps.py
 
 核心原则：
 1. 关键协议强力劫持保护（Anchor）：
-   - http/https/html/xhtml 绝对锁定为 zen.desktop（防止其它浏览器或第三方应用篡改）
+   - http/https/html/xhtml 当前 PC 锁定为 tag-browser.desktop（防止其它浏览器或第三方应用篡改）
    - magnet/bittorrent 绝对锁定为 org.qbittorrent.qBittorrent.desktop
    - codex:// 锁定为 chatgpt.desktop
    - baiduyunguanjia:// 锁定为 baidunetdisk.desktop
@@ -23,10 +23,10 @@ from pathlib import Path
 
 # 不可篡改的核心锚点映射（绝对防劫持）
 LOCKED_ANCHORS = {
-    "x-scheme-handler/http": "zen.desktop",
-    "x-scheme-handler/https": "zen.desktop",
-    "text/html": "zen.desktop",
-    "application/xhtml+xml": "zen.desktop",
+    "x-scheme-handler/http": "tag-browser.desktop",
+    "x-scheme-handler/https": "tag-browser.desktop",
+    "text/html": "tag-browser.desktop",
+    "application/xhtml+xml": "tag-browser.desktop",
     "x-scheme-handler/magnet": "org.qbittorrent.qBittorrent.desktop",
     "application/x-bittorrent": "org.qbittorrent.qBittorrent.desktop",
     "x-scheme-handler/codex": "chatgpt.desktop",
