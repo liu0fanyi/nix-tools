@@ -1,0 +1,25 @@
+{
+  "system_candidate": "/nix/store/p9ihpwchwd3l6xkbbpblxbb2nk41xicb-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "home_candidate": "/nix/store/2hjawbmlab55js57z44kha1dg35phb1s-home-manager-generation",
+  "browser_binary": "/nix/store/mywl30pfg7dn6cp8zwy3b97gsqlza43g-tag-browser-0.1.0",
+  "browser_source_revision": "f056de821754c0da78e6b8719030756bc501445f",
+  "changed_lock_nodes": [
+    "tag-browser-src"
+  ],
+  "five_native_templates_verified": true,
+  "default_target_link_verified": true,
+  "restore_after_reload_verified": true,
+  "system_menu_binary_and_release_version_verified": true,
+  "system_switch_by_agent": false,
+  "existing_unrelated_files_sha256": {
+    "home-manager/nix_modules/fcitx5.nix": "070cd7c57d20401b70a7bbfa4271aeed0cdbd114ec0f62dcd221b81c5763ce72",
+    "specs/010-host-configuration/tasks.md": "9557be6b4c56b39709192b4fd66ed7923a228627d22cc7516516f400d1076c01"
+  },
+  "candidate_includes_existing_uncommitted_host_changes": true,
+  "release": "v0.1.0-nix.58",
+  "github_workflow": 39764189814,
+  "cachix_verified": true,
+  "workflow_creates_pin": false,
+  "existing_user_changes_preserved": true,
+  "remaining": "发行阶段P1–P3完成；P4由用户普通终端系统切换及关闭旧窗口重开试用。Agent未执行系统switch。"
+}
