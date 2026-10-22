@@ -383,3 +383,5 @@ H3候选已验证：普通系统完整构建通过，五个原生单元与已验
 浏览器 nix.55 共享侧栏重构与零TODO验收补正已发行：私有Release/CI/Cachix精确输出、34份包内资源、完整liu-bigpc系统/HM候选、菜单版本与五个原生服务注册均核验，见[tag-browser-nix55-install-results.json](tag-browser-nix55-install-results.json)。本次仅更新tag-browser-src与本项安装证据，不创建Pin、不执行系统switch，配套PC/NUC前端已由dufs-plus规格另记、现用后端保持；用户在普通终端安装并关闭旧窗口重开验收，唯一交付计数归tag-browser029/P1–P4。
 
 浏览器 nix.56 共用 Lucide 工具栏、主动自动标签与本地会话恢复已发行：私有Release/CI/Cachix精确输出、43份正式资源、完整liu-bigpc系统/HM候选及五个原生服务注册均核验；见[tag-browser-nix56-install-results.json](tag-browser-nix56-install-results.json)。PC/NUC仅前端事务已由dufs-plus028记录，后端和认证保持；不创建Pin、不执行系统switch、不另装用户profile。唯一跨仓交付计数归tag-browser033/P1–P4，剩P4用户普通终端安装重开及试用；既有输入法/宿主修改逐文件保持。
+
+浏览器 nix.57 后台页面自动休眠已发行：私有Release/CI/Cachix精确输出、46份正式资源、完整liu-bigpc系统/HM候选及五个原生服务注册均核验；见[tag-browser-nix57-install-results.json](tag-browser-nix57-install-results.json)。本轮仅浏览器，不切换PC/NUC服务；不创建Pin、不执行系统switch、不另装用户profile。唯一交付计数归tag-browser034/R1–R4，剩R4用户普通终端安装重开并检查休眠设置；既有输入法/宿主修改逐文件保持。
