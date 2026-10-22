@@ -379,3 +379,5 @@ H3候选已验证：普通系统完整构建通过，五个原生单元与已验
 浏览器 nix.53 收藏网址更新响应补正已发行：私有Release/CI/Cachix精确输出、29份包内资源、完整liu-bigpc系统/HM候选、菜单版本与五个原生服务注册均核验，见[tag-browser-nix53-install-results.json](tag-browser-nix53-install-results.json)。本次仅更新tag-browser-src与本项安装证据，不创建Pin、不执行系统switch，不切换PC/NUC原生服务；用户在普通终端安装并关闭旧窗口重开验收，唯一交付计数归tag-browser027/UR1–UR3及026/R1。
 
 浏览器 nix.54 筛选/搜索结果当前项高亮补正已发行：私有Release/CI/Cachix精确输出、29份包内资源、完整liu-bigpc系统/HM候选、菜单版本与五个原生服务注册均核验，见[tag-browser-nix54-install-results.json](tag-browser-nix54-install-results.json)。本次仅更新tag-browser-src与本项安装证据，不创建Pin、不执行系统switch，不切换PC/NUC原生服务；用户在普通终端安装并关闭旧窗口重开验收，唯一交付计数归tag-browser027/HR1–HR3及026/R1。
+
+浏览器 nix.55 共享侧栏重构与零TODO验收补正已发行：私有Release/CI/Cachix精确输出、34份包内资源、完整liu-bigpc系统/HM候选、菜单版本与五个原生服务注册均核验，见[tag-browser-nix55-install-results.json](tag-browser-nix55-install-results.json)。本次仅更新tag-browser-src与本项安装证据，不创建Pin、不执行系统switch，配套PC/NUC前端已由dufs-plus规格另记、现用后端保持；用户在普通终端安装并关闭旧窗口重开验收，唯一交付计数归tag-browser029/P1–P4。
