@@ -389,3 +389,5 @@ H3候选已验证：普通系统完整构建通过，五个原生单元与已验
 浏览器 nix.58 一键全字典自动标签已发行：私有Release/CI/Cachix精确输出、46份正式资源、完整liu-bigpc系统/HM候选及五个原生服务注册均核验；见[tag-browser-nix58-install-results.json](tag-browser-nix58-install-results.json)。本轮仅浏览器，不切换PC/NUC服务；不创建Pin、不执行系统switch、不另装用户profile。唯一交付计数归tag-browser032/P1–P4，剩P4用户普通终端安装重开并检查自动标签简化流程；既有输入法/宿主修改逐文件保持。
 
 浏览器 nix.59 当前浏览统一选择与三列动作已发行：私有Release/CI/Cachix精确输出、46份正式资源、完整liu-bigpc系统/HM候选及五个原生服务注册均核验；见[tag-browser-nix59-install-results.json](tag-browser-nix59-install-results.json)。本轮仅浏览器，不切换PC/NUC服务；不创建Pin、不执行系统switch、不另装用户profile。唯一交付计数归tag-browser027/OP1–OP4，剩OP4用户普通终端安装重开并检查当前浏览选框与三列按钮布局；既有输入法/宿主修改逐文件保持。
+
+浏览器 nix.60 松石绿侧栏与工具能力提示已发行：私有Release/CI/Cachix精确输出、46份包内资源、完整liu-bigpc系统/HM候选、菜单版本与五个原生服务注册均核验，见[tag-browser-nix60-install-results.json](tag-browser-nix60-install-results.json)。本次仅更新tag-browser-src与本项安装证据，不创建Pin、不执行系统switch，配套PC/NUC前端已由dufs-plus规格另记、现用后端保持；用户在普通终端安装并关闭旧窗口重开验收，唯一交付计数归tag-browser007/DL1–DL2。
