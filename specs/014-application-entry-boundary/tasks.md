@@ -403,3 +403,5 @@ H3候选已验证：普通系统完整构建通过，五个原生单元与已验
 浏览器 nix.65 六处样式细节补正已发行：私有Release/CI/Cachix精确输出、46份包内资源、完整liu-bigpc系统/HM候选、菜单版本与五个原生服务注册均核验，见[tag-browser-nix65-install-results.json](tag-browser-nix65-install-results.json)。本次仅更新tag-browser-src与本项安装证据，不创建Pin、不执行系统switch，本次仅浏览器发行，PC/NUC服务未切换；用户在普通终端安装并关闭旧窗口重开验收，唯一交付计数归tag-browser010/G8，用户安装确认归027/OP4。
 
 浏览器 nix.66 共享组件配色已发行，CI/Cachix精确输出、47份包内资源、完整liu-bigpc系统/HM候选、菜单版本、四项默认浏览器关联与五个原生服务注册核验通过，见[tag-browser-nix66-install-results.json](tag-browser-nix66-install-results.json)。本轮只更新tag-browser-src及本项证据；原有输入法和010任务改动保留并包含在构建候选中，未纳入本轮提交。Agent不执行系统switch；服务程序/前端切换与用户安装进度唯一归tag-browser036。
+
+浏览器nix.67收藏网址冲突补正已发行：297项Node、七组Firefox1842项断言、47份正式资源、CI/Cachix精确输出、完整liu-bigpc系统/HM候选、五个原生模板/恢复顺序与四项默认浏览器关联通过，见[tag-browser-nix67-install-results.json](tag-browser-nix67-install-results.json)。本轮只更新tag-browser-src及本项证据，原有输入法与010任务改动保留且包含在候选中、不纳入本轮提交；不执行系统switch、不切换PC/NUC服务，036配套服务待确认状态不变。发行唯一计数归tag-browser027/UCP1–UCP3，用户安装/重开归027/OP4。
