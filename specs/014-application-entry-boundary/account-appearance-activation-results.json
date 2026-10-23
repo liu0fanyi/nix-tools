@@ -1,0 +1,126 @@
+{
+  "owner": "tag-browser/specs/036-shared-appearance/R3",
+  "activated": true,
+  "fresh_confirmation": "可以切换",
+  "package": "/nix/store/a02haw2kvjjxaq6v234fcg4djg9kzfaj-tag-all-workspace-native-0.1.0",
+  "frontend": "/nix/store/ib0xaw1111w8qxba66lrprwfxqhmirgk-dufs-plus-appearance-release-frontend",
+  "manager_package": "/nix/store/vb0phbx5f56nnhgm7bc1xf03cmrwhy73-tag-native-release-manager",
+  "targets": {
+    "pc": {
+      "prepared": "/home/liou/.local/share/tag-all/native-version-releases/af316284273c17a58efd8329517c1a02337fee38f5e41e40e937c808e1ba33e6",
+      "activation": {
+        "phase": "activated",
+        "manifest": "af316284273c17a58efd8329517c1a02337fee38f5e41e40e937c808e1ba33e6",
+        "backup": "/home/liou/.local/share/tag-all/native-version-releases/af316284273c17a58efd8329517c1a02337fee38f5e41e40e937c808e1ba33e6/backup",
+        "database_restored": false
+      },
+      "live": {
+        "scope": "pc",
+        "units": {
+          "tag-all-core.service": {
+            "active": true,
+            "actual_rust_binary_verified": true,
+            "frontend_sha256_verified": true
+          }
+        },
+        "http_statuses": {
+          "5006": 200
+        }
+      },
+      "state": {
+        "scope": "pc",
+        "offline_backup_integrity_verified": true,
+        "backup_database_and_metadata_sha_verified": true,
+        "current_database_inode_preserved": true,
+        "database_restored": false,
+        "active_units": [
+          "tag-all-core.service",
+          "tag-all-tools.service",
+          "tag-native-files.service",
+          "tag-native-stack.target",
+          "tag-native-workspace.service"
+        ],
+        "original_upholds_restored": true,
+        "temporary_target_override_removed": true,
+        "only_program_and_frontend_replacement": true
+      }
+    },
+    "nuc": {
+      "prepared": "/home/liou/.local/share/tag-all/native-version-releases/d4436aa08b8e1fed850ff41265bd04301b6b5b838ae1b523e1573bb497313fe4",
+      "activation": {
+        "phase": "activated",
+        "manifest": "d4436aa08b8e1fed850ff41265bd04301b6b5b838ae1b523e1573bb497313fe4",
+        "backup": "/home/liou/.local/share/tag-all/native-version-releases/d4436aa08b8e1fed850ff41265bd04301b6b5b838ae1b523e1573bb497313fe4/backup",
+        "database_restored": false
+      },
+      "live": {
+        "scope": "nuc",
+        "units": {
+          "tag-nuc-private-core.service": {
+            "active": true,
+            "actual_rust_binary_verified": true,
+            "frontend_sha256_verified": true
+          },
+          "tag-nuc-readonly-core.service": {
+            "active": true,
+            "actual_rust_binary_verified": true,
+            "frontend_sha256_verified": true
+          }
+        },
+        "http_statuses": {
+          "5006": 401,
+          "5008": 401
+        },
+        "nas_authentication_smoke": true,
+        "workcdn_unauthenticated_status": 401
+      },
+      "state": {
+        "scope": "nuc",
+        "offline_backup_integrity_verified": true,
+        "backup_database_and_metadata_sha_verified": true,
+        "current_database_inode_preserved": true,
+        "database_restored": false,
+        "active_units": [
+          "tag-native-nuc.target",
+          "tag-nuc-private-core.service",
+          "tag-nuc-private-files.service",
+          "tag-nuc-private-tools.service",
+          "tag-nuc-readonly-core.service",
+          "tag-nuc-readonly-files.service",
+          "tag-nuc-readonly-tools.service"
+        ],
+        "original_upholds_restored": true,
+        "temporary_target_override_removed": true,
+        "only_program_and_frontend_replacement": true
+      }
+    }
+  },
+  "appearance_api": {
+    "pc": {
+      "authenticated_owner_get_status": 200,
+      "configuration_version": 1,
+      "applied_roles": 29,
+      "private_no_store": true,
+      "machine_contract_available": true,
+      "settings_page_exact_frontend_verified": true,
+      "migration_17_present": true,
+      "configuration_written": false
+    },
+    "nuc": {
+      "schemas": {
+        "private": {
+          "migration_17_present": true
+        },
+        "readonly": {
+          "migration_17_present": true
+        }
+      },
+      "anonymous_api_denied_on_both_entries": true,
+      "owner_credentials_or_user_profile_accessed": false
+    },
+    "limits": "Real owner-authenticated API checked on PC; NUC checked exact binary/frontend, schema, anonymous rejection and public authentication. No production credentials/profile read, and no theme edits made. Owner API, CAS, sync and dual-window UI exercised in original isolated gates."
+  },
+  "system_switch_by_agent": false,
+  "database_restored": false,
+  "production_theme_edited": false
+}
