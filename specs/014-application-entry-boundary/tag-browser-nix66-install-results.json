@@ -1,0 +1,26 @@
+{
+  "system_candidate": "/nix/store/7mbxjy8baa46xhw35ishj6nzrvx73l78-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "home_candidate": "/nix/store/7y0kpaigb499szz6gryig294163lzff6-home-manager-generation",
+  "browser_binary": "/nix/store/d9bkdh838aqajdbxc7r305km82jafid2-tag-browser-0.1.0",
+  "browser_source_revision": "609108a5faa12f6a615807418902839a0d6fdd03",
+  "changed_lock_nodes": [
+    "tag-browser-src"
+  ],
+  "five_native_templates_verified": true,
+  "default_target_link_verified": true,
+  "restore_after_reload_verified": true,
+  "system_menu_binary_and_release_version_verified": true,
+  "system_switch_by_agent": false,
+  "four_browser_mime_defaults_verified": true,
+  "preexisting_fcitx_and_tasks_changes_preserved_and_in_candidate": true,
+  "ci": {
+    "run_id": 39902375319,
+    "conclusion": "success",
+    "store_path": "/nix/store/d9bkdh838aqajdbxc7r305km82jafid2-tag-browser-0.1.0",
+    "cachix_verified": true,
+    "ci_matches_local_package": true,
+    "workflow_creates_pin": false
+  },
+  "release_tag": "v0.1.0-nix.66",
+  "user_manual_switch_pending": true
+}
