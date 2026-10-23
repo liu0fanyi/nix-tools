@@ -1,0 +1,32 @@
+{
+  "system_candidate": "/nix/store/z1xj43z9gjcn3v369qr5hv26r46r7v15-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "home_candidate": "/nix/store/7y0kpaigb499szz6gryig294163lzff6-home-manager-generation",
+  "browser_binary": "/nix/store/vji1l4j968g3zkyzribvlkzcca6bgrcj-tag-browser-0.1.0",
+  "browser_source_revision": "eac178ca5705b78e997d19d2411938a035953b04",
+  "changed_lock_nodes": [
+    "tag-browser-src"
+  ],
+  "five_native_templates_verified": true,
+  "default_target_link_verified": true,
+  "restore_after_reload_verified": true,
+  "system_menu_binary_and_release_version_verified": true,
+  "system_switch_by_agent": false,
+  "default_browser_fix_retained": true,
+  "generated_web_defaults": {
+    "x-scheme-handler/http": "tag-browser.desktop",
+    "x-scheme-handler/https": "tag-browser.desktop",
+    "text/html": "tag-browser.desktop",
+    "application/xhtml+xml": "tag-browser.desktop"
+  },
+  "release": "v0.1.0-nix.65",
+  "github_workflow": 39879711190,
+  "cachix_verified": true,
+  "workflow_creates_pin": false,
+  "existing_user_changes_preserved": true,
+  "remaining": "完整系统/HM候选已核验；用户普通终端 rerun 和关闭旧窗口重开试用尚待确认；Agent 未执行 switch",
+  "existing_unrelated_files_sha256": {
+    "home-manager/nix_modules/fcitx5.nix": "070cd7c57d20401b70a7bbfa4271aeed0cdbd114ec0f62dcd221b81c5763ce72",
+    "specs/010-host-configuration/tasks.md": "9557be6b4c56b39709192b4fd66ed7923a228627d22cc7516516f400d1076c01"
+  },
+  "candidate_includes_existing_uncommitted_host_changes": true
+}
