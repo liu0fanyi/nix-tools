@@ -407,3 +407,5 @@ H3候选已验证：普通系统完整构建通过，五个原生单元与已验
 浏览器nix.67收藏网址冲突补正已发行：297项Node、七组Firefox1842项断言、47份正式资源、CI/Cachix精确输出、完整liu-bigpc系统/HM候选、五个原生模板/恢复顺序与四项默认浏览器关联通过，见[tag-browser-nix67-install-results.json](tag-browser-nix67-install-results.json)。本轮只更新tag-browser-src及本项证据，原有输入法与010任务改动保留且包含在候选中、不纳入本轮提交；不执行系统switch、不切换PC/NUC服务，036配套服务待确认状态不变。发行唯一计数归tag-browser027/UCP1–UCP3，用户安装/重开归027/OP4。
 
 配色配套程序与前端已在用户本轮“可以切换”后通过固定原生事务激活PC/NUC双区，实际程序/前端、离线备份完整性/inode、原认证与公网入口、配色API/schema17核验通过，见[运行验收](account-appearance-activation-results.json)。仅替换程序与前端，未system switch、未恢复旧DB、未修改用户配色或读取凭据/profile。唯一计数归Tag Browser036/R3（已完成），真实窗口确认归036/U1。
+
+nix.68页面样式修正已发行：47份正式资源、297项Node、七组Firefox1842项断言、私有Release/CI/Cachix精确输出和完整liu-bigpc系统/HM候选通过，见[tag-browser-nix68-install-results.json](tag-browser-nix68-install-results.json)。PC/NUC前端按本轮保存确认完成固定事务激活，后端保持原包；实际入口/认证/备份/数据库inode及配色只读接口通过，见[前端激活](account-appearance-polish-activation-results.json)。只更新浏览器固定输入和本项证据，既有输入法/010改动保持并包含在候选、不纳入提交；Agent未system switch。唯一发行计数归Tag Browser036/SP1–SP4（剩余0），用户安装重开与视觉确认归027/OP4、036/U1。

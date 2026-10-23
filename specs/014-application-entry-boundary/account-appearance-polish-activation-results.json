@@ -1,0 +1,149 @@
+{
+  "package": "/nix/store/a02haw2kvjjxaq6v234fcg4djg9kzfaj-tag-all-workspace-native-0.1.0",
+  "frontend": "/nix/store/y9y8775gvf4pjq24cjg03wj1fjhi8dyg-dufs-plus-appearance-polish-frontend",
+  "manager_package": "/nix/store/vb0phbx5f56nnhgm7bc1xf03cmrwhy73-tag-native-release-manager",
+  "binary_sha256": "6d865c57901e7733808154c33ea3bf80b56d64fab58aa232155ddde279f47af3",
+  "frontend_index_sha256": "b6c451451341904412c34511257dd5da3468a247336cbb46277ab44d3844c7c0",
+  "activated": true,
+  "targets": {
+    "pc": {
+      "prepared": "/home/liou/.local/share/tag-all/native-version-releases/fa746733b1128057f93e493ae59949d657fb3369a0d408c166adb5459f3b0d8a",
+      "preview": {
+        "scope": "pc",
+        "package": "/nix/store/a02haw2kvjjxaq6v234fcg4djg9kzfaj-tag-all-workspace-native-0.1.0",
+        "frontend": "/nix/store/y9y8775gvf4pjq24cjg03wj1fjhi8dyg-dufs-plus-appearance-polish-frontend",
+        "core_units": [
+          "tag-all-core.service"
+        ],
+        "processing_idle": true,
+        "activated": false
+      },
+      "changed_only_program_and_frontend": true,
+      "activation": {
+        "phase": "activated",
+        "manifest": "fa746733b1128057f93e493ae59949d657fb3369a0d408c166adb5459f3b0d8a",
+        "backup": "/home/liou/.local/share/tag-all/native-version-releases/fa746733b1128057f93e493ae59949d657fb3369a0d408c166adb5459f3b0d8a/backup",
+        "database_restored": false
+      },
+      "live": {
+        "scope": "pc",
+        "units": {
+          "tag-all-core.service": {
+            "active": true,
+            "actual_rust_binary_verified": true,
+            "frontend_sha256_verified": true
+          }
+        },
+        "http_statuses": {
+          "5006": 200
+        }
+      },
+      "state": {
+        "scope": "pc",
+        "offline_backup_integrity_verified": true,
+        "backup_database_and_metadata_sha_verified": true,
+        "current_database_inode_preserved": true,
+        "database_restored": false,
+        "active_units": [
+          "tag-all-core.service",
+          "tag-all-tools.service",
+          "tag-native-files.service",
+          "tag-native-stack.target",
+          "tag-native-workspace.service"
+        ],
+        "original_upholds_restored": true,
+        "temporary_target_override_removed": true,
+        "only_program_and_frontend_replacement": true
+      }
+    },
+    "nuc": {
+      "prepared": "/home/liou/.local/share/tag-all/native-version-releases/2b4f62f631349e3bf1dbd417b6f6d190fb1558aaf15a1c99c68cf26e9945a776",
+      "preview": {
+        "scope": "nuc",
+        "package": "/nix/store/a02haw2kvjjxaq6v234fcg4djg9kzfaj-tag-all-workspace-native-0.1.0",
+        "frontend": "/nix/store/y9y8775gvf4pjq24cjg03wj1fjhi8dyg-dufs-plus-appearance-polish-frontend",
+        "core_units": [
+          "tag-nuc-private-core.service",
+          "tag-nuc-readonly-core.service"
+        ],
+        "processing_idle": true,
+        "activated": false
+      },
+      "changed_only_program_and_frontend": true,
+      "activation": {
+        "phase": "activated",
+        "manifest": "2b4f62f631349e3bf1dbd417b6f6d190fb1558aaf15a1c99c68cf26e9945a776",
+        "backup": "/home/liou/.local/share/tag-all/native-version-releases/2b4f62f631349e3bf1dbd417b6f6d190fb1558aaf15a1c99c68cf26e9945a776/backup",
+        "database_restored": false
+      },
+      "live": {
+        "scope": "nuc",
+        "units": {
+          "tag-nuc-private-core.service": {
+            "active": true,
+            "actual_rust_binary_verified": true,
+            "frontend_sha256_verified": true
+          },
+          "tag-nuc-readonly-core.service": {
+            "active": true,
+            "actual_rust_binary_verified": true,
+            "frontend_sha256_verified": true
+          }
+        },
+        "http_statuses": {
+          "5006": 401,
+          "5008": 401
+        },
+        "nas_authentication_smoke": true,
+        "workcdn_unauthenticated_status": 401
+      },
+      "state": {
+        "scope": "nuc",
+        "offline_backup_integrity_verified": true,
+        "backup_database_and_metadata_sha_verified": true,
+        "current_database_inode_preserved": true,
+        "database_restored": false,
+        "active_units": [
+          "tag-native-nuc.target",
+          "tag-nuc-private-core.service",
+          "tag-nuc-private-files.service",
+          "tag-nuc-private-tools.service",
+          "tag-nuc-readonly-core.service",
+          "tag-nuc-readonly-files.service",
+          "tag-nuc-readonly-tools.service"
+        ],
+        "original_upholds_restored": true,
+        "temporary_target_override_removed": true,
+        "only_program_and_frontend_replacement": true
+      }
+    }
+  },
+  "owner": "tag-browser/specs/036-shared-appearance/SP3",
+  "fresh_confirmation": "均已保存关闭，可以切换 PC 和 NUC",
+  "backend_unchanged": true,
+  "feature_live": {
+    "pc": {
+      "authenticated_owner_get_status": 200,
+      "configuration_version": 1,
+      "applied_roles": 29,
+      "private_no_store": true,
+      "machine_contract_available": true,
+      "settings_page_exact_frontend_verified": true,
+      "migration_17_present": true,
+      "configuration_written": false
+    },
+    "nuc": {
+      "schemas": {
+        "private": {
+          "migration_17_present": true
+        },
+        "readonly": {
+          "migration_17_present": true
+        }
+      },
+      "anonymous_api_denied_on_both_entries": true,
+      "owner_credentials_or_user_profile_accessed": false
+    },
+    "limits": "Real owner-authenticated API checked on PC; NUC checked exact binary/frontend, schema, anonymous rejection and public authentication. No production credentials/profile read, and no theme edits made. Owner API, CAS, sync and dual-window UI exercised in original isolated gates."
+  }
+}
