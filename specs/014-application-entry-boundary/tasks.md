@@ -435,3 +435,5 @@ nix.78及PC/NUC柔和悬停前端交付完成。47份资源、298项Node、七�
 nix.79及PC／NUC侧栏配色前端交付完成。47份资源、298项Node、七组Firefox2028项断言零失败/TODO；CI/签名Cachix/latest Pin保留1版、完整PC/HM候选和服务注册/菜单/MIME通过。本轮保存确认后仅前端激活，实际程序/资源/认证/备份/DB inode通过。未写账号主题或用户profile，无后端替换/DB恢复/system switch。APR1–APR5剩余0，用户安装重开与视觉确认保留。 见[tag-browser-nix79-install-results.json](tag-browser-nix79-install-results.json)。仅更新tag-browser-src锁输入及本项证据，原有fcitx5/010修改保留且不纳入提交。
 
 nix.80视频定位浏览器发行候选已通过：298项Node、2043项七组Firefox、47份包内资源、私有Release/CI/Cachix签名/latest Pin及完整PC/HM候选、五个原生模板/恢复顺序/四类浏览器MIME。见[tag-browser-nix80-install-results.json](tag-browser-nix80-install-results.json)。仅tag-browser-src锁输入与本项证据变动，既有fcitx5/010修改保留；Agent未system switch。PC/NUC前端仍待本轮保存关闭确认，唯一发行计数归Tag Browser027/VLR1–VLR3。
+
+nix.81浏览器发行完成：298项Node、七组Firefox2051项断言零失败/TODO、47份正式资源、私有Release/CI/Cachix签名/latest Pin保留1版及完整PC/HM候选通过。PC／NUC新版固定前端已按本轮保存确认激活，实际程序/资源/认证/备份/DB inode核验通过；LSR1–LSR3发行剩余0。后端/账号主题/用户profile保持，无系统switch；用户安装重开与原视频试用待确认。 见[tag-browser-nix81-install-results.json](tag-browser-nix81-install-results.json)。消费者仅更新tag-browser-src锁输入及本项证据，既有fcitx5/010修改保留且不纳入本次提交。五个原生模板、default target链接、恢复钩子顺序及四类浏览器MIME核验通过。
