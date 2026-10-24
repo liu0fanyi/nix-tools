@@ -431,3 +431,5 @@ nix.76 测试 profile 隔离补丁已发行：复用已核验 nix.75 原归档�
 nix.77及PC/NUC配套前端交付完成。47份资源、298项Node、七组Firefox1971项断言零失败/TODO；CI/签名Cachix/latest Pin保留1版、完整PC/HM候选和原生服务注册/菜单/MIME核验通过。本轮保存确认后仅前端激活，程序/资源/认证/备份/DB inode通过。未改后端/账号主题或用户profile，Agent未system switch；用户安装与视觉观察保持。唯一阶段FSR1–FSR5剩余0。 见[tag-browser-nix77-install-results.json](tag-browser-nix77-install-results.json)。仅更新tag-browser-src锁输入及本项证据；既有fcitx5/010修改保留。
 
 nix.78及PC/NUC柔和悬停前端交付完成。47份资源、298项Node、七组Firefox1992项断言零失败/TODO；CI/签名Cachix/latest Pin保留1版、完整PC/HM候选与服务注册/菜单/MIME通过。本轮保存确认后仅前端激活，程序/资源/认证/备份/inode通过。账号主题未写入，一键配色由用户显式使用；后端/profile保持，Agent未system switch。唯一阶段HVR1–HVR5剩余0，用户安装/视觉确认保留。 见[tag-browser-nix78-install-results.json](tag-browser-nix78-install-results.json)。仅更新tag-browser-src及本项证据；既有fcitx5/010修改保留。
+
+nix.79及PC／NUC侧栏配色前端交付完成。47份资源、298项Node、七组Firefox2028项断言零失败/TODO；CI/签名Cachix/latest Pin保留1版、完整PC/HM候选和服务注册/菜单/MIME通过。本轮保存确认后仅前端激活，实际程序/资源/认证/备份/DB inode通过。未写账号主题或用户profile，无后端替换/DB恢复/system switch。APR1–APR5剩余0，用户安装重开与视觉确认保留。 见[tag-browser-nix79-install-results.json](tag-browser-nix79-install-results.json)。仅更新tag-browser-src锁输入及本项证据，原有fcitx5/010修改保留且不纳入提交。
