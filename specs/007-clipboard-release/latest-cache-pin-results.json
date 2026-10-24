@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-24",
+  "cache": "liu0fanyi-nix",
+  "pin": {
+    "createdOn": "2026-10-24T10:09:16.82991Z",
+    "keep": {
+      "contents": 1,
+      "tag": "Revisions"
+    },
+    "lastRevision": {
+      "artifacts": [],
+      "createdOn": "2026-10-24T10:14:49.26247Z",
+      "orphaned": false,
+      "revision": 2,
+      "storePath": "/nix/store/jdchs28f8h7cghn4j9fpvhypwl6gs1cr-clipboard-sync-0.2.0"
+    },
+    "name": "clipboard-sync-latest"
+  },
+  "remote_verified_anonymously": true,
+  "regression": "upload/metadata failure preserves previous Pin; Pin failure is fatal; CI stale source cannot overwrite latest",
+  "ci_run": 40085098007,
+  "ci_conclusion": "success",
+  "runtime_output_unchanged": true,
+  "system_switch_executed": false
+}
