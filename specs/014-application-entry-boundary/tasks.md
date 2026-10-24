@@ -433,3 +433,5 @@ nix.77及PC/NUC配套前端交付完成。47份资源、298项Node、七组Firef
 nix.78及PC/NUC柔和悬停前端交付完成。47份资源、298项Node、七组Firefox1992项断言零失败/TODO；CI/签名Cachix/latest Pin保留1版、完整PC/HM候选与服务注册/菜单/MIME通过。本轮保存确认后仅前端激活，程序/资源/认证/备份/inode通过。账号主题未写入，一键配色由用户显式使用；后端/profile保持，Agent未system switch。唯一阶段HVR1–HVR5剩余0，用户安装/视觉确认保留。 见[tag-browser-nix78-install-results.json](tag-browser-nix78-install-results.json)。仅更新tag-browser-src及本项证据；既有fcitx5/010修改保留。
 
 nix.79及PC／NUC侧栏配色前端交付完成。47份资源、298项Node、七组Firefox2028项断言零失败/TODO；CI/签名Cachix/latest Pin保留1版、完整PC/HM候选和服务注册/菜单/MIME通过。本轮保存确认后仅前端激活，实际程序/资源/认证/备份/DB inode通过。未写账号主题或用户profile，无后端替换/DB恢复/system switch。APR1–APR5剩余0，用户安装重开与视觉确认保留。 见[tag-browser-nix79-install-results.json](tag-browser-nix79-install-results.json)。仅更新tag-browser-src锁输入及本项证据，原有fcitx5/010修改保留且不纳入提交。
+
+nix.80视频定位浏览器发行候选已通过：298项Node、2043项七组Firefox、47份包内资源、私有Release/CI/Cachix签名/latest Pin及完整PC/HM候选、五个原生模板/恢复顺序/四类浏览器MIME。见[tag-browser-nix80-install-results.json](tag-browser-nix80-install-results.json)。仅tag-browser-src锁输入与本项证据变动，既有fcitx5/010修改保留；Agent未system switch。PC/NUC前端仍待本轮保存关闭确认，唯一发行计数归Tag Browser027/VLR1–VLR3。
