@@ -423,3 +423,5 @@ nix.73取色器与自适应顶栏已发行：正式包非无头Firefox原生取�
 nix.74预览/实际状态同源浏览器已发行：1946项七组Firefox、297项Node、47份包内资源、CI/Cachix精确输出与完整PC/HM候选、五个原生模板/恢复顺序和四类MIME关联通过，见[tag-browser-nix74-install-results.json](tag-browser-nix74-install-results.json)。仅更新tag-browser-src锁节点及本项证据；既有输入法与010任务修改保持且包含在候选，不纳入提交。未system switch；配套PC/NUC前端的保存确认/激活独立执行，唯一发行计数Tag Browser036/SSR1–SSR5。
 
 预览/实际状态同源配套固定前端已获本轮保存关闭确认并在PC/NUC完成原生事务激活，实际入口/摘要、9份HTTP资源、配色只读接口、离线备份/DB inode和原认证/公网边界通过，见[前端激活](shared-state-frontend-activation-results.json)。后端、生产主题及独立应用保持，无DB恢复或系统switch；nix.74浏览器用户安装仍独立。唯一发行计数Tag Browser036/SSR1–SSR5剩余0。
+
+nix.75原生配色读取修正已发行：298项Node、1957项七组Firefox、47份包内资源、私有Release/CI/Cachix精确输出及完整PC/HM候选、五个原生模板/恢复顺序和四类浏览器MIME通过。见[tag-browser-nix75-install-results.json](tag-browser-nix75-install-results.json)。仅更新tag-browser-src及本项证据，原有输入法/010修改保持且包含于候选、不纳入提交；未system switch，本轮不停止或切换PC/NUC服务、不改网页或生产主题。唯一发行计数Tag Browser036/XRR1–XRR4剩余0；用户正常安装重开和视觉观察保持。
