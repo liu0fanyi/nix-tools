@@ -1,0 +1,42 @@
+{
+  "system_candidate": "/nix/store/n9fz6zq648b38clhhbfjffmjd4hiqn8x-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "home_candidate": "/nix/store/7y0kpaigb499szz6gryig294163lzff6-home-manager-generation",
+  "browser_binary": "/nix/store/3j2ibxrr5a56zfidc9g28knl9zv05mpr-tag-browser-0.1.0",
+  "browser_source_revision": "35f9166831011f9c0b3bcc9a16d91ee98f96a59b",
+  "changed_lock_nodes": [
+    "tag-browser-src"
+  ],
+  "five_native_templates_verified": true,
+  "default_target_link_verified": true,
+  "restore_after_reload_verified": true,
+  "system_menu_binary_and_release_version_verified": true,
+  "system_switch_by_agent": false,
+  "four_browser_mime_defaults_verified": true,
+  "preexisting_fcitx_and_tasks_changes_preserved_and_in_candidate": true,
+  "release_tag": "v0.1.0-nix.73",
+  "ci": {
+    "run_id": 40058269044,
+    "conclusion": "success",
+    "store_path": "/nix/store/3j2ibxrr5a56zfidc9g28knl9zv05mpr-tag-browser-0.1.0",
+    "cachix_verified": true,
+    "ci_matches_local_package": true,
+    "workflow_creates_pin": false
+  },
+  "formal_native_picker": {
+    "missing_schema_reproduces_abort": true,
+    "fixed_native_gtk_picker_created": true,
+    "actual_wrapper_schema_path": "/nix/store/ipf3pkb2853bklrmlq3f59pxhyrh44p4-gtk+3-3.24.52/share/gsettings-schemas/gtk+3-3.24.52",
+    "gsettings_backend": "memory",
+    "production_access": false,
+    "native_browser": {
+      "non_headless_firefox": true,
+      "native_color_dialog_visible": true,
+      "browser_alive_after_picker": true,
+      "profile_isolated": true
+    },
+    "package": "/nix/store/3j2ibxrr5a56zfidc9g28knl9zv05mpr-tag-browser-0.1.0"
+  },
+  "user_manual_switch_pending": true,
+  "production_services_changed": true,
+  "frontend_only_update": true
+}

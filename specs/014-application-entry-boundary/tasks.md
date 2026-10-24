@@ -417,3 +417,5 @@ nix.70顶部/连续背景发行已验证：七组Firefox1872项断言、47份包
 nix.71细粒度配色已发行：1875项七组Firefox断言、47份包内资源、私有Release/CI/Cachix精确输出、完整liu-bigpc系统/HM候选及五个原生服务注册通过，见[tag-browser-nix71-install-results.json](tag-browser-nix71-install-results.json)。PC/NUC程序和前端经本轮保存确认激活，实际资源/schema/认证/备份/DB inode核验通过，见[配套激活](granular-appearance-activation-results.json)。旧版回退限制经用户明确接受，不将旧配色兼容性标为通过。保留原有输入法/010修改并包含在候选，不纳入提交；Agent未system switch。唯一发行计数归Tag Browser036/ER1–ER5（剩余0），用户重开/视觉仍归027/OP4、036/U1。
 
 nix.72统一顶部按钮及侧栏布局已发行，1903项七组Firefox断言/47份正式资产/CI/Cachix精确输出、完整PC系统/HM及五个原生模板通过，见[安装候选](tag-browser-nix72-install-results.json)。PC/NUC仅替换固定前端，经当轮保存确认与真实资源/认证/离线备份/DB inode核验，见[前端激活](unified-appearance-activation-results.json)。既有输入法/010改动保持且包含在候选，不纳入本次提交；Agent未system switch。唯一发行计数Tag Browser036/UR1–UR5剩余0，原有安装/视觉/真实验收观察项保持。
+
+nix.73取色器与自适应顶栏已发行：正式包非无头Firefox原生取色器、1906项七组Firefox断言/47份正式资产、CI/Cachix精确输出及完整PC系统/HM和五个原生模板通过，见[安装候选](tag-browser-nix73-install-results.json)。PC/NUC仅替换固定前端，经当轮保存确认及实际资源/认证/备份/DB inode核验，见[前端激活](gtk-adaptive-activation-results.json)。既有输入法/010改动保持且包含在候选，不纳入本次提交；Agent未system switch。唯一发行计数Tag Browser036/KR1–KR5剩余0，原有用户安装/视觉/真实业务验收项保持。
