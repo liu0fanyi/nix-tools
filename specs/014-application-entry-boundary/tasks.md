@@ -427,3 +427,5 @@ nix.74预览/实际状态同源浏览器已发行：1946项七组Firefox、297�
 nix.75原生配色读取修正已发行：298项Node、1957项七组Firefox、47份包内资源、私有Release/CI/Cachix精确输出及完整PC/HM候选、五个原生模板/恢复顺序和四类浏览器MIME通过。见[tag-browser-nix75-install-results.json](tag-browser-nix75-install-results.json)。仅更新tag-browser-src及本项证据，原有输入法/010修改保持且包含于候选、不纳入提交；未system switch，本轮不停止或切换PC/NUC服务、不改网页或生产主题。唯一发行计数Tag Browser036/XRR1–XRR4剩余0；用户正常安装重开和视觉观察保持。
 
 nix.76 测试 profile 隔离补丁已发行：复用已核验 nix.75 原归档，47份运行资源不变；8项启动参数/隔离、4项缓存流程回归、真实中文/GTK/默认浏览器、CI/签名缓存/latest Pin和完整PC/HM候选通过，见[tag-browser-nix76-install-results.json](tag-browser-nix76-install-results.json)。仅更新 tag-browser-src 锁输入及本项证据；保留既有输入法/010修改，不执行系统switch或PC/NUC服务切换。唯一发行计数Tag Browser007/IR1–IR4剩余0。
+
+nix.77及PC/NUC配套前端交付完成。47份资源、298项Node、七组Firefox1971项断言零失败/TODO；CI/签名Cachix/latest Pin保留1版、完整PC/HM候选和原生服务注册/菜单/MIME核验通过。本轮保存确认后仅前端激活，程序/资源/认证/备份/DB inode通过。未改后端/账号主题或用户profile，Agent未system switch；用户安装与视觉观察保持。唯一阶段FSR1–FSR5剩余0。 见[tag-browser-nix77-install-results.json](tag-browser-nix77-install-results.json)。仅更新tag-browser-src锁输入及本项证据；既有fcitx5/010修改保留。
