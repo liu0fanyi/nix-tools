@@ -42,7 +42,22 @@
     "four_browser_mime_defaults_verified": true,
     "preexisting_fcitx_and_tasks_changes_preserved_and_in_candidate": true
   },
-  "frontend_activated": false,
+  "frontend_activated": true,
   "preexisting_user_edits_preserved": true,
-  "system_switch_by_agent": false
+  "system_switch_by_agent": false,
+  "frontend_store_path": "/nix/store/1jw82x5aidddnkcdhvhh58dys45pynfz-dufs-plus-knowledge-cards-frontend",
+  "frontend_activation": {
+    "pc": true,
+    "nuc": true,
+    "fresh_saved_editor_confirmation": true,
+    "remote_owned_verification": "/tmp/native-sidebar-upload-native-verification-3VxrX3mY",
+    "system_switch_by_agent": false
+  },
+  "frontend_http_verification": {
+    "pc_http_assets_verified": 26,
+    "knowledge_card_files_preserved": 5,
+    "production_upload_performed": false
+  },
+  "user_system_switch_pending": true,
+  "user_installed_browser_acceptance_pending": true
 }

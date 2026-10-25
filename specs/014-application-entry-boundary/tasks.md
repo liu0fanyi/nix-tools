@@ -438,4 +438,4 @@ nix.80视频定位浏览器发行候选已通过：298项Node、2043项七组Fir
 
 nix.81浏览器发行完成：298项Node、七组Firefox2051项断言零失败/TODO、47份正式资源、私有Release/CI/Cachix签名/latest Pin保留1版及完整PC/HM候选通过。PC／NUC新版固定前端已按本轮保存确认激活，实际程序/资源/认证/备份/DB inode核验通过；LSR1–LSR3发行剩余0。后端/账号主题/用户profile保持，无系统switch；用户安装重开与原视频试用待确认。 见[tag-browser-nix81-install-results.json](tag-browser-nix81-install-results.json)。消费者仅更新tag-browser-src锁输入及本项证据，既有fcitx5/010修改保留且不纳入本次提交。五个原生模板、default target链接、恢复钩子顺序及四类浏览器MIME核验通过。
 
-nix.82侧栏多文件上传：消费者仅更新tag-browser-src锁到正式发行提交024e0d9；CI/Cachix精确输出与可信签名、仅保留最新版Pin、完整PC/HM候选、MIME及五个原生模板/恢复顺序通过。原有fcitx5与010改动保留且不纳入提交；未system switch。配套前端已准备，等待当轮编辑保存关闭确认。唯一发行计数归Tag Browser012/UPR1–UPR5，当前3/5，见[tag-browser-nix82-install-results.json](tag-browser-nix82-install-results.json)。
+nix.82侧栏多文件上传：消费者仅更新tag-browser-src锁到正式发行提交024e0d9；CI/Cachix精确输出与可信签名、仅保留最新版Pin、完整PC/HM候选、MIME及五个原生模板/恢复顺序通过。原有fcitx5与010改动保留且不纳入提交；未system switch。本轮保存关闭确认后PC/NUC配套前端已激活，实际进程/资源、离线备份、DB inode与认证核验通过，知识卡保留。用户仍需在普通终端安装并重开浏览器验收。唯一发行计数归Tag Browser012/UPR1–UPR5，5/5完成，剩余0项，见[tag-browser-nix82-install-results.json](tag-browser-nix82-install-results.json)。
