@@ -14,3 +14,5 @@
 本轮固定组合前端 kcpc6pvnzfis3ds01dv23qjk7ircawv8 在PC／NUC激活通过；后端保持1293mxwc61r3wmp84c1sx5b31a0mwkg4。实际进程、备份校验、DB身份、认证保护与PC实际六项静态资源摘要通过。见[web-release-results.json](web-release-results.json)。
 
 本轮知识卡共享组件发行：PC固定路径krc8vqrkf6mn7c0si3jgjkmisd0hj32a已可信签名缓存并latest保留1版，其他4个Pin不变；完整liu-bigpc系统/HM候选和菜单/快捷键/原生模板/MIME通过，未switch。组合前端qmzg4wkgdny1rpgzqac8xkb2zzvzmqjl已按本轮编辑保存确认激活PC/NUC双区，实际资源/进程/备份/认证/DB身份通过；跨仓阶段计数归知识卡001/T014。两份既有用户修改摘要未变。
+
+知识卡002/C4的单卡内交互网页已按本轮保存确认完成PC/NUC激活，固定组合前端3rl7mfcccgwl650n84dfakhkr3qq4cdn，后端不变，其他288份前端资源未变；实际HTTP摘要/进程/备份/DB身份/认证通过。PC消费者、Cachix及系统候选维持krc8；本轮未switch或安装手机。阶段计数仅在知识卡002。

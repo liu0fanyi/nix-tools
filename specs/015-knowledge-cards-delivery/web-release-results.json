@@ -1,22 +1,23 @@
 {
-  "frontend": "/nix/store/qmzg4wkgdny1rpgzqac8xkb2zzvzmqjl-dufs-plus-knowledge-cards-frontend",
+  "frontend": "/nix/store/3rl7mfcccgwl650n84dfakhkr3qq4cdn-dufs-plus-knowledge-cards-frontend",
+  "feature": "single card internal knowledge and interaction",
+  "sample_url": "http://nuc.local:5006/dist/knowledge-cards/index.html?view=example",
   "activation": {
     "pc": true,
     "nuc": true,
     "fresh_saved_editor_confirmation": true,
-    "remote_owned_verification": "/tmp/knowledge-cards-shared-native-verification-lGuJHmwD",
+    "remote_owned_verification": "/tmp/knowledge-cards-inline-native-verification-BkIqf0Tx",
     "system_switch_by_agent": false
   },
   "served_assets": {
     "pc_http_assets_sha256": {
-      "index.html": "3797210ce222b87573ab0704d10c9ed6e860d52ad44dcb7e22f7345417d50db7",
-      "assets/index-DVjxHqey.css": "782919354a1f5243abf12b4703a41303dd2634c8ab4ff7444c0bf5fc5811bfba",
-      "assets/event-CZfEy-aX.js": "6940a3e60c43004950ad6dc5017b98b4976b96faf5e79e3f092fb923487298c5",
-      "assets/index-Bx-c_eMD.js": "9efb0d57499b44fcd74cfe92128f03c2b12cc34ada526b587245b8ad22a304fc",
-      "assets/tauri-BZ2-yMx3.js": "44488156957062b83b296ad36b68373be8d283bc9aabbbf70aa9000a3e18a4b8"
+      "index.html": "edde8c96e44535962668bb33b3685114907dcb24e68af456ebd53343316988c1",
+      "assets/index-DZGcH8Z7.css": "e4b650ceeb2463cba02f433ec9282ae6ac1d3037868706c49d1d1e779d3ba1e4",
+      "assets/tauri-_4zWdjYe.js": "fac10af24a65bbae473e94e8465dd39d4f76eddca50e60db6acf6374b6bc4a0b",
+      "assets/index-Dij46sNR.js": "1bd1dc49f61104250f9605b4396a06a07be5e321ce8aeb99e356a7a73d9f54c3",
+      "assets/event-DQakGulI.js": "e49c75de660690a67c66e8cbeaac1d36cab98046142da0c4f4f35a1efcb4a6bd"
     },
-    "all_match_fixed_candidate": true,
-    "credentials_used": false
+    "all_match_fixed_candidate": true
   },
   "backend_unchanged": true,
   "nuc_authenticated_http_tested": false,
@@ -42,6 +43,7 @@
     "old_package": "/nix/store/1293mxwc61r3wmp84c1sx5b31a0mwkg4-tag-all-workspace-native-0.1.0",
     "new_package": "/nix/store/1293mxwc61r3wmp84c1sx5b31a0mwkg4-tag-all-workspace-native-0.1.0"
   },
+  "outside_knowledge_cards_files_unchanged": 288,
   "pc_live": {
     "scope": "pc",
     "units": {
