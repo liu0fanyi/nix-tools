@@ -1,0 +1,48 @@
+{
+  "release_tag": "v0.1.0-nix.82",
+  "source_product_task_owner": "tag-browser/specs/012-todo-file-actions/tasks.md UPR1-UPR5",
+  "ci": {
+    "run_id": 40214703326,
+    "conclusion": "success",
+    "store_path": "/nix/store/zjs9wd3qkhyb4vcrla38lzd0s7i8r13r-tag-browser-0.1.0",
+    "cachix_verified": true,
+    "ci_matches_local_package": true,
+    "workflow_creates_pin": true,
+    "latest_pin": {
+      "createdOn": "2026-10-24T10:09:14.207482Z",
+      "keep": {
+        "contents": 1,
+        "tag": "Revisions"
+      },
+      "lastRevision": {
+        "artifacts": [],
+        "createdOn": "2026-10-25T17:05:51.791458Z",
+        "orphaned": false,
+        "revision": 9,
+        "storePath": "/nix/store/zjs9wd3qkhyb4vcrla38lzd0s7i8r13r-tag-browser-0.1.0"
+      },
+      "name": "tag-browser-latest"
+    },
+    "other_application_pins_unchanged": true,
+    "trusted_signature_verified": true
+  },
+  "system": {
+    "system_candidate": "/nix/store/d4a5kxzhzw6z6bbphz9vzgbqrskhra4d-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+    "home_candidate": "/nix/store/jmd9khpiy6lnyxbmms1zmw4iav87i6j3-home-manager-generation",
+    "browser_binary": "/nix/store/zjs9wd3qkhyb4vcrla38lzd0s7i8r13r-tag-browser-0.1.0",
+    "browser_source_revision": "024e0d9edb07014596513fc1025de1a79d022285",
+    "changed_lock_nodes": [
+      "tag-browser-src"
+    ],
+    "five_native_templates_verified": true,
+    "default_target_link_verified": true,
+    "restore_after_reload_verified": true,
+    "system_menu_binary_and_release_version_verified": true,
+    "system_switch_by_agent": false,
+    "four_browser_mime_defaults_verified": true,
+    "preexisting_fcitx_and_tasks_changes_preserved_and_in_candidate": true
+  },
+  "frontend_activated": false,
+  "preexisting_user_edits_preserved": true,
+  "system_switch_by_agent": false
+}

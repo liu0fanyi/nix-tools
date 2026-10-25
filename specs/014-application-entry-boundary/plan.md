@@ -366,3 +366,5 @@ P2完成、剩余0；总体4/5，E5当前2/3，剩余1项P3真实验收与收尾
 默认浏览器配套复用 liu-bigpc host 的 HM override，不修改共享 home.nix 的其他主机默认。
 与浏览器007/DB联动核验桌面 Exec 与启动器 MOZ_APP_LAUNCHER 一致。沿用 Constitution
 Check：PC 只读构建完整系统/HM、保留五个原生单元、不执行 switch 或修改用户 profile。
+
+nix.82消费者宪法核对：仅固定tag-browser-src及发布证据，不改变其他输入、桌面默认应用、用户原有fcitx5/010编辑、生产后端或系统激活。构建只在PC，候选验证保留原生程序恢复；前端生产停服仍要求本轮保存关闭确认。无外部参考引入，沿用既有私有源与单产品发行计数。
