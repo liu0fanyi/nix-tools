@@ -1,0 +1,96 @@
+{
+  "frontend": "/nix/store/kcpc6pvnzfis3ds01dv23qjk7ircawv8-dufs-plus-knowledge-cards-frontend",
+  "activation": {
+    "pc": true,
+    "nuc": true,
+    "fresh_saved_editor_confirmation": true,
+    "remote_owned_verification": "/tmp/knowledge-cards-composite-native-verification-DCcxaSRM",
+    "system_switch_by_agent": false
+  },
+  "served_assets": {
+    "served_assets_match": [
+      "assets/core-C1V3-PH7.js",
+      "assets/event-BdKy0adX.js",
+      "assets/index-CulUijla.js",
+      "assets/index-_iNTKa6p.css",
+      "assets/tauri-DSN0WNTv.js",
+      "index.html"
+    ]
+  },
+  "backend_unchanged": true,
+  "nuc_authenticated_http_tested": false,
+  "nuc_unauthenticated_access_remains_401": true,
+  "pc_live": {
+    "scope": "pc",
+    "units": {
+      "tag-all-core.service": {
+        "knowledge_cards_assets_verified": true,
+        "active": true,
+        "actual_rust_binary_verified": true,
+        "frontend_sha256_verified": true
+      }
+    },
+    "http_statuses": {
+      "5006": 200
+    }
+  },
+  "pc_state": {
+    "scope": "pc",
+    "offline_backup_integrity_verified": true,
+    "backup_database_and_metadata_sha_verified": true,
+    "current_database_inode_preserved": true,
+    "database_restored": false,
+    "active_units": [
+      "tag-all-core.service",
+      "tag-all-tools.service",
+      "tag-native-files.service",
+      "tag-native-stack.target",
+      "tag-native-workspace.service"
+    ],
+    "original_upholds_restored": true,
+    "temporary_target_override_removed": true,
+    "only_frontend_replacement": true
+  },
+  "nuc_live": {
+    "scope": "nuc",
+    "units": {
+      "tag-nuc-private-core.service": {
+        "knowledge_cards_assets_verified": true,
+        "active": true,
+        "actual_rust_binary_verified": true,
+        "frontend_sha256_verified": true
+      },
+      "tag-nuc-readonly-core.service": {
+        "knowledge_cards_assets_verified": true,
+        "active": true,
+        "actual_rust_binary_verified": true,
+        "frontend_sha256_verified": true
+      }
+    },
+    "http_statuses": {
+      "5006": 401,
+      "5008": 401
+    },
+    "nas_authentication_smoke": true,
+    "workcdn_unauthenticated_status": 401
+  },
+  "nuc_state": {
+    "scope": "nuc",
+    "offline_backup_integrity_verified": true,
+    "backup_database_and_metadata_sha_verified": true,
+    "current_database_inode_preserved": true,
+    "database_restored": false,
+    "active_units": [
+      "tag-native-nuc.target",
+      "tag-nuc-private-core.service",
+      "tag-nuc-private-files.service",
+      "tag-nuc-private-tools.service",
+      "tag-nuc-readonly-core.service",
+      "tag-nuc-readonly-files.service",
+      "tag-nuc-readonly-tools.service"
+    ],
+    "original_upholds_restored": true,
+    "temporary_target_override_removed": true,
+    "only_frontend_replacement": true
+  }
+}
