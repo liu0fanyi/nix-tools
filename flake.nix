@@ -158,6 +158,7 @@
       tag-browser-binary-path = inputs.tag-browser-src.lib.${system}.binaryPath;
       screen-cut-binary-path = (import ./packages/screen-cut.nix { inherit pkgs; }).binaryPath;
       screen-mark-binary-path = (import ./packages/screen-mark.nix { inherit pkgs; }).binaryPath;
+      knowledge-cards-binary-path = (import ./packages/knowledge-cards.nix { inherit pkgs; }).binaryPath;
 
       homeConfigurations = {
         "liou" = mkHomeConfig "liou" [ ];

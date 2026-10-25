@@ -161,6 +161,7 @@ let
   };
 
   screenCut = import ../../packages/screen-cut.nix { inherit pkgs; };
+  knowledgeCards = import ../../packages/knowledge-cards.nix { inherit pkgs; };
   screenRecordEdit = pkgs.writeShellApplication {
     name = "screen-record-edit";
     text = ''
@@ -297,6 +298,7 @@ let
                 // 一键切换 Mako 勿扰模式，并清除当前可见通知。
                 Mod+Shift+N { spawn "mako-dnd" "toggle"; }
             ${lib.optionalString isLiuBigpc ''
+                Ctrl+Alt+K hotkey-overlay-title="新建知识卡" { spawn "${knowledgeCards}/bin/knowledge-cards"; }
                 // 截图沿用 Fn+I (Print)，录屏用 Fn+O (Scroll_Lock)；Shift统一表示结束后编辑。
                 Shift+Print hotkey-overlay-title="截图后编辑 (Screen Mark)" { spawn "${screenshotEdit}/bin/screenshot-edit"; }
                 Scroll_Lock cooldown-ms=1000 hotkey-overlay-title="开始/停止录屏" { spawn "${screenRecordToggle}/bin/screen-record-toggle"; }
@@ -414,7 +416,7 @@ in
         # such as the official Linux WeChat client.
         pkgs.xwayland-satellite
       ]
-      ++ lib.optionals isLiuBigpc [ pkgs.satty screenMark screenshotEdit pkgs.wf-recorder screenRecordToggle screenRecordAudio screenRecordEdit ]
+      ++ lib.optionals isLiuBigpc [ knowledgeCards pkgs.satty screenMark screenshotEdit pkgs.wf-recorder screenRecordToggle screenRecordAudio screenRecordEdit ]
       ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [ screenCut ]
       ++ lib.optionals (!isNixOS) [
         niriPackage

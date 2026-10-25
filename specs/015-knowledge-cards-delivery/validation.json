@@ -1,0 +1,13 @@
+{
+  "system_candidate": "/nix/store/afrqffw9gs57zhxnylpg6mkr0sj9cwcn-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "home_candidate": "/nix/store/c7rw2h2zrrg37ykw0mznn6s51sqygzc3-home-manager-generation",
+  "knowledge_cards_binary": "/nix/store/3rnfjwzj1lncr35v5a3k3bd9zvxssrq6-knowledge-cards-0.1.0",
+  "menu_and_shortcut_exact_package_verified": true,
+  "niri_config_valid": true,
+  "five_native_templates_verified": true,
+  "default_target_link_verified": true,
+  "restore_after_reload_verified": true,
+  "four_browser_mime_defaults_verified": true,
+  "preexisting_user_modifications_preserved": true,
+  "system_switch_by_agent": false
+}

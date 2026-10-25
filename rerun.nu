@@ -203,6 +203,19 @@ def main [
             error make { msg: $"从 Cachix 预取 Screen Mark 失败：\n($screen_mark_copy.stderr | str trim)" }
         }
         print $"(ansi green)✓ Screen Mark 已命中 Cachix: ($screen_mark_path)(ansi reset)"
+
+        print $"(ansi cyan)Checking Knowledge Cards binary cache...(ansi reset)"
+        let cards_eval = (nix eval --raw $"($env.PWD)#knowledge-cards-binary-path" | complete)
+        if $cards_eval.exit_code != 0 { error make { msg: $"无法求值 Knowledge Cards store path：\n($cards_eval.stderr | str trim)" } }
+        let cards_path = ($cards_eval.stdout | str trim)
+        if ($cards_path | is-empty) { error make { msg: "Knowledge Cards store path 为空，停止部署" } }
+        let cards_cache = "https://liu0fanyi-nix.cachix.org"
+        let cards_check = (nix path-info --refresh --store $cards_cache $cards_path | complete)
+        if $cards_check.exit_code != 0 { error make { msg: $"Cachix 尚未发布 Knowledge Cards：($cards_path)\n($cards_check.stderr | str trim)" } }
+        let cards_copy = (nix copy --refresh --no-recursive --from $cards_cache $cards_path | complete)
+        if $cards_copy.exit_code != 0 { error make { msg: $"从 Cachix 预取 Knowledge Cards 失败：\n($cards_copy.stderr | str trim)" } }
+        print $"(ansi green)✓ Knowledge Cards 已命中 Cachix: ($cards_path)(ansi reset)"
+
     }
 
     if $use_nixos {
