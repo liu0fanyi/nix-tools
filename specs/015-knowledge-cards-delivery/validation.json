@@ -1,7 +1,7 @@
 {
-  "system_candidate": "/nix/store/byqam285j1izk35j5sxirpbz69gi7lh3-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
-  "home_candidate": "/nix/store/di614xv7vih7q02019ik231j7mdagy6m-home-manager-generation",
-  "knowledge_cards_binary": "/nix/store/5azqzys296xs6pl76fy87gl5n2kbv5lk-knowledge-cards-0.1.0",
+  "system_candidate": "/nix/store/0fydjss5y1yc6llcbx2gfrcnjr2ig6fd-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "home_candidate": "/nix/store/jmd9khpiy6lnyxbmms1zmw4iav87i6j3-home-manager-generation",
+  "knowledge_cards_binary": "/nix/store/krc8vqrkf6mn7c0si3jgjkmisd0hj32a-knowledge-cards-0.1.0",
   "menu_and_shortcut_exact_package_verified": true,
   "niri_config_valid": true,
   "five_native_templates_verified": true,

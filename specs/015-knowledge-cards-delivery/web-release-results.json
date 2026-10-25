@@ -1,25 +1,47 @@
 {
-  "frontend": "/nix/store/kcpc6pvnzfis3ds01dv23qjk7ircawv8-dufs-plus-knowledge-cards-frontend",
+  "frontend": "/nix/store/qmzg4wkgdny1rpgzqac8xkb2zzvzmqjl-dufs-plus-knowledge-cards-frontend",
   "activation": {
     "pc": true,
     "nuc": true,
     "fresh_saved_editor_confirmation": true,
-    "remote_owned_verification": "/tmp/knowledge-cards-composite-native-verification-DCcxaSRM",
+    "remote_owned_verification": "/tmp/knowledge-cards-shared-native-verification-lGuJHmwD",
     "system_switch_by_agent": false
   },
   "served_assets": {
-    "served_assets_match": [
-      "assets/core-C1V3-PH7.js",
-      "assets/event-BdKy0adX.js",
-      "assets/index-CulUijla.js",
-      "assets/index-_iNTKa6p.css",
-      "assets/tauri-DSN0WNTv.js",
-      "index.html"
-    ]
+    "pc_http_assets_sha256": {
+      "index.html": "3797210ce222b87573ab0704d10c9ed6e860d52ad44dcb7e22f7345417d50db7",
+      "assets/index-DVjxHqey.css": "782919354a1f5243abf12b4703a41303dd2634c8ab4ff7444c0bf5fc5811bfba",
+      "assets/event-CZfEy-aX.js": "6940a3e60c43004950ad6dc5017b98b4976b96faf5e79e3f092fb923487298c5",
+      "assets/index-Bx-c_eMD.js": "9efb0d57499b44fcd74cfe92128f03c2b12cc34ada526b587245b8ad22a304fc",
+      "assets/tauri-BZ2-yMx3.js": "44488156957062b83b296ad36b68373be8d283bc9aabbbf70aa9000a3e18a4b8"
+    },
+    "all_match_fixed_candidate": true,
+    "credentials_used": false
   },
   "backend_unchanged": true,
   "nuc_authenticated_http_tested": false,
   "nuc_unauthenticated_access_remains_401": true,
+  "rollback": {
+    "cases": [
+      "fresh_editor_confirmation_required_before_mutation",
+      "real_update_and_explicit_rollback_keep_new_database_writes_and_inode",
+      "post_start_failure_restores_old_program_and_keeps_current_data",
+      "controller_sigkill_after_install_recovers_old_program_without_state_restore",
+      "unrelated_unit_drift_refused_before_stop",
+      "active_queue_refused_without_stopping_current_service"
+    ],
+    "actual_old_and_new_packaged_programs": true,
+    "actual_owned_user_unit": true,
+    "actual_upholds_target_and_interrupted_recovery": true,
+    "latest_writes_retained_on_rollback": true,
+    "database_inode_preserved": true,
+    "owned_units_and_files_cleaned": true,
+    "production_access": false,
+    "production_activated": false,
+    "manager_package": "/nix/store/vb0phbx5f56nnhgm7bc1xf03cmrwhy73-tag-native-release-manager",
+    "old_package": "/nix/store/1293mxwc61r3wmp84c1sx5b31a0mwkg4-tag-all-workspace-native-0.1.0",
+    "new_package": "/nix/store/1293mxwc61r3wmp84c1sx5b31a0mwkg4-tag-all-workspace-native-0.1.0"
+  },
   "pc_live": {
     "scope": "pc",
     "units": {

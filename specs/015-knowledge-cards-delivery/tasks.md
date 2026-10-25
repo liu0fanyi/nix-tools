@@ -12,3 +12,5 @@
 后续修订：固定新版PC包5azqzys296xs6pl76fy87gl5n2kbv5lk已发布并完整系统/HM候选验证。网页按现用原生实际入口改为不可变前端组合，使用当轮编辑保存确认后已激活。独立文件上传及401不是上线证据。
 
 本轮固定组合前端 kcpc6pvnzfis3ds01dv23qjk7ircawv8 在PC／NUC激活通过；后端保持1293mxwc61r3wmp84c1sx5b31a0mwkg4。实际进程、备份校验、DB身份、认证保护与PC实际六项静态资源摘要通过。见[web-release-results.json](web-release-results.json)。
+
+本轮知识卡共享组件发行：PC固定路径krc8vqrkf6mn7c0si3jgjkmisd0hj32a已可信签名缓存并latest保留1版，其他4个Pin不变；完整liu-bigpc系统/HM候选和菜单/快捷键/原生模板/MIME通过，未switch。组合前端qmzg4wkgdny1rpgzqac8xkb2zzvzmqjl已按本轮编辑保存确认激活PC/NUC双区，实际资源/进程/备份/认证/DB身份通过；跨仓阶段计数归知识卡001/T014。两份既有用户修改摘要未变。
