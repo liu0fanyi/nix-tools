@@ -101,6 +101,9 @@ def source_url(root):
         return None
     host = match[1].replace("ssh.github.com", "github.com")
     sha = subprocess.check_output(["git", "-C", str(root), "rev-parse", "HEAD"], text=True).strip()
+    published = subprocess.check_output(["git", "-C", str(root), "for-each-ref", "--format=%(refname)", "--contains", sha, "refs/remotes/" + remote + "/"], text=True).strip()
+    if not published:
+        return None  # Local-only or failed pushes must not produce broken source links.
     return "https://" + host + "/" + match[2] + "/blob/" + sha + "/"
 
 

@@ -92,6 +92,8 @@ class OverviewTests(unittest.TestCase):
     def test_source_links_use_fixed_git_revision_and_uncommitted_links_are_text(self):
         self.git("remote", "add", "origin", "git@github.com:example/demo.git")
         sha = self.git("rev-parse", "HEAD").strip()
+        self.assertNotIn("https://github.com/", overview.project_entry(self.root, self.text))
+        self.git("update-ref", "refs/remotes/origin/main", sha)
         entry = overview.project_entry(self.root, self.text)
         self.assertIn("https://github.com/example/demo/blob/" + sha + "/specs/001-demo/tasks.md", entry)
         (self.root / "specs/001-demo/tasks.md").write_text("changed")
