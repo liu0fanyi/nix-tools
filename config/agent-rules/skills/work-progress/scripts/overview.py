@@ -66,7 +66,7 @@ def reading_entry(root, text):
 
 
 REGISTRY = Path(__file__).resolve().parents[3] / "project/projects.json"
-PROJECTS_ROOT = "/home/liou/dufs-lan/todos/projects"
+PROJECTS_ROOT = "/home/liou/dufs-lan/projects"
 
 
 def registrations():

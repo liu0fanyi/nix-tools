@@ -1,6 +1,6 @@
 ---
 name: work-progress
-description: 项目代码、交付或计划更新后，联动 Spec 维护本地 Markdown 总纲和 Git 最近变化，并只向 NUC todos/projects 发布摘要。适用于项目状态查询、阶段收尾与已授权的批量进度整理，不替代产品部署。
+description: 项目代码、交付或计划更新后，联动 Spec 维护本地 Markdown 总纲和 Git 最近变化，并只向 NUC projects 发布摘要。适用于项目状态查询、阶段收尾与已授权的批量进度整理，不替代产品部署。
 ---
 
 # 项目总纲与 Spec 联动
@@ -49,7 +49,7 @@ python3 ~/.codex/skills/work-progress/scripts/overview.py --repo <产品根> --p
 ```
 
 `--write` 只填本地最近变化；当前情况和计划由 Agent 对照 Spec 维护，不从日志猜未来。
-发布只写 `liou@nuc.local:/home/liou/dufs-lan/todos/projects/<登记名>.md` 与同目录 README.md 索引；共享目录永不使用 --delete，不运行 NUC Git。不复制整个 specs/docs/.git、源码、用户文件、配置、凭据或运行产物。
+发布只写 `liou@nuc.local:/home/liou/dufs-lan/projects/<登记名>.md` 与同目录 README.md 索引；共享目录永不使用 --delete，不运行 NUC Git。不复制整个 specs/docs/.git、源码、用户文件、配置、凭据或运行产物。
 本地引用保留相对路径，发布阅读版转换为现有远程仓的精确提交链接；本地未提交文件或无远程时退化为文字，不虚构 URL。公开/私有策略未确认时不建远程。
 
 普通主仓的 sync-todos 已接入该工具；未接入的旧脚本不能再用于进度发布，尤其不可在旧 worktree 里运行遗留镜像。后续项目在中央登记并核对即可，无需逐项目加 AGENTS。

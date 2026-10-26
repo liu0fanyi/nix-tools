@@ -117,7 +117,7 @@ class OverviewTests(unittest.TestCase):
             overview.registrations()
 
     def test_rejects_shared_roots_wrong_area_and_symlink_source(self):
-        for dest in ["/home/liou/dufs-lan/todos", "/home/liou/dufs-lan/todos/demo", "/home/liou/dufs-lan/todos/projects/..", "/home/liou/dufs/demo", "/tmp/demo"]:
+        for dest in ["/home/liou/dufs-lan/todos", "/home/liou/dufs-lan/todos/demo", "/home/liou/dufs-lan/todos/projects", "/home/liou/dufs-lan/projects/..", "/home/liou/dufs/demo", "/tmp/demo"]:
             with patch.object(overview.subprocess, "run") as run:
                 with self.assertRaises(ValueError):
                     overview.publish(self.root, self.text, dest, False)

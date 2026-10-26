@@ -1,6 +1,6 @@
 {
   "remote_host": "liou@nuc.local",
-  "remote_root": "/home/liou/dufs-lan/todos/projects",
+  "remote_root": "/home/liou/dufs-lan/projects",
   "projects": [
     {
       "name": "android-app-kit",

@@ -20,5 +20,9 @@
   "release_artifacts_changed": false,
   "services_changed": false,
   "hardware_operations": false,
-  "next_action": "后续各仓变更时按共享技能维护本地总纲并同步摘要"
+  "next_action": "后续各仓变更时按共享技能维护本地总纲并同步摘要",
+  "remote_root": "/home/liou/dufs-lan/projects",
+  "browser_entry": "http://nuc.local:5006/#/projects?location=default",
+  "previous_misplaced_overviews": "/home/liou/dufs-lan/todos/projects",
+  "previous_misplaced_overviews_removed": true
 }

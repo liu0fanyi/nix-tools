@@ -49,7 +49,7 @@
 
 ## 全工作区迁移（用户2026-10-26追加）
 
-当前/data/project所有独立产品（包含Bevy，排除xiaoqiang；nix-tools通过本工作区worktree归入）按共享技能建立本地specs/README.md；同Git仓库不重复列worktree，附属共享应用归所属产品。新版NUC只放todos/projects/<登记名>.md及README.md索引，不再复制所有spec细节。详细引用转换为已存在远程仓库的精确Git提交链接；无远程时不虚构链接，不新建远程。
+当前/data/project所有独立产品（包含Bevy，排除xiaoqiang；nix-tools通过本工作区worktree归入）按共享技能建立本地specs/README.md；同Git仓库不重复列worktree，附属共享应用归所属产品。新版NUC只放projects/<登记名>.md及README.md索引，不再复制所有spec细节。详细引用转换为已存在远程仓库的精确Git提交链接；无远程时不虚构链接，不新建远程。
 
 删除旧todos根部工程镜像及明确的工程历史试验/备份：必须先生成精确名单、建立todos之外的私有备份并逐文件校验，再核对新32份总纲完整，之后清理。个人待办、学习资料、资产目录及所有运行文件/固件/安装包保留。xiaoqiang不参与本轮进度整理与projects发布，进度和专用资料均保持原规则。旧同步入口必须更新，防止旧目录重生；不需要逐项目添加AGENTS。
 
