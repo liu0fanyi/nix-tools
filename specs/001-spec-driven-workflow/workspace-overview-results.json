@@ -24,5 +24,20 @@
   "remote_root": "/home/liou/dufs-lan/projects",
   "browser_entry": "http://nuc.local:5006/#/projects?location=default",
   "previous_misplaced_overviews": "/home/liou/dufs-lan/todos/projects",
-  "previous_misplaced_overviews_removed": true
+  "previous_misplaced_overviews_removed": true,
+  "guidance_cleanup": {
+    "completed": 3,
+    "remaining": 0,
+    "repositories_audited": 32,
+    "repositories_updated": 25,
+    "scoped_files": 59,
+    "configured_remotes_pushed": 21,
+    "local_only_sources": 4,
+    "shared_wrappers_verified": 24,
+    "publisher_tests_passed": 8,
+    "local_links_and_scoped_diffs_verified": true,
+    "xiaoqiang_heads_and_worktree_status_unchanged": 10,
+    "published_files_verified": 33,
+    "protected_personal_entries_unchanged": 36
+  }
 }
