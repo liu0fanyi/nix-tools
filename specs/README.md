@@ -16,12 +16,12 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-10-26 · fix: 项目总纲发布到用户指定的根 projects 目录 · `62b934a`
+- 2026-10-26 · fix: 未推送的总纲引用不生成失效 Git 链接 · `bb4f587`
 - 2026-10-26 · feat: 用共享技能联动 Spec 与 Markdown 项目总纲 · `1116fc0`
 - 2026-10-26 · Pin Tag Browser nix.82 and verify desktop candidate · `26c192f`
 - 2026-10-25 · Pin released shared knowledge cards desktop package · `936483b`
 - 2026-10-25 · Update knowledge card cache and prepare native composite frontend delivery · `72792c7`
 - 2026-10-25 · Deliver cached knowledge cards with PC capture shortcut and isolated web publisher · `af53f4e`
 - 2026-10-25 · Pin Tag Browser nix.81 and verify native install candidate · `b936edd`
-- 2026-10-24 · Update Tag Browser to verified nix.80 release · `85e0386`
-- 2026-10-24 · Update fixed Tag Browser input to nix.79 · `af346cb`
 <!-- recent-commits:end -->
