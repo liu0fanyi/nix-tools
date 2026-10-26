@@ -208,69 +208,6 @@
       "root": "/data/project/tspdt-explorer",
       "aliases": [],
       "category": "应用与工具"
-    },
-    {
-      "name": "xiaoqiang-device-common",
-      "root": "/data/project/xiaoqiang/device-common",
-      "aliases": [],
-      "category": "xiaoqiang"
-    },
-    {
-      "name": "xiaoqiang-esp32-p4-400m20s",
-      "root": "/data/project/xiaoqiang/esp32-p4-400m20s",
-      "aliases": [
-        "/data/project/xiaoqiang/esp32-p4-cmt2300a",
-        "/data/project/xiaoqiang/esp32-p4-cmt2300a-lowlatency-mic"
-      ],
-      "category": "xiaoqiang"
-    },
-    {
-      "name": "xiaoqiang-esp32-p4-sip",
-      "root": "/data/project/xiaoqiang/esp32-p4-sip",
-      "aliases": [],
-      "category": "xiaoqiang"
-    },
-    {
-      "name": "xiaoqiang-p4-license-tool",
-      "root": "/data/project/xiaoqiang/p4-license-tool",
-      "aliases": [],
-      "category": "xiaoqiang"
-    },
-    {
-      "name": "xiaoqiang-signature-server",
-      "root": "/data/project/xiaoqiang/signature-server",
-      "aliases": [],
-      "category": "xiaoqiang"
-    },
-    {
-      "name": "xiaoqiang-sip",
-      "root": "/data/project/xiaoqiang/sip",
-      "aliases": [],
-      "category": "xiaoqiang"
-    },
-    {
-      "name": "xiaoqiang-sip-rk3506",
-      "root": "/data/project/xiaoqiang/sip-rk3506",
-      "aliases": [],
-      "category": "xiaoqiang"
-    },
-    {
-      "name": "xiaoqiang-sip_old",
-      "root": "/data/project/xiaoqiang/sip_old",
-      "aliases": [],
-      "category": "xiaoqiang"
-    },
-    {
-      "name": "xiaoqiang-tauri_config_page",
-      "root": "/data/project/xiaoqiang/tauri_config_page",
-      "aliases": [],
-      "category": "xiaoqiang"
-    },
-    {
-      "name": "xiaoqiang-xiaozhi",
-      "root": "/data/project/xiaoqiang/xiaozhi",
-      "aliases": [],
-      "category": "xiaoqiang"
     }
   ]
 }

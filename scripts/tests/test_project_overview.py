@@ -101,6 +101,12 @@ class OverviewTests(unittest.TestCase):
         self.assertIn("计划（本地记录待提交）", entry)
         self.assertNotIn("/specs/001-demo/tasks.md", entry)
 
+    def test_xiaoqiang_is_excluded_even_if_registered(self):
+        root = Path('/data/project/xiaoqiang/device-common')
+        with patch.object(overview, 'registrations', return_value=[{'name': 'excluded', 'root': str(root), 'aliases': []}]):
+            with self.assertRaisesRegex(ValueError, 'xiaoqiang is excluded'):
+                overview.registered(root)
+
     def test_worktree_alias_cannot_overwrite_primary_summary(self):
         with self.assertRaises(ValueError):
             overview.registered(self.root / "alias")

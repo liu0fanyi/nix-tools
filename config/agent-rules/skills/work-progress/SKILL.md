@@ -54,7 +54,10 @@ python3 ~/.codex/skills/work-progress/scripts/overview.py --repo <产品根> --p
 
 普通主仓的 sync-todos 已接入该工具；未接入的旧脚本不能再用于进度发布，尤其不可在旧 worktree 里运行遗留镜像。后续项目在中央登记并核对即可，无需逐项目加 AGENTS。
 
-用户2026-10-26统一指定 projects 作为所有项目进度入口，替代旧子仓的 todos/<项目> 和 xiaoqiang 摘要路径。xiaoqiang 固件、下载索引、接线/恢复等技术资料仍按其专用 `/home/liou/dufs/<工程目录>/` 白名单发布，此工具不操作这些内容。专用手册有实际变化时按原文档入口单独同步，不混入进度镜像。
+用户确认 xiaoqiang 不动：本轮批量整理和 projects 登记仅包括非 xiaoqiang 工程。
+xiaoqiang 不加入中央 projects 索引，不发布摘要或规格到 todos，不更新其进度文件。
+其进度、固件、下载索引及接线/恢复等资料继续按原 `/home/liou/dufs/<工程发布目录>/`
+白名单维护。遇到“全部项目”等泛称仍保留这一明确排除，不据泛称推翻例外。
 
 旧 todos 工程资料只在明确清理任务中处理：精确名单、todos 外私有备份、逐文件 SHA 校验、新摘要完整核验之后才能删除；个人待办/学习资料/资产与运行数据保持原样。不因正常收尾再次清理旧资料。
 

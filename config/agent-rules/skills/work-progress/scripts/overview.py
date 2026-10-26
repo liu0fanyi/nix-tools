@@ -80,6 +80,8 @@ def registrations():
 
 
 def registered(root):
+    if "/xiaoqiang/" in str(root) + "/":
+        raise ValueError("xiaoqiang is excluded; retain its original dedicated publication rules")
     for project in registrations():
         if str(root) == project["root"]:
             return project

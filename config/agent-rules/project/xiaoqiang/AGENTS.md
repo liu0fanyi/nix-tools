@@ -23,11 +23,3 @@ PDF 等参考资料放 references/。文档有实质变化时同步更新索引�
 本地各仓库 specs 是唯一权威源；此规则优先于通用 work-progress 的 todos 示例。
 AGENTS/constitution 保留 Git，不作为阅读文档上传。同步前核对精确目标及白名单，
 回读校验摘要；禁止宽泛删除其他工程固件、资料或运行数据。
-
-## 进度总纲的新入口（2026-10-26 用户统一指定）
-
-所有当前工程的简短进度总纲改由共享 work-progress 登记到
-`/home/liou/dufs-lan/todos/projects/xiaoqiang-<项目>.md`，仅传本地 specs/README.md
-的阅读摘要和中央索引，不传规格树、规则、源码、配置或原始资料。这是对上文旧
-“进度也仅同步dufs”的明确调整；固件/安装包/接线与恢复资料仍使用原dufs白名单，
-不迁移、不删除、不建立技术资料双镜像。子仓旧的禁止todos说明对此摘要例外不再适用。

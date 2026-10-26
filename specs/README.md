@@ -2,10 +2,10 @@
 
 ## 当前情况
 - 维护工作站、NUC 发布和桌面应用缓存；Tag Browser nix.82 发行检查已完成。
-- 本轮正将全工作区进度改成统一的 projects Markdown 总纲。
+- 32个非xiaoqiang工程已统一为 projects Markdown 总纲，旧工程镜像已备份清理。
 
 ## 后续计划
-- [完成所有工程总纲发布和旧工程镜像清理。](001-spec-driven-workflow/tasks.md)
+- [按后续实际变更维护项目总纲。](001-spec-driven-workflow/tasks.md)
 
 ## 待处理问题
 - [用户系统安装与真实窗口验收仍与制品发行分开记录。](014-application-entry-boundary/tasks.md)
