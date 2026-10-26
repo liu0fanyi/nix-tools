@@ -34,6 +34,16 @@
 --integration dsh`（并按需 `specify integration install codex`），不要在此工作区根
 或 `nix-tools` 中替代它管理产品规格。
 
+### 项目总纲与 Spec 联动
+
+项目代码、交付状态或后续计划更新后，使用共享 `work-progress` 技能维护所属仓库
+`specs/README.md`：当前情况、后续计划、待处理问题与最多八条 Git 最近变化。
+先更新对应 feature spec/tasks，再概括到总纲并链接原条目；不复制任务清单、百分比或
+另建平行计划。总纲与源码一起提交，NUC 只接收 Markdown 阅读镜像。
+现有 sync-todos 生成旧明细看板时，按技能最后发布总纲 README 覆盖阅读入口；不得让
+旧看板覆盖最终结果。无需为这条规则逐个修改产品 AGENTS；子仓镜像白名单及 xiaoqiang
+专用目录规则继续优先，首次接入只处理当前任务仓库，不批量初始化或清理其他项目。
+
 ### 执行前与收尾的边界核对
 
 - 接手任务或切换仓库时，主动读取适用的上级/本仓库 AGENTS、constitution 和相关 spec，

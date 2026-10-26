@@ -1,73 +1,60 @@
 ---
 name: work-progress
-description: 维护本地仓库 specs 中的规格与任务进度，并通过仓库 sync-todos 入口镜像到 NUC 项目进展。适用于工作区项目状态更新与规格文档同步，不用于直接编辑远端平行计划或部署应用。
+description: 项目代码、交付或计划更新后，联动 Spec 维护仓库内简短 Markdown 总纲、Git 最近变化，并镜像到 NUC。也用于项目状态查询和阶段收尾；不替代产品部署。
 ---
 
-# 工作进展与 Spec 镜像
+# 项目总纲与 Spec 联动
 
-本技能由 nix-tools 的 `config/agent-rules/skills/work-progress/` 管理，
-安装位置通过符号链接引用；修改后在 nix-tools 提交，不另建独立副本。
+维护源为 nix-tools 的 `config/agent-rules/skills/work-progress/`，安装位置为符号链接。
+所有产品规格仍由所属仓库 `specs/NNN-<feature>/` 管理；多仓工作区本身没有产品规格。
 
-各产品仓库内的 `specs/` 是需求、方案与任务状态的权威源，NUC 仅供镜像查阅。
-目标由项目规则决定：一般工程使用 `dufs-lan/todos/<项目>/`；
-`/data/project/xiaoqiang/` 所有工程仅使用 `/home/liou/dufs/<工程发布目录>/`，
-禁止 todos 双镜像。既有特殊目录名和文档白名单按子仓库规则，不按本地名字猜目标。
-`/data/project` 是多仓库工作区，不在根目录或 nix-tools 中代管其他产品规格。
+## 每次项目更新后
 
-## 维护本地权威源
+1. 读取适用的 AGENTS、constitution、相关 spec 和工作树。先更新对应 `spec.md` / `tasks.md`，区分已实现、已部署和待用户确认，不以 Git 提交证明上线。
+2. 维护该仓库 **`specs/README.md`**，作为 Spec 的简短阅读入口。正文只保留“当前情况”“后续计划”“待处理问题”，每段通常不超过三条。后续计划按优先级概括并链接到对应 spec/tasks，问题链接已有 issue；无已确认计划时写明，不擅自补目标。这里是细节的摘要，不另设任务勾选、完成率或第二份计划。
+3. “最近变化”使用下面的标记，由工具从当前仓库 Git 提取，最多八条。不要改写旧提交历史。新增功能提交标题尽量直白描述用户能感知的变化；纯构建/测试/资料同步写在对应类型提交中，默认不出现在最近功能变化里。提交正文可保留实现和验证细节。
+4. 代码提交后用工具更新最近变化，将总纲与 Spec 一起纳入 Git；只提交当前任务白名单，保留其他人的修改。不要为刷新提交哈希反复制造文档提交。
+5. 核对既有 `sync-todos` 的源、目的地和删除范围，先 dry-run 再同步。旧脚本仍生成规格明细看板时，最后使用下述 **仅 README** 发布覆盖阅读入口。已采用共享渲染器的脚本直接同步即可。
 
-接手或切换仓库时，先读适用的上级及目标仓库 `AGENTS.md`、`.specify/memory/constitution.md` 和相关
-`specs/NNN-<feature>/`，核对工作树与当前任务。规格由 Spec Kit 流程管理：
-`/speckit-specify` → `plan` → `tasks` → `implement` → `converge`。
+首次进入某个产品时按本轮授权范围建立该文件，不批量改其他仓库，不逐项目添加 AGENTS。已经明确排除的产品或内容保持排除；总纲承载本产品自身情况即可。
 
-- `spec.md`：需求与验收标准；`plan.md`：技术方案；`tasks.md`：任务及完成勾选。
-- 接口与数据契约放特性目录的 `contracts/`；可判定的长期约束放 constitution。
-- 项目说明与参考索引留在仓库 `README.md`、`AGENTS.md`、`docs/`。
-- 按已验证事实更新进度，区分实现、构建、部署、实机验收和提交/推送；不把待验收任务勾成完成。
-- 不再通过 SSH 编辑远端项目 `plan.md` 或 `a-next.md` 来安排该仓库工作，
-  不另建与 specs 竞争的计划。跨项目根部资料按工作区规则查阅，不能因采用新流程自动删除。
+```markdown
+# 项目名
 
-## 同步入口与实际行为
+## 当前情况
+- 一句话说明实际可用到哪里；有必要时写明待上线/待验收。
 
-已核验的参考实现：
-[/home/liou/nix-tools/scripts/sync-todos.py](/home/liou/nix-tools/scripts/sync-todos.py)，
-入口定义于 [/home/liou/nix-tools/justfile](/home/liou/nix-tools/justfile)。
-使用前读取目标仓库的实际 recipe 和脚本，确认源目录、目的目录及删除范围。
+## 后续计划
+- [接下来要做的事](NNN-feature/tasks.md)。
 
-nix-tools 的命令在 `/home/liou/nix-tools` 执行：
+## 待处理问题
+- [目前需要关注的问题](NNN-feature/issues.md)。
 
-```bash
-devenv shell -- just sync-todos
+## 最近变化
+<!-- recent-commits:start -->
+<!-- recent-commits:end -->
 ```
 
-已进入其开发环境时可用 `just sync-todos`。代码或任务状态变动后，按仓库约定同步，
-不要求先部署应用。该脚本的真实行为是：
+实际创建时用已核对的有效链接替换示例；没有条目就写“暂无已确认事项”。
 
-- 源仓库由脚本自身位置确定；远端固定为 `todos/nix-tools/`，没有通用项目参数。
-  从其他工作目录运行它仍只同步 nix-tools，不能用它替代其他项目的同步入口。
-- 本地 `specs/` 存在时，用 `rsync --delete` 镜像到远端项目的 `specs/`。
-  先确认该目录只含本地权威源的镜像；不得把删除范围扩大到项目根或 `todos/`。
-- `docs/` 与 `deploy/docs/` 依次增量同步到同一远端 `docs/`，不带 `--delete`；
-  当前脚本遇两者同名文件会拒绝同步，旧远端文档不会自动清理。
-- 从各特性 `spec.md` 的一级标题及 `tasks.md` 勾选项生成临时 README 看板，
-  上传到远端 `README.md`，不覆盖本地 README。任务列显示已勾选/总数，
-  缺少 tasks.md 时显示“未建任务清单”；计数不证明功能验收完成。
-- 传输使用 `--chmod=D755,F644`；同步 constitution、AGENTS 和仓库/部署 README 入口，
-  不生成旧格式 `plan.md`。支持 `--dry-run` 本地预演，正式同步后按 checksum 回查。
-  这是 nix-tools 的白名单，不可套到明确禁止上传规则文件的 xiaoqiang 工程。
+## 共享工具
 
-其他仓库优先使用其已存在且经过核对的同步入口；若尚无入口，先在该仓库按本次授权范围
-适配同步流程与项目路径，再执行。不要直接运行 nix-tools 脚本并宣称已同步其他项目。
+`python3 ~/.codex/skills/work-progress/scripts/overview.py --repo <仓库根> --write`
+只更新本地总纲的最近提交区；先用 `--dry-run` 查看。它不理解需求，当前情况/计划仍由 Agent 对照 Spec 维护，不能从最近提交猜测未来方向。`--entry` 输出面向 NUC 项目根的阅读版并修正相对链接，`--publish` 不会隐式刷新本地文件。
 
-## 核验与旧流程边界
+对于尚未接入共享渲染器的旧镜像入口，在该仓库原同步完成之后执行：
 
-执行前简述本轮范围、禁令与精确写入目标，核对实际脚本和可用的 dry-run；
-用户已确认的范围不重复询问。同步结束检查退出状态，回读本仓库指定的阅读入口和
-本次变动的 specs/docs，核对内容、链接和权限；同时核对目标合法、删除范围及
-是否存在任务范围外写入。内容摘要一致不能代替目的地与边界验收。
-失败时定位具体步骤；脚本不是原子发布，失败前可能已有部分文件同步，不宣称全部完成。
-文档镜像不需要构建或部署 Planner、DUFS 或产品应用。
+```bash
+python3 ~/.codex/skills/work-progress/scripts/overview.py \
+  --repo <仓库根> --publish --remote-dir <项目规则中的精确目录> --dry-run
+# 检查内容与唯一目标 README.md 后，去掉 --dry-run 执行。
+```
 
-旧 `scripts/work_file.py` 仅是遗留的远端 Markdown 编辑器，不属于当前维护流程，
-不得用它更新 specs 项目的状态。旧远端 plan、资料、备份及画布关联不由本技能自动迁移或删除；
-只有另行明确的迁移任务才处理这些内容。
+此命令只写一个远端 README.md，无删除参数，传输后 checksum 回查。它不上传 `.git`、提交正文、diff、账号、用户文件或运行产物，不在 NUC 执行 Git。远端只读镜像，不通过 SSH 安排另一份计划。
+
+目标由产品规则决定：一般工程为 `liou@nuc.local:/home/liou/dufs-lan/todos/<项目>/`；
+xiaoqiang 只允许 `/home/liou/dufs/<工程发布目录>/`，禁止 todos 双镜像。目录名不能从本地名字猜测。镜像正文中的引用需要已有对应 Spec 镜像；未同步完整资料时不要宣称链接可读。
+
+原有资料同步规则继续执行：只有各仓明确拥有的 specs 子目录允许删除镜像；docs 增量，目录755/文件644，不清理共享根或其他工程。具体白名单与例外以项目规则为准。同步不是原子事务，失败报告已完成部分和剩余步骤，不掩盖旧状态。
+
+收尾核对本地总纲、实际 Spec、提交和 NUC 阅读入口一致；给用户简短结果及剩余步骤。页面移除需产品构建/发布流程，文档镜像不代表前端已上线。保留其他独立应用和旧资料，除非当前任务明确授权删除。

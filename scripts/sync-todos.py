@@ -7,6 +7,7 @@ import shutil
 import shlex
 import subprocess
 import tempfile
+import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 PROJECT = 'nix-tools'
@@ -34,6 +35,11 @@ def task_counts(path):
 
 
 def render():
+    if (ROOT / 'specs/README.md').is_file():
+        helper = Path.home() / '.codex/skills/work-progress/scripts/overview.py'
+        if not helper.is_file():
+            raise ValueError('Install managed work-progress links with just agent-rules --apply in nix-tools')
+        return subprocess.check_output([sys.executable, str(helper), '--repo', str(ROOT), '--entry'], text=True)
     lines = [f'# {PROJECT} 规格与进度', '',
              '> 本地仓库为权威源；由 just sync-todos 生成，远端勿手工编辑。任务勾选不等于部署或实机验收。', '',
              '| 特性 | 任务 | 规格 | 方案 |', '| --- | --- | --- | --- |']

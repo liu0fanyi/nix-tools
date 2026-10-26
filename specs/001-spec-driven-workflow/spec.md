@@ -1,3 +1,5 @@
+> 当前阅读方式已由下方“Markdown 总纲”替代原任务看板与 Planner 兼容目标；旧验收只记录历史，不作为新实施要求。
+
 # 特性规格：nix-tools Spec-Driven 研发体系规范化与远端状态镜像
 
 - **编号**：`001`
@@ -36,3 +38,11 @@
 - [x] **CR-2**：根目录 `AGENTS.md` 紧凑重构，删除冗余的 `deploy/AGENTS.md`。
 - [x] **CR-3**：提供可重复运行的 `just sync-todos` 命令，能将 `specs/`、`docs/` 及生成的汇总看板可靠增量同步至 `liou@nuc.local:/home/liou/dufs-lan/todos/nix-tools/`。
 - [x] **CR-4**：同步到远端后的目录包含结构化的 `specs/` 镜像以及符合旧前端格式的 `plan.md` 兼容层。
+
+## Markdown 总纲（当前需求）
+
+用户取消独立项目进展页面，只阅读 Markdown。每个当前工作仓库维护 specs/README.md，简短概括当前情况、后续计划、待处理问题；计划引用已有 feature spec/tasks，Git 提供最多八条最近功能变化。不要知识卡整理功能，不批量初始化其他工程。
+
+共享 work-progress 技能与工作区上级规则负责每次任务收尾的 Spec→总纲→Git→NUC 联动，无需逐仓添加 AGENTS。总纲与代码一起版本管理；远端 README 是阅读镜像。旧细节资料继续按各工程白名单同步，页面不再遍历 specs 或显示任务百分比。发布总纲不授予应用部署、停服或系统 switch 权限。
+
+验收：工具能在隔离 Git 仓库提取/转义/过滤提交，拒绝越界路径与外链文件，修正移动后相对链接，dry-run 不写入，正式镜像只覆盖本项目 README 并 checksum 回查。DUFS 移除旧入口/资源/目录接管且原浏览能力保留；跨仓唯一阶段 M1–M4。

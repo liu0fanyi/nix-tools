@@ -12,7 +12,7 @@ def rules(root=ROOT, home=None, workspace=Path('/data/project')):
     base = root / 'config/agent-rules'
     pairs = [(base / 'project/AGENTS.md', workspace / 'AGENTS.md'),
              (base / 'project/xiaoqiang/AGENTS.md', workspace / 'xiaoqiang/AGENTS.md')]
-    for name in ['SKILL.md', 'agents/openai.yaml', 'scripts/work_file.py']:
+    for name in ['SKILL.md', 'agents/openai.yaml', 'scripts/work_file.py', 'scripts/overview.py']:
         pairs.append((base / 'skills/work-progress' / name,
                       home / '.codex/skills/work-progress' / name))
     return pairs
