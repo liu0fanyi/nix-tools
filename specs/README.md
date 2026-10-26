@@ -1,15 +1,14 @@
-# nix-tools
+# Nix 配置与发布工具
 
 ## 当前情况
-- 管理工作站配置、NUC 发布流程与桌面应用的 Nix/Cachix 发行；Tag Browser nix.82 的发布及系统候选检查已完成，用户本机安装与试用另行确认。
-- 项目状态改为本地 Markdown 总纲，由共享 work-progress 技能联动 Spec 与最近提交，NUC 提供阅读镜像。
+- 维护工作站、NUC 发布和桌面应用缓存；Tag Browser nix.82 发行检查已完成。
+- 本轮正将全工作区进度改成统一的 projects Markdown 总纲。
 
 ## 后续计划
-- [总纲共享工具与镜像验证](001-spec-driven-workflow/tasks.md)已完成；之后各项目更新时按需接入并维护总纲。
-- 暂无其他已确认的新方向；配置维护按已有规格推进。
+- [完成所有工程总纲发布和旧工程镜像清理。](001-spec-driven-workflow/tasks.md)
 
 ## 待处理问题
-- [浏览器发行与用户安装状态](014-application-entry-boundary/tasks.md)分别记录，已发布不等于用户已安装。
+- [用户系统安装与真实窗口验收仍与制品发行分开记录。](014-application-entry-boundary/tasks.md)
 
 ## 最近变化
 <!-- recent-commits:start -->

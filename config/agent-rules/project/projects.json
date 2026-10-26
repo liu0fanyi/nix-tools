@@ -1,0 +1,276 @@
+{
+  "remote_host": "liou@nuc.local",
+  "remote_root": "/home/liou/dufs-lan/todos/projects",
+  "projects": [
+    {
+      "name": "android-app-kit",
+      "root": "/data/project/android-app-kit",
+      "aliases": [],
+      "category": "共享组件"
+    },
+    {
+      "name": "bevy-env",
+      "root": "/data/project/bevy-env",
+      "aliases": [],
+      "category": "Bevy"
+    },
+    {
+      "name": "bevy-app-foundation",
+      "root": "/data/project/bevy-env/bevy-app-foundation",
+      "aliases": [],
+      "category": "Bevy"
+    },
+    {
+      "name": "bevy-canvas-kit",
+      "root": "/data/project/bevy-env/bevy-canvas-kit",
+      "aliases": [],
+      "category": "Bevy"
+    },
+    {
+      "name": "bevy-colony",
+      "root": "/data/project/bevy-env/bevy-colony",
+      "aliases": [],
+      "category": "Bevy"
+    },
+    {
+      "name": "bevy-game",
+      "root": "/data/project/bevy-env/bevy-game",
+      "aliases": [],
+      "category": "Bevy"
+    },
+    {
+      "name": "bevy-project-planner",
+      "root": "/data/project/bevy-env/bevy-project-planner",
+      "aliases": [],
+      "category": "Bevy"
+    },
+    {
+      "name": "bevy-sketch",
+      "root": "/data/project/bevy-env/bevy-sketch",
+      "aliases": [],
+      "category": "Bevy"
+    },
+    {
+      "name": "device-bean-mobile",
+      "root": "/data/project/device-bean-mobile",
+      "aliases": [
+        "/data/project/device-bean-remove-independent-apps",
+        "/data/project/device-bean-writer-migration",
+        "/data/project/device-bean-writer-release",
+        "/data/project/device-bean-writer-ui"
+      ],
+      "category": "应用与工具"
+    },
+    {
+      "name": "dufs-client-rs",
+      "root": "/data/project/dufs-client-rs",
+      "aliases": [],
+      "category": "共享组件"
+    },
+    {
+      "name": "dufs-plus",
+      "root": "/data/project/dufs-plus",
+      "aliases": [
+        "/data/project/dufs-plus-c3",
+        "/data/project/dufs-plus-capability-client"
+      ],
+      "category": "应用与工具"
+    },
+    {
+      "name": "esp32-cam",
+      "root": "/data/project/esp32-cam",
+      "aliases": [],
+      "category": "ESP32"
+    },
+    {
+      "name": "esp32-cam-mobile",
+      "root": "/data/project/esp32-cam-mobile",
+      "aliases": [],
+      "category": "ESP32"
+    },
+    {
+      "name": "esp32-common",
+      "root": "/data/project/esp32-common",
+      "aliases": [],
+      "category": "ESP32"
+    },
+    {
+      "name": "esp32-device-bean",
+      "root": "/data/project/esp32-device-bean",
+      "aliases": [],
+      "category": "ESP32"
+    },
+    {
+      "name": "esp32-focus-writer",
+      "root": "/data/project/esp32-focus-writer",
+      "aliases": [
+        "/data/project/esp32-focus-writer-midi"
+      ],
+      "category": "ESP32"
+    },
+    {
+      "name": "esp32-p4-dufs-terminal",
+      "root": "/data/project/esp32-p4-dufs-terminal",
+      "aliases": [],
+      "category": "ESP32"
+    },
+    {
+      "name": "esp32-p4-game",
+      "root": "/data/project/esp32-p4-game",
+      "aliases": [],
+      "category": "ESP32"
+    },
+    {
+      "name": "esp32-p4-ipkvm",
+      "root": "/data/project/esp32-p4-ipkvm",
+      "aliases": [],
+      "category": "ESP32"
+    },
+    {
+      "name": "esp32-piano-score",
+      "root": "/data/project/esp32-piano-score",
+      "aliases": [],
+      "category": "ESP32"
+    },
+    {
+      "name": "esp32-smartknob",
+      "root": "/data/project/esp32-smartknob",
+      "aliases": [],
+      "category": "ESP32"
+    },
+    {
+      "name": "esp32-wifi-audio",
+      "root": "/data/project/esp32-wifi-audio",
+      "aliases": [],
+      "category": "ESP32"
+    },
+    {
+      "name": "focus-writer-mobile",
+      "root": "/data/project/focus-writer-mobile",
+      "aliases": [],
+      "category": "应用与工具"
+    },
+    {
+      "name": "knowledge-cards",
+      "root": "/data/project/knowledge-cards",
+      "aliases": [],
+      "category": "应用与工具"
+    },
+    {
+      "name": "nix-tools",
+      "root": "/home/liou/nix-tools",
+      "aliases": [
+        "/data/project/nix-tools-native-core",
+        "/data/project/nix-tools-tag-nix"
+      ],
+      "category": "应用与工具"
+    },
+    {
+      "name": "quick-note",
+      "root": "/data/project/quick-note",
+      "aliases": [],
+      "category": "应用与工具"
+    },
+    {
+      "name": "recipe-workbench",
+      "root": "/data/project/recipe-workbench",
+      "aliases": [],
+      "category": "应用与工具"
+    },
+    {
+      "name": "screen-cut",
+      "root": "/data/project/screen-cut",
+      "aliases": [],
+      "category": "应用与工具"
+    },
+    {
+      "name": "screen-mark",
+      "root": "/data/project/screen-mark",
+      "aliases": [],
+      "category": "应用与工具"
+    },
+    {
+      "name": "tag-all",
+      "root": "/data/project/tag-all",
+      "aliases": [
+        "/data/project/tag-all-shared-web"
+      ],
+      "category": "应用与工具"
+    },
+    {
+      "name": "tag-browser",
+      "root": "/data/project/tag-browser",
+      "aliases": [],
+      "category": "应用与工具"
+    },
+    {
+      "name": "tspdt-explorer",
+      "root": "/data/project/tspdt-explorer",
+      "aliases": [],
+      "category": "应用与工具"
+    },
+    {
+      "name": "xiaoqiang-device-common",
+      "root": "/data/project/xiaoqiang/device-common",
+      "aliases": [],
+      "category": "xiaoqiang"
+    },
+    {
+      "name": "xiaoqiang-esp32-p4-400m20s",
+      "root": "/data/project/xiaoqiang/esp32-p4-400m20s",
+      "aliases": [
+        "/data/project/xiaoqiang/esp32-p4-cmt2300a",
+        "/data/project/xiaoqiang/esp32-p4-cmt2300a-lowlatency-mic"
+      ],
+      "category": "xiaoqiang"
+    },
+    {
+      "name": "xiaoqiang-esp32-p4-sip",
+      "root": "/data/project/xiaoqiang/esp32-p4-sip",
+      "aliases": [],
+      "category": "xiaoqiang"
+    },
+    {
+      "name": "xiaoqiang-p4-license-tool",
+      "root": "/data/project/xiaoqiang/p4-license-tool",
+      "aliases": [],
+      "category": "xiaoqiang"
+    },
+    {
+      "name": "xiaoqiang-signature-server",
+      "root": "/data/project/xiaoqiang/signature-server",
+      "aliases": [],
+      "category": "xiaoqiang"
+    },
+    {
+      "name": "xiaoqiang-sip",
+      "root": "/data/project/xiaoqiang/sip",
+      "aliases": [],
+      "category": "xiaoqiang"
+    },
+    {
+      "name": "xiaoqiang-sip-rk3506",
+      "root": "/data/project/xiaoqiang/sip-rk3506",
+      "aliases": [],
+      "category": "xiaoqiang"
+    },
+    {
+      "name": "xiaoqiang-sip_old",
+      "root": "/data/project/xiaoqiang/sip_old",
+      "aliases": [],
+      "category": "xiaoqiang"
+    },
+    {
+      "name": "xiaoqiang-tauri_config_page",
+      "root": "/data/project/xiaoqiang/tauri_config_page",
+      "aliases": [],
+      "category": "xiaoqiang"
+    },
+    {
+      "name": "xiaoqiang-xiaozhi",
+      "root": "/data/project/xiaoqiang/xiaozhi",
+      "aliases": [],
+      "category": "xiaoqiang"
+    }
+  ]
+}

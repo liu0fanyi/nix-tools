@@ -22,9 +22,13 @@
 
 - 功能规格放在该仓库的 `specs/NNN-<feature>/`（`spec.md` / `plan.md` / `tasks.md`），
   由 Spec Kit 驱动（`/speckit-specify` → `plan` → `tasks` → `implement` → `converge`）。
-- 一般工程状态汇总镜像到 `liou@nuc.local:/home/liou/dufs-lan/todos/<项目>/`。
-  **xiaoqiang 全部工程例外：只同步到 `/home/liou/dufs/<工程发布目录>/`，禁止 todos 双镜像**；
-  精确路径和白名单遵守 `xiaoqiang/AGENTS.md` 及各仓库规则。
+- 用户2026-10-26统一指定：所有工程的简短进度总纲只发布到
+  `liou@nuc.local:/home/liou/dufs-lan/todos/projects/<登记名>.md`，索引为该目录 README.md。
+  本地源为所属仓库 specs/README.md，中央登记表在 nix-tools 的
+  config/agent-rules/project/projects.json；同一仓库的 worktree 不重复发布。
+  本决定替代下级规则中旧 todos/<项目> 进度镜像路径，不再向新阅读区复制规格树、规则或源码。
+  xiaoqiang 的进度总纲同样统一到 projects；其固件、安装包、接线说明等专用资料仍按
+  `/home/liou/dufs/<工程发布目录>/` 的原白名单管理，禁止把这些资料复制到 todos。
 - 跨项目事项与项目内状态一律以各仓库 `specs/` 为准，不另建冲突计划。未立项的构想、
   采购清单等暂存于 `liou@nuc.local:/home/liou/dufs-lan/todos/a-杂鱼整理.md`；旧的
   `a-next.md`、`a-observe.md`、`a-done.md` 已于 2026-09-16 迁移到各工程 specs 后删除
@@ -40,9 +44,10 @@
 `specs/README.md`：当前情况、后续计划、待处理问题与最多八条 Git 最近变化。
 先更新对应 feature spec/tasks，再概括到总纲并链接原条目；不复制任务清单、百分比或
 另建平行计划。总纲与源码一起提交，NUC 只接收 Markdown 阅读镜像。
-现有 sync-todos 生成旧明细看板时，按技能最后发布总纲 README 覆盖阅读入口；不得让
-旧看板覆盖最终结果。无需为这条规则逐个修改产品 AGENTS；子仓镜像白名单及 xiaoqiang
-专用目录规则继续优先，首次接入只处理当前任务仓库，不批量初始化或清理其他项目。
+普通工程 sync-todos 通过共享技能发布单份 Markdown 和中央索引，不再重建旧目录。
+项目引用在本地保持 Spec 链接，发布时转换为现有 Git 精确提交的源码链接；无远程仓库
+时展示文字，不虚构链接或新建远程。无需逐产品添加 AGENTS；批量迁移只按本次用户
+确认范围执行，后续更新只维护正在修改的项目。独立技术资料与运行产物不属于总纲同步。
 
 ### 执行前与收尾的边界核对
 

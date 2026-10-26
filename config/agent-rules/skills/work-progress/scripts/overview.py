@@ -65,35 +65,108 @@ def reading_entry(root, text):
     return re.sub(r"\]\(([^)\s]+)\)", link, text)
 
 
-def publish(root, text, destination, dry_run):
-    # Ordinary project mirrors and xiaoqiang's separate area are never mixed.
-    if not re.fullmatch(r"/home/liou/(?:dufs-lan/todos|dufs)/[^/\s]+", destination):
-        raise ValueError("Use the exact project directory from its rules, never a shared root")
-    if "/xiaoqiang/" in str(root) + "/" and not destination.startswith("/home/liou/dufs/"):
-        raise ValueError("xiaoqiang cannot publish to todos")
-    if "/xiaoqiang/" not in str(root) + "/" and destination.startswith("/home/liou/dufs/"):
-        raise ValueError("Non-xiaoqiang repositories cannot publish to the xiaoqiang area")
-    if PurePosixPath(destination).name in {".", ".."} or any(part in {".", ".."} for part in destination.split("/")):
-        raise ValueError("Invalid project directory")
-    entry = reading_entry(root, text)
+REGISTRY = Path(__file__).resolve().parents[3] / "project/projects.json"
+PROJECTS_ROOT = "/home/liou/dufs-lan/todos/projects"
+
+
+def registrations():
+    data = __import__("json").loads(REGISTRY.read_text())
+    if data["remote_host"] != "liou@nuc.local" or data["remote_root"] != PROJECTS_ROOT:
+        raise ValueError("Unexpected project publication registry")
+    names = [p["name"] for p in data["projects"]]
+    if len(names) != len(set(names)) or any(not re.fullmatch(r"[a-zA-Z0-9_-]+", n) for n in names):
+        raise ValueError("Unique safe project names required")
+    return data["projects"]
+
+
+def registered(root):
+    for project in registrations():
+        if str(root) == project["root"]:
+            return project
+        if str(root) in project.get("aliases", []):
+            raise ValueError("Update and publish the owning project at " + project["root"] + "; do not overwrite it from a worktree")
+    raise ValueError("Register the owning project centrally before publication")
+
+
+def source_url(root):
+    remotes = subprocess.check_output(["git", "-C", str(root), "remote"], text=True).splitlines()
+    remote = "product" if "product" in remotes else "origin" if "origin" in remotes else None
+    if not remote:
+        return None
+    raw = subprocess.check_output(["git", "-C", str(root), "remote", "get-url", remote], text=True).strip()
+    match = re.fullmatch(r"git@(github.com|gitee.com):([a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+?)(?:\.git)?", raw)
+    if not match:
+        match = re.fullmatch(r"(?:https://|ssh://git@)(github.com|ssh.github.com|gitee.com)(?::443)?/([a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+?)(?:\.git)?", raw)
+    if not match:
+        return None
+    host = match[1].replace("ssh.github.com", "github.com")
+    sha = subprocess.check_output(["git", "-C", str(root), "rev-parse", "HEAD"], text=True).strip()
+    return "https://" + host + "/" + match[2] + "/blob/" + sha + "/"
+
+
+def project_entry(root, text):
+    # Keep source links local in Git, but publish only the concise Markdown overview.
+    # Details link to the exact existing Git commit; no spec tree or source is uploaded.
+    reading_entry(root, text)  # Validate local references and repository containment.
+    base = source_url(root)
+    def link(match):
+        label, target = match[1], match[2]
+        if re.match(r"[a-zA-Z][a-zA-Z0-9+.-]*:", target) or target.startswith(("#", "/")):
+            return match[0]
+        path, sep, anchor = target.partition("#")
+        relocated = posixpath.normpath("specs/" + path)
+        if not base:
+            return label  # No invented remote or broken links for local-only repositories.
+        tracked = subprocess.run(["git", "-C", str(root), "ls-files", "--error-unmatch", relocated], capture_output=True)
+        changed = subprocess.run(["git", "-C", str(root), "diff", "--quiet", "HEAD", "--", relocated], capture_output=True)
+        if tracked.returncode or changed.returncode:
+            return label + "（本地记录待提交）"
+        from urllib.parse import quote
+        return "[" + label + "](" + base + quote(relocated, safe="/") + (sep + anchor if sep else "") + ")"
+    return re.sub(r"\[([^\]]+)\]\(([^)\s]+)\)", link, text)
+
+
+def index_entry():
+    lines = ["# 工程总纲", "", "每个项目一份 Markdown；项目名称可打开当前情况、后续计划、待处理问题与最近变化。", ""]
+    projects = registrations()
+    for category in dict.fromkeys(p["category"] for p in projects):
+        lines += ["## " + category, "", "| 项目 | 当前情况 |", "| --- | --- |"]
+        for project in projects:
+            if project["category"] != category:
+                continue
+            root = Path(project["root"])
+            text = (root / "specs/README.md").read_text()
+            section = text.partition("## 当前情况")[2].split("\n## ")[0]
+            first = next((l[2:].strip() for l in section.splitlines() if l.startswith("- ")), "暂无已确认状态")
+            first = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", first).replace("|", "\\|")
+            lines.append("| [" + project["name"] + "](" + project["name"] + ".md) | " + first + " |")
+        lines.append("")
+    return "\n".join(lines)
+
+
+def publish(root, text, destination=None, dry_run=False):
+    project = registered(root)
+    if destination is not None and destination.rstrip("/") != PROJECTS_ROOT:
+        raise ValueError("Project summaries publish only to " + PROJECTS_ROOT)
+    entries = {project["name"] + ".md": project_entry(root, text), "README.md": index_entry()}
     with tempfile.TemporaryDirectory(prefix="project-overview-") as temp:
-        source = Path(temp) / "README.md"
-        source.write_text(entry)
-        source.chmod(0o644)
-        mkdir = ["ssh", "liou@nuc.local", "mkdir -p " + shlex.quote(destination)]
-        transfer = ["rsync", "-ptz", "--checksum", "--chmod=F644", str(source), "liou@nuc.local:" + destination + "/README.md"]
+        stage = Path(temp)
+        for name, body in entries.items():
+            (stage / name).write_text(body)
+            (stage / name).chmod(0o644)
+        mkdir = ["ssh", "liou@nuc.local", "mkdir -p -m 755 " + shlex.quote(PROJECTS_ROOT)]
+        # Explicit files only; never --delete on the shared projects directory.
+        transfer = ["rsync", "-ptz", "--checksum", "--chmod=F644", *[str(stage/name) for name in entries], "liou@nuc.local:" + PROJECTS_ROOT + "/"]
         if dry_run:
-            print(entry, end="")
-            print(shlex.join(mkdir))
-            print(shlex.join(transfer))
+            print(entries[project["name"] + ".md"], end="")
+            print(shlex.join(mkdir)); print(shlex.join(transfer))
             return
         subprocess.run(mkdir, check=True)
         subprocess.run(transfer, check=True)
-        verify = transfer[:1] + ["--dry-run", "--itemize-changes"] + transfer[1:]
-        result = subprocess.run(verify, check=True, capture_output=True, text=True)
+        result = subprocess.run(transfer[:1] + ["--dry-run", "--itemize-changes"] + transfer[1:], check=True, capture_output=True, text=True)
         if result.stdout.strip():
             raise ValueError("Overview mirror mismatch: " + result.stdout)
-        print("Verified project overview: " + destination + "/README.md")
+        print("Verified project overview: " + PROJECTS_ROOT + "/" + project["name"] + ".md")
 
 
 def main():
@@ -110,10 +183,8 @@ def main():
         root, source = repository(args.repo)
         text = source.read_text()
         if args.entry:
-            print(reading_entry(root, text), end="")
+            print(project_entry(root, text), end="")
         elif args.publish:
-            if not args.remote_dir:
-                parser.error("--publish requires --remote-dir confirmed against project rules")
             publish(root, text, args.remote_dir, args.dry_run)
         else:
             result = refreshed(root, text)
