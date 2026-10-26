@@ -6,4 +6,4 @@
 - [主机角色](host-structure-review.md)
 - [NUC 备份与恢复](nuc-migration.md)
 
-功能与任务在本地 specs，NUC todos/nix-tools 是只读镜像。操作手册不维护平行进度。
+功能与任务在本地 specs，NUC projects/nix-tools.md 是只读总纲。操作手册不维护平行进度。

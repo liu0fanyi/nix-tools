@@ -13,7 +13,7 @@
 
 2. **权威源与状态镜像协议**：
    - PC `/home/liou/nix-tools` 是代码与 Spec 规格的**唯一权威源**。
-   - **状态镜像**：每当有代码更新或任务勾选变动（无论是否涉及部署），必须执行 `just sync-todos`，自动将本地 `specs/`、`docs/` 以及生成的汇总看板 `README.md` 增量镜像到 `liou@nuc.local:/home/liou/dufs-lan/todos/nix-tools/`，供云端“项目进展”与 DUFS 实时查阅。
+   - **进度总纲**：代码或任务状态变化后，按共享 work-progress 技能维护本地 specs/README.md，再执行 `just sync-todos` 发布登记总纲和共享索引；不上传整套 specs/docs 或规则文件。
    - 彻底废除旧的 SSH 读写 `a-next.md` 安排计划的方式，不另建脱离仓库的平行计划。
 
 ---
@@ -24,7 +24,7 @@
 
 ```bash
 devenv shell -- just test                            # 本地单元与回归测试
-devenv shell -- just sync-todos                      # 镜像 specs/docs 至 NUC 看板
+devenv shell -- just sync-todos                      # 按 work-progress 发布总纲（先 --dry-run）
 devenv shell -- just deploy nuc infra                # 部署 NUC 基础设施（Caddy/DUFS/Authelia等）
 devenv shell -- just deploy nuc frontend             # 部署前端
 devenv shell -- just deploy nuc tag-server           # 部署后端镜像
@@ -70,14 +70,7 @@ ssh -F ~/.ssh/config liou@nuc.local '...'
 rsync -e "ssh -F $HOME/.ssh/config" ... liou@nuc.local:/path
 ```
 
-**`just sync-todos` 的临时替代**：脚本内部硬编码 `ssh`/`rsync`，无法从外部传 `-F`。
-可用下面的等价流程（手动顺序传输，**不要并发**）：
-
-1. `ssh -F ~/.ssh/config liou@nuc.local 'mkdir -p <远端>/specs <远端>/docs <远端>/.specify/memory'`
-2. 逐条 `rsync -e "ssh -F ~/.ssh/config" -rptz --omit-dir-times --checksum --chmod=D755,F644 [--delete] <src> liou@nuc.local:<dst>`，每条之间 `sleep 1`。
-3. 看板 `README.md` 由 `scripts/sync-todos.py` 的 `render()` 生成到临时文件后再单独传输；
-   `deploy/docs` 需先按脚本规则重写链接（`](../../specs/` → `](../specs/`、`](../README.md)` → `](../deployment-readme.md)`）再传。
-4. 用 `--dry-run --itemize-changes` 复核（输出为空即一致；`<fcst......` 表示仅时间戳差异，内容相同）。
+**`just sync-todos` 的沙盒替代**：共享工具调用 ssh/rsync 时，用临时 PATH 包装器给 ssh 加 `-F ~/.ssh/config`，仍运行同一个发布器，先 --dry-run 后正式同步。不手动恢复旧 specs/docs 镜像命令，不使用 --delete；目标只取中央登记表。不要改用户 SSH 配置或跳过主机密钥校验。
 
 **并发陷阱（2026-09-16 实测）**：连续快速建立多个 SSH/rsync 连接时，失败率显著上升，
 表现为上述 code 3 / code 11；单条命令重复执行 3 次均成功。因此**必须串行并加间隔**，
@@ -199,8 +192,8 @@ Agent 在用户 switch 前必须**只读**验证到用户实际会走的那一�
 ## 六、文档发布与多端隔离约束
 
 1. **文档闭环**：
-   - 用户文档保留仓库权威源文件，并在每次状态变动或任务结束时由 `just sync-todos` 统一镜像同步到 `liou@nuc.local:/home/liou/dufs-lan/todos/nix-tools/`。
-   - `README.md` 为索引，正文放 `docs/`。本文对应 `deploy/docs/build-agent-guide.md`；变更时同步更新索引和副本。
+   - 详细规格与手册保留仓库权威源；每次状态变动按共享 work-progress 技能更新本地总纲并由 `just sync-todos` 发布摘要。
+   - 本地 `README.md` 为入口，手册放 `docs/`。本文对应 `deploy/docs/build-agent-guide.md`；维护其本地副本，不将全文复制到 NUC。
 2. **目录保护隔离**：
    - 不得覆盖 NUC `todos/` 根部的个人资料（待办、购物清单等）或其他工程资料。
      原 `a-next.md` / `a-observe.md` / `a-done.md` 已于 2026-09-16 迁入各工程 specs 后删除，
@@ -415,7 +408,7 @@ podman image prune -f          # 仅删 <none> 悬空镜像，不动有 tag 的
 
 按用户绑定维护决定，clipboard-sync 子模块的功能规格统一位于本仓库 specs/005-clipboard-core、006-clipboard-reliability、007-clipboard-release。子模块只留手册与指向本仓库的入口，代码/Git/构建保持独立。其他产品仍在各自仓库管理规格。本规则明确恢复既有父仓库规格归属，不恢复已经取消的 dsh Web 或 Clip 2 分钟过期需求。
 
-同步前可运行 `just sync-todos --dry-run`；正式同步只对本项目 specs 使用删除镜像，docs 增量，附带 constitution/操作入口并以 checksum 复查。
+`just sync-todos` 仅发布中央登记的总纲和共享索引；先 `--dry-run`，后 checksum 回查，禁止全量镜像 specs/docs、恢复旧 todos 工程目录或使用 --delete。
 
 ## 完整 Nix 私有镜像发布（tag-all 023）
 

@@ -1,3 +1,5 @@
+> 第一至三节是旧全量镜像方案，保留为历史记录，不得执行。当前实施以“全工作区迁移方案”、共享 work-progress 与中央登记为准；NUC只发布根 projects 的摘要与索引。
+
 # 技术方案：nix-tools 研发规范化与状态镜像实现
 
 - **关联特性**：`specs/001-spec-driven-workflow/spec.md`
@@ -63,13 +65,13 @@ rsync -avz /tmp/todos-nix-tools-README.md liou@nuc.local:/home/liou/dufs-lan/tod
 
 ## 当前方案：共享 Markdown 总纲
 
-work-progress 管理集中技能、标准库 Python 工具与工作区一条统一入口。手工摘要在所属仓库 specs/README.md，工具只填最近 Git 区；不从提交猜测后续计划。nix-tools/dufs-plus 现有 sync-todos 消费共享 --entry 渲染，其他项目在任务实际更新时由技能适配既有入口或最后仅 README 覆盖，不逐仓补 AGENTS。
+work-progress 管理集中技能、标准库 Python 工具与工作区一条统一入口。手工摘要在所属仓库 specs/README.md，工具只填最近 Git 区；不从提交猜测后续计划。各仓既有 sync-todos 作为共享 --publish 薄包装；未提供命令的产品直接使用共享工具，不逐仓添加操作规则。
 
-NUC 目录及文件白名单不变；不上传 .git、提交正文或 diff，不生成独立页面。DUFS 消费方规格在其005，保留独立 Bevy 产物。首次接入只涉及本次两个仓库，知识卡等其他产品不改。
+NUC仅写入中央登记的 projects/<登记名>.md 与共享README.md；不上传整套规格、手册、规则、.git、提交正文或 diff，不生成独立页面。DUFS 消费方规格在其005，保留独立 Bevy 产物。首次接入只涉及本次两个仓库，知识卡等其他产品不改。
 
 ### Constitution Check
 
-产品状态仍在各自 specs；摘要是有链接的阅读索引而非平行任务源。只本机代码与构建、NUC 资料镜像；不更改后端/用户数据、不进行系统 switch。权限755/644、仅明确归属specs删除镜像、docs增量，xiaoqiang专用目录不变。无外部参考引入，ref/docs/specs分层以及gitlink完整SHA/浅克隆要求无新增适用项。
+产品状态仍在各自 specs；摘要是有链接的阅读索引而非平行任务源。只本机代码与构建、NUC 资料镜像；不更改后端/用户数据、不进行系统 switch。权限755/644、只发布两个登记Markdown文件且无删除选项，xiaoqiang专用目录不变。无外部参考引入，ref/docs/specs分层以及gitlink完整SHA/浅克隆要求无新增适用项。
 
 验证共享工具的真实临时Git与目标拒绝、既有agent-rules回归/技能校验；DUFS WASM/Rust/private构建及真实构建目录浏览回归；最后两仓提交/推送与白名单资料checksum。
 

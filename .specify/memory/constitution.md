@@ -30,13 +30,13 @@
 
 ### 原则 IV：单源 Spec 规范与状态镜像协议 (Single-Source Spec & State Mirroring)
 - **唯一事实源**：本仓库本地的 `specs/` 目录是所有功能特性、架构改造与实施任务的唯一权威事实源。禁止建立脱离仓库的平行待办或冲突计划。
-- **状态镜像义务**：每当有代码更新或任务清单勾选变动，必须执行 `just sync-todos` 将状态与文档镜像同步至 `liou@nuc.local:/home/liou/dufs-lan/todos/nix-tools/`，保持云端看板（DUFS）实时可见。
+- **状态镜像义务**：代码或任务状态变化后，MUST 按共享 work-progress 维护本地 specs/README.md，再执行 `just sync-todos` 发布登记总纲与共享索引。
 
 ### 原则 V：同步边界与目录保护 (Sync Bounds)
-- **写入白名单**：`just sync-todos` 及其底层脚本只允许写入 `liou@nuc.local:/home/liou/dufs-lan/todos/nix-tools/`。严禁向该路径之外的任何远端位置写入本工程文档。
+- **写入白名单**：进度发布 MUST 遵循共享 work-progress 技能和中央登记，仅写入 `liou@nuc.local:/home/liou/dufs-lan/projects/nix-tools.md` 与同目录共享 `README.md`；详细 specs/docs/规则留在本仓，禁止全量镜像或使用 --delete。
 - **全局文件保护**：严禁覆盖 NUC `todos/` 根部三份全局文件（`a-next.md`、`a-observe.md`、`a-done.md`）或其他工程资料。
 - **专用目录隔离**：严禁向 xiaoqiang 专用的 `/home/liou/dufs/` 写入或重建本工程文档。
-- **判定方法**：检查 `scripts/sync-todos.py` 的远端写入路径是否为上述白名单的子路径，且不含对全局文件与 `/home/liou/dufs/` 的写操作。
+- **判定方法**：检查共享发布器只写入上述两个文件且无 --delete，不复制 specs/docs/规则，且不含对个人文件与 `/home/liou/dufs/` 的写操作。
 
 ---
 
@@ -45,7 +45,7 @@
 1. **最高约束力**：本宪法优先级高于日常开发习惯与临时脚本。任何与本宪法冲突的方案设计在 `/speckit-plan` 阶段均视为审查不通过。
 2. **修订程序**：宪法原则的修改必须有明确的技术理由，并经由显式确认与记录。
 
-**版本**: 1.3.1 | **批准日期**: 2026-09-10 | **最近修订**: 2026-10-07
+**版本**: 1.4.0 | **批准日期**: 2026-09-10 | **最近修订**: 2026-10-26
 
 ## Clip 规格归属（用户绑定维护决定，2026-09-12）
 
@@ -74,3 +74,5 @@ Nix 依赖仍由产品锁文件固定。规格位于各产品，不以基础设�
 离线迁移双区状态并注册持久用户服务。MUST 保留三级认证/只读边界、CA/身份、
 Whisper/Git/终端能力及保留新写入的回退。MUST NOT 在NUC编译、执行NixOS switch、
 把PC试用证据当NUC完整验收或在文件仍编辑时停服。默认容器发布入口不自动改模式。
+
+2026-10-26 文档发布修订：按用户确认的根 projects 总纲方案更新进度白名单；产品规格、部署/硬件/数据安全边界不变。

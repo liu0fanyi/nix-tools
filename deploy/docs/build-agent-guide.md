@@ -13,7 +13,7 @@
 
 2. **权威源与状态镜像协议**：
    - PC `/home/liou/nix-tools` 是代码与 Spec 规格的**唯一权威源**。
-   - **状态镜像**：每当有代码更新或任务勾选变动（无论是否涉及部署），必须执行 `just sync-todos`，自动将本地 `specs/`、`docs/` 以及生成的汇总看板 `README.md` 增量镜像到 `liou@nuc.local:/home/liou/dufs-lan/todos/nix-tools/`，供云端“项目进展”与 DUFS 实时查阅。
+   - **进度总纲**：按共享 work-progress 技能维护本地 specs/README.md，`just sync-todos` 仅发布登记总纲和共享索引，不全量镜像规格或手册。
    - 彻底废除旧的 SSH 读写 `a-next.md` 安排计划的方式，不另建脱离仓库的平行计划。
 
 ---
@@ -24,7 +24,7 @@
 
 ```bash
 devenv shell -- just test                            # 本地单元与回归测试
-devenv shell -- just sync-todos                      # 镜像 specs/docs 至 NUC 看板
+devenv shell -- just sync-todos                      # 按 work-progress 发布总纲（先 --dry-run）
 devenv shell -- just deploy nuc infra                # 部署 NUC 基础设施（Caddy/DUFS/Authelia等）
 devenv shell -- just deploy nuc frontend             # 部署前端
 devenv shell -- just deploy nuc tag-server           # 部署后端镜像
@@ -95,7 +95,7 @@ devenv shell -- just manage <操作>                   # NUC 运维管理入口
 ## 六、文档发布与多端隔离约束
 
 1. **文档闭环**：
-   - 用户文档保留仓库权威源文件，并在每次状态变动或任务结束时由 `just sync-todos` 统一镜像同步到 `liou@nuc.local:/home/liou/dufs-lan/todos/nix-tools/`。
+   - 详细文档保留仓库权威源；每次状态变动按共享 work-progress 技能维护总纲并发布登记摘要。
    - `README.md` 为索引，正文放 `docs/`。本文对应 `deploy/docs/build-agent-guide.md`；变更时同步更新索引和副本。
 2. **目录保护隔离**：
    - 不得覆盖 NUC `todos/` 根部的个人资料（待办、购物清单等）或其他工程资料。
@@ -164,7 +164,7 @@ devenv shell -- just manage <操作>                   # NUC 运维管理入口
 
 按用户绑定维护决定，clipboard-sync 子模块的功能规格统一位于本仓库 specs/005-clipboard-core、006-clipboard-reliability、007-clipboard-release。子模块只留手册与指向本仓库的入口，代码/Git/构建保持独立。其他产品仍在各自仓库管理规格。本规则明确恢复既有父仓库规格归属，不恢复已经取消的 dsh Web 或 Clip 2 分钟过期需求。
 
-同步前可运行 `just sync-todos --dry-run`；正式同步只对本项目 specs 使用删除镜像，docs 增量，附带 constitution/操作入口并以 checksum 复查。
+进度总纲按共享 work-progress 技能发布，仅登记摘要和共享索引；先 --dry-run 后 checksum，不全量镜像 specs/docs/规则，不使用 --delete。
 
 ## 完整 Nix 私有镜像发布（tag-all 023）
 

@@ -47,7 +47,7 @@ test:
     python3 -m unittest discover -s deploy/tests
     python3 -m unittest discover -s scripts/tests
 
-# 镜像 specs、docs 与看板到 NUC todos/nix-tools/
+# 按共享 work-progress 发布登记总纲与索引；先 --dry-run
 sync-todos *args:
     python3 scripts/sync-todos.py {{args}}
 

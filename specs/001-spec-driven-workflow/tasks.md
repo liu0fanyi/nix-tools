@@ -33,3 +33,11 @@
 用户纠正范围后：xiaoqiang已排除，误加的10份本地进度总纲以反向提交恢复；原dufs专用发布区未触碰，新增projects摘要移除。此纠正不启动Gitee权限处理或任何产品发布。
 
 用户最终指定网页根目录 `#/projects?location=default`：发布目标修正为 `/home/liou/dufs-lan/projects/`，旧误放的 `todos/projects` 33份Markdown校验后迁移并移除空目录。共享技能、注册表、发布白名单和各README入口同步修正，xiaoqiang排除与个人资料保护不变。
+
+## 文档规则收尾（本轮唯一阶段计数）
+
+- [x] G1 扫描32个非xiaoqiang产品的现行操作规则、constitution、相关规格及同步入口。
+- [x] G2 将旧全量镜像/旧白名单改为共享技能与中央登记，历史验收保留事实且明确不再执行旧步骤。
+- [ ] G3 白名单差异、链接、目标和xiaoqiang未变核验，提交推送后同步根projects摘要。
+
+当前2/3，剩余G3核验、提交及摘要同步；无产品部署、硬件操作、用户资料清理或xiaoqiang修改。

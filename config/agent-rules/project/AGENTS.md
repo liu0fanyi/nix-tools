@@ -26,6 +26,8 @@
   `liou@nuc.local:/home/liou/dufs-lan/projects/<登记名>.md`，索引为该目录 README.md。
   本地源为所属仓库 specs/README.md，中央登记表在 nix-tools 的
   config/agent-rules/project/projects.json；同一仓库的 worktree 不重复发布。
+  旧 Spec/任务中的 todos 工程镜像、全量 specs/docs 同步或删除镜像步骤仅作历史记录；
+  后续工作按共享 work-progress 与中央登记执行，不重建旧目录、不改写旧验收事实。
   本决定只替代一般工程旧 todos/<项目> 进度路径，不扩大到 xiaoqiang。
   **xiaoqiang 全部工程继续仅使用 `/home/liou/dufs/<工程发布目录>/`，不参与此次总纲整理、
   不在 projects 建立摘要或任何副本。** 精确白名单遵守其原规则。
