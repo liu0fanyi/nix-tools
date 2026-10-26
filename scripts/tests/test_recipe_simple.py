@@ -45,6 +45,28 @@ class SimpleChecks(unittest.TestCase):
         self.assertFalse(any(p.suffix in ('.mp4','.mkv','.webm') for p in self.root.rglob('*')))
         self.assertFalse((self.root/'media').exists());self.assertFalse((self.root/'queues').exists())
         self.assertIn('豆腐',(self.root/'library/search-index.json').read_text())
+    def test_webp_migration_preserves_sources_and_resumes(self):
+        self.send(self.response());vid=self.entry['id'];dest=self.root/'library/recipes'/vid
+        original=self.root/'platform-subtitles'/vid/'cover.jpg';before=original.read_bytes()
+        self.assertIn('cover.webp',(dest/'recipe.html').read_text())
+        with Image.open(dest/'cover.webp') as im:self.assertEqual(im.format,'WEBP');self.assertEqual(im.size,(32,20))
+        # Simulate a legacy duplicate plus an interrupted page/index migration.
+        (dest/'cover.jpg').write_bytes(before)
+        recipe=m.f.batch.load(self.root/'results'/(vid+'.json'))
+        (dest/'recipe.html').write_text(m.render_recipe(recipe))
+        self.app.optimize_covers();self.assertFalse((dest/'cover.jpg').exists())
+        self.assertEqual(original.read_bytes(),before);self.app.verify_packet(vid)
+        self.assertTrue(m.f.batch.load(self.root/'library/search-index.json')[0]['thumbnail'].endswith('/cover.webp'))
+        with mock.patch.object(m,'web_cover',side_effect=AssertionError('cached derivative reused')):self.app.optimize_covers()
+        (dest/'cover.webp').write_bytes(b'corrupt cached image')
+        self.app.optimize_covers()
+        with Image.open(dest/'cover.webp') as im:im.load()
+        original.write_bytes(b'changed original')
+        with self.assertRaisesRegex(ValueError,'cover input changed'):self.app.optimize_covers()
+    def test_webp_scales_large_images_without_upscaling(self):
+        data=io.BytesIO();Image.new('RGB',(2400,1500),(90,140,30)).save(data,'JPEG')
+        result=m.web_cover(data.getvalue())
+        with Image.open(io.BytesIO(result)) as im:self.assertEqual(im.size,(960,600));self.assertEqual(im.format,'WEBP')
     def test_source_change_and_stale_result_rejected(self):
         response=self.response();bad=copy.deepcopy(response);bad['input_sha256']='0'*64
         with self.assertRaisesRegex(ValueError,'stale'):self.send(bad)

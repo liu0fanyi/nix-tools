@@ -337,3 +337,8 @@ U2 parse_srt新增clip_final与timing_repairs显式选项，仅平台AI字幕提
 Sioyek 用 xcb 和统一 DPI 包装；Gnumeric 沿用锁定包。mpv 模块写入 input.conf 和 Lua 剪贴板脚本。MIME 检查由 rerun 在应用前调用，显式 --apply 才修改源码，核心锚点拒绝吸收外部覆盖；动态配置设置 force 避免激活冲突。
 
 Constitution Check：仅 PC 构建，不代用户 switch、不启动远控连接、不下载媒体；私密配置只提交加密对象，文档镜像限定 NUC 白名单目录。核对完整系统/HM、生成入口与脚本，真实 GUI 单列 AH3。
+
+
+### 菜谱WebP实施边界（2026-10-26）
+
+使用现有Pillow本地编码，EXIF方向校正、RGB、LANCZOS等比缩小至960长边、WebP质量78/method6；不引入外部依赖或参考仓。Constitution Check：规格留本仓，原始平台封面及来源绑定不改写，展示衍生物与来源分层，公开源码只含工具和合成测试；操作仅限本次菜谱ROOT的library，不影响其他下载和服务。采用optimize-covers子命令持有既有写锁，逐条原子落盘和缓存摘要校验，末尾只重建目录一次；断开后可复用已验证产物再执行。验收包括尺寸/格式、来源未变、重复运行、缓存恢复、索引/页面HTTP和实际空间变化。

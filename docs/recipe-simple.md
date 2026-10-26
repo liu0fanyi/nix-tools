@@ -156,3 +156,15 @@ rm -f /home/liou/Downloads/菜谱精简库-老东北美食/collect.stop
 
 
 字幕和封面采集默认不限待AI数量：`recipe-simple --root <ROOT> collect --max-pending 0 --interval 60 --watch`。AI停止或积压不影响采集；磁盘不足和采集故障仍停止。正数 `--max-pending` 可用于主动限制。
+
+### 压缩网页封面
+
+新发布的菜谱自动使用 WebP，长边最多960像素、质量78，不放大原图。已有库可执行：
+
+```bash
+/home/liou/nix-tools/scripts/recipe-simple --root '<菜谱数据目录>' optimize-covers
+```
+
+命令只转换已发布菜谱，使用4个图片编码线程，持有既有写锁；可重复执行，已验证的图片缓存会复用。图片和页面先落盘、目录最后切换，成功后清理发布目录中与原始摘要一致的重复JPEG。遇到中断后运行同一命令即可继续。`cover-display.json`记录编码参数、来源和WebP摘要。
+
+平台原始封面仍留在 `platform-subtitles/` 用于输入绑定，不压缩或删除；因此整个工作目录仍比可独立浏览的 `library/` 大。材料、步骤和原始JSON不变，也不重新调用模型。目录重建兼容旧JPEG和新WebP。

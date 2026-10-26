@@ -14,7 +14,8 @@ import time
 import urllib.parse
 import urllib.request
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
-from PIL import Image
+from concurrent.futures import ThreadPoolExecutor
+from PIL import Image, ImageOps
 from jsonschema import Draft202012Validator
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -78,6 +79,16 @@ def atomic_bytes(path,data):
         os.chmod(name,0o644);os.replace(name,path);f.sync_dir(path.parent)
     finally:
         if os.path.exists(name):os.unlink(name)
+
+
+COVER_WEBP_SETTINGS={'version':1,'max_edge':960,'quality':78,'method':6}
+
+def web_cover(source):
+    with Image.open(io.BytesIO(source)) as image:
+        image.load();image=ImageOps.exif_transpose(image).convert('RGB')
+        image.thumbnail((960,960),Image.Resampling.LANCZOS)
+        output=io.BytesIO();image.save(output,format='WEBP',quality=78,method=6)
+        return output.getvalue()
 
 
 class Simple:
@@ -207,14 +218,46 @@ class Simple:
         response=f.batch.load(self.root/'responses'/(vid+'.json'))
         if recipe!=assemble(packet,response):raise ValueError('stored result changed')
         destination=self.root/'library/recipes'/vid;f.durable_mkdir(destination)
-        atomic_bytes(destination/'cover.jpg',(self.root/'platform-subtitles'/vid/'cover.jpg').read_bytes())
-        f.atomic(destination/'recipe.json',recipe);f.atomic(destination/'recipe.html',render_recipe(recipe),text=True)
+        self.write_web_cover(vid,recipe)
+        f.atomic(destination/'recipe.json',recipe);f.atomic(destination/'recipe.html',render_recipe(recipe,cover='cover.webp'),text=True)
         self.update(vid,'published');self.rebuild_directory()
+    def write_web_cover(self,vid,recipe):
+        source=f.safe(self.root/'platform-subtitles'/vid/'cover.jpg',self.root)
+        raw=source.read_bytes();source_sha=f.batch.digest(source)
+        if source_sha!=recipe['source']['cover_sha256']:raise ValueError('cover input changed')
+        destination=self.root/'library/recipes'/vid;f.durable_mkdir(destination)
+        target=f.safe(destination/'cover.webp',self.root);receipt=f.safe(destination/'cover-display.json',self.root)
+        if target.exists() and receipt.exists():
+            saved=f.batch.load(receipt)
+            if saved.get('source_sha256')==source_sha and saved.get('settings')==COVER_WEBP_SETTINGS and saved.get('sha256')==f.batch.digest(target):return
+        data=web_cover(raw)
+        atomic_bytes(target,data)
+        f.atomic(receipt,{'source_sha256':source_sha,'sha256':f.batch.digest(target),'settings':COVER_WEBP_SETTINGS})
+    def optimize_covers(self):
+        rows=self.db.execute("SELECT id FROM jobs WHERE state='published' ORDER BY rowid").fetchall()
+        def convert(vid):
+            recipe=f.batch.load(self.root/'results'/(vid+'.json'))
+            self.write_web_cover(vid,recipe)
+            f.atomic(self.root/'library/recipes'/vid/'recipe.html',render_recipe(recipe,cover='cover.webp'),text=True)
+        # Only independent image/page files are parallel; SQLite stays on its owner thread.
+        with ThreadPoolExecutor(max_workers=4) as pool:
+            for number,_ in enumerate(pool.map(convert,[row['id'] for row in rows]),1):
+                if number%250==0:print(json.dumps({'optimized':number,'total':len(rows)}),flush=True)
+        self.rebuild_directory()
+        # Only remove redundant published copies after all directory links switch.
+        removed=0
+        for row in rows:
+            vid=row['id'];directory=self.root/'library/recipes'/vid;legacy=f.safe(directory/'cover.jpg',self.root)
+            if legacy.exists():
+                recipe=f.batch.load(self.root/'results'/(vid+'.json'))
+                if f.batch.digest(legacy)!=recipe['source']['cover_sha256']:raise ValueError('published legacy cover changed')
+                legacy.unlink();f.sync_dir(directory);removed+=1
+        return {'optimized':len(rows),'removed_published_jpegs':removed,'settings':COVER_WEBP_SETTINGS,'original_sources_preserved':True}
     def rebuild_directory(self):
         records=[]
         for row in self.db.execute("SELECT id FROM jobs WHERE state='published' ORDER BY rowid"):
             vid=row['id'];recipe=f.batch.load(self.root/'results'/(vid+'.json'))
-            records.append({'id':vid,'title':recipe['title'],'author':recipe['source']['author'],'page':'recipes/'+vid+'/recipe.html','thumbnail':'recipes/'+vid+'/cover.jpg','status':'needs_review' if recipe['notes'] else 'draft','issues':len(recipe['notes']),'ingredients':[{'name':i['name'],'role':'optional' if i['optional'] else 'main'} for i in recipe['ingredients']]})
+            records.append({'id':vid,'title':recipe['title'],'author':recipe['source']['author'],'page':'recipes/'+vid+'/recipe.html','thumbnail':'recipes/'+vid+('/cover.webp' if (self.root/'library/recipes'/vid/'cover.webp').exists() else '/cover.jpg'),'status':'needs_review' if recipe['notes'] else 'draft','issues':len(recipe['notes']),'ingredients':[{'name':i['name'],'role':'optional' if i['optional'] else 'main'} for i in recipe['ingredients']]})
         records=f.ingredients.index_records(records,f.batch.load(self.root/'dictionary.json'))
         directory=f.ingredients.render_directory(records,self.root/'library').replace('图文菜谱库','AI 字幕菜谱库').replace('从食材清单找做法，再看关键操作画面。','从食材清单找材料和做法，封面来自原视频。').replace('点击菜谱查看左文右图步骤','点击菜谱查看材料和做法').replace("record.title + '操作画面'","record.title + '原视频封面'")
         directory=directory.replace('</header>','<p><a href="progress.html">处理进度</a> · <a href="bilibili-recipe-controls.user.js">原视频键盘浏览脚本</a> · <a href="player-guide.html">使用方法</a></p></header>',1)
@@ -245,13 +288,14 @@ def assemble(packet,response):
     return recipe
 
 
-def render_recipe(recipe):
+def render_recipe(recipe,cover='cover.jpg'):
+    if cover not in ('cover.jpg','cover.webp'):raise ValueError('invalid display cover')
     esc=lambda s:html.escape(str(s),quote=True);source=recipe['source']
     def clock(t):return f'{int(t)//60:02}:{int(t)%60:02}'
     ingredients=''.join('<li><b>'+esc(i['name'])+'</b> · '+esc(i['amount'] or '未明确')+(' <small>可选／替代</small>' if i['optional'] else '')+'</li>' for i in recipe['ingredients'])
     steps=''.join('<li><p>'+esc(s['text'])+'</p><a target="_blank" rel="noopener noreferrer" href="'+esc(source['url']+'?t='+str(int(s['start']))+'#recipe-time='+str(s['start']))+'">原视频 '+clock(s['start'])+' ↗</a></li>' for s in recipe['steps'])
     notes='<details><summary>字幕不清或补充说明（'+str(len(recipe['notes']))+'）</summary><ul>'+''.join('<li>'+esc(n)+'</li>' for n in recipe['notes'])+'</ul></details>' if recipe['notes'] else ''
-    return '''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'''+esc(recipe['title'])+'''</title><style>body{margin:0;background:#f5f3ee;color:#282d28;font:17px/1.8 system-ui,sans-serif}main{max-width:850px;margin:auto;padding:26px}h1{font-size:32px}img{display:block;width:100%;max-height:390px;object-fit:contain;border-radius:12px;background:#eee}a{color:#476833}li{margin:12px 0}small,.meta{color:#687166;font-size:14px}details{margin-top:28px;background:#fff;padding:14px;border-radius:8px}section{background:white;padding:12px 24px;margin:20px 0;border-radius:10px}</style><main><nav><a href="../../index.html">← 菜谱目录</a> · <a href="../../player-guide.html">原视频键盘浏览</a></nav><h1>'''+esc(recipe['title'])+'''</h1><p class="meta">'''+esc(source['author'])+''' · AI 字幕整理</p><img src="cover.jpg" alt="原视频封面"><p><a target="_blank" rel="noopener noreferrer" href="'''+esc(source['url'])+'''">观看原视频 ↗</a></p><section><h2>材料</h2><ul>'''+ingredients+'''</ul></section><section><h2>制作过程</h2><ol>'''+steps+'''</ol></section>'''+notes+'''<p class="meta">用量未明确时保留未知。时间链接是原视频位置，不是烹饪时长。<a href="recipe.json">菜谱 JSON</a></p></main></html>'''
+    return '''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'''+esc(recipe['title'])+'''</title><style>body{margin:0;background:#f5f3ee;color:#282d28;font:17px/1.8 system-ui,sans-serif}main{max-width:850px;margin:auto;padding:26px}h1{font-size:32px}img{display:block;width:100%;max-height:390px;object-fit:contain;border-radius:12px;background:#eee}a{color:#476833}li{margin:12px 0}small,.meta{color:#687166;font-size:14px}details{margin-top:28px;background:#fff;padding:14px;border-radius:8px}section{background:white;padding:12px 24px;margin:20px 0;border-radius:10px}</style><main><nav><a href="../../index.html">← 菜谱目录</a> · <a href="../../player-guide.html">原视频键盘浏览</a></nav><h1>'''+esc(recipe['title'])+'''</h1><p class="meta">'''+esc(source['author'])+''' · AI 字幕整理</p><img src="'''+cover+'''" alt="原视频封面"><p><a target="_blank" rel="noopener noreferrer" href="'''+esc(source['url'])+'''">观看原视频 ↗</a></p><section><h2>材料</h2><ul>'''+ingredients+'''</ul></section><section><h2>制作过程</h2><ol>'''+steps+'''</ol></section>'''+notes+'''<p class="meta">用量未明确时保留未知。时间链接是原视频位置，不是烹饪时长。<a href="recipe.json">菜谱 JSON</a></p></main></html>'''
 
 
 EVENTS={'cover_retry_wait':'封面响应不完整，等待低频重新获取','retry_wait':'模型暂不可用，等待自动重试','prepared':'字幕和封面已就绪','recovered':'已恢复并发布保存结果','skipped':'没有中文AI字幕，跳过','waiting_for_ai':'缓存已满，等待AI整理','sources_finished':'来源队列已结束','stopped':'任务已停止','failed':'任务失败，已停止','extracting':'开始AI字幕整理','publishing':'开始校验和发布','published':'菜谱发布完成','waiting_for_subtitles':'等待下一份字幕','finished':'AI队列已处理完毕'}
@@ -413,7 +457,7 @@ def collect(root,max_pending=0,interval=60,watch=False):
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--root',type=Path,required=True);sub=parser.add_subparsers(dest='command',required=True)
     init=sub.add_parser('init');init.add_argument('--browser');add=sub.add_parser('add');add.add_argument('manifest',type=Path)
-    sub.add_parser('next');sub.add_parser('status');imp=sub.add_parser('import');imp.add_argument('response',type=Path)
+    sub.add_parser('next');sub.add_parser('status');sub.add_parser('optimize-covers');imp=sub.add_parser('import');imp.add_argument('response',type=Path)
     collector=sub.add_parser('collect');collector.add_argument('--max-pending',type=int,default=0,help='0: unlimited subtitle/cover queue (default); positive: optional pending limit');collector.add_argument('--interval',type=int,default=60);collector.add_argument('--watch',action='store_true')
     retry=sub.add_parser('retry');retry.add_argument('--job',required=True);sub.add_parser('rebuild');preview=sub.add_parser('serve');preview.add_argument('--port',type=int,default=8765)
     ai=sub.add_parser('ai');ai.add_argument('--model',default='gpt-6.1-sol');ai.add_argument('--once',action='store_true');ai.add_argument('--timeout',type=int,default=600)
@@ -431,6 +475,7 @@ def main():
         elif args.command=='next':result=app.next()
         elif args.command=='import':result=app.accept(args.response)
         elif args.command=='retry':app.retry(args.job);result=app.status()
+        elif args.command=='optimize-covers':result=app.optimize_covers()
         elif args.command=='rebuild':
             for row in app.db.execute("SELECT id FROM jobs WHERE state='published'").fetchall():app.publish(row['id'])
             result=app.status()

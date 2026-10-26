@@ -4,7 +4,7 @@
 - 维护工作站、NUC 发布和桌面应用缓存；Tag Browser nix.82 发行检查已完成。
 - 32个非xiaoqiang工程已统一为 projects Markdown 总纲，旧工程镜像已备份清理。
 
-- [既有 B 站菜谱快照全量处理和结构验收完成，成品留本机。](010-host-configuration/tasks.md)
+- [既有 B 站菜谱快照全量验收完成，网页封面已压缩为 WebP，成品留本机。](010-host-configuration/tasks.md)
 
 ## 后续计划
 - [按后续实际变更维护项目总纲。](001-spec-driven-workflow/tasks.md)
