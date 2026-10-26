@@ -7,12 +7,18 @@ CURRENT=Path('/home/liou/.local/share/tag-all/native-version-releases/current.js
 MANAGER=Path('/nix/store/vb0phbx5f56nnhgm7bc1xf03cmrwhy73-tag-native-release-manager')
 def run(args):return subprocess.check_output(args,text=True).strip()
 def digest(path):return hashlib.sha256(path.read_bytes()).hexdigest()
+def frontend_files(source):
+ files=[f for f in source.rglob('*') if f.is_file()]
+ assert files and not any(f.is_symlink() for f in source.rglob('*')), 'Symlink artifact'
+ allowed={'.js','.css','.wasm','.woff','.woff2','.ttf'}
+ assert all(f.relative_to(source).as_posix()=='index.html' or f.relative_to(source).parts[0]=='assets' and f.suffix in allowed for f in files),'Unexpected artifact'
+ return files
+
 def main():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument('--web-root',type=Path,required=True);p.add_argument('--frontend-base',type=Path);p.add_argument('--prepare',action='store_true');p.add_argument('--dry-run',action='store_true');p.add_argument('--proof',type=Path);a=p.parse_args()
  source=a.web_root.resolve();owned=str(source).endswith('/share/knowledge-cards/web') or source.name=='dist' and '-knowledge-cards-ui-' in source.parent.name
  assert str(source).startswith('/nix/store/') and owned and (source/'index.html').is_file(),'Use fixed Knowledge Cards frontend output'
- files=[f for f in source.rglob('*') if f.is_file()];assert files and not any(f.is_symlink() for f in source.rglob('*'))
- assert all(f.relative_to(source).as_posix()=='index.html' or f.relative_to(source).parts[0]=='assets' and f.suffix in ('.js','.css') for f in files),'Unexpected artifact'
+ files=frontend_files(source)
  proof={'source':str(source),'web_files':{str(f.relative_to(source)):digest(f) for f in files},'entry_url':'http://nuc.local:5006/dist/knowledge-cards/index.html?view=new','native_composition_required':True,'activated':False,'service_stopped':False}
  if not a.prepare or a.dry_run:print(json.dumps(proof,indent=2));return
  ssh=['ssh',HOST];pc=json.loads(CURRENT.read_text());nuc=json.loads(run(ssh+['cat',str(CURRENT)]));assert pc['package']==nuc['package'];package=pc['package']
