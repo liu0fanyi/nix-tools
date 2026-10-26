@@ -1,0 +1,29 @@
+{
+  "stage": "markdown_overview_development",
+  "shared_tool_cases_passed": 5,
+  "agent_rule_cases_passed": 4,
+  "skill_validation": true,
+  "managed_links_verified": true,
+  "dufs_wasm_check": true,
+  "dufs_rust_tests_passed": 274,
+  "dufs_private_build": true,
+  "built_browser_directory_regression": true,
+  "browser_fixture": "synthetic_only",
+  "legacy_reader_removed_from_source": true,
+  "frontend_activated": false,
+  "backend_changed": false,
+  "user_existing_edits_preserved": true,
+  "mirrors_verified": true,
+  "remote_entry_checks": {
+    "reading_entries": 2,
+    "links_valid": true,
+    "permissions_valid": true
+  },
+  "development_and_docs_steps_completed": 4,
+  "remaining_development_and_docs_steps": 0,
+  "next_action": "User-requested frontend publication; no production activation in this stage",
+  "source_commits": {
+    "nix-tools": "1116fc0",
+    "dufs-plus": "73eada7"
+  }
+}

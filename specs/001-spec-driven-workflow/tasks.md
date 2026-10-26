@@ -14,7 +14,7 @@
 
 - [x] M1 更新共享 work-progress 技能、工作区规则和可复用 Markdown/Git 工具；不逐项目添加 AGENTS。
 - [x] M2 当前两仓总纲与 spec 联动、既有镜像入口使用总纲，DUFS 移除独立阅读器和目录接管。
-- [ ] M3 隔离工具/规则回归、技能校验及 DUFS WASM/Rust/private 构建与目录浏览验证。
-- [ ] M4 两仓本轮白名单提交推送、NUC Markdown 镜像及 checksum/链接/权限核验；前端上线另行执行。
+- [x] M3 隔离工具/规则回归、技能校验及 DUFS WASM/Rust/private 构建与目录浏览验证。
+- [x] M4 两仓本轮白名单提交推送、NUC Markdown 镜像及 checksum/链接/权限核验；前端上线另行执行。
 
-当前开发与资料阶段2/4，剩余M3验证、M4提交镜像；实际服务切换不在本轮授权内。
+当前开发与资料阶段4/4完成，剩余0项。共享技能/规则链接、5项工具测试与4项规则测试、技能校验、DUFS WASM/274项Rust/private构建与实际浏览验证通过；两仓已提交推送，NUC阅读入口及specs/docs镜像checksum、链接和权限核验通过。证据见[结果](markdown-overview-results.json)。生产前端仍为现用版本，独立按钮移除待后续发行；不代填上线验收。

@@ -5,7 +5,7 @@
 - 项目状态改为本地 Markdown 总纲，由共享 work-progress 技能联动 Spec 与最近提交，NUC 提供阅读镜像。
 
 ## 后续计划
-- [完成总纲共享工具与镜像验证](001-spec-driven-workflow/tasks.md)，之后各项目更新时按需接入，不逐仓添加 AGENTS。
+- [总纲共享工具与镜像验证](001-spec-driven-workflow/tasks.md)已完成；之后各项目更新时按需接入并维护总纲。
 - 暂无其他已确认的新方向；配置维护按已有规格推进。
 
 ## 待处理问题
@@ -13,6 +13,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-10-26 · feat: 用共享技能联动 Spec 与 Markdown 项目总纲 · `1116fc0`
 - 2026-10-26 · Pin Tag Browser nix.82 and verify desktop candidate · `26c192f`
 - 2026-10-25 · Pin released shared knowledge cards desktop package · `936483b`
 - 2026-10-25 · Update knowledge card cache and prepare native composite frontend delivery · `72792c7`
@@ -20,5 +21,4 @@
 - 2026-10-25 · Pin Tag Browser nix.81 and verify native install candidate · `b936edd`
 - 2026-10-24 · Update Tag Browser to verified nix.80 release · `85e0386`
 - 2026-10-24 · Update fixed Tag Browser input to nix.79 · `af346cb`
-- 2026-10-24 · Update fixed Tag Browser input to nix.78 · `bd1e906`
 <!-- recent-commits:end -->
