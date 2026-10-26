@@ -208,6 +208,12 @@
       "root": "/data/project/tspdt-explorer",
       "aliases": [],
       "category": "应用与工具"
+    },
+    {
+      "name": "course-library",
+      "root": "/data/project/course-library",
+      "aliases": [],
+      "category": "应用与工具"
     }
   ]
 }
