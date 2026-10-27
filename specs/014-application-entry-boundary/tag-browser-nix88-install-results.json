@@ -1,0 +1,182 @@
+{
+  "stage": "paired_frontend_rollout_and_browser_release_verified",
+  "release_tag": "v0.1.0-nix.88",
+  "release_source_commit": "7b54fd84389d521693e221a8394c0896303266c5",
+  "package": {
+    "release_tag": "v0.1.0-nix.88",
+    "package": "/nix/store/5qbiqw18943fhdsqksq7jwvfccgn8nyy-tag-browser-0.1.0",
+    "archive": "/data/project/tag-browser/engine/obj-tag-browser/dist/tagbrowser-156.0.1.en-US.linux-x86_64.tar.xz",
+    "archive_sha256": "a289af25c4719d7519a151227a873261875ca5edd9aaf4bca7bf553704e10afc",
+    "archive_size": 83268312,
+    "runtime_resource_sha256": {
+      "TagBrowserScrollFrame.js": "bf12d89860547ced6ff4d559a22f01dafde13c60b06860dd7cfc31e85e5b8556",
+      "TagBrowserTaggingController.mjs": "2cf002f2bec7d54bc647e78e590d1d7d31bce1c7483ead2f50a2a67870885a5d",
+      "TagBrowserIcons.mjs": "e462609c59baa22561174e9535f72e7f7ad1ce34193d2d919ebe8a1b9c23d5a6",
+      "TagBrowserControllers.mjs": "093333d4833eb24eab80811aa3bafc0cd399a7cd00683cb60eb204285b1a077d",
+      "TagBrowserFileActionsController.mjs": "f039e520f5aa349e8c603cbcd8243bedf0d198b7ee5be60b847276df8e344914",
+      "TagBrowserAutoTagController.mjs": "e7e351bcd7fddd908486c1618f0714a38588c0e8785b2b8bfbb59531dd9a5959",
+      "TagBrowserTreeIntegration.mjs": "f250bd185ffbceab44f01d1920c72669f6f187f55aa1eaec9790dd5a28daa4ef",
+      "TagBrowserSearchController.mjs": "26ba83b838f90a0ebd56fec1cea988cd68727ca079bbd9c85076767402920e83",
+      "TagBrowserDirectoryTree.mjs": "0c2ed6602195b2b9ad776e15205ff5f397d7cefdb2c39bd00771ac546c991708",
+      "TagBrowserView.mjs": "f23c5cc1d55b7660dc4edbf739b4a5e5db5e1ce3d62e50e4d3e45f5f4a599d8d",
+      "TagBrowserRecovery.mjs": "5d7474c514f466b023f754b9cf3bfc0b6db37b861b5e0535e4c702afb451527c",
+      "TagBrowserSearchWorker.js": "3db5d9b86256e2cfb1e3e8bd52bee058c87e9b496cd06a0782e292a7268a4347",
+      "TagBrowserAutoTagKey.mjs": "fb0aa4c3b012412e0b2527439014190817bb723276b3f0cdfafd7cf0905bcc4c",
+      "TagBrowserSearchWorkerClient.mjs": "dc114a8dec7b81b6ae4dd999c5ea84f0c954304d334f56d7e9ddb2154f1ff160",
+      "tag-browser-sidebar.css": "752a5a84688d00b290d6d0c3d5dc3f5493273bb120f6b899afc6ac00f848d5a7",
+      "TagBrowserSidebar.mjs": "5c4f76dae6d69d99b5591ab9b7dafa4a37d2366ea7ea635fa8934d50cd71b1bd",
+      "TagBrowserSleep.mjs": "cdb2fe853bd4e601a754d9cb876d4015893363337c66c933cd655df9aa0de0d6",
+      "TagBrowserSearchProviders.mjs": "0a7249bfa427355ef467194bf87d87784bf4c4dd2d56f188012c27c83ffe7aad",
+      "TagBrowserTodo.mjs": "5cbd6bc1799c330623555937145aaca40efe69c4c2916a853c9e3b98c51db16c",
+      "TagBrowserAutoTag.mjs": "b9d7bb3b3c5d5ed712aceaab9ad1eac1c8aac8d9fcc438d82c2b201db380377a",
+      "TagBrowserPageController.mjs": "6d41c9cbb3939278944fb46d3aec0ff065eaa749289461cc1129664501f09c52",
+      "TagBrowserSearchView.mjs": "f9b2451b7ac21dfecab660a060950b5f209bad3bbda8c4f63877536b252e8440",
+      "TagBrowserConstants.mjs": "fde9fb86dedbb6a2cf7b6bb5ea2cdabc059cd36a00e6cca8ba88025c63f87e4a",
+      "TagBrowserSelectionController.mjs": "c15003fed357a4790a95e1b79be0242c3e59da2101c613394889e2683226ba02",
+      "TagBrowserSession.mjs": "3cc12e893efacabc0cac6e9cf86dac89e3c095462f106d06ebc20ef9c4efa1d9",
+      "TagBrowserTagCore.mjs": "0f57248f843764db702293e8c07d3347038f14a670a394c030560a008a711ebb",
+      "TagBrowserSleepCore.mjs": "ed2aa124a45624051300e372975e8d750e2935875140bb40c5c5ecc4361216f8",
+      "TagBrowserRecoveryCore.mjs": "79ae17d07fe7116c82d4438432046c9497e345a8f4ab8977a642d84610b9cffb",
+      "TagBrowserCollectionView.mjs": "aee350b63fd5763d2518c4e8ae26ef26107c351e31b3519cbe7bd14119140734",
+      "TagBrowserZenImport.mjs": "272ac4c55447e3f776d52f5fabcb86d3012e5b6eaffb2f9992051ded167dffcb",
+      "TagBrowserIdentityController.mjs": "20ad3c4e8dfd5dece8242792647f8b3b27306bacf324e921e436a0519f1839e4",
+      "TagBrowserCollections.mjs": "984e4a686d73fff1c654ff1fcbf06ff86b57e5a423b9e0e680e6ad86ca82620d",
+      "TagBrowserScroll.mjs": "96b63f48aff477e9b20527c824bbd0d13b7115a4d531ddd3121cb65db0e78d7c",
+      "TagBrowserResultView.mjs": "fec1e6ea8421bf88135da05328c4b1b6195689c92193e60d4cf83c6d3b762342",
+      "TagBrowserTodoController.mjs": "c08155602cd9397c54ad24ae5d5afbbab92cc73d585d2fd2dff852f6447b750c",
+      "TagBrowserMultiSearch.mjs": "008dd890922f3f23f9c8c49578ba396690f6c226cf9e6032f28d7902d0ec5fec",
+      "TagBrowserTreeView.mjs": "4eea91ea0a5bf3754ed0852c382596783bcdb54696fd3191c31dd26403162638",
+      "TagBrowserImportController.mjs": "7e4b95b4710f39ca8969c3fca09099cd7bba2bf23161084f451cbb66fe1d3be9",
+      "TagBrowserConnection.mjs": "59bd63875d7d1cef5dbe0ba49cd00922faba685f85cd1029c510ed3169fee32e",
+      "TagBrowserSleepChild.mjs": "d36bc21d408d595d513aa51e380b4c46f2910ebd187d8ebf72a3664e2947dba5",
+      "TagBrowserFileSearch.mjs": "7f954f2305528fa5d8994e2f7faf836f31ae9f5d7aadd464e0e895fbe6543b72",
+      "TagBrowserCollectionController.mjs": "92b962b5ff44f61259f52193488aba79b6082ce9267738cc2b3302ba915865a6",
+      "tag-browser-tag-core.wasm": "a4d6506c623c8d3f5a15c03153bd270a5f1742fd4ed23cfd010db15c12ded78d",
+      "tag-browser-icons-LICENSE": "1e7290b35280a048667bbf0ebabac1c7fd52a75300e8b2946ac165715997f2bc",
+      "TagBrowserYaml.mjs": "5b4536e72a2203aa6f159630caeefde35a95d8f95620f5a1d3c48efe3a0e76fa",
+      "tag-browser-yaml-LICENSE": "a07bc24468b9654ce76a547d47a2db282d07733b715db4c73a98bd63961f9550",
+      "TagBrowserAppearance.mjs": "e26780705199d5cbd23c272b97e575709240c7911e68c4f103f0a07cfe3fb731"
+    },
+    "runtime_resource_changes_since_nix87": [
+      "TagBrowserAutoTagController.mjs",
+      "TagBrowserCollectionController.mjs",
+      "TagBrowserConnection.mjs",
+      "TagBrowserControllers.mjs",
+      "TagBrowserDirectoryTree.mjs",
+      "TagBrowserFileActionsController.mjs",
+      "TagBrowserPageController.mjs",
+      "TagBrowserResultView.mjs",
+      "TagBrowserSearchController.mjs",
+      "TagBrowserSession.mjs",
+      "TagBrowserSidebar.mjs",
+      "TagBrowserTagCore.mjs",
+      "TagBrowserTaggingController.mjs",
+      "TagBrowserTreeIntegration.mjs",
+      "TagBrowserView.mjs",
+      "tag-browser-tag-core.wasm"
+    ],
+    "runtime_resources": 47,
+    "firefox_assertions": 2164,
+    "firefox_groups": 7,
+    "failures": 0,
+    "todo": 0,
+    "npm_test": true,
+    "reused_verified_regression": "specs/004-file-workspace-actions/tag-state-results.json",
+    "standalone_isolated_profile_version": "Mozilla TagBrowser 156.0.1",
+    "latest_pin": "tag-browser-latest",
+    "keep_revisions": 1
+  },
+  "upload": {
+    "release": "https://github.com/liu0fanyi/tag-browser/releases/tag/v0.1.0-nix.88",
+    "revision": "7b54fd84389d521693e221a8394c0896303266c5",
+    "archive_sha256": "a289af25c4719d7519a151227a873261875ca5edd9aaf4bca7bf553704e10afc",
+    "assets_verified": true,
+    "workflow_dispatched": true,
+    "user_requested_release": true
+  },
+  "ci": {
+    "run_id": 40514130986,
+    "conclusion": "success",
+    "store_path": "/nix/store/5qbiqw18943fhdsqksq7jwvfccgn8nyy-tag-browser-0.1.0",
+    "cachix_verified": true,
+    "ci_matches_local_package": true,
+    "workflow_creates_pin": true,
+    "latest_pin": {
+      "createdOn": "2026-10-24T10:09:14.207482Z",
+      "keep": {
+        "contents": 1,
+        "tag": "Revisions"
+      },
+      "lastRevision": {
+        "artifacts": [],
+        "createdOn": "2026-10-27T13:41:53.136951Z",
+        "orphaned": false,
+        "revision": 15,
+        "storePath": "/nix/store/5qbiqw18943fhdsqksq7jwvfccgn8nyy-tag-browser-0.1.0"
+      },
+      "name": "tag-browser-latest"
+    },
+    "other_application_pins_unchanged": true,
+    "trusted_signature_verified": true
+  },
+  "system": {
+    "system_candidate": "/nix/store/rkz489qwwbhxn3d7rq13g86gv980f4il-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+    "home_candidate": "/nix/store/jmd9khpiy6lnyxbmms1zmw4iav87i6j3-home-manager-generation",
+    "browser_binary": "/nix/store/5qbiqw18943fhdsqksq7jwvfccgn8nyy-tag-browser-0.1.0",
+    "browser_source_revision": "7b54fd84389d521693e221a8394c0896303266c5",
+    "changed_lock_nodes": [
+      "tag-browser-src"
+    ],
+    "five_native_templates_verified": true,
+    "default_target_link_verified": true,
+    "restore_after_reload_verified": true,
+    "system_menu_binary_and_release_version_verified": true,
+    "system_switch_by_agent": false,
+    "four_browser_mime_defaults_verified": true,
+    "preexisting_fcitx_and_tasks_changes_preserved_and_in_candidate": true
+  },
+  "desktop_caches": {
+    "clipboard-sync.outPath": {
+      "path": "/nix/store/jdchs28f8h7cghn4j9fpvhypwl6gs1cr-clipboard-sync-0.2.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "tag-browser-binary-path": {
+      "path": "/nix/store/5qbiqw18943fhdsqksq7jwvfccgn8nyy-tag-browser-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "screen-cut-binary-path": {
+      "path": "/nix/store/arrsa3p4q795xkw02503wrz9xyr4wmq4-screen-cut-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "screen-mark-binary-path": {
+      "path": "/nix/store/j1cvwiafizx98f8qzwj2n6szalsqldm8-screen-mark-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "knowledge-cards-binary-path": {
+      "path": "/nix/store/krc8vqrkf6mn7c0si3jgjkmisd0hj32a-knowledge-cards-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    }
+  },
+  "frontend": {
+    "source_commit": "3b05680a59fe047a0339eef6e7e661b4f25958c5",
+    "frontend": "/nix/store/113mjhjwb3yvgw1cb6c4gnihbvmij73p-dufs-plus-tag-state-frontend",
+    "packages": {
+      "pc": "/nix/store/1293mxwc61r3wmp84c1sx5b31a0mwkg4-tag-all-workspace-native-0.1.0",
+      "nuc": "/nix/store/4zbh6crnzwibj2rnnkm7wldbrkrzqrm4-tag-all-workspace-native-0.1.0"
+    },
+    "both_targets_activated": true,
+    "each_backend_preserved": true,
+    "database_restored": false,
+    "only_frontend_replaced": true,
+    "evidence": "dufs-plus/specs/022-operation-boundaries/tag-state-release-results.json"
+  },
+  "user_command": "cd /home/liou/nix-tools && nu rerun.nu liou --host liu-bigpc",
+  "agent_system_switch": false,
+  "daily_profiles_accessed": false,
+  "preexisting_seven_changes_preserved": true
+}
