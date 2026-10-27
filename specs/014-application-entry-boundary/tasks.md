@@ -443,3 +443,5 @@ nix.82侧栏多文件上传：消费者仅更新tag-browser-src锁到正式发�
 nix.83新标签建议与文件工具修复：CI/签名Cachix/latest Pin保留1版、47份正式资源、七组2103断言与完整PC/HM候选核验通过；rerun.nu的五个桌面应用精确缓存均已验证和预取。消费者只更新tag-browser-src到d88d331，五个原生模板/默认target/恢复钩子/MIME通过；既有六项修改保留且不纳入提交，没有系统switch或服务重启。配套前端已在此前025/G2上线，本次不重复切换；用户安装重开待自行执行。见[tag-browser-nix83-install-results.json](tag-browser-nix83-install-results.json)，唯一发行计数Tag Browser037/P1–P4。
 
 nix.84已发行并完成完整PC/HM候选检查：滚动桥跨导航重接/旧Document清理与原生上传焦点修复；47份资源、308项Node、七组2105项Firefox断言零失败/TODO、CI/签名缓存/latest Pin及五应用升级缓存通过。见[tag-browser-nix84-install-results.json](tag-browser-nix84-install-results.json)。仅更新tag-browser-src及本项证据；现有六项输入法/010/资料修改保留，Agent未system switch或服务切换。唯一发行计数Tag Browser037/Q1–Q4，用户安装/真实GTK弹窗试用独立。
+
+2026-10-27用户修订常规发布授权：已确定范围的“上线”指令即包含当轮PC／NUC短暂停服切换，不再追加保存关闭问答；候选/预演/回退与实际验收门槛保留，CLI兼容参数由该轮指令授权。权威操作契约见[原生版本更新](contracts/native-version-update.md)，不改写历史确认事实，不扩大到系统switch或数据操作。本轮前端交付唯一计数仍归dufs-plus029/ITR1–ITR3。

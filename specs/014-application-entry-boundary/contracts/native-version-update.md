@@ -2,7 +2,7 @@
 
 本契约补充已完成入口迁移后的日常发布。产品进度权威为tag-all/specs/030-native-version-release，F1候选、F2更新回退验证、F3实际发布共三个步骤，不重新迁移数据或扩大014原有P3人工业务验收。
 
-`just native-release pc|nuc --package <固定Nix应用包> --frontend <固定Nix前端>`默认只读预演。`--prepare`保存私有、摘要绑定的manifest和候选/前版GC根，不停服。`--apply <prepared目录> --editors-saved`显式确认当次编辑已保存并暂停上传后执行；`--rollback <prepared目录> --editors-saved`只恢复程序/前端选择，继续使用最新数据。
+`just native-release pc|nuc --package <固定Nix应用包> --frontend <固定Nix前端>`默认只读预演。`--prepare`保存私有、摘要绑定的manifest和候选/前版GC根，不停服。`--apply <prepared目录> --editors-saved`在取得当轮切换授权后执行；`--rollback <prepared目录> --editors-saved`只恢复程序/前端选择，继续使用最新数据。
 
 PC只管理tag-all-core.service，NUC只管理tag-nuc-private-core.service和tag-nuc-readonly-core.service。只新增各自80-tag-version.conf并记录版本指针，不改原单元/启动守卫、环境、配置、数据路径、认证、CA、DUFS、工具、Caddy/Authelia/DDNS及外网路由；不执行系统switch，不启动退役业务容器。
 
@@ -17,3 +17,7 @@ PC只管理tag-all-core.service，NUC只管理tag-nuc-private-core.service和tag
 ## 普通PC系统更新的注册保留
 
 liu-bigpc普通flake必须保留五个已验原生应用单元和default.target.wants链接。nixos/modules/pc-native-service-registration.nix声明固定应用入口模板，Home Manager在linkGeneration与reloadSystemd之后按ready存在且container-mode不存在恢复target；各服务原模式守卫继续有效。不得重新启用旧容器、重跑迁移、覆盖80-tag-version或boot守卫、创建新数据库。候选单元字节及钩子排序必须从实际Home Manager生成物验证，普通系统完整构建不能代替实际激活成功核验。源generation的“未移除”备用链接不是普通HM已经持久管理服务的证据；由用户执行系统switch，Agent只修复明确归属注册并恢复服务。
+
+## 当轮上线授权（用户于2026-10-27修订）
+
+对已经确定范围的常规PC／NUC应用或前端更新，用户说“上线”即授权本轮短暂停服切换；完成候选、预演与回退门槛后直接执行，不再追加保存关闭的二次问答。执行前简要提醒暂停编辑/上传即可；用户明确暂缓、仍在编辑或变更范围时遵守最新指令。兼容CLI参数名仍为`--editors-saved`，由执行方依据该轮明确上线指令传入，不得在用户未授权上线时自动设置。该规则不放宽固定制品、活跃队列/配置漂移保护、离线备份、实际验收及不恢复数据的回退边界，不授权系统switch、数据删除/恢复或未确定的发布范围。旧验收记录中的逐轮保存确认保留为历史事实。
