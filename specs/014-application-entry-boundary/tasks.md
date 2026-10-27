@@ -448,3 +448,5 @@ nix.84已发行并完成完整PC/HM候选检查：滚动桥跨导航重接/旧Do
 
 
 nix.85配套音频入口发行已完成：47份正式资源、七组2110项Firefox断言、私有Release/CI精确输出、可信签名Cachix/latest Pin保留1版及五应用缓存预取通过。仅tag-browser-src锁更新到2f04cf3，完整PC/HM候选、菜单/版本、四类MIME、五个原生模板和恢复顺序通过；原有七项修改逐项保留且不纳入提交。见[tag-browser-nix85-install-results.json](tag-browser-nix85-install-results.json)。统一配套交付按一次“上线/发行”口令执行；网页已先行上线，本次不重复停服、不读取用户profile、不system switch。唯一发行计数Tag Browser004/AP1–AP4，4/4完成，剩0步；用户仍需手动安装重开和试用。
+
+nix.86当前歌曲身份与标签切换配套交付完成：PC／NUC前端已按一次“上线”激活验收，后端和数据库保持；47份正式资源、七组2131项Firefox断言零TODO/失败、私有Release/CI精确输出、可信签名Cachix/latest Pin保留1版及五应用升级缓存通过。仅更新tag-browser-src到正式发行提交93e55ab，完整PC/HM候选、五个原生模板/默认target/恢复钩子、菜单版本及四类MIME通过，原有七项修改保持且不纳入提交。见[tag-browser-nix86-install-results.json](tag-browser-nix86-install-results.json)。唯一交付计数Tag Browser004/TP1–TP4为4/4完成、剩0；用户仍需手动系统更新、正常退出旧窗口重开与真实曲目试用，Agent未system switch或访问日常profile。
