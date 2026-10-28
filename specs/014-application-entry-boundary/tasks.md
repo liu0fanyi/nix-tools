@@ -454,3 +454,5 @@ nix.86当前歌曲身份与标签切换配套交付完成：PC／NUC前端已按
 nix.87非模态打标配套交付完成：PC／NUC前端已按一次“上线”激活并验收，保留各端后端、知识卡资源和数据库；47份资源、七组2140项Firefox断言、私有Release/CI精确输出、签名Cachix/latest Pin保留1版、完整PC/HM候选及五应用缓存预取通过。仅更新tag-browser-src到dbcb065，五个原生模板/default target/恢复钩子、菜单版本及四类MIME核验通过，原有七项用户修改保持且不纳入提交。见[tag-browser-nix87-install-results.json](tag-browser-nix87-install-results.json)。唯一交付计数Tag Browser004/LR1–LR4为4/4完成、剩0；用户安装重开与实际体验确认独立，Agent未system switch或访问日常profile。
 
 nix.88状态流配套交付已核验：PC／NUC仅替换前端且保留各端后端/数据库/知识卡资源，双端六项回退和真实资源/认证/备份通过；私有Release/CI精确输出、可信签名Cachix/latest Pin保留1版、完整PC/HM及五应用缓存通过。仅更新tag-browser-src到7b54fd8，五个原生模板/default target/恢复钩子、菜单版本及四类MIME核验通过；既有七项用户修改逐项保持。见[tag-browser-nix88-install-results.json](tag-browser-nix88-install-results.json)。唯一交付计数Tag Browser004/SR为4/4，用户系统安装和重开/实际体验另行确认；Agent未system switch或操作日常profile。
+
+2026-10-28：nix.89标签徽章配套发行完成，唯一消费锁tag-browser-src更新到24a4148；完整PC/HM、五个原生模板/default target/恢复钩子、菜单版本/四类MIME及五应用精确缓存均核验。PC／NUC前端已切换；NUC音乐后端另通过完整tester、原生包装、双栈及六项回退上线，内网4首/2歌单/文件一致性通过。见[tag-browser-nix89-install-results.json](tag-browser-nix89-install-results.json)。既有八项用户修改保持，Agent未system switch；用户普通终端安装和重开/实际体验独立。
