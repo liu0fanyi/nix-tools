@@ -1,9 +1,7 @@
 # Nix 配置与发布工具
 
 ## 当前情况
-- 常规PC／NUC更新以用户当轮“上线”为切换授权，不再追加保存关闭问答；既有预演、回退、备份与实际验收保持。
-- [Tag Browser nix.90及五应用缓存、完整PC/HM安装候选已核验；PC／NUC配套前端已上线，各端现用后端与知识卡资源保留。](014-application-entry-boundary/sidebar-viewport-install-results.json)
-- 32个非xiaoqiang工程已统一为projects总纲；[既有菜谱快照与WebP封面验收完成，成品留本机。](010-host-configuration/tasks.md)
+- [Tag Browser nix.91及五应用缓存、完整PC/HM候选已核验；PC／NUC配套网页已上线，保留现用后端及独立知识卡。](014-application-entry-boundary/sidebar-query-install-results.json)
 
 ## 后续计划
 - [按后续实际变更维护项目总纲。](001-spec-driven-workflow/tasks.md)

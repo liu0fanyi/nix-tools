@@ -1,0 +1,79 @@
+{
+  "release_tag": "v0.1.0-nix.91",
+  "release_source_revision": "9b777e9991c7cf1f3008acd3a4e7fa92c7b5721f",
+  "system": {
+    "system_candidate": "/nix/store/dzfkv6w73i92x0gzv4ccxh0pfsgfp4b0-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+    "home_candidate": "/nix/store/jmd9khpiy6lnyxbmms1zmw4iav87i6j3-home-manager-generation",
+    "browser_binary": "/nix/store/l8n8a8dcvr4wgvj83gprqz39hnp8ffn2-tag-browser-0.1.0",
+    "browser_source_revision": "9b777e9991c7cf1f3008acd3a4e7fa92c7b5721f",
+    "changed_lock_nodes": [
+      "tag-browser-src"
+    ],
+    "five_native_templates_verified": true,
+    "default_target_link_verified": true,
+    "restore_after_reload_verified": true,
+    "system_menu_binary_and_release_version_verified": true,
+    "system_switch_by_agent": false,
+    "four_browser_mime_defaults_verified": true,
+    "preexisting_fcitx_and_tasks_changes_preserved_and_in_candidate": true
+  },
+  "desktop_caches": {
+    "clipboard-sync.outPath": {
+      "path": "/nix/store/jdchs28f8h7cghn4j9fpvhypwl6gs1cr-clipboard-sync-0.2.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "screen-cut-binary-path": {
+      "path": "/nix/store/arrsa3p4q795xkw02503wrz9xyr4wmq4-screen-cut-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "screen-mark-binary-path": {
+      "path": "/nix/store/j1cvwiafizx98f8qzwj2n6szalsqldm8-screen-mark-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "knowledge-cards-binary-path": {
+      "path": "/nix/store/krc8vqrkf6mn7c0si3jgjkmisd0hj32a-knowledge-cards-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "tag-browser-binary-path": {
+      "path": "/nix/store/l8n8a8dcvr4wgvj83gprqz39hnp8ffn2-tag-browser-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    }
+  },
+  "frontend": {
+    "source_commit": "96d9967ac4049ccda11da6b4ee60e43bfe792894",
+    "both_targets_activated": true,
+    "each_backend_preserved": true,
+    "database_restored": false,
+    "only_frontend_replaced": true,
+    "scopes": {
+      "pc": {
+        "frontend": "/nix/store/pwgcxl5242i200r20wn3vywjzvr9f2k6-dufs-plus-sidebar-query-frontend",
+        "package": "/nix/store/1293mxwc61r3wmp84c1sx5b31a0mwkg4-tag-all-workspace-native-0.1.0",
+        "preserved_knowledge_card_assets": 112
+      },
+      "nuc": {
+        "frontend": "/nix/store/dixfgr6l9hkn0g988hi05cbcl008z10v-dufs-plus-sidebar-query-frontend",
+        "package": "/nix/store/hjc9b3b20j970knlwipjycf8fzpl8qhm-tag-all-workspace-native-0.1.0",
+        "preserved_knowledge_card_assets": 112
+      }
+    },
+    "evidence": "dufs-plus/specs/023-sidebar-directory-tree/query-group-release-results.json"
+  },
+  "agent_system_switch": false,
+  "preserved_preexisting_changes": {
+    "AGENTS.md": "8160b71ec85f34b33dbbf9978367c5b295646e2e9d69477440a1545974964fa1",
+    "docs/resource-history.md": "fe4c46f56509a225043d6a43474bc8bf4f5859aa571f1173759658bf8ea07856",
+    "home-manager/nix_modules/fcitx5.nix": "070cd7c57d20401b70a7bbfa4271aeed0cdbd114ec0f62dcd221b81c5763ce72",
+    "nixos/hosts/liu-bigpc/default.nix": "aa8f8782559dec86984a9d04de142e94f7b3c8aee0ca062b9806db03692ef7c9",
+    "scripts/deploy-knowledge-cards.py": "83bf9c740609f3d6654f069b51b49adb91751a2d2bb36a07760030ebeaa3c9ff",
+    "specs/010-host-configuration/plan.md": "bfc5680c9f90fb474a8be58c0e865ceaf0b9015fee59a86ebeaeabba768301e8",
+    "specs/010-host-configuration/spec.md": "96392d4cae85a2262c1ba4cd5c3ee227c3fc88f67650141f1384d9de43b52a31",
+    "specs/010-host-configuration/tasks.md": "d8f6bf738bf0c1f48da61f6a9487a707ebe330e20076fd28785b1af49950fdd7"
+  },
+  "product_evidence": "tag-browser/specs/027-collection-navigation/nix91-publication-results.json"
+}
