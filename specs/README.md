@@ -2,7 +2,7 @@
 
 ## 当前情况
 - 常规PC／NUC更新以用户当轮“上线”为切换授权，不再追加保存关闭问答；既有预演、回退、备份与实际验收保持。
-- 维护工作站、NUC 发布和桌面应用缓存；Tag Browser nix.89及五个桌面应用升级缓存、完整PC/HM候选均已核验；本轮PC／NUC配套前端切换已验收。知识卡固定前端装配已兼容本地WASM/字体并通过预演，未切换服务。
+- [Tag Browser nix.90及五应用缓存、完整PC/HM安装候选已核验；PC／NUC配套前端已上线，各端现用后端与知识卡资源保留。](014-application-entry-boundary/sidebar-viewport-install-results.json)
 - 32个非xiaoqiang工程已统一为projects总纲；[既有菜谱快照与WebP封面验收完成，成品留本机。](010-host-configuration/tasks.md)
 
 ## 后续计划
