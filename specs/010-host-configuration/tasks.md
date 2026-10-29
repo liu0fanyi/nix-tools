@@ -10,7 +10,7 @@
 | 菜谱 | 精简菜谱既有快照已全部处理；阶段 U 的 U2/U3 已完成，输入绑定、页面、索引和重建通过结构核验。旧 OCR/视觉选图/独立复审流程仅保留历史与工具维护背景，不再作为精简全库运行前置条件。 |
 | 桌面配置 | Y3 缩放、Z3 输入法恢复、AB3 默认浏览器仍待实机确认；不能仅凭后来执行过 switch 自动勾选。 |
 | 工具更新 | AA 的旧版 Antigravity 安装验收已被 AC3 替代；AC3、AG3 各保留一项当前应用验收，版本以锁定配置为准。 |
-| 资源诊断 | AD、AF 已完成，各剩 0 项；AE3 仍待重开 EDA 并核对进程 core 限制。 |
+| 资源诊断 | AD、AF 已完成；2026-10-26 停用 atop 后台采集见 AJ；AE3 仍待重开 EDA 并核对进程 core 限制。 |
 | 本轮补登记 | 向日葵、磁力下载、文档工具、mpv 和 MIME 增量维护统一见阶段 AH；规格整理与提交见阶段 AI。 |
 
 截图编辑的当前入口是 Screen Mark；录屏用 Fn+O/Shift+Fn+O，编辑器为 Screen Cut。下文 Satty、Avidemux 及旧录屏组合属于演进记录，被替代方案的待验收备注不计入当前任务。
@@ -800,6 +800,30 @@ AH 汇总此前未进入规格的现有实现，不新增远控账号、无人�
 2026-10-21 AI2 核验边界：部署回归 112 项通过；原有 test_backup_failure_never_activates 漏 mock，调用真实 SSH 失败，排除后单列记录，未修改部署实现。直接运行脚本全套时缺 jsonschema/Pillow；补齐锁定临时环境后完整回归在限定时间内未结束，不宣称全套通过。完整系统/HM 构建、生成服务与 MIME 隔离检查均通过；本轮仅整理规格、清理脚本行尾空白并收录已有改动，不扩展功能。当前 33 个文件作为一次本地提交归档；未推送或执行系统切换。阶段 AI 共两项，提交收尾后剩余 0；阶段 AH 仍剩 AH3 实机验收。
 
 
+### 结束 atop 后台采集（阶段 AJ）
+
+- [x] AJ1：复核既有分析、确认开机日志复制开销，关闭后台采集/记账/轮转并保留手动CLI及历史。
+- [x] AJ2：完整系统/HM构建，确认生成系统无atop后台单元和开机依赖，更新并镜像文档。
+- [ ] AJ3：用户手动switch后确认三个后台单元均非active，后续重启不再等待atop。
+
+2026-10-26：当前运行atop.service的systemd-analyze blame为1分44.812秒，启动
+journal逐项显示同版本原始日志仍复制为.new。已有整理结论覆盖10月18–20日，
+未额外读取21–26日root专属日志。当前会话sudo因no_new_privs被拒绝，未能即时
+停服；持久关闭依赖用户手动switch。未删除历史或执行系统切换。
+
+
+2026-10-26 AJ2 完成：完整系统
+`/nix/store/bwz2vfpj6jnbl7s3bnsq06ayfldq4kqx-nixos-system-liu-bigpc-26.11.20260922.b6c98e9`
+及HM `/nix/store/jmd9khpiy6lnyxbmms1zmw4iav87i6j3-home-manager-generation` 构建通过。
+求值确认 programs.atop=false，services/timers/systemdPackages均无atop，
+专用default/atop已移除；生成系统单元目录及.wants/.requires无atop项，
+手动atop/atopsar保留，atop -V实测2.13.0。hm-backup、pen-scroll ExecStart、
+input/uinput组与内核uinput正确；构建包含工作区已有输入法配置，未覆盖其改动。
+直接无交互systemctl停服同样被要求认证，三个现有单元尚未停用，不将配置验证
+写成已运行生效。文档/规格按固定目录镜像，证据留/tmp/atop-disable-*-20261026*。
+阶段AJ剩1项AJ3：用户手动应用后确认服务关闭，后续重启不再等待atop。
+
+
 2026-10-26 阶段 U 收尾：原冻结清单全部进入 published/skipped 终态，无等待或失败；SQLite 完整性、清单覆盖、平台字幕与封面摘要、任务/回复绑定、材料步骤时间范围、结果与发布页面、食材索引一致性通过全量核验。早期回复接收摘要按原 JSON 序列化复原精确匹配，未改写来源或数据库摘要。目录单次重建字节一致，实际食材查询和页面 HTTP 可用，私有文件返回404，本库无视频/音频。详细报告仅留本机 Downloads，不上传清单、字幕、封面或模型输出。范围是原快照，不代表当前 UP 主最新投稿覆盖；AI 整理稿未经逐道人工语义复审，食材别名尚未全面归一（如番茄/西红柿检索集合不同）。采集和消费者正常完成退出，仅恢复本地浏览服务；U2/U3 完成，阶段 U 剩余0项。
 
 
@@ -828,3 +852,4 @@ HX2 核验：完整系统 `/nix/store/hcvgyhzhnk1dny9sqy30949p268jz85f-nixos-sys
 HM 激活 hm-backup、pen-scroll ExecStart、input/uinput 组和内核模块核对通过。
 未改变当前桌面输入法、未执行 switch；Rime 内部状态、候选 Esc、焦点与延迟体验
 留 HX3。证据仅留 `/tmp/helix-ime-work/`；构建包含当时工作树已有其他配置。
+

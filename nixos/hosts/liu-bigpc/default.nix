@@ -1,4 +1,4 @@
-{ config, lib, pkgs, inputs, ... }:
+{ lib, pkgs, inputs, ... }:
 
 {
   imports = [
@@ -13,24 +13,9 @@
 
   networking.hostName = "liu-bigpc";
 
-  # Replay stalls with per-process CPU/memory/I/O and system PSI history.
-  # atoprc only controls interactive defaults; the recorder reads default/atop.
-  programs.atop = {
-    enable = true;
-    atopService.enable = true;
-    atopacctService.enable = true;
-    atopRotateTimer.enable = true;
-    settings.interval = 5;
-  };
-  environment.etc."default/atop".text = ''
-    LOGINTERVAL=5
-    LOGGENERATIONS=7
-    LOGPATH=/var/log/atop
-  '';
-  systemd.services.atop = {
-    restartTriggers = [ config.environment.etc."default/atop".source ];
-    serviceConfig.UMask = "0077";
-  };
+  # Diagnostic capture is finished. Keep the CLI below for manual replay, but
+  # do not register recorder/accounting/rotation units or copy logs at boot.
+  programs.atop.enable = false;
 
   # Rootless Podman compose containers stop with the user manager. Restore only
   # this host's existing private PC node after login; do not recreate volumes,
@@ -69,6 +54,7 @@
 
   # Legacy Windows RF configuration tools and RAR extraction support.
   environment.systemPackages = [
+    pkgs.atop # Manual replay of existing /var/log/atop files only.
     pkgs.unar
     pkgs.wineWow64Packages.stable
     inputs.tag-browser-src.packages.${pkgs.stdenv.hostPlatform.system}.default
@@ -175,8 +161,6 @@
 
   # The data filesystem roots should remain writable by the primary user.
   systemd.tmpfiles.rules = [
-    # Logs include process names; keep them local and readable only by root.
-    "d /var/log/atop 0700 root root -"
     "d /data 0755 liou users -"
     "d /data-ssd 0755 liou users -"
   ];

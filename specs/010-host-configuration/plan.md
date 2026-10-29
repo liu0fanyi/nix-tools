@@ -339,6 +339,17 @@ Sioyek 用 xcb 和统一 DPI 包装；Gnumeric 沿用锁定包。mpv 模块写�
 Constitution Check：仅 PC 构建，不代用户 switch、不启动远控连接、不下载媒体；私密配置只提交加密对象，文档镜像限定 NUC 白名单目录。核对完整系统/HM、生成入口与脚本，真实 GUI 单列 AH3。
 
 
+## 结束 atop 后台采集（阶段 AJ）
+
+关闭 programs.atop.enable，从主机移除专用 /etc/default/atop、service覆写与
+日志目录创建规则；environment.systemPackages单独保留pkgs.atop，只供手动回放。
+已有日志不会因删除tmpfiles目录声明被删除，也不再有每日清理。
+完整toplevel/HM构建，核对生成systemd单元/开机依赖/包注册均无atop后台任务，
+手动CLI仍在；检查HM备份和既有设备服务路径/组/内核配置。Agent不执行switch。
+Constitution Check：仅PC构建，不影响远端运行服务；固定NUC目录仅同步文档规格，
+不传原始性能日志，不删除历史或个人资料。
+
+
 ### 菜谱WebP实施边界（2026-10-26）
 
 使用现有Pillow本地编码，EXIF方向校正、RGB、LANCZOS等比缩小至960长边、WebP质量78/method6；不引入外部依赖或参考仓。Constitution Check：规格留本仓，原始平台封面及来源绑定不改写，展示衍生物与来源分层，公开源码只含工具和合成测试；操作仅限本次菜谱ROOT的library，不影响其他下载和服务。采用optimize-covers子命令持有既有写锁，逐条原子落盘和缓存摘要校验，末尾只重建目录一次；断开后可复用已验证产物再执行。验收包括尺寸/格式、来源未变、重复运行、缓存恢复、索引/页面HTTP和实际空间变化。

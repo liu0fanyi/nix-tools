@@ -1,5 +1,37 @@
 # 系统资源历史与卡顿回放
 
+## 当前状态：已配置停用后台记录（2026-10-26）
+
+用户要求结束此次诊断采集。NixOS 配置已关闭 programs.atop，移除后台记录、
+进程记账和每日轮转单元，保留 atop/atopsar 命令，供手动读取既有历史文件。
+2026-10-26 当时尚待用户手动应用，Agent 未代为 switch。
+2026-10-29 只读复核当前系统，三个后台单元均 not-found/inactive；后续重启耗时尚未观察。
+不删除 /var/log/atop、已导出报告及既有分析；停用后旧日志也不再自动轮转清理。
+
+此次检查发现：启动前置脚本即使面对相同2.13版本的日志，仍逐个调用atopconvert
+复制为.new，再比较删除副本。本机systemd-analyze blame记录atop.service耗时
+1分44.812秒；后台化采集的默认实现不适合继续常驻这台交互工作站。
+保留的分析结论仅覆盖下文明确注明的10月18–20日已导出数据，不代表已复核21–26日原始日志。
+
+用户在普通终端应用并检查：
+
+```bash
+cd /home/liou/nix-tools
+nu rerun.nu liou --host liu-bigpc
+systemctl is-active atop.service atopacct.service atop-rotate.timer
+```
+
+预期为inactive或单元不存在，不能再为active；退出码非0在此是正常结果。
+如要在应用配置前立即停止当前记录，可先执行：
+
+```bash
+sudo systemctl stop atop-rotate.timer atop.service atopacct.service
+```
+
+下面的采样频率、保留策略和启动检查属于启用期间的历史说明；当前配置不再自动采集。
+
+## 原启用方案（历史）
+
 `liu-bigpc` 使用 atop 在后台每 5 秒记录一次系统和进程活动，按天写入
 `/var/log/atop/atop_YYYYMMDD`。覆盖 CPU、内存、swap、磁盘 I/O 和系统 PSI；
 atopacct 补充采样之间已退出进程的记账信息，但不能恢复它们所有详细指标。
