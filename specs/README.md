@@ -13,6 +13,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-10-29 · Pin Tag Browser nix.91 and verify paired frontend delivery · `283ae06`
 - 2026-10-29 · Update Tag Browser to nix.90 with verified paired sidebar delivery · `b61e855`
 - 2026-10-28 · Summarize deployed tag badge updates and nix.89 release · `121487e`
 - 2026-10-27 · Summarize completed nix.88 paired tag state delivery · `fbe016c`
@@ -20,5 +21,4 @@
 - 2026-10-27 · Summarize completed nix.87 paired delivery and manual installation · `8c66a0e`
 - 2026-10-27 · Pin Tag Browser nix.87 and verify full desktop upgrade candidate · `d8ad494`
 - 2026-10-27 · Summarize verified nix.86 upgrade and paired frontend rollout · `8740833`
-- 2026-10-27 · Pin Tag Browser nix.86 and verify full desktop upgrade candidate · `2962a4b`
 <!-- recent-commits:end -->
