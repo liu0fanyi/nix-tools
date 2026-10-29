@@ -841,7 +841,7 @@ WP3验收：全库已发布封面转WebP、逐张严格解码及尺寸检查通�
 
 - [x] HX1：实现进程独立状态、交互启动/退出恢复和常用 normal/select/insert 按键绑定，保留原自定义编辑行为。
 - [x] HX2：完整系统/HM 构建、生成配置与隔离状态回归；收尾仅提交本次白名单并发布登记总纲。
-- [ ] HX3：用户手动应用后实测中英文 insert 恢复、normal 命令、候选 Esc、多个终端和延迟；根据体验决定是否需要 Helix 补丁。
+- [x] HX3：用户手动应用后试用输入法恢复方案，确认体验无问题，接受当前配置方案；本轮无需 Helix 补丁。
 
 
 HX2 核验：完整系统 `/nix/store/hcvgyhzhnk1dny9sqy30949p268jz85f-nixos-system-liu-bigpc-26.11.20260922.b6c98e9`
@@ -853,3 +853,15 @@ HM 激活 hm-backup、pen-scroll ExecStart、input/uinput 组和内核模块核�
 未改变当前桌面输入法、未执行 switch；Rime 内部状态、候选 Esc、焦点与延迟体验
 留 HX3。证据仅留 `/tmp/helix-ime-work/`；构建包含当时工作树已有其他配置。
 
+
+2026-10-29 HX3：用户反馈“我试了一下，没啥问题”，确认接受当前方案。
+阶段 HX 三项完成，剩余 0；不把总体试用反馈扩写为逐个边界场景的独立测试证据。
+
+2026-10-29 提交前复核：完整系统/HM 构建通过；当前系统已指向
+`/nix/store/wfa8yvq2lzxljw8m0z0cxziq1qwl9lbm-nixos-system-liu-bigpc-26.11.20260922.b6c98e9`。
+Fcitx5 主服务及重连辅助均 active，Type=dbus、BusName 与依赖关系正确；
+未额外重启输入法或模拟真实显示断线，Z3 的登录/断线验收保持待确认。
+atop、atopacct、atop-rotate 三个单元均 not-found/inactive，AJ3 的应用后停用
+检查已通过；尚未观察下一次重启，AJ3 仍保留这一项待确认。
+本轮仅归档现有配置与历史记录，撤回知识卡脚本中违反 AGENTS 的沙盒 SSH 绕过，
+不执行部署、清理、系统切换或服务重启。
