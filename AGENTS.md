@@ -404,6 +404,32 @@ podman image prune -f          # 仅删 <none> 悬空镜像，不动有 tag 的
      /tmp/disk-clean-report-20261020.json；实际卡顿进程报告仅留本机。
 
 
+- 2026-10-26（用户授权清理）：系统盘 `/dev/sdb4` 由95%降至61%，
+  已用约379.1GiB→241.0GiB，可用约22G→160G，实测释放约138.1GiB。
+  1. 宿主检查未发现插件目录打开文件，删除1513个超过一小时的
+     `openai-bundled.staging-*` 临时目录，先恢复候选内部写权限；保留正式安装、
+     最近一小时目录和聊天记录，插件临时目录总占用约47G→516M。
+  2. 确认无活跃构建，删除327个Storage/PID0的working-container，再仅执行
+     `podman image prune -f`；镜像占用92.85GB→23.94GB。逐项核对149个不同的
+     原有镜像标签及ID全部保留，5个服务容器ID、名称、状态、镜像ID、退出码不变；
+     SSD201/RK3506和生产镜像保留，未删除或重启服务容器，未清理卷。
+  3. 通过现有宿主Podman socket操作，未执行migrate/reset、system/container prune
+     或`-a`；未动Nix历史代、源码、个人文件及数据盘。前后快照、候选与审计保存在
+     `/tmp/disk-clean-*-20261026*`，最终报告为`/tmp/disk-clean-report-20261026.json`。
+
+
+- 2026-10-26（第二轮，用户明确授权清空回收站）：系统盘由61%降至54%，
+  已用约240.9GiB→214.9GiB，可用约160G→186G，实测再释放约26.0GiB。
+  1. 逐目录检查无打开文件后，永久清空回收站636项文件及对应636项元数据；
+     清理npm下载缓存、pip缓存和Codex可重下载运行时缓存，原目录保留。
+  2. uv缓存约4.9G中有CAD工具正在使用，保留；浏览器缓存、聊天记录、剪贴板
+     历史、Gradle/Rust缓存及数据盘未动。Nix store只读盘点约90G，无引用路径
+     中1896个已登记路径的NAR合计约9.67GiB（非实际可释放磁盘量），另有未登记
+     staging/lock路径；未执行GC、删除历史代或清理journal/崩溃记录。
+  3. 本轮报告为`/tmp/disk-clean-second-report-20261026.json`，只读盘点与缓存
+     打开文件检查保存在`/tmp/disk-clean-second-*20261026*`。
+
+
 ## Clip 规格归属
 
 按用户绑定维护决定，clipboard-sync 子模块的功能规格统一位于本仓库 specs/005-clipboard-core、006-clipboard-reliability、007-clipboard-release。子模块只留手册与指向本仓库的入口，代码/Git/构建保持独立。其他产品仍在各自仓库管理规格。本规则明确恢复既有父仓库规格归属，不恢复已经取消的 dsh Web 或 Clip 2 分钟过期需求。
