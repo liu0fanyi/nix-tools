@@ -372,3 +372,5 @@ nix.82消费者宪法核对：仅固定tag-browser-src及发布证据，不改�
 nix.83消费者Constitution Check：只更新tag-browser-src锁及本项发行证据，保留原有六项修改，不动后端、服务或用户profile，不执行系统switch；没有外部参考/依赖来源迁移。唯一发行计数为Tag Browser037/P1–P4。
 
 本轮nix.91发行Constitution Check：按统一上线授权使用既有原生更新事务，仅前端切换并保留双端现用后端、独立应用、认证及当前数据；实际备份/inode和回退通过。消费者仅锁定tag-browser-src，完整PC/HM和五应用缓存核验，不代为system switch；八项既有修改原样保留，无外部参考或共享版本更新。
+
+本轮nix.92发行Constitution Check：仅更新tag-browser-src及安装证据/总纲，完整PC/HM、五应用精确缓存与现用原生启动模板核验；既有及并发修改未被本轮覆盖，无网页/后端/独立应用切换，不system switch，无共享版本或外部参考变更。

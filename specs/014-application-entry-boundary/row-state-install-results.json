@@ -1,0 +1,77 @@
+{
+  "release_tag": "v0.1.0-nix.92",
+  "release_source_revision": "1fc843bc5d1b25dfb14dd654ebd1535f4291db16",
+  "system": {
+    "system_candidate": "/nix/store/wfa8yvq2lzxljw8m0z0cxziq1qwl9lbm-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+    "home_candidate": "/nix/store/963lxm7bv3qw6y40vk7mz5sxwxc1lzyy-home-manager-generation",
+    "browser_binary": "/nix/store/w9y2g9giqsgb1kkmzf6pqdwzyljfq3d9-tag-browser-0.1.0",
+    "browser_source_revision": "1fc843bc5d1b25dfb14dd654ebd1535f4291db16",
+    "changed_lock_nodes": [
+      "tag-browser-src"
+    ],
+    "five_native_templates_verified": true,
+    "default_target_link_verified": true,
+    "restore_after_reload_verified": true,
+    "system_menu_binary_and_release_version_verified": true,
+    "system_switch_by_agent": false,
+    "four_browser_mime_defaults_verified": true,
+    "concurrent_external_changes_at_build": {
+      "AGENTS.md": "8160b71ec85f34b33dbbf9978367c5b295646e2e9d69477440a1545974964fa1",
+      "docs/resource-history.md": "fe4c46f56509a225043d6a43474bc8bf4f5859aa571f1173759658bf8ea07856",
+      "home-manager/nix_modules/fcitx5.nix": "070cd7c57d20401b70a7bbfa4271aeed0cdbd114ec0f62dcd221b81c5763ce72",
+      "nixos/hosts/liu-bigpc/default.nix": "aa8f8782559dec86984a9d04de142e94f7b3c8aee0ca062b9806db03692ef7c9",
+      "scripts/deploy-knowledge-cards.py": "83bf9c740609f3d6654f069b51b49adb91751a2d2bb36a07760030ebeaa3c9ff",
+      "specs/010-host-configuration/plan.md": "e2022defbc2b6b8ac272466377cce36c082c98c12a5ff33e93c1b45dfab387ca",
+      "specs/010-host-configuration/spec.md": "e57548929cbedf086804f7c35729dfa25ece70f4cbd227cd86b980ff13f7e77f",
+      "specs/010-host-configuration/tasks.md": "0b9c47737cff8ce7327285066ba267ec336d09509d7ccf9345301bb4d2bf9fe4"
+    },
+    "runtime_inputs_unchanged_during_build": true,
+    "original_external_changes_since_first_snapshot": [
+      "specs/010-host-configuration/plan.md",
+      "specs/010-host-configuration/spec.md",
+      "specs/010-host-configuration/tasks.md"
+    ],
+    "preexisting_fcitx_and_tasks_changes_preserved_and_in_candidate": true,
+    "external_work_not_overwritten_by_release": true
+  },
+  "desktop_caches": {
+    "clipboard-sync.outPath": {
+      "path": "/nix/store/jdchs28f8h7cghn4j9fpvhypwl6gs1cr-clipboard-sync-0.2.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "screen-cut-binary-path": {
+      "path": "/nix/store/arrsa3p4q795xkw02503wrz9xyr4wmq4-screen-cut-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "screen-mark-binary-path": {
+      "path": "/nix/store/j1cvwiafizx98f8qzwj2n6szalsqldm8-screen-mark-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "knowledge-cards-binary-path": {
+      "path": "/nix/store/krc8vqrkf6mn7c0si3jgjkmisd0hj32a-knowledge-cards-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "tag-browser-binary-path": {
+      "path": "/nix/store/w9y2g9giqsgb1kkmzf6pqdwzyljfq3d9-tag-browser-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    }
+  },
+  "frontend_service_switches": false,
+  "agent_system_switch": false,
+  "initial_external_file_sha256_for_audit": {
+    "AGENTS.md": "8160b71ec85f34b33dbbf9978367c5b295646e2e9d69477440a1545974964fa1",
+    "docs/resource-history.md": "fe4c46f56509a225043d6a43474bc8bf4f5859aa571f1173759658bf8ea07856",
+    "home-manager/nix_modules/fcitx5.nix": "070cd7c57d20401b70a7bbfa4271aeed0cdbd114ec0f62dcd221b81c5763ce72",
+    "nixos/hosts/liu-bigpc/default.nix": "aa8f8782559dec86984a9d04de142e94f7b3c8aee0ca062b9806db03692ef7c9",
+    "scripts/deploy-knowledge-cards.py": "83bf9c740609f3d6654f069b51b49adb91751a2d2bb36a07760030ebeaa3c9ff",
+    "specs/010-host-configuration/plan.md": "bfc5680c9f90fb474a8be58c0e865ceaf0b9015fee59a86ebeaeabba768301e8",
+    "specs/010-host-configuration/spec.md": "96392d4cae85a2262c1ba4cd5c3ee227c3fc88f67650141f1384d9de43b52a31",
+    "specs/010-host-configuration/tasks.md": "d8f6bf738bf0c1f48da61f6a9487a707ebe330e20076fd28785b1af49950fdd7"
+  },
+  "product_evidence": "tag-browser/specs/027-collection-navigation/nix92-publication-results.json"
+}
