@@ -630,6 +630,8 @@ U2封面恢复补充：截断图片响应增加三次低频重取，保持严格
 
 2026-10-09：OpenX11Connection仅恢复候选UI不能重新分组旧fcitx4上下文；实际重启Fcitx后用户确认恢复。最终脚本容忍已有X11连接，xprop阻塞等待断线再请求重启；独立总线/Xvfb/Fcitx回归使用标记替代systemctl，未操作真实显示服务器。系统与HM构建通过，未执行switch。阶段Z剩余1项Z3，其他应用偶发问题尚未逐项实测；阶段Y字号仍待用户应用后验收。
 
+2026-10-22 Z2修正：本次登录日志确认graphical-session.target、fcitx5-daemon及重连辅助服务形成排序环，systemd删除主服务启动任务。辅助服务改为仅由daemon拉起，取消挂到graphical-session.target；主服务增加Type=dbus及BusName=org.fcitx.Fcitx5，避免辅助服务首次控制器调用抢先D-Bus激活第二实例。当前会话已启动输入法并切回rime；恢复时实际由D-Bus激活实例持有总线名，不能将其冒称新版声明式服务已生效。完整系统`/nix/store/fxbs35pwnkj9s6x1chbvvgxkbj9a37sm-nixos-system-liu-bigpc-26.11.20260922.b6c98e9`及HM`/nix/store/2hjawbmlab55js57z44kha1dg35phb1s-home-manager-generation`构建通过，产物单元路径、Type/BusName及wants链接核对正确；隔离systemd依赖图验证通过。未执行switch，阶段Z仍剩1项Z3：用户手动应用并确认登录启动及后续断线恢复。
+
 
 ### Antigravity 更新（阶段 AA）
 

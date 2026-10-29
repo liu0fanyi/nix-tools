@@ -103,7 +103,13 @@ in
     # Fcitx5-Rime 依靠配置文件时间判断是否需要重新部署；Nix store 文件的
     # 固定时间戳会让它错误复用旧 build。服务启动前将配置物化为普通文件，
     # 再使用当前 addons 合成目录进行增量部署。
-    systemd.user.services.fcitx5-daemon.Service.ExecStartPre = [ rimeDeploy ];
+    systemd.user.services.fcitx5-daemon.Service = {
+      ExecStartPre = [ rimeDeploy ];
+      # Wait for the controller before starting the reconnect helper. Otherwise
+      # its first D-Bus call can activate a second daemon and steal the name.
+      Type = "dbus";
+      BusName = "org.fcitx.Fcitx5";
+    };
 
     systemd.user.services.fcitx5-x11-reconnect = lib.mkIf recoverX11 {
       Unit = {
@@ -117,7 +123,11 @@ in
         Restart = "always";
         RestartSec = "3s";
       };
-      Install.WantedBy = [ "graphical-session.target" "fcitx5-daemon.service" ];
+      # The daemon starts after graphical-session.target. Enabling this helper
+      # on that target would implicitly order the target after the helper,
+      # closing a cycle through After=fcitx5-daemon.service. Let the daemon
+      # pull in its helper instead.
+      Install.WantedBy = [ "fcitx5-daemon.service" ];
     };
 
     # i18n.inputMethod 已生成 fcitx5-daemon.service；屏蔽包内 XDG autostart，
