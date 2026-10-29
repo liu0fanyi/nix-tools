@@ -809,3 +809,20 @@ AH 汇总此前未进入规格的现有实现，不新增远控账号、无人�
 
 
 WP3验收：全库已发布封面转WebP、逐张严格解码及尺寸检查通过；来源摘要、菜谱JSON保持不变，页面和索引统一WebP，目录重建字节一致。原发布目录重复JPEG已按摘要白名单清理，原始来源封面保留；独立预览及工坊封面HTTP/MIME通过。22项精简回归通过，压缩计数、具体体积和详细报告仅留本机。WP1–WP3完成，阶段WP剩余0项。
+
+
+### Helix 输入法配置试用（阶段 HX）
+
+- [x] HX1：实现进程独立状态、交互启动/退出恢复和常用 normal/select/insert 按键绑定，保留原自定义编辑行为。
+- [x] HX2：完整系统/HM 构建、生成配置与隔离状态回归；收尾仅提交本次白名单并发布登记总纲。
+- [ ] HX3：用户手动应用后实测中英文 insert 恢复、normal 命令、候选 Esc、多个终端和延迟；根据体验决定是否需要 Helix 补丁。
+
+
+HX2 核验：完整系统 `/nix/store/hcvgyhzhnk1dny9sqy30949p268jz85f-nixos-system-liu-bigpc-26.11.20260922.b6c98e9`
+及 HM `/nix/store/963lxm7bv3qw6y40vk7mz5sxwxc1lzyy-home-manager-generation` 构建通过。
+用临时控制器替代生成脚本中的 fcitx5-remote，验证中文/英文恢复、重复 normal、
+不可用控制器、0.4 秒超时、会话隔离和非交互 CLI；PTY 运行真实 Helix 25.07.1
+与生成配置，覆盖八个 normal 插入入口、select i、Ctrl-C、启动/退出恢复及目录清理。
+HM 激活 hm-backup、pen-scroll ExecStart、input/uinput 组和内核模块核对通过。
+未改变当前桌面输入法、未执行 switch；Rime 内部状态、候选 Esc、焦点与延迟体验
+留 HX3。证据仅留 `/tmp/helix-ime-work/`；构建包含当时工作树已有其他配置。

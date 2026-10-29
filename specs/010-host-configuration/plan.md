@@ -342,3 +342,16 @@ Constitution Check：仅 PC 构建，不代用户 switch、不启动远控连接
 ### 菜谱WebP实施边界（2026-10-26）
 
 使用现有Pillow本地编码，EXIF方向校正、RGB、LANCZOS等比缩小至960长边、WebP质量78/method6；不引入外部依赖或参考仓。Constitution Check：规格留本仓，原始平台封面及来源绑定不改写，展示衍生物与来源分层，公开源码只含工具和合成测试；操作仅限本次菜谱ROOT的library，不影响其他下载和服务。采用optimize-covers子命令持有既有写锁，逐条原子落盘和缓存摘要校验，末尾只重建目录一次；断开后可复用已验证产物再执行。验收包括尺寸/格式、来源未变、重复运行、缓存恢复、索引/页面HTTP和实际空间变化。
+
+
+## Helix 输入法配置试用（阶段 HX）
+
+仅修改 helix.nix：Fcitx5 开启时包装原 hx，交互启动创建独立 mktemp 状态目录，
+暂时关闭 Fcitx5；退出用 trap 恢复。共享脚本通过 fcitx5-remote --check 查询/开关，
+每次调用限制 0.4 秒；保存 1/2 启用状态，不切换引擎，重复关闭不覆盖原状态。
+常用 normal/select 插入入口在原编辑命令后恢复状态，insert Esc/Ctrl-C 返回 normal
+后保存并关闭。保留现有 i/a collapse_selection、Enter 插空行后回 normal 的行为。
+Constitution Check：仅 PC 构建，不代用户 switch；依赖沿用锁定 nixpkgs，无新增参考
+仓库或原件，规格留 specs、说明留 docs；进度仅发布登记 projects 摘要和索引。
+完整系统/HM 构建、真实 Helix 配置解析及隔离控制器状态回归后交用户试用；
+真正的 Rime 候选、焦点、异步按键与延迟体验由 HX3 验收。

@@ -1,6 +1,74 @@
-{ config, pkgs, theme, ... }: {
+{ config, lib, pkgs, theme, ... }:
+let
+  imeEnabled = config.features.fcitx5.enable;
+  # Keep Rime's selected engine/schema intact: only deactivate the framework.
+  ime = pkgs.writeShellScript "helix-ime" ''
+    [ -n "''${HELIX_IME_DIR:-}" ] || exit 0
+    remote() {
+      ${pkgs.coreutils}/bin/timeout 0.4s ${pkgs.fcitx5}/bin/fcitx5-remote --check "$@" 2>/dev/null
+    }
+    case "$1" in
+      normal)
+        # Repeated Escape must not overwrite the saved insert state.
+        if [ ! -f "$HELIX_IME_DIR/state" ]; then
+          state=$(remote) || exit 0
+          case "$state" in
+            1|2) printf '%s\n' "$state" > "$HELIX_IME_DIR/state" ;;
+            *) exit 0 ;;
+          esac
+        fi
+        remote -c || true
+        ;;
+      insert)
+        [ -f "$HELIX_IME_DIR/state" ] || exit 0
+        read -r state < "$HELIX_IME_DIR/state"
+        case "$state" in
+          2) remote -o || exit 0 ;;
+          1) remote -c || exit 0 ;;
+        esac
+        ${pkgs.coreutils}/bin/rm -f "$HELIX_IME_DIR/state"
+        ;;
+    esac
+    exit 0
+  '';
+  launcher = pkgs.writeShellScript "hx-ime" ''
+    # CLI queries and pipelines must not change the desktop input method.
+    if [ ! -t 0 ] || [ ! -t 1 ]; then
+      exec ${pkgs.helix}/bin/hx "$@"
+    fi
+    export HELIX_IME_DIR
+    HELIX_IME_DIR=$(${pkgs.coreutils}/bin/mktemp -d "''${XDG_RUNTIME_DIR:-''${TMPDIR:-/tmp}}/helix-ime.XXXXXXXX")
+    cleanup() {
+      ${ime} insert
+      ${pkgs.coreutils}/bin/rm -rf -- "$HELIX_IME_DIR"
+    }
+    trap cleanup EXIT
+    ${ime} normal
+    ${pkgs.helix}/bin/hx "$@"
+  '';
+  imePackage = pkgs.symlinkJoin {
+    name = "helix-fcitx5";
+    paths = [ pkgs.helix ];
+    postBuild = ''
+      rm "$out/bin/hx"
+      ln -s ${launcher} "$out/bin/hx"
+    '';
+    meta = pkgs.helix.meta;
+  };
+  restoreIme = ":sh ${ime} insert";
+  saveIme = ":sh ${ime} normal";
+  insertKeys = {
+    I = [ "insert_at_line_start" restoreIme ];
+    A = [ "insert_at_line_end" restoreIme ];
+    o = [ "open_below" restoreIme ];
+    O = [ "open_above" restoreIme ];
+    c = [ "change_selection" restoreIme ];
+    A-c = [ "change_selection_noyank" restoreIme ];
+  };
+in {
   programs.helix = {
     enable = true;
+    package = lib.mkIf imeEnabled imePackage;
     settings = {
       theme = "gruvbox_dark_hard";
       editor = {
@@ -95,8 +163,8 @@
           # There is no real difference if you have overridden the commands bound to 'w', 'e' and 'b' like above
           # But if you really want to get familiar with the Helix way of selecting-while-moving, comment the
           # bindings for 'w', 'e', and 'b' out and leave the bindings for 'i' and 'a' active below. A world of difference!
-          i = [ "insert_mode" "collapse_selection" ];
-          a = [ "append_mode" "collapse_selection" ];
+          i = [ "insert_mode" "collapse_selection" ] ++ lib.optional imeEnabled restoreIme;
+          a = [ "append_mode" "collapse_selection" ] ++ lib.optional imeEnabled restoreIme;
 
           D = "kill_to_line_end";
 
@@ -106,6 +174,10 @@
           # [keys.insert]
           # "A-x" = "normal_mode"     # Maps Alt-X to enter normal mode
           # j = { k = "normal_mode" } # Maps `jk` to exit insert mode
+        } // lib.optionalAttrs imeEnabled insertKeys;
+        insert = lib.optionalAttrs imeEnabled {
+          esc = [ "normal_mode" saveIme ];
+          C-c = [ "normal_mode" saveIme ];
         };
         select = {
           # https://github.com/LGUG2Z/helix-vim/blob/master/config.toml
@@ -130,7 +202,10 @@
           ];
           X = [ "extend_line_up" "extend_to_line_bounds" ];
           A-x = "extend_to_line_bounds";
-        };
+        } // lib.optionalAttrs imeEnabled (insertKeys // {
+          i = [ "insert_mode" restoreIme ];
+          a = [ "append_mode" restoreIme ];
+        });
       };
     };
     languages = with pkgs; {
