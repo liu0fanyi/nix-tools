@@ -16,6 +16,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-10-30 · Fix dsh startup on NixOS with a dedicated official Node runtime · `6c69b72`
 - 2026-10-29 · Stop atop background collection while preserving manual history replay · `d805862`
 - 2026-10-29 · Fix Fcitx5 startup ordering and wait for its D-Bus controller · `ba1a2dc`
 - 2026-10-29 · Refresh committed nix.92 installation overview · `a4829fe`
@@ -23,5 +24,4 @@
 - 2026-10-29 · Restore insert input method when switching Helix modes · `d689e8a`
 - 2026-10-29 · Refresh nix.91 installation overview · `147951a`
 - 2026-10-29 · Pin Tag Browser nix.91 and verify paired frontend delivery · `283ae06`
-- 2026-10-29 · Update Tag Browser to nix.90 with verified paired sidebar delivery · `b61e855`
 <!-- recent-commits:end -->
