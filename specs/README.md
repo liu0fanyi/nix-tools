@@ -17,12 +17,12 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-10-30 · Update EasyEDA desktop to 4.1.93 and verify the full workstation candidate · `0a0efbf`
+- 2026-10-30 · Refresh nix.94 installation overview · `83b5a9f`
 - 2026-10-30 · Pin Tag Browser nix.94 and verify the complete desktop candidate · `f8f247a`
 - 2026-10-30 · Refresh desktop overview for Tag Browser nix.93 · `dc141d8`
 - 2026-10-30 · Pin Tag Browser nix.93 and verify full desktop installation candidate · `4b2bf2c`
 - 2026-10-30 · Fix dsh startup on NixOS with a dedicated official Node runtime · `6c69b72`
 - 2026-10-29 · Stop atop background collection while preserving manual history replay · `d805862`
 - 2026-10-29 · Fix Fcitx5 startup ordering and wait for its D-Bus controller · `ba1a2dc`
-- 2026-10-29 · Refresh committed nix.92 installation overview · `a4829fe`
-- 2026-10-29 · Pin Tag Browser nix.92 and verify signed application caches · `e08722e`
 <!-- recent-commits:end -->
