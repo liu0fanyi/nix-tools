@@ -1,0 +1,248 @@
+{
+  "stage": "browser release and paired PC/NUC frontend delivery verified",
+  "date": "2026-10-30T01:49:13.156436+00:00",
+  "release": {
+    "release": "https://github.com/liu0fanyi/tag-browser/releases/tag/v0.1.0-nix.94",
+    "revision": "670dfc76d57ca790f936cec9174f49d148702f24",
+    "archive_sha256": "3624d10873e09af2c85d094b95e693a96b0d2223620a1893a010f69f40ead5db",
+    "assets_verified": true,
+    "workflow_dispatched": true,
+    "user_requested_release": true
+  },
+  "installation": {
+    "system_candidate": "/nix/store/i0ck8lvsz657kjfk6ghc6rpbi4k8b692-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+    "home_candidate": "/nix/store/kidiwl6j4vmhdn7imcqjd6l9sb37zif1-home-manager-generation",
+    "browser_binary": "/nix/store/n2mk8mmj8cakb3zrpxazl6i85s94a1dx-tag-browser-0.1.0",
+    "browser_source_revision": "670dfc76d57ca790f936cec9174f49d148702f24",
+    "changed_lock_nodes": [
+      "tag-browser-src"
+    ],
+    "five_native_templates_verified": true,
+    "default_target_link_verified": true,
+    "restore_after_reload_verified": true,
+    "system_menu_binary_and_release_version_verified": true,
+    "system_switch_by_agent": false,
+    "four_browser_mime_defaults_verified": true,
+    "concurrent_external_changes_at_build": {},
+    "runtime_inputs_unchanged_during_build": true,
+    "external_work_not_overwritten_by_release": true
+  },
+  "desktop_caches": {
+    "clipboard-sync.outPath": {
+      "path": "/nix/store/jdchs28f8h7cghn4j9fpvhypwl6gs1cr-clipboard-sync-0.2.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "screen-cut-binary-path": {
+      "path": "/nix/store/arrsa3p4q795xkw02503wrz9xyr4wmq4-screen-cut-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "screen-mark-binary-path": {
+      "path": "/nix/store/j1cvwiafizx98f8qzwj2n6szalsqldm8-screen-mark-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "knowledge-cards-binary-path": {
+      "path": "/nix/store/krc8vqrkf6mn7c0si3jgjkmisd0hj32a-knowledge-cards-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "tag-browser-binary-path": {
+      "path": "/nix/store/n2mk8mmj8cakb3zrpxazl6i85s94a1dx-tag-browser-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    }
+  },
+  "ci_cache": {
+    "run_id": 40987870626,
+    "conclusion": "success",
+    "store_path": "/nix/store/n2mk8mmj8cakb3zrpxazl6i85s94a1dx-tag-browser-0.1.0",
+    "cachix_verified": true,
+    "ci_matches_local_package": true,
+    "workflow_creates_pin": true,
+    "latest_pin": {
+      "createdOn": "2026-10-24T10:09:14.207482Z",
+      "keep": {
+        "contents": 1,
+        "tag": "Revisions"
+      },
+      "lastRevision": {
+        "artifacts": [],
+        "createdOn": "2026-10-30T01:48:25.046738Z",
+        "orphaned": false,
+        "revision": 21,
+        "storePath": "/nix/store/n2mk8mmj8cakb3zrpxazl6i85s94a1dx-tag-browser-0.1.0"
+      },
+      "name": "tag-browser-latest"
+    },
+    "other_application_pins_unchanged": true,
+    "trusted_signature_verified": true
+  },
+  "paired_frontend": {
+    "targets": {
+      "pc": {
+        "package": "/nix/store/1293mxwc61r3wmp84c1sx5b31a0mwkg4-tag-all-workspace-native-0.1.0",
+        "previous_frontend": "/nix/store/6bgjm4qyvjj78grb1rzf4raivvf74psc-dufs-plus-pages-tags-pc-frontend",
+        "frontend": "/nix/store/qy1v3iriaknvlpl96aszqagxjprgng68-dufs-plus-parent94-pc-frontend",
+        "binary_sha256": "a6b123bed34e4c282ed7bbdd1c62dd67fd9dd24fb5c2dbc20c62c784fd9d88a0",
+        "preview": {
+          "scope": "pc",
+          "package": "/nix/store/1293mxwc61r3wmp84c1sx5b31a0mwkg4-tag-all-workspace-native-0.1.0",
+          "frontend": "/nix/store/qy1v3iriaknvlpl96aszqagxjprgng68-dufs-plus-parent94-pc-frontend",
+          "core_units": [
+            "tag-all-core.service"
+          ],
+          "processing_idle": true,
+          "activated": false
+        },
+        "prepared": "/home/liou/.local/share/tag-all/native-version-releases/9f2b872b0304e257648940807dc92f92b8328d18014bd1d9583b0b6e98d92131",
+        "changed_only_frontend": true,
+        "frontend_index_sha256": "9db83ebabf734e56a7d1baeb23d6196e9ba786f73973e56ed7aeefe886c847ee",
+        "root_assets_sha256": {},
+        "activation": {
+          "phase": "activated",
+          "manifest": "9f2b872b0304e257648940807dc92f92b8328d18014bd1d9583b0b6e98d92131",
+          "backup": "/home/liou/.local/share/tag-all/native-version-releases/9f2b872b0304e257648940807dc92f92b8328d18014bd1d9583b0b6e98d92131/backup",
+          "database_restored": false
+        },
+        "live": {
+          "scope": "pc",
+          "units": {
+            "tag-all-core.service": {
+              "active": true,
+              "actual_rust_binary_verified": true,
+              "frontend_sha256_verified": true
+            }
+          },
+          "http_statuses": {
+            "5006": 200
+          }
+        },
+        "state": {
+          "scope": "pc",
+          "offline_backup_integrity_verified": true,
+          "backup_database_and_metadata_sha_verified": true,
+          "current_database_inode_preserved": true,
+          "database_restored": false,
+          "active_units": [
+            "tag-all-core.service",
+            "tag-all-tools.service",
+            "tag-native-files.service",
+            "tag-native-stack.target",
+            "tag-native-workspace.service"
+          ],
+          "original_upholds_restored": true,
+          "temporary_target_override_removed": true,
+          "only_frontend_replacement": true
+        }
+      },
+      "nuc": {
+        "package": "/nix/store/hjc9b3b20j970knlwipjycf8fzpl8qhm-tag-all-workspace-native-0.1.0",
+        "previous_frontend": "/nix/store/7mmgfqgf19i3vj5472kxgi2d3nd53q7x-dufs-plus-pages-tags-nuc-frontend",
+        "frontend": "/nix/store/pakysjj0yb9656ph5jpjd82y8w6fxzgp-dufs-plus-parent94-nuc-frontend",
+        "binary_sha256": "646c05d712cfe3f677a8d7ffa9c5f09f2cd0913b1ce6b71e94cc15b7062d3c78",
+        "preview": {
+          "scope": "nuc",
+          "package": "/nix/store/hjc9b3b20j970knlwipjycf8fzpl8qhm-tag-all-workspace-native-0.1.0",
+          "frontend": "/nix/store/pakysjj0yb9656ph5jpjd82y8w6fxzgp-dufs-plus-parent94-nuc-frontend",
+          "core_units": [
+            "tag-nuc-private-core.service",
+            "tag-nuc-readonly-core.service"
+          ],
+          "processing_idle": true,
+          "activated": false
+        },
+        "prepared": "/home/liou/.local/share/tag-all/native-version-releases/721757285f72b241ae35d65679002898a479d4b0dfd1e3ae84fb7ebe0d3c95ca",
+        "changed_only_frontend": true,
+        "frontend_index_sha256": "9db83ebabf734e56a7d1baeb23d6196e9ba786f73973e56ed7aeefe886c847ee",
+        "root_assets_sha256": {},
+        "activation": {
+          "phase": "activated",
+          "manifest": "721757285f72b241ae35d65679002898a479d4b0dfd1e3ae84fb7ebe0d3c95ca",
+          "backup": "/home/liou/.local/share/tag-all/native-version-releases/721757285f72b241ae35d65679002898a479d4b0dfd1e3ae84fb7ebe0d3c95ca/backup",
+          "database_restored": false
+        },
+        "live": {
+          "scope": "nuc",
+          "units": {
+            "tag-nuc-private-core.service": {
+              "active": true,
+              "actual_rust_binary_verified": true,
+              "frontend_sha256_verified": true
+            },
+            "tag-nuc-readonly-core.service": {
+              "active": true,
+              "actual_rust_binary_verified": true,
+              "frontend_sha256_verified": true
+            }
+          },
+          "http_statuses": {
+            "5006": 401,
+            "5008": 401
+          },
+          "nas_authentication_smoke": true,
+          "workcdn_unauthenticated_status": 401
+        },
+        "state": {
+          "scope": "nuc",
+          "offline_backup_integrity_verified": true,
+          "backup_database_and_metadata_sha_verified": true,
+          "current_database_inode_preserved": true,
+          "database_restored": false,
+          "active_units": [
+            "tag-native-nuc.target",
+            "tag-nuc-private-core.service",
+            "tag-nuc-private-files.service",
+            "tag-nuc-private-tools.service",
+            "tag-nuc-readonly-core.service",
+            "tag-nuc-readonly-files.service",
+            "tag-nuc-readonly-tools.service"
+          ],
+          "original_upholds_restored": true,
+          "temporary_target_override_removed": true,
+          "only_frontend_replacement": true
+        }
+      }
+    },
+    "rollback_verification": {
+      "cases": [
+        "fresh_editor_confirmation_required_before_mutation",
+        "real_update_and_explicit_rollback_keep_new_database_writes_and_inode",
+        "post_start_failure_restores_old_program_and_keeps_current_data",
+        "controller_sigkill_after_install_recovers_old_program_without_state_restore",
+        "unrelated_unit_drift_refused_before_stop",
+        "active_queue_refused_without_stopping_current_service"
+      ],
+      "actual_old_and_new_packaged_programs": true,
+      "actual_owned_user_unit": true,
+      "actual_upholds_target_and_interrupted_recovery": true,
+      "latest_writes_retained_on_rollback": true,
+      "database_inode_preserved": true,
+      "owned_units_and_files_cleaned": true,
+      "production_access": false,
+      "production_activated": false,
+      "manager_package": "/nix/store/vb0phbx5f56nnhgm7bc1xf03cmrwhy73-tag-native-release-manager",
+      "old_package": "/nix/store/1293mxwc61r3wmp84c1sx5b31a0mwkg4-tag-all-workspace-native-0.1.0",
+      "new_package": "/nix/store/1293mxwc61r3wmp84c1sx5b31a0mwkg4-tag-all-workspace-native-0.1.0"
+    },
+    "boundaries": {
+      "backend_unchanged": true,
+      "production_theme_written": false,
+      "user_documents_written": false,
+      "database_restored": false,
+      "system_switch": false,
+      "independent_apps_replaced": false,
+      "dufs_uncommitted_feature034_edits_preserved": true,
+      "markdown_compact_toolbar_not_in_this_candidate": true
+    }
+  },
+  "boundaries": {
+    "system_switch_by_agent": false,
+    "daily_profile_accessed": false,
+    "other_application_pins_unchanged": true,
+    "database_restored": false,
+    "backend_replaced": false,
+    "markdown_compact_toolbar_excluded": true
+  }
+}
