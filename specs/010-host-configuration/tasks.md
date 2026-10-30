@@ -865,3 +865,21 @@ atop、atopacct、atop-rotate 三个单元均 not-found/inactive，AJ3 的应用
 检查已通过；尚未观察下一次重启，AJ3 仍保留这一项待确认。
 本轮仅归档现有配置与历史记录，撤回知识卡脚本中违反 AGENTS 的沙盒 SSH 绕过，
 不执行部署、清理、系统切换或服务重启。
+
+### dsh 更新与 Nix Node 兼容修复（阶段 DS，2026-10-30）
+
+- [x] DS1：验证官方 Node 24.20.0 的原生加载器兼容性，固定专用 Nix 运行时与 dsh wrapper；将 dsh 更新至 0.2.1-rc.5，隔离验证五个插件更新及通知桥接，备份并更新实际 Web profile。
+- [x] DS2：构建完整 liu-bigpc toplevel/HM generation，核对生成入口、备份/设备权限；认证 HTTP、插件加载及 PTY 探针通过，登记本地手册与项目总纲。
+- [ ] DS3：用户在普通终端手动 switch 后，从现有桌面入口或 dsh 命令打开 Web，确认界面与实际使用。
+
+已复现 nixpkgs Node 22.23.2/24.19.0/24.20.0 下 Unsupported/no-getter，旧 dsh
+rc.2 也失败；相同版本的官方 Node 24.20.0 及其 Nix ELF 修复产物通过加载器探针。
+完整系统 `/nix/store/ynb1sba5i8xm023ippcwx1f3hl34kwwq-nixos-system-liu-bigpc-26.11.20260922.b6c98e9`
+及 HM `/nix/store/kidiwl6j4vmhdn7imcqjd6l9sb37zif1-home-manager-generation` 构建通过。
+实际 HM wrapper 固定专用 Node，dsh-web ExecStart 保持既有入口，hm-backup、
+pen-scroll/input/uinput 与内核 uinput 核对正确；未执行系统 switch。
+隔离 profile 认证 HTTP 200、无插件加载错误，核心 PTY 命令退出 0；详细日志与探针
+只留 `/tmp/dsh-official-node-20261030/`，其中本地临时 URL 含认证 token，不发布日志。
+插件版本与备份位置见 `docs/dsh-web-operations.md`；不将启动验收扩写为模型/SSH/
+Blender/记忆后端业务验收。官方桌面端不支持 Linux，社区 AppImage 仅完成来源调查。
+阶段 DS 剩余 1 项 DS3：用户手动应用与界面试用。

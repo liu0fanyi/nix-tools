@@ -10,6 +10,7 @@
 let
   scaling = config.features.desktopScaling;
   toolPkgs = inputs.tool-updates.legacyPackages.${pkgs.stdenv.hostPlatform.system};
+  dshNode = pkgs.callPackage ./packages/dsh-node.nix { };
   qtX11Flags = lib.optionalString scaling.enable ''
     --set QT_AUTO_SCREEN_SCALE_FACTOR 1 \
     --set QT_SCALE_FACTOR_ROUNDING_POLICY PassThrough
@@ -480,11 +481,14 @@ in
   #   所以 `dsh` 命中 wrapper 而非 npm 裸链接。
   #
   # 仅 NixOS：npm 包装在 ~/.npm-global（用户目录可写），wrapper 覆盖到该路径。
+  # dsh 的 node-addon-require-builtin 无法识别 nixpkgs Node 的加固指令，
+  # 使用固定官方运行时；PATH 同时保证子进程使用同一 Node，系统 Node 保留。
   home.file.".local/bin/dsh" = lib.mkIf isNixOS {
     executable = true;
     text = ''
       #!/bin/sh
-      exec node --expose-internals ${config.home.homeDirectory}/.npm-global/lib/node_modules/@deepseek-ai/dsh/lib/bin.js "$@"
+      export PATH="${dshNode}/bin:$PATH"
+      exec ${dshNode}/bin/node --expose-internals ${config.home.homeDirectory}/.npm-global/lib/node_modules/@deepseek-ai/dsh/lib/bin.js "$@"
     '';
   };
   home.file.".local/bin/dsh-tui" = lib.mkIf isNixOS {
@@ -711,7 +715,7 @@ in
   # dsh / dsh-tui 通过 npm 全局安装（~/.npm-global），home-manager 无法像
   # nix 包那样固定版本，这里在每次 switch 时检查 npm 最新版，仅在需要时更新，
   # 保证版本跟随上游（近似滚动更新）。插件装在 ~/.dsh/profiles/，独立于 npm 包，
-  # 更新 dsh 不影响已装插件。
+  # 更新后需复核插件兼容性；插件目录保留不代表旧版本仍可加载。
   home.activation.ensureDshLatest = lib.mkIf isNixOS (
     lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       # 不能在任何分支用 exit（activation 是顶层 shell 脚本，exit 会终止整个

@@ -3,6 +3,31 @@
 `dsh web`（DeepSeek Harness Web GUI）跑在本机 `http://127.0.0.1:3080`，由 home-manager
 的 `systemd.user.services.dsh-web` 管理（不 enable，保持手动启动语义）。
 
+## 2026-10-30 更新与 NixOS 运行时修复
+
+dsh 已更新为 `0.2.1-rc.5`。Nix 构建的 Node 22.23.2、24.19.0、24.20.0
+均无法通过其 `node-addon-require-builtin` 原生加载器检查（`Unsupported/no-getter`）；
+旧 dsh `0.2.1-rc.2` 也存在同一问题。专用运行时改用 Node 官方 Linux x64
+`24.20.0`，来源与 SHA256 固定在 `home-manager/packages/dsh-node.nix`，由 Nix
+修复 ELF 动态链接。仅 dsh wrapper 及其子进程使用，系统 Node 与 dsh-tui 保留原配置。
+参见 [nixpkgs 已知问题](https://github.com/NixOS/nixpkgs/issues/565667)。
+
+当前 Web profile 插件更新为：remote-ssh `2.4.41`、better-sidebar `0.28.2`、
+context `0.78.1`、OpenViking memory `0.5.31`、Blender `0.2.4`；同时显式安装
+`@deepseek-ai/dsh-hooks-claude-code` 与 `@deepseek-ai/dsh-hook-protocol` `0.2.1-rc.5`，
+以补齐旧通知 patch 的运行依赖。保留原 `cordis.patch.yml`，不放宽插件兼容检查。
+更新前的完整 profile 保留为 `~/.dsh/profiles/web.before-update-20261030`。
+
+隔离副本使用实际 Nix wrapper 启动、带认证 cookie 的网页 HTTP 200、持续运行且
+插件无加载警告检查通过；核心 node-pty 创建终端执行命令通过。完整 liu-bigpc
+toplevel 与 Home Manager generation 构建通过，持久 wrapper 仍需用户手动 switch
+后生效。测试均使用随机端口并自动退出，不代表模型调用、远程 SSH、Blender 或
+记忆后端逐项业务验收。下文旧版本表与历史事故仅作为历史记录。
+
+桌面端调查：官方仍未支持 Linux 发布；社区
+[bruc3van/dsh-desktop v0.5.27](https://github.com/bruc3van/dsh-desktop/releases/tag/v0.5.27)
+提供 x86_64 AppImage/DEB，但上游验证范围为 Ubuntu 24.04 WSL，尚未在本机安装或验证。
+
 - 启动/重启：`systemctl --user restart dsh-web`
 - 日志：`journalctl --user -u dsh-web --since "10 minutes ago"`
 - 桌面入口：Mod+D → fuzzel → `dsh-web.desktop` → `dsh-web-toggle`
