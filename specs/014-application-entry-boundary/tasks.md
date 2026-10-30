@@ -468,3 +468,5 @@ nix.88状态流配套交付已核验：PC／NUC仅替换前端且保留各端后
 2026-10-30：nix.95共用资源行/收藏标题浏览器发行完成，仅tag-browser-src输入锁更新；完整PC/HM、五应用精确缓存、原生模板/default target/恢复钩子、菜单版本与四类MIME核验通过，见[安装证据](tag-browser-nix95-install-results.json)。本轮开始工作树干净，无用户修改被覆盖；无网页/后端服务切换、数据写入、system switch或日常profile访问。唯一跨仓发行计数Tag Browser027/URR，实际安装重开仍待用户确认。
 
 2026-10-30：nix.96统一多选浏览器发行完成，仅tag-browser-src输入锁更新；完整PC/HM、五应用精确缓存、原生模板/default target/恢复钩子、菜单版本与四类MIME通过，见[安装证据](tag-browser-nix96-install-results.json)。本轮开始工作树干净；构建时并发改动按证据记录且不覆盖。无网页/后端服务切换、生产数据写入、system switch或日常profile访问。唯一跨仓发行计数Tag Browser027/MSR，实际安装重开仍待用户确认。
+
+2026-10-30：nix.97标签整理与URL排序浏览器发行完成，仅tag-browser-src输入锁更新；完整PC/HM、五应用精确缓存、原生模板/default target/恢复钩子、菜单版本与四类MIME通过，见[安装证据](tag-browser-nix97-install-results.json)。本轮开始工作树干净；并发外部改动按证据记录且不覆盖。无网页/后端服务切换、生产数据写入、system switch或日常profile访问。唯一跨仓发行计数Tag Browser001/TOR，实际安装重开仍待用户确认。
