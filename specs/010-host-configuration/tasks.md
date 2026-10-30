@@ -883,3 +883,29 @@ pen-scroll/input/uinput 与内核 uinput 核对正确；未执行系统 switch�
 插件版本与备份位置见 `docs/dsh-web-operations.md`；不将启动验收扩写为模型/SSH/
 Blender/记忆后端业务验收。官方桌面端不支持 Linux，社区 AppImage 仅完成来源调查。
 阶段 DS 剩余 1 项 DS3：用户手动应用与界面试用。
+
+
+### 嘉立创 EDA 4.1 升级（阶段 ED4）
+
+- [x] ED4.1：固定官网 Linux x64 4.1.93 ZIP 和实取 SHA-256，核对原包布局、图标、入口与版本；保留缩放、FHS 和 core 限制。
+- [x] ED4.2：构建 liu-bigpc 完整 toplevel 与 Home Manager generation，核对实际启动链、桌面入口、hm-backup 和既有设备权限；不启动真实 EDA 或执行 switch。
+- [ ] ED4.3：用户在普通终端手动 switch，保存工程后重开 EDA，核验客户端版本及网关连接，并重测工程详情/ERC明细接口；不以构建成功冒充接口已修复。
+
+用户授权客户端更新；此前仅升级官方 easyeda-api skill 1.1.36→1.1.62。
+旧客户端实际为3.2.203；官方4.1.93发布于2026-10-29，Linux x64下载链接已核可用。
+公开文档中新接口的版本要求仍须与实际客户端逐项核对，不保证4.1.93已支持所有4.2接口。
+系统切换遵守本仓AGENTS，由用户执行；保留当前EDA进程、工程与已有库。
+
+
+ED4.1/2 核验：官方包 SHA-256 为
+`1835a98cc58945229d313e879d785fa038dc2d10a85ea4a1998924e6dcf5f8f9`，
+ZIP完整性与650个条目、主程序/辅助进程755权限、图标及原目录布局通过；
+实际应用元数据为4.1.93.be2a4d1d（ZIP根version文件为Electron版本，未误当应用版本）。
+完整系统 `/nix/store/94790zvmcpc9jpdq7yixn067wa32ngb2-nixos-system-liu-bigpc-26.11.20260922.b6c98e9`
+与HM `/nix/store/sscfpj7kwc62v4pj3r23l1vzs8z39zr3-home-manager-generation` 构建通过；
+HM命令指向4.1.93 FHS入口，desktop仍为lceda-pro，启动链保留主屏1.5倍缩放、
+软硬core限制0且未加--no-sandbox。hm-backup、input/uinput/dialout组、uinput模块
+及pen-scroll服务ExecStart/附加组核对正确。
+未执行switch、启动新版、退出旧版、打开/转换工程或修改网关；GUI/接口验收保留ED4.3。
+阶段ED4剩余1项ED4.3：用户执行 `nu rerun.nu liou --host liu-bigpc`，保存后退出并重开EDA，
+再查实际客户端版本、扩展连接和先前失败接口。

@@ -13,7 +13,7 @@ liu-bigpc 的 Niri 会话通过 fcitx5-x11-reconnect 用户服务等待 X 显示
 FreeCAD 在 `home.nix` 与 Blender 并列声明，通过 `packages/freecad-bin.nix` 固定官方 1.1.3 AppImage 与 SHA-256，使用 appimageTools 包装。当前 nixpkgs 源码包未命中完整缓存，为避免长时间编译 IFC/FreeCAD 改用同版本官方二进制。验证完整 toplevel、HM generation 和命令/desktop 入口，不执行 switch。
 
 EDA 使用独立 `home-manager/nix_modules/eda.nix` 模块；KiCad 来自锁定 nixpkgs，
-嘉立创包位于 `home-manager/packages/lceda-pro.nix`，固定官方 3.2.203 ZIP 与哈希，
+嘉立创包位于 `home-manager/packages/lceda-pro.nix`，固定官方 ZIP 与哈希；本轮 ED4 候选由 3.2.203 升级到 4.1.93，
 使用 buildFHSEnv 保留官方 Electron 及原生模块，生成桌面入口并安装上游图标。
 不关闭 Electron 沙箱，不修改用户现有工程。升级需核对下载页、哈希及完整构建。
 
@@ -366,3 +366,12 @@ Constitution Check：仅 PC 构建，不代用户 switch；依赖沿用锁定 ni
 仓库或原件，规格留 specs、说明留 docs；进度仅发布登记 projects 摘要和索引。
 完整系统/HM 构建、真实 Helix 配置解析及隔离控制器状态回归后交用户试用；
 真正的 Rime 候选、焦点、异步按键与延迟体验由 HX3 验收。
+
+
+## 嘉立创 EDA 4.1 候选（阶段 ED4）
+
+仅将官方Linux x64固定包从3.2.203更新至4.1.93和实取SHA-256，复用既有FHS、
+桌面入口、图标、缩放和core限制。安装包属于正常Nix包管理依赖，不新增外部参考仓库；
+不运行上游安装脚本或系统switch，不触碰现有设计数据。
+Constitution Check：来源/版本/哈希固定，构建在PC，用户应用与实际API验收分开；
+总纲按中央登记单文件发布，不全量同步规格。实际构建及剩余项见ED4任务。

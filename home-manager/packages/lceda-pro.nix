@@ -10,13 +10,13 @@
   scaleFactor ? null,
 }:
 let
-  version = "3.2.203";
+  version = "4.1.93";
   files = stdenvNoCC.mkDerivation {
     pname = "lceda-pro-files";
     inherit version;
     src = fetchurl {
       url = "https://image.lceda.cn/files/lceda-pro-linux-x64-${version}.zip";
-      sha256 = "c89f17a95d9828f39ce743afb6b322e43c2b897ddae5d47479ac6c1071d719ed";
+      sha256 = "sha256-GDWpjMWJRSKdMT6HnXhfoDjcLRCoXqShmYkk5tz1+Pk=";
     };
     nativeBuildInputs = [ libarchive ];
     env.LC_ALL = "C.UTF-8";
