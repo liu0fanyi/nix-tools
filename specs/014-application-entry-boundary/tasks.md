@@ -460,3 +460,5 @@ nix.88状态流配套交付已核验：PC／NUC仅替换前端且保留各端后
 本轮配套发行nix.91：仅更新tag-browser-src锁节点，完整PC/HM候选及五应用缓存通过，PC／NUC固定前端已激活，各端现用后端及独立知识卡资源保持。见[安装和双端核验](sidebar-query-install-results.json)。八项既有修改原样保留；不system switch。
 
 本轮条目状态浏览器发行nix.92已完成：完整PC/HM候选和五应用缓存通过，仅tag-browser-src锁节点更新；见[精确安装证据](row-state-install-results.json)。本轮无网页服务切换；Agent未system switch，既有及并发修改未被本轮覆盖。跨仓唯一发行计数为产品027/RSD1–RSD3。
+
+2026-10-30：nix.93合并页面与标签栏配套发行完成，唯一锁节点tag-browser-src更新至6c8f903。完整PC/HM、五应用精确缓存、原生模板/恢复钩子、菜单版本与四类MIME通过；PC/NUC固定前端已激活，逐端后端/数据库/独立应用保持。见[安装证据](merged-pages-install-results.json)。本轮开始工作树干净；现有dsh等已提交配置原样保留并包含于系统候选，未代为system switch或读取日常profile。唯一跨仓发行计数Tag Browser027/PCR，用户普通终端安装重开与真实体验待确认。

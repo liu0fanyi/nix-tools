@@ -3,7 +3,7 @@
 ## 当前情况
 - [dsh 已更新至 rc.5，专用官方 Node 与五个插件更新通过启动、PTY 及完整系统/HM 构建；持久入口待用户手动应用。](010-host-configuration/tasks.md#dsh-更新与-nix-node-兼容修复阶段-ds2026-10-30)
 - [Helix 输入法恢复已通过构建、隔离验证和用户试用，当前配置方案验收完成。](010-host-configuration/tasks.md#helix-输入法配置试用阶段-hx)
-- [Tag Browser nix.92及五应用缓存、完整PC/HM候选已核验；仅浏览器源码锁定更新，本轮无网页服务切换。](014-application-entry-boundary/row-state-install-results.json)
+- [Tag Browser nix.93、五应用缓存和完整PC/HM候选已核验；仅浏览器输入锁更新，PC/NUC配套前端已切换并保留各端后端，用户系统更新待执行。](014-application-entry-boundary/merged-pages-install-results.json)
 
 ## 后续计划
 - [手动应用 dsh 运行时修复并确认实际界面使用（DS3）。](010-host-configuration/tasks.md#dsh-更新与-nix-node-兼容修复阶段-ds2026-10-30)
