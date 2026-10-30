@@ -1,0 +1,92 @@
+{
+  "stage": "paired browser release and PC/NUC frontend activation verified",
+  "date": "2026-10-30T10:46:00.294392+00:00",
+  "release": {
+    "release": "https://github.com/liu0fanyi/tag-browser/releases/tag/v0.1.0-nix.99",
+    "revision": "52cb553bbbe9bdefd22575bcc6d649c6978f72db",
+    "archive_sha256": "0a03b7e37b83ff317f2c17520bf40c97dcceba170025f29b207d3dc23ca07c63",
+    "assets_verified": true,
+    "workflow_dispatched": true,
+    "user_requested_release": true
+  },
+  "installation": {
+    "system_candidate": "/nix/store/ih7a31jdwknxlk537fwmhdq5yd12xxw3-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+    "home_candidate": "/nix/store/sscfpj7kwc62v4pj3r23l1vzs8z39zr3-home-manager-generation",
+    "browser_binary": "/nix/store/y2frdwqwrr7j7rymifd56fjz0s3h1qfl-tag-browser-0.1.0",
+    "browser_source_revision": "52cb553bbbe9bdefd22575bcc6d649c6978f72db",
+    "changed_lock_nodes": [
+      "tag-browser-src"
+    ],
+    "five_native_templates_verified": true,
+    "default_target_link_verified": true,
+    "restore_after_reload_verified": true,
+    "system_menu_binary_and_release_version_verified": true,
+    "system_switch_by_agent": false,
+    "four_browser_mime_defaults_verified": true,
+    "concurrent_external_changes_at_build": {},
+    "runtime_inputs_unchanged_during_build": true,
+    "external_work_not_overwritten_by_release": true
+  },
+  "desktop_caches": {
+    "clipboard-sync.outPath": {
+      "path": "/nix/store/jdchs28f8h7cghn4j9fpvhypwl6gs1cr-clipboard-sync-0.2.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "screen-cut-binary-path": {
+      "path": "/nix/store/arrsa3p4q795xkw02503wrz9xyr4wmq4-screen-cut-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "screen-mark-binary-path": {
+      "path": "/nix/store/j1cvwiafizx98f8qzwj2n6szalsqldm8-screen-mark-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "knowledge-cards-binary-path": {
+      "path": "/nix/store/krc8vqrkf6mn7c0si3jgjkmisd0hj32a-knowledge-cards-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "tag-browser-binary-path": {
+      "path": "/nix/store/y2frdwqwrr7j7rymifd56fjz0s3h1qfl-tag-browser-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    }
+  },
+  "ci_cache": {
+    "run_id": 41042059402,
+    "conclusion": "success",
+    "store_path": "/nix/store/y2frdwqwrr7j7rymifd56fjz0s3h1qfl-tag-browser-0.1.0",
+    "cachix_verified": true,
+    "ci_matches_local_package": true,
+    "workflow_creates_pin": true,
+    "latest_pin": {
+      "createdOn": "2026-10-24T10:09:14.207482Z",
+      "keep": {
+        "contents": 1,
+        "tag": "Revisions"
+      },
+      "lastRevision": {
+        "artifacts": [],
+        "createdOn": "2026-10-30T10:38:27.59019Z",
+        "orphaned": false,
+        "revision": 26,
+        "storePath": "/nix/store/y2frdwqwrr7j7rymifd56fjz0s3h1qfl-tag-browser-0.1.0"
+      },
+      "name": "tag-browser-latest"
+    },
+    "other_application_pins_unchanged": true,
+    "trusted_signature_verified": true
+  },
+  "boundaries": {
+    "system_switch_by_agent": false,
+    "daily_profile_accessed": false,
+    "other_application_pins_unchanged": true,
+    "only_frontend_switched": true,
+    "backend_preserved": true,
+    "production_theme_or_collections_written": false,
+    "data_restored": false,
+    "shared_revision": "c027abf6bd66cdcbbada66ffc000959891bc97d7"
+  }
+}
