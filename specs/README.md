@@ -16,12 +16,12 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-10-30 · Update Tag Browser to nix.95 and verify desktop installation candidate · `750f8ca`
+- 2026-10-30 · Refresh workstation overview after EasyEDA runtime verification · `83c854f`
 - 2026-10-30 · Verify the running EasyEDA 4.1.93 client and recovered inspection APIs · `2952440`
 - 2026-10-30 · Refresh workstation overview for the EasyEDA 4.1.93 candidate · `b3c37af`
 - 2026-10-30 · Update EasyEDA desktop to 4.1.93 and verify the full workstation candidate · `0a0efbf`
 - 2026-10-30 · Refresh nix.94 installation overview · `83b5a9f`
 - 2026-10-30 · Pin Tag Browser nix.94 and verify the complete desktop candidate · `f8f247a`
 - 2026-10-30 · Refresh desktop overview for Tag Browser nix.93 · `dc141d8`
-- 2026-10-30 · Pin Tag Browser nix.93 and verify full desktop installation candidate · `4b2bf2c`
-- 2026-10-30 · Fix dsh startup on NixOS with a dedicated official Node runtime · `6c69b72`
 <!-- recent-commits:end -->
