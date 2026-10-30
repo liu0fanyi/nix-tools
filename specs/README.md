@@ -16,12 +16,12 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-10-30 · Install Tag Browser nix.97 with tag organization and URL ordering · `bb7750c`
+- 2026-10-30 · Refresh nix.96 installation overview · `cc6e978`
 - 2026-10-30 · Update Tag Browser to nix.96 and verify desktop installation candidate · `6cc3728`
 - 2026-10-30 · Refresh nix.95 installation overview · `a04a7c8`
 - 2026-10-30 · Update Tag Browser to nix.95 and verify desktop installation candidate · `750f8ca`
 - 2026-10-30 · Refresh workstation overview after EasyEDA runtime verification · `83c854f`
 - 2026-10-30 · Verify the running EasyEDA 4.1.93 client and recovered inspection APIs · `2952440`
 - 2026-10-30 · Refresh workstation overview for the EasyEDA 4.1.93 candidate · `b3c37af`
-- 2026-10-30 · Update EasyEDA desktop to 4.1.93 and verify the full workstation candidate · `0a0efbf`
-- 2026-10-30 · Refresh nix.94 installation overview · `83b5a9f`
 <!-- recent-commits:end -->
