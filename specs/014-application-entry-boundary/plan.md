@@ -378,3 +378,5 @@ nix.83消费者Constitution Check：只更新tag-browser-src锁及本项发行�
 浏览器nix.102配套Constitution Check：复核工作区及本仓约束，产品027/OHR独占发行计数。只更新浏览器源码输入锁，验证完整PC/HM与精确缓存/签名；原生服务模板、其余输入和应用Pin保持，不执行system switch、服务激活或profile/生产数据写入。
 
 浏览器nix.103配套Constitution Check：复核工作区与本仓约束，产品027/SHR独占发行计数；仅浏览器源码输入锁及安装证据，核对完整PC/HM、五应用精确缓存和可信签名，服务模板/其余输入及应用Pin保持，不执行system switch、服务激活或profile/数据写入。
+
+浏览器nix.104配套Constitution Check：复核工作区/本仓约束，产品027/OSUR独占发行计数；仅浏览器源码输入锁及安装证据，核对完整PC/HM、五应用精确缓存和可信签名，其余输入/服务模板/应用Pin保持，不执行system switch、服务激活或profile/数据写入。
