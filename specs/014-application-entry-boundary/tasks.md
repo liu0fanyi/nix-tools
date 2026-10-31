@@ -474,3 +474,7 @@ nix.88状态流配套交付已核验：PC／NUC仅替换前端且保留各端后
 2026-10-30：nix.98收藏目录与层级主题配套发行完成；浏览器输入锁仅tag-browser-src更新，完整PC/HM与五应用缓存、注册模板/恢复钩子/MIME核验通过，见[安装证据](tag-browser-nix98-install-results.json)。原完整tester实际CLI、原生包装/双栈及两套六项回退通过后，按用户本轮“发行”直接串行NUC/PC切换程序与各自保留知识卡的前端；实际程序/HTTP/认证、离线备份/SQLite及inode和Upholds恢复通过，见[实际激活](tree-depth-native-activation-results.json)。无系统switch、日常profile访问、账号主题改写或数据库恢复。唯一跨仓DTR1–DTR3剩余0，用户浏览器安装重开另列。
 
 2026-10-30：nix.99配套发行完成。仅tag-browser-src锁更新，CI/签名缓存/latest Pin保留1版、五应用缓存、完整PC/HM及原生注册/钩子/MIME通过，见[安装证据](tag-browser-nix99-install-results.json)。两端当前8h3y包及新前端各六项隔离回退通过后，按用户本轮“上线”授权只替换PC／NUC前端；workcdn对应只读core同时更新，实际程序/13项HTTP资源/鉴权/离线备份/inode/Upholds恢复通过，见[实际激活](readonly-depth-native-activation-results.json)。后端、账号主题和独立应用保持，无DB恢复、日常profile访问或system switch。唯一跨仓RAR1–RAR3剩余0；用户系统安装重开另列。
+
+2026-10-31：首次批量网页打标nix.100发行消费核对完成。唯一跨仓发行计数在Tag Browser027/BTR；本仓仅更新tag-browser-src输入锁并记录完整PC/HM、五应用精确缓存、原生模板/恢复钩子/菜单及MIME核验。其他输入、应用、生产数据、网页/后端服务和系统当前代保持；实际安装/重开由用户执行。
+
+nix.100：完整PC/HM、五应用精确缓存、可信签名与latest Pin保留1版、五模板/default target/恢复钩子/菜单版本及四类MIME均核验。仅tag-browser-src锁至a75246d，初始消费工作树干净，无其他输入或应用Pin变化；未激活网页/后端、system switch、迁移收藏或访问日常profile。见[安装证据](tag-browser-nix100-install-results.json)。唯一发行计数Tag Browser027/BTR全部完成，实际手动安装/重开与用户体验另列。
