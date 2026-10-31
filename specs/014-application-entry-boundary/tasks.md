@@ -484,3 +484,5 @@ nix.100：完整PC/HM、五应用精确缓存、可信签名与latest Pin保留1
 nix.101：完整PC/HM、五应用精确缓存、CI可信签名/latest Pin保留1版、五模板/default target/恢复钩子/菜单版本及四类MIME均核验，仅tag-browser-src锁至8fc8ce3。初始消费工作树干净，其余输入和应用Pin未改；无网页/后端激活、生产数据写入、system switch或日常profile访问。见[安装证据](tag-browser-nix101-install-results.json)。唯一发行计数Tag Browser001/UAR全部完成，用户手动安装和实际重开体验独立。
 
 nix.102：折叠收藏的当前/后台运行/休眠三态提示已发行。仅tag-browser-src至98c1fc2，CI可信签名/latest Pin保留1版、五应用精确缓存及完整PC/HM候选通过；五模板/default target/恢复顺序、菜单版本与四类MIME保持。见[安装证据](tag-browser-nix102-install-results.json)。唯一发行计数Tag Browser027/OHR已完成，用户手动系统安装与实际重开体验独立；未激活服务、修改生产数据或访问日常profile。
+
+nix.103：休眠收藏提示恢复修复已发行，实际多页卸载/点击及完整七组2593项产品回归通过。仅tag-browser-src至6c556bf，CI可信签名/latest Pin保留1版、五应用缓存及完整PC/HM候选通过；五模板/default target/恢复顺序、菜单版本和四类MIME保持。见[安装证据](tag-browser-nix103-install-results.json)。唯一发行计数Tag Browser027/SHR已完成，用户手动安装与实际重开体验独立；未激活服务、修改生产数据或访问日常profile。
