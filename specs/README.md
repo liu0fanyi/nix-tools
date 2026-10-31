@@ -17,6 +17,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-01 · Add DiskTree graphical disk usage analyzer · `443c0b3`
 - 2026-10-31 · Use AbiWord and Gnumeric as default document and spreadsheet editors · `1916917`
 - 2026-10-31 · Summarize verified nix.104 browser installation candidate · `a128358`
 - 2026-10-31 · Update Tag Browser to nix.104 with verified installation and caches · `f5af860`
@@ -24,5 +25,4 @@
 - 2026-10-31 · Update Tag Browser to nix.103 with verified installation and caches · `525c446`
 - 2026-10-31 · Summarize verified nix.102 browser delivery · `12301af`
 - 2026-10-31 · Update Tag Browser to nix.102 with verified installation and caches · `3d84c76`
-- 2026-10-31 · Refresh nix.101 installation progress overview · `c670e55`
 <!-- recent-commits:end -->
