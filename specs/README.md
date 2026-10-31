@@ -16,12 +16,12 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-10-31 · Update Tag Browser to nix.101 with verified installation and caches · `7f905cf`
+- 2026-10-31 · Refresh nix.100 installation progress overview · `52d6a6a`
 - 2026-10-31 · Update Tag Browser to nix.100 with verified installation and caches · `54ac628`
 - 2026-10-30 · Pin nix.99 and verify frontend-only workspace updates · `3d44222`
 - 2026-10-30 · Pin nix.98 and verify paired directory theme native updates · `b89ee88`
 - 2026-10-30 · Refresh nix.97 installation overview · `97dfcc4`
 - 2026-10-30 · Install Tag Browser nix.97 with tag organization and URL ordering · `bb7750c`
 - 2026-10-30 · Refresh nix.96 installation overview · `cc6e978`
-- 2026-10-30 · Update Tag Browser to nix.96 and verify desktop installation candidate · `6cc3728`
-- 2026-10-30 · Refresh nix.95 installation overview · `a04a7c8`
 <!-- recent-commits:end -->
