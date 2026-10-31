@@ -184,6 +184,8 @@ in
       bubblewrap
       dust
       duf
+      # 图形化磁盘占用矩形图（tobi/disktree 官方发行包）。
+      (callPackage ./packages/disktree-bin.nix { })
       ripgrep
       fd
       jq

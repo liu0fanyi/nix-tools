@@ -937,3 +937,21 @@ ERC返回rule/primitives明细，包含ATTRMATCHCODE与SHOWDANDLING，均为警�
 本次仅即时更新已备份的用户动态 MIME 文件，未执行系统switch；Nix声明保证下次
 正常应用仍保持默认应用。MIME反哺脚本保留宏表格类型键名大小写。
 证据留 `/tmp/office-mime-20261031/`。阶段OF剩1项OF3：用户双击文件确认。
+
+### DiskTree 图形版安装（阶段 DT，2026-11-01）
+
+- [x] DT1：按用户确认安装 tobi/disktree 图形版，固定官方0.11.0 Linux x64发布包和GitHub asset.digest，补齐Nix动态库、图标和桌面入口。
+- [x] DT2：验证完整liu-bigpc系统/HM构建、生成命令与桌面入口、现有备份/设备权限配置；实际Niri测试窗口使用临时样例目录，维护总纲。
+- [ ] DT3：用户在普通终端手动应用配置，从应用菜单打开DiskTree确认实际使用。
+
+当前nixpkgs无同名包，使用 `home-manager/packages/disktree-bin.nix` 固定官方发布物，
+不执行上游install.sh、不改系统Nixpkgs锁定。包的VERSION与CLI帮助验证通过；
+实际Niri窗口app_id=disktree、持续运行检查通过，测试进程已停止。
+仅扫描临时样例目录，未扫描整盘、未删除任何用户文件；上游整盘扫描动作保留为用户入口。
+本次未执行系统switch。构建、来源摘要与启动证据留 `/tmp/disktree-install-20261101/`。
+
+完整系统 `/nix/store/phn92wifpj7712a62wmj8w6lfqncch9a-nixos-system-liu-bigpc-26.11.20260922.b6c98e9`
+及HM `/nix/store/xz9wm63g763kc3q5kqgf7vak80ka4i6c-home-manager-generation` 构建通过。
+HM home-path命令、desktop实际Exec与0.11.0标识、图标一致；hm-backup、系统
+pen-scroll ExecStart/input/uinput、内核uinput及udev求值核对通过，Office默认应用保留。
+阶段DT剩余1项DT3：用户手动运行 `nu rerun.nu liou --host liu-bigpc` 并从菜单打开试用。
