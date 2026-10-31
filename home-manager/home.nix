@@ -140,6 +140,21 @@ in
       "application/xhtml+xml" = [ "zen.desktop" ];
       "x-scheme-handler/codex" = [ "chatgpt.desktop" ];
       "x-scheme-handler/baiduyunguanjia" = [ "baidunetdisk.desktop" ];
+      # Office 文件显式指定编辑器，避免未设默认时选中 Codex 的格式声明。
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document" = [ "abiword.desktop" ];
+      "application/msword" = [ "abiword.desktop" ];
+      "application/vnd.oasis.opendocument.text" = [ "abiword.desktop" ];
+      "application/rtf" = [ "abiword.desktop" ];
+      "text/rtf" = [ "abiword.desktop" ];
+      "application/x-abiword" = [ "abiword.desktop" ];
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" = [ "org.gnumeric.gnumeric.desktop" ];
+      "application/vnd.ms-excel" = [ "org.gnumeric.gnumeric.desktop" ];
+      "application/vnd.ms-excel.sheet.macroEnabled.12" = [ "org.gnumeric.gnumeric.desktop" ];
+      "application/vnd.oasis.opendocument.spreadsheet" = [ "org.gnumeric.gnumeric.desktop" ];
+      "application/x-gnumeric" = [ "org.gnumeric.gnumeric.desktop" ];
+      "text/csv" = [ "org.gnumeric.gnumeric.desktop" ];
+      "text/tab-separated-values" = [ "org.gnumeric.gnumeric.desktop" ];
+      "application/tab-separated-values" = [ "org.gnumeric.gnumeric.desktop" ];
     };
   };
 

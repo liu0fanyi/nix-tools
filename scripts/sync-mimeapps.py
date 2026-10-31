@@ -61,6 +61,8 @@ def parse_system_mimeapps() -> dict[str, str]:
     if not MIMEAPPS_PATH.exists():
         return {}
     cp = configparser.ConfigParser()
+    # 保留 MIME 名中的大小写（如 sheet.macroEnabled.12），与 Nix 声明一致。
+    cp.optionxform = str
     try:
         cp.read(MIMEAPPS_PATH, encoding="utf-8")
     except Exception as e:

@@ -921,3 +921,19 @@ ERC返回rule/primitives明细，包含ATTRMATCHCODE与SHOWDANDLING，均为警�
 独立CBB库按旧标识和当前个人库查询均未取得记录，新增/复制/删除未做写入验收，
 这些是复用工程的后续事项，不扩写为本次客户端升级全部API成功。
 阶段ED4三项完成，剩余0项；原理图/模块工作按产品原任务继续。
+
+### 文档与表格默认应用修复（阶段 OF，2026-10-31）
+
+- [x] OF1：核对受管 MIME 软链接和 Codex 的格式声明，显式将文档设为 AbiWord、表格设为 Gnumeric，并保留原有协议与其他关联。
+- [x] OF2：完整 liu-bigpc 系统/HM 构建，隔离和当前会话14项默认关联核验、GIO查询、旧配置备份及动态 MIME 即时修复；维护手册与总纲。
+- [ ] OF3：用户在文件管理器双击现有 DOCX/表格，确认实际打开应用符合预期。
+
+完整系统 `/nix/store/9cp393rafkqvs3i3h72xlmyrf5msisrd-nixos-system-liu-bigpc-26.11.20260922.b6c98e9`
+及 HM `/nix/store/sz560x2x42lg5myvsllmza812hc5p0h9-home-manager-generation` 构建通过。
+原有8项默认关联逐项保持；14项文档/表格 xdg-mime 查询通过，GIO DOCX/XLSX/CSV
+确认 AbiWord/Gnumeric。ABIWord OpenXML导入插件与Gnumeric Excel插件均存在，
+未打开/修改用户文档，不将查询结果当成格式保真或实际窗口验收。
+核对 HM 备份环境、现有 pen-scroll ExecStart/组、input/uinput、内核与udev求值。
+本次仅即时更新已备份的用户动态 MIME 文件，未执行系统switch；Nix声明保证下次
+正常应用仍保持默认应用。MIME反哺脚本保留宏表格类型键名大小写。
+证据留 `/tmp/office-mime-20261031/`。阶段OF剩1项OF3：用户双击文件确认。

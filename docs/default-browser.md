@@ -1,5 +1,25 @@
 # 默认浏览器
 
+## 文档与表格默认应用（2026-10-31）
+
+Office 默认关联同样由 `home-manager/home.nix` 的 `xdg.mimeApps` 声明。
+此前未显式指定 DOCX/XLSX/CSV 等类型，Codex 官方 desktop 又声明支持这些格式，
+因此桌面会回退选择 Codex。`~/.config/mimeapps.list` 与旧位置的同名文件由
+Home Manager 软链接管理，文件管理器右键修改可能失败或在下一次激活时被覆盖。
+
+现已显式设置 DOCX、DOC、ODT、RTF、ABW 为 AbiWord；XLSX、XLS、XLSM、ODS、
+Gnumeric 原生格式、CSV、TSV 为 Gnumeric（desktop ID 为
+`org.gnumeric.gnumeric.desktop`）。不改变网页/磁力/Codex 深链接的现有默认值。
+MIME 增量反哺脚本保留 MIME 键名大小写，避免 XLSM 的 `macroEnabled` 被转成不同键。
+
+完整 liu-bigpc 系统/HM generation 构建通过，生成配置的14项关联及原有条目均核验。
+当前会话已备份旧配置并原子替换用户动态 MIME 文件；14项 `xdg-mime` 查询通过，
+GIO 对 DOCX、XLSX、CSV 的默认应用查询与声明一致，无需为此立即系统 switch。
+下次正常 switch 会重新建立包含这些声明的受管软链接；未打开或修改用户文档。
+本地备份与验证结果留 `/tmp/office-mime-20261031/`。
+
+## 默认浏览器历史记录
+
 Home Manager 明确将 `http`、`https`、HTML 和 XHTML 的默认应用设为 `zen.desktop`。
 Codex/ChatGPT 官方桌面入口同时声明了普通 `http/https`；之前直接复制该入口，
 而配置只有磁力和种子默认应用，网页协议会回退选择关联缓存中的 ChatGPT。
