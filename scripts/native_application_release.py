@@ -93,15 +93,15 @@ def replace_command(old, package, frontend):
     return changed, [str(Path(arguments[0]).parent.parent), previous]
 
 
-def namespace_package(state, package):
+def namespace_package(state, package, *, required=False):
     database=private(Path(state)/'core.db')
     with closing(sqlite3.connect(database.as_uri()+'?mode=ro',uri=True)) as db:
-        if not db.execute("SELECT 1 FROM sqlite_schema WHERE name='workspace_namespace_state'").fetchone():return
-        row=db.execute('SELECT version FROM workspace_namespace_state WHERE singleton=1').fetchone()
-    if row is None:return
+        exists=db.execute("SELECT 1 FROM sqlite_schema WHERE name='workspace_namespace_state'").fetchone()
+        row=db.execute('SELECT version FROM workspace_namespace_state WHERE singleton=1').fetchone() if exists else None
+    if row is None and not required:return
     marker=Path(package)/'share/tag-all/workspace-namespace'
-    if row[0]!='canonical-v2' or not marker.is_file() or marker.read_text()!='canonical-v2\n':
-        raise ValueError('Current database requires a canonical namespace program; forward recovery required')
+    if (row is not None and row[0]!='canonical-v2') or not marker.is_file() or marker.read_text()!='canonical-v2\n':
+        raise ValueError('Canonical namespace program required before migration or forward recovery')
 
 
 class Manager:

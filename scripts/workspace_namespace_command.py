@@ -9,11 +9,12 @@ from dataclasses import replace
 import importlib
 import json
 import re
+import shlex
 from pathlib import Path
 import sys
 
 from application_entry_transaction import private,digest
-from native_application_release import Manager,fixed_scope as application_scope
+from native_application_release import Manager,namespace_package,fixed_scope as application_scope
 from workspace_namespace_transaction import Cutover,fixed_scope
 
 DRIVER_FILES=('workspace_namespace_release.py','workspace_namespace_plan.py','workspace_namespace_store.py','workspace_namespace_references.py','workspace_namespace_identities.py','workspace_namespace_layout.py','workspace_namespace_journals.py')
@@ -42,6 +43,12 @@ def controller(name,product):
     scope=fixed_scope(name);base=application_scope(name)
     # NUC read-only services and their state are outside this migration.
     manager=Manager(replace(base,units=scope.units,states=(scope.state,),connections=base.connections[:1],probes=base.probes[:1]))
+    executable=Path(shlex.split(manager.unit_input(scope.units[0])['command'])[0])
+    if not re.fullmatch(r'/nix/store/[a-z0-9]{32}-[^/]+/bin/tag-all-core',str(executable)):
+        raise ValueError('Fixed installed workspace core required')
+    # A legacy DB does not yet demand the new marker for ordinary releases.
+    # This cutover does: stage the supporting program before preparing it.
+    namespace_package(scope.state,executable.parent.parent,required=True)
     apply,status=product.ports(scope.state/'core.db')
     return Cutover(scope,manager,apply,status)
 

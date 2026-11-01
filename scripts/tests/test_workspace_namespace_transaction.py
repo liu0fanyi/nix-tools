@@ -198,6 +198,17 @@ class CutoverTests(unittest.TestCase):
 
 
 class NamespaceProgramTests(unittest.TestCase):
+    def test_cutover_requires_supporting_program_even_before_namespace_table_exists(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);database=root/'core.db'
+            with closing(sqlite3.connect(database)) as db, db:db.execute('CREATE TABLE notes(body TEXT)')
+            database.chmod(0o600);package=root/'package';package.mkdir()
+            namespace_package(root,package)
+            with self.assertRaisesRegex(ValueError,'before migration'):namespace_package(root,package,required=True)
+            marker=package/'share/tag-all/workspace-namespace';marker.parent.mkdir(parents=True);marker.write_text('canonical-v2\n')
+            namespace_package(root,package,required=True)
+            with closing(sqlite3.connect(database)) as db, db:self.assertFalse(db.execute("SELECT 1 FROM sqlite_schema WHERE name='workspace_namespace_state'").fetchone())
+
     def test_legacy_program_is_refused_after_path_commit_and_new_program_keeps_current_data(self):
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder);database=root/'core.db'

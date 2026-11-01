@@ -339,6 +339,6 @@ PC与NUC以独立namespace服务根切换；实体dufs-lan和Art/project/Home源
 
 产品冻结driver提供同快照SQLite/URL迁移和纯十四文件配置计划；本仓workspace_namespace_command与workspace_namespace_transaction负责固定主机、输入SHA、原发布器服务端口、实例/执行器锁、私有备份、停服/激活和journal。提交前允许取消并恢复配置；提交后仅同计划向前恢复，不恢复数据库。失败保留自有Upholds抑制，不影响NUC readonly。实际namespace回执存在时，普通程序发行/回退也必须检查候选包的canonical-v2能力标记，禁止旧程序忽略新路径状态。
 
-PC浏览器迁移记录只在数据库持久回执确认后发布；提交前配置只暂存该文件，避免App恰好重启时提前迁移会话。提交后中断仍向前恢复并保留新写入。
+prepare/apply前即要求当前受信核心包具有canonical-v2能力标记，即使数据库仍为旧模式也不能漏掉程序预升级。PC浏览器迁移记录只在数据库持久回执确认后发布；提交前配置只暂存该文件，避免App恰好重启时提前迁移会话。提交后中断仍向前恢复并保留新写入。
 
 本轮只实现/合成验收，不接触生产数据/日常profile或切换系统。唯一跨仓计数Tag Browser038/V1–V6，现用nix.105的完成事实保持。
