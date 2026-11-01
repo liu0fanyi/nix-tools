@@ -138,20 +138,28 @@ class Adapter:
         value['phase']='rolled-back';self.m.atomic(receipt,json.dumps(value,ensure_ascii=False))
         return {'phase':'rolled-back','receipt':str(receipt),'data_restored':False}
 
-    def bind_entry_hash(self,i,expected=None,previous_entry=None):
-        text=self.m.regular(self.control,True)
-        if expected is not None and text!=expected:raise ValueError('Startup control changed during directory transaction')
+    def checked_control(self,i,text,previous_entry=None):
         value=json.loads(text)
-        if value.get('root')!=str(ROOT) or value.get('hostname')!='nuc' or value.get('uid')!=1000:
+        if value.get('root')!=str(ROOT.parent) or value.get('hostname')!='nuc' or value.get('uid')!=1000:
             raise ValueError('Fixed native startup control required')
         files=value.get('files',{})
         if str(i['entry']) not in files:raise ValueError('Entry missing from startup binding')
         if previous_entry is not None and files[str(i['entry'])]!=hashlib.sha256(previous_entry.encode()).hexdigest():raise ValueError('Previous entry binding changed')
-        files[str(i['entry'])]=hashlib.sha256(self.m.regular(i['entry'],True).encode()).hexdigest()
+        return value
+
+    def check_startup_binding(self,i):
+        self.checked_control(i,self.m.regular(self.control,True),self.m.regular(i['entry'],True))
+
+    def bind_entry_hash(self,i,expected=None,previous_entry=None):
+        text=self.m.regular(self.control,True)
+        if expected is not None and text!=expected:raise ValueError('Startup control changed during directory transaction')
+        value=self.checked_control(i,text,previous_entry)
+        value['files'][str(i['entry'])]=hashlib.sha256(self.m.regular(i['entry'],True).encode()).hexdigest()
         self.m.atomic(self.control,json.dumps(value,ensure_ascii=False,indent=2)+'\n')
 
     def apply(self,rows):
         i=self.d.installation();rows=self.d.validate(checked_rows(rows),i)
+        self.check_startup_binding(i)
         self.idle_only=True
         try:self.d.apply()
         except IdleVerified:pass
@@ -184,9 +192,10 @@ def main():
     else:
         if not args.inventory:raise ValueError('Inventory required')
         rows=checked_rows(json.loads(m.regular(args.inventory,True))['roots']);i=adapter.d.installation();adapter.d.validate(rows,i)
+        adapter.check_startup_binding(i)
         if args.apply:
             with adapter.d.lock():result=adapter.apply(rows)
-        else:result={'activated':False,'roots':len(rows),'legacy_prefixes_preserved':True,'can_apply':adapter.d.inspect()['canApply']}
+        else:result={'activated':False,'roots':len(rows),'legacy_prefixes_preserved':True,'startup_binding_verified':True,'can_apply':adapter.d.inspect()['canApply']}
     print(json.dumps(result,ensure_ascii=False))
 
 if __name__=='__main__':main()

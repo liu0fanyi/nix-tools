@@ -49,7 +49,7 @@ class NucDirectoryScope(unittest.TestCase):
     def test_startup_binding_updates_only_reviewed_entry(self):
         with tempfile.TemporaryDirectory() as raw:
             a,i,entry,receipt,calls=self.fixture(raw)
-            value={'root':str(n.ROOT),'hostname':'nuc','uid':1000,'files':{str(entry):'old','/unrelated':'keep'},'other':'keep'}
+            value={'root':'/home/liou/.local/share/tag-all/nuc-native','hostname':'nuc','uid':1000,'files':{str(entry):'old','/unrelated':'keep'},'other':'keep'}
             m.atomic(a.control,json.dumps(value));a.bind_entry_hash(i);actual=json.loads(a.control.read_text())
             self.assertEqual(actual['files'][str(entry)],hashlib.sha256(entry.read_bytes()).hexdigest());self.assertEqual(actual['files']['/unrelated'],'keep');self.assertEqual(actual['other'],'keep')
             value['root']='/wrong';m.atomic(a.control,json.dumps(value))
@@ -57,7 +57,7 @@ class NucDirectoryScope(unittest.TestCase):
     def test_startup_binding_rejects_concurrent_or_unbound_entry(self):
         with tempfile.TemporaryDirectory() as raw:
             a,i,entry,receipt,calls=self.fixture(raw)
-            value={'root':str(n.ROOT),'hostname':'nuc','uid':1000,'files':{str(entry):'unbound'}}
+            value={'root':'/home/liou/.local/share/tag-all/nuc-native','hostname':'nuc','uid':1000,'files':{str(entry):'unbound'}}
             m.atomic(a.control,json.dumps(value));before=a.control.read_text()
             with self.assertRaises(ValueError):a.bind_entry_hash(i,before+'changed')
             with self.assertRaises(ValueError):a.bind_entry_hash(i,before,'previous entry')
@@ -66,6 +66,15 @@ class NucDirectoryScope(unittest.TestCase):
         with tempfile.TemporaryDirectory() as raw:
             a,i,entry,receipt,calls=self.fixture(raw);a.restore(receipt,restart=False)
             self.assertEqual(entry.read_text(),'old configuration');self.assertEqual(calls,[[m.SYSTEMCTL,'--user','daemon-reload']])
+    def test_preflight_checks_real_global_control_scope_and_current_entry_before_writes(self):
+        with tempfile.TemporaryDirectory() as raw:
+            a,i,entry,receipt,calls=self.fixture(raw)
+            value={'root':'/home/liou/.local/share/tag-all/nuc-native','hostname':'nuc','uid':1000,'files':{str(entry):hashlib.sha256(entry.read_bytes()).hexdigest()}}
+            m.atomic(a.control,json.dumps(value));a.check_startup_binding(i)
+            for bad in [dict(value,root=str(n.ROOT)),dict(value,files={str(entry):'wrong'})]:
+                m.atomic(a.control,json.dumps(bad))
+                with self.assertRaises(ValueError):a.check_startup_binding(i)
+            self.assertEqual(calls,[])
     def test_backup_cannot_expand_configuration_scope(self):
         with tempfile.TemporaryDirectory() as raw:
             a,i,entry,receipt,calls=self.fixture(raw);value=json.loads(receipt.read_text());value['before']['/unrelated']='forbidden';m.atomic(receipt,json.dumps(value))

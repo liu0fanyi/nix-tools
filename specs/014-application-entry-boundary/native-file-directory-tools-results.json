@@ -1,16 +1,32 @@
 {
   "helper": "/nix/store/lmpn9b1q5b4fcmlx3hx8ggc1lpzh8zzm-tag-workspace-directories-helper.py",
   "helper_sha256": "807de607bbefe3a55e94bea62221e4a0531f976643c0b5874ea8f5e817249228",
-  "installer": "/nix/store/zxwvm9j7dj4zsqidw9kr82l1f2knffl6-tag-native-shared-directories.py",
-  "installer_sha256": "dd8cbd9d1d5877aff44a15f76c09942f377aa4896880b401f9005ca84e80a4a8",
+  "installer": "/nix/store/y160pax23p3h3r712k1ymbzrp4v4ww1d-tag-native-shared-directories.py",
+  "installer_sha256": "6212bd997d4f5b85de39a8aeab1ca1d50de204420190ff39c88b43b8154e6a89",
   "same_as_packaged_browser_helper": true,
   "browser_not_in_helper_closure": true,
-  "installer_tests": 10,
-  "installer_test_log_sha256": "8b5a823e1d62d9a7abe618ad33b0702565011377e780cd4300f34d369ec364c7",
-  "stage": "fixed installation tools and rollback guards verified; final directory activation pending",
+  "installer_tests": 11,
+  "installer_test_log_sha256": "69667db207d3f8daa729f8125b5fd3ec50a1cd21168d36cfda60bde9b22f5992",
+  "stage": "NUC private 17 roots activated; PC Home temporarily disabled pending backend symlink privacy correction",
   "gc_roots": {
     "directory_tools_gc_rooted": true,
-    "outputs": 2
+    "outputs": 3,
+    "latest_installer_gc_rooted": true,
+    "initial_installer_retained": true
   },
-  "source_sha256": "dd8cbd9d1d5877aff44a15f76c09942f377aa4896880b401f9005ca84e80a4a8"
+  "source_sha256": "6212bd997d4f5b85de39a8aeab1ca1d50de204420190ff39c88b43b8154e6a89",
+  "nuc_preview": {
+    "activated": false,
+    "roots": 17,
+    "legacy_prefixes_preserved": true,
+    "startup_binding_verified": true,
+    "can_apply": true
+  },
+  "nuc_activation": {
+    "phase": "activated",
+    "receipt": "/home/liou/.local/state/tag-workspace-directories/nuc-private/release-0673c794a6c74b4c87828515e8a279bc.json",
+    "roots": 17,
+    "unavailable": [],
+    "data_restored": false
+  }
 }
