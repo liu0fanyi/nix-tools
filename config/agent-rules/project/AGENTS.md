@@ -158,9 +158,9 @@ SDK、image、历史 ZIP 默认按原格式备份并记录来源与 SHA256，不
 | `android-app-kit` | Android 组件库 | ✅ github:android-app-kit |
 | `dufs-client-rs` | DUFS 客户端 | ✅ github:dufs-client-rs |
 | `quick-note` | 手机速记 PWA（零依赖 textarea，CAS 写 `/todos/a-杂鱼整理.md`） | ✅ github:quick-note（private） |
-| `bevy-env` | Bevy 工程环境仓（5 个既有活动子仓库；新学习规划筹备中） | ✅ github:bevy-env |
+| `bevy-env` | Bevy 工程环境仓（6 个活动子仓库；学习规划尚未上线） | ✅ github:bevy-env |
 
-#### `bevy-env/` 下 5 个既有活动子仓库
+#### `bevy-env/` 下 6 个活动子仓库
 
 | 子仓库 | 说明 | 远程 |
 | --- | --- | --- |
