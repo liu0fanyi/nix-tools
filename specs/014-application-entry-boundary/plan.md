@@ -380,3 +380,7 @@ nix.83消费者Constitution Check：只更新tag-browser-src锁及本项发行�
 浏览器nix.103配套Constitution Check：复核工作区与本仓约束，产品027/SHR独占发行计数；仅浏览器源码输入锁及安装证据，核对完整PC/HM、五应用精确缓存和可信签名，服务模板/其余输入及应用Pin保持，不执行system switch、服务激活或profile/数据写入。
 
 浏览器nix.104配套Constitution Check：复核工作区/本仓约束，产品027/OSUR独占发行计数；仅浏览器源码输入锁及安装证据，核对完整PC/HM、五应用精确缓存和可信签名，其余输入/服务模板/应用Pin保持，不执行system switch、服务激活或profile/数据写入。
+
+本轮nix.105发行Constitution Check：唯一发行计数归Tag Browser038/P1–P4。复用已验39步/真实私有挂载的固定CLI与App目录助手，只新增NUC私有工作区适配，保持旧逻辑前缀、节点/数据身份和只读区目录映射；配置回退先于程序回退，不恢复数据。按原native-release发布应用/网页，PC Home经App助手应用，普通系统/HM只构建不switch。无外部参考引入，独立应用和其他Pin保持。
+
+目录配置发行补正：NUC安装器复用正式App助手的声明/校验/后台任务与配置事务，额外仅绑定固定私有入口的native-nuc-control.json中该entry摘要。实际node.toml未声明locations时沿后端隐式default规则读取，不写回配置；五项自有配置回退（entry、registry、两项40覆盖、原启动控制），先回退目录再回退程序。控制文件其他键/输入摘要和只读域保持；中断及外部漂移拒绝覆盖。此前目录应用拒绝均已恢复配置，数据库未恢复；最终激活另按实际证据记录。
