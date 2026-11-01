@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "source_commit": "f098f53",
+  "transaction_tests": 13,
+  "original_release_tests": 3,
+  "installed_packages": {
+    "manager": "/nix/store/5xcw726a51qn40cj2vd0nq0141jnz0yr-tag-native-release-manager",
+    "driver": "/nix/store/8b8043kh193gh269p2hya657wgd2plvb-tag-workspace-namespace-driver",
+    "installed_source_bytes_verified": true,
+    "driver_imports": 7,
+    "production_accessed": false
+  },
+  "unit_candidates": {
+    "passed": true,
+    "pc_units": "/nix/store/07j31f5cd61q5jlcnr9dzy9myg1j79kr-canonical-pc-unit-candidate",
+    "nuc_units": "/nix/store/cjkpgv4971ai4w2igiy5lfw197fgbrfw-tag-all-native-nuc-candidate",
+    "physical_app_sources_preserved": true,
+    "readonly_unchanged": true,
+    "activated": false,
+    "full_system_build": false,
+    "binary_is_previous_tested_package": true
+  },
+  "production_prepared": false,
+  "production_activated": false,
+  "database_restored": false,
+  "daily_profile_used": false,
+  "system_switched": false
+}
