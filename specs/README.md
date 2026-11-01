@@ -3,7 +3,7 @@
 ## 当前情况
 - [DiskTree图形版0.11.0已固定官方包，Niri样例窗口及完整系统/HM构建通过，待用户手动应用并试用。](010-host-configuration/tasks.md#disktree-图形版安装阶段-dt2026-11-01)
 - [DOCX等文档默认AbiWord、表格默认Gnumeric已即时修复，14项关联及完整系统/HM构建验证通过，待实际双击确认。](010-host-configuration/tasks.md#文档与表格默认应用修复阶段-of2026-10-31)
-- [Tag Browser nix.104统一工作区/收藏状态及异步滚动归属已发行，CI可信签名、五应用缓存及完整PC/HM候选通过；仅浏览器输入锁更新，无服务激活，用户系统安装待执行。](014-application-entry-boundary/tag-browser-nix104-install-results.json)
+- [Tag Browser nix.105制品及PC/NUC配套已上线，NUC17根可用；PC Home已停用等待符号链接隐私修复，完整PC/HM候选已验证，用户安装待执行。](014-application-entry-boundary/tasks.md)
 
 ## 后续计划
 - [手动应用DiskTree配置并试用图形界面（DT3）。](010-host-configuration/tasks.md#disktree-图形版安装阶段-dt2026-11-01)
@@ -17,12 +17,12 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-01 · Validate the global NUC startup binding before directory writes · `96df2d9`
+- 2026-11-01 · Use verified browser directory transactions for NUC shared roots · `a481e2f`
 - 2026-11-01 · Add DiskTree graphical disk usage analyzer · `443c0b3`
 - 2026-10-31 · Use AbiWord and Gnumeric as default document and spreadsheet editors · `1916917`
 - 2026-10-31 · Summarize verified nix.104 browser installation candidate · `a128358`
 - 2026-10-31 · Update Tag Browser to nix.104 with verified installation and caches · `f5af860`
 - 2026-10-31 · Summarize verified nix.103 browser delivery · `c55fa97`
 - 2026-10-31 · Update Tag Browser to nix.103 with verified installation and caches · `525c446`
-- 2026-10-31 · Summarize verified nix.102 browser delivery · `12301af`
-- 2026-10-31 · Update Tag Browser to nix.102 with verified installation and caches · `3d84c76`
 <!-- recent-commits:end -->
