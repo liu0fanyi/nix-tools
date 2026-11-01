@@ -3,7 +3,7 @@
 { config, lib, ... }:
 let
   cfg = config.services.tag-native-stack;
-  mappings = import (tagAllSource + "/nix/workspace-mounts.nix") { inherit lib; inherit (cfg) workspace; mounts = cfg.workspaceMounts; };
+  mappings = import (tagAllSource + "/nix/workspace-mounts.nix") { inherit lib; inherit (cfg) workspace; mounts = cfg.workspaceMounts; recursive = cfg.workspaceMountsRecursive; };
 in {
   imports = [ (tagAllSource + "/nix/home-manager-core.nix") ./native-workspace.nix ];
   options.services.tag-native-stack = {
@@ -25,6 +25,7 @@ in {
     configurationFile = lib.mkOption { type = lib.types.nullOr lib.types.str; default = null; };
     syncMode = lib.mkOption { type = lib.types.enum [ "isolated" "configured" ]; default = "isolated"; };
     environmentFile = lib.mkOption { type = lib.types.nullOr lib.types.str; default = null; };
+    workspaceMountsRecursive = lib.mkOption { type = lib.types.bool; default = true; };
     workspaceMounts = lib.mkOption { type = lib.types.attrsOf lib.types.str; default = {}; };
   };
   options.services.tag-native-stack.peer = lib.mkOption {
@@ -34,7 +35,7 @@ in {
   config = lib.mkIf cfg.enable {
     services.tag-all-core = {
       enable = true;
-      inherit (cfg) package pdfContainer processingContainers toolRuntime workspace nodeId configurationFile syncMode environmentFile workspaceMounts;
+      inherit (cfg) package pdfContainer processingContainers toolRuntime workspace nodeId configurationFile syncMode environmentFile workspaceMounts workspaceMountsRecursive;
       port = if cfg.applicationEntry then cfg.gatewayPort else cfg.corePort;
       applicationEntry = lib.mkIf cfg.applicationEntry {
         enable = true;

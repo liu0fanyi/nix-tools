@@ -1,5 +1,5 @@
 # Read-only candidate factory. Imported only by the preflight build, never automatically.
-{ tagAllSource, corePackage, frontendRoot, pdfContainer ? null, processingContainers ? null, toolRuntime ? null, applicationEntry ? false }:
+{ tagAllSource, corePackage, frontendRoot, pdfContainer ? null, processingContainers ? null, toolRuntime ? null, applicationEntry ? false, canonicalNamespace ? applicationEntry }:
 { config, lib, pkgs, ... }:
 let
   guard = mode: "${pkgs.python3}/bin/python3 ${../../scripts/native_pc_mode_guard.py} --mode ${mode} --podman ${pkgs.podman}/bin/podman --systemctl ${pkgs.systemd}/bin/systemctl";
@@ -18,8 +18,13 @@ in {
       peerSocket = if applicationEntry then root + "/sockets/peer.sock" else null;
       inherit frontendRoot pdfContainer processingContainers toolRuntime;
       nodeId = "pc";
-      workspace = "/home/liou/dufs-lan";
-      workspaceMounts.project = "/data/project";
+      workspace = if canonicalNamespace then "/home/liou/tag-workspaces/pc" else "/home/liou/dufs-lan";
+      workspaceMountsRecursive = !canonicalNamespace;
+      workspaceMounts = if canonicalNamespace then {
+        dufs = "/home/liou/dufs-lan";
+        project = "/data/project";
+        home = "/home/liou";
+      } else { project = "/data/project"; };
       # Preserve the existing anonymous PC entry, strictly on loopback.
       localAuthentication = "loopback";
       gatewayPort = 5006;

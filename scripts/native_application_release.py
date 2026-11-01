@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Hash-bound native application updates; configuration rollback never restores data."""
-from contextlib import contextmanager
+from contextlib import contextmanager, closing
 from dataclasses import dataclass
 import argparse
 import hashlib
@@ -11,6 +11,7 @@ from pathlib import Path
 import re
 import shlex
 import socket
+import sqlite3
 import subprocess
 import time
 import uuid
@@ -90,6 +91,17 @@ def replace_command(old, package, frontend):
     expected[0] = str(package / 'bin/tag-all-core'); expected[position] = str(frontend)
     if actual != expected: raise ValueError('Unrelated command argument changed')
     return changed, [str(Path(arguments[0]).parent.parent), previous]
+
+
+def namespace_package(state, package):
+    database=private(Path(state)/'core.db')
+    with closing(sqlite3.connect(database.as_uri()+'?mode=ro',uri=True)) as db:
+        if not db.execute("SELECT 1 FROM sqlite_schema WHERE name='workspace_namespace_state'").fetchone():return
+        row=db.execute('SELECT version FROM workspace_namespace_state WHERE singleton=1').fetchone()
+    if row is None:return
+    marker=Path(package)/'share/tag-all/workspace-namespace'
+    if row[0]!='canonical-v2' or not marker.is_file() or marker.read_text()!='canonical-v2\n':
+        raise ValueError('Current database requires a canonical namespace program; forward recovery required')
 
 
 class Manager:
@@ -191,7 +203,7 @@ class Manager:
                 'units': sorted(values.get('Upholds', '').split())}
 
     @contextmanager
-    def suspend_upholding(self, plan):
+    def suspend_upholding(self, plan, *, restore_on_error=True):
         expected = plan.get('upholding')
         if not self.scope.uphold_target:
             if expected is not None: raise ValueError('Unexpected uphold target')
@@ -221,18 +233,27 @@ class Manager:
             private(path.parent, True)
             atomic(path, content)
         self.run(['systemctl', '--user', 'daemon-reload'])
+        finished = False
         try:
             if self.uphold_binding()['units'] != retained: raise ValueError('Core uphold inhibition failed')
             yield
+            finished = True
         finally:
             if private(path).read_text() != content: raise ValueError('Uphold inhibition changed')
-            path.unlink()
-            self.run(['systemctl', '--user', 'daemon-reload'])
-            if self.uphold_binding() != expected: raise ValueError('Original upholding did not recover')
+            if restore_on_error or finished:
+                path.unlink()
+                self.run(['systemctl', '--user', 'daemon-reload'])
+                if self.uphold_binding() != expected: raise ValueError('Original upholding did not recover')
 
     def stopped(self):
         if any(self.properties(unit)['ActiveState'] not in ('inactive', 'failed') for unit in self.scope.units):
             raise ValueError('All scoped core writers must be stopped')
+
+    def namespace_commands(self, commands):
+        for unit,state in zip(self.scope.units,self.scope.states):
+            executable=Path(shlex.split(commands[unit])[0])
+            if executable.name!='tag-all-core' or executable.parent.name!='bin':raise ValueError('Unexpected native command')
+            namespace_package(state,executable.parent.parent)
 
     def plan(self, package, frontend):
         package, frontend = Path(package), Path(frontend)
@@ -248,6 +269,7 @@ class Manager:
             inputs[unit] = self.unit_input(unit)
             commands[unit], old = replace_command(inputs[unit]['command'], package, frontend)
             previous.extend(old)
+        self.namespace_commands(commands)
         pointer = self.scope.release_root / 'current.json'
         if pointer.is_symlink(): raise ValueError('Version pointer symlink refused')
         return {'scope': self.scope.name, 'upholding': upholding, 'units': inputs, 'commands': commands, 'package': str(package),
@@ -312,6 +334,7 @@ class Manager:
             pointer = self.scope.release_root / 'current.json'
             actual = digest(private(pointer)) if pointer.exists() else None
             if actual != plan['pointer_before']: raise ValueError('Current version changed')
+        self.namespace_commands({unit:plan['units'][unit]['command'] if rollback else plan['commands'][unit] for unit in self.scope.units})
         return plan
 
     def targets(self):
@@ -378,6 +401,7 @@ class Manager:
                         atomic(backup / 'results.json', json.dumps(states, indent=2) + '\n')
                         transaction.phase('backed-up' if not rollback else 'rolling-back')
                         changed = True
+                        self.namespace_commands({unit:plan['units'][unit]['command'] if rollback else plan['commands'][unit] for unit in self.scope.units})
                         if not rollback: transaction.phase('installing')
                         transaction.install(rollback=rollback)
                         if rollback: transaction.verify_before()
@@ -396,6 +420,7 @@ class Manager:
                     self.stopped()
                     if changed:
                         if rollback: transaction.phase('rollback-failed'); raise
+                        self.namespace_commands({unit:plan['units'][unit]['command'] for unit in self.scope.units})
                         transaction.install(rollback=True); transaction.verify_before()
                     self.run(['systemctl', '--user', 'daemon-reload'])
                     self.run(['systemctl', '--user', 'start', *self.scope.units])

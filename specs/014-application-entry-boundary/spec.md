@@ -332,3 +332,11 @@ P2完成、剩余0；总体4/5，E5当前2/3，剩余1项P3真实验收与收尾
 默认应用，系统升级保持这一用户选择；未安装该产品的其他主机不改变。MIME 保护
 脚本接受 Tag Browser，其他核心协议保护不变。浏览器侧 DB1/DB2 为唯一阶段计数，
 本仓只验证默认声明、实际桌面入口、完整系统/HM 及原生服务保持；switch 由用户执行。
+
+## 用户授权的规范虚拟根迁移
+
+PC与NUC以独立namespace服务根切换；实体dufs-lan和Art/project/Home源保持原位。候选模板区分实体数据根与服务根，独立应用资产仍来自dufs-lan/dist，readonly域不改。canonical候选使用nonrecursive目录bind，正常目录登记后仍由原助手管理。旧路径兼容要求由用户本轮明确取代，不安装旧URL别名。
+
+产品冻结driver提供同快照SQLite/URL迁移和纯十四文件配置计划；本仓workspace_namespace_command与workspace_namespace_transaction负责固定主机、输入SHA、原发布器服务端口、实例/执行器锁、私有备份、停服/激活和journal。提交前允许取消并恢复配置；提交后仅同计划向前恢复，不恢复数据库。失败保留自有Upholds抑制，不影响NUC readonly。实际namespace回执存在时，普通程序发行/回退也必须检查候选包的canonical-v2能力标记，禁止旧程序忽略新路径状态。
+
+本轮只实现/合成验收，不接触生产数据/日常profile或切换系统。唯一跨仓计数Tag Browser038/V1–V6，现用nix.105的完成事实保持。

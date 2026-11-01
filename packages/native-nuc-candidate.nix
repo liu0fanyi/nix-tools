@@ -1,15 +1,16 @@
 # Produce opt-in user unit files only. This output never activates Home Manager or NixOS.
 { pkgs, homeManagerSource, tagAllSource, package, whisperPackage,
   toolArchive, toolImage, toolSha256, stateRoot ? "/home/liou/.local/share/tag-all/nuc-native",
-  privateWorkspace ? "/home/liou/dufs-lan", readonlyWorkspace ? "/home/liou/dufs",
+  privateDataRoot ? "/home/liou/dufs-lan",
+  privateWorkspace ? (if canonicalNamespace then "/home/liou/tag-workspaces/nuc" else privateDataRoot), readonlyWorkspace ? "/home/liou/dufs",
   media ? "/media/liou", models ? "/home/liou/.local/share/whisper.cpp/models",
   writingSsh ? "/home/liou/.config/dufs-plus/secrets/writing-git",
-  applicationEntry ? false, frontendRoot ? null,
+  applicationEntry ? false, canonicalNamespace ? applicationEntry, frontendRoot ? null,
   applicationNames ? [ "devices" "transcriptions" "recorder-bean" "bevy-game" "bevy-sketch" "project-planner" "quick-note" ] }:
 let
   lib = pkgs.lib;
   applications = map (name: { inherit name; root = "${stateRoot}/private/apps/${name}"; }) applicationNames;
-  appMounts = map (app: "${privateWorkspace}/dist/${app.name}:${app.root}") applications;
+  appMounts = map (app: "${privateDataRoot}/dist/${app.name}:${app.root}") applications;
   entryConfiguration = role: let private = role == "private"; port = if private then 5006 else 5008; in {
     lan = true;
     authorities = map (host: "${host}:${toString port}") [ "nuc.local" "nuc" "192.168.1.12" "localhost" "127.0.0.1" "[::1]" ];
@@ -28,6 +29,7 @@ let
     terminal_socket = "/run/user/1000/ttyd/ttyd.sock";
     inherit applications;
   };
+  privateMounts = if canonicalNamespace then { dufs = privateDataRoot; art = "${media}/Art"; project = "${media}/project"; } else { inherit media; };
   templates = pkgs.formats.toml {};
   command = xs: lib.escapeShellArgs (map (x: lib.replaceStrings [ "%" "$" ] [ "%%" "$$" ] (toString x)) xs);
   instance = role: workspace: port:
@@ -60,7 +62,8 @@ let
             syncMode = if private then "configured" else "isolated";
             configurationFile = "${root}/config/node.toml";
             environmentFile = "${root}/config/service.env";
-            workspaceMounts = lib.optionalAttrs private { inherit media; };
+            workspaceMounts = lib.optionalAttrs private privateMounts;
+            workspaceMountsRecursive = !(private && canonicalNamespace);
             toolRuntime = { image = toolImage; archive = toolArchive; archiveSha256 = toolSha256; stateDirectory = runtime; };
             processingContainers = builtins.listToAttrs (map (name: {
               inherit name; value = { image = toolImage; stateDirectory = "${root}/executors/${name}"; connection = "unix://${runtime}/runtime.sock"; };
@@ -101,7 +104,7 @@ let
     UMask=0077
     NoNewPrivileges=yes
     PrivateUsers=yes
-    ${if write then "BindPaths=${media}:${workspace}/media" else "BindReadOnlyPaths=${workspace}"}
+    ${if write then lib.concatStringsSep "\n" (lib.mapAttrsToList (name: source: "BindPaths=${source}:${workspace}/${name}:norbind") privateMounts) else "BindReadOnlyPaths=${workspace}"}
     ${lib.optionalString (!write) "ReadOnlyPaths=${workspace}"}
     Restart=on-failure
   '';
