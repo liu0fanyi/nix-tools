@@ -489,4 +489,6 @@ nix.103：休眠收藏提示恢复修复已发行，实际多页卸载/点击及
 
 nix.104：工作区/收藏统一打开状态及异步滚动归属已发行。仅tag-browser-src至0cd7538，CI可信签名/latest Pin保留1版、五应用缓存及完整PC/HM候选通过；五模板/default target/恢复顺序、菜单版本和四类MIME保持。见[安装证据](tag-browser-nix104-install-results.json)。唯一发行计数Tag Browser027/OSUR已完成，用户手动安装与实际重开体验独立；未激活服务、修改生产数据或访问日常profile。
 
-本轮nix.105制品、CI及完整PC/HM候选通过，PC/NUC配套已运行最终39步验证的程序，NUC私有17根已激活。PC Home在最终HEAD发现隐藏链接可读后停用（未读配置内容），共享路径解析和索引修复正在原完整门槛中；唯一发行计数Tag Browser038/P仍未收尾，不把当前服务上线等同整轮完成。
+nix.105核验过程（最终已补正，见下）：制品、CI及完整PC/HM候选通过，PC/NUC配套已运行最终39步验证的程序，NUC私有17根已激活。PC Home在最终HEAD发现隐藏链接可读后停用（未读配置内容），当时共享路径解析和索引修复正在原完整门槛中，唯一发行计数Tag Browser038/P尚未收尾；下述最终验证与发行现已完成。
+
+nix.105：正式浏览器及PC/NUC配套服务/网页、PC Home与NUC私有17根目录已验证；完整PC/HM候选、CI可信签名/五应用缓存通过。只变tag-browser-src输入，独立应用和只读目录映射保持；失败目录尝试已恢复配置。唯一发行计数Tag Browser038/P，见[安装/上线证据](tag-browser-nix105-install-results.json)。仍由用户手动switch及正常重开确认；无日常profile访问、DB恢复或NUC编译。

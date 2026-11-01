@@ -3,7 +3,7 @@
 ## 当前情况
 - [DiskTree图形版0.11.0已固定官方包，Niri样例窗口及完整系统/HM构建通过，待用户手动应用并试用。](010-host-configuration/tasks.md#disktree-图形版安装阶段-dt2026-11-01)
 - [DOCX等文档默认AbiWord、表格默认Gnumeric已即时修复，14项关联及完整系统/HM构建验证通过，待实际双击确认。](010-host-configuration/tasks.md#文档与表格默认应用修复阶段-of2026-10-31)
-- [Tag Browser nix.105制品及PC/NUC配套已上线，NUC17根可用；PC Home已停用等待符号链接隐私修复，完整PC/HM候选已验证，用户安装待执行。](014-application-entry-boundary/tasks.md)
+- [Tag Browser nix.105及PC/NUC配套已发行：本机打开、PC Home及NUC17根可用；CI签名/五应用缓存和完整PC/HM候选通过，用户系统安装待执行。](014-application-entry-boundary/tag-browser-nix105-install-results.json)
 
 ## 后续计划
 - [手动应用DiskTree配置并试用图形界面（DT3）。](010-host-configuration/tasks.md#disktree-图形版安装阶段-dt2026-11-01)
