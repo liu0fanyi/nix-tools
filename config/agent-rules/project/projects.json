@@ -39,12 +39,6 @@
       "category": "Bevy"
     },
     {
-      "name": "bevy-project-planner",
-      "root": "/data/project/bevy-env/bevy-project-planner",
-      "aliases": [],
-      "category": "Bevy"
-    },
-    {
       "name": "bevy-sketch",
       "root": "/data/project/bevy-env/bevy-sketch",
       "aliases": [],

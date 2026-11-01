@@ -158,9 +158,9 @@ SDK、image、历史 ZIP 默认按原格式备份并记录来源与 SHA256，不
 | `android-app-kit` | Android 组件库 | ✅ github:android-app-kit |
 | `dufs-client-rs` | DUFS 客户端 | ✅ github:dufs-client-rs |
 | `quick-note` | 手机速记 PWA（零依赖 textarea，CAS 写 `/todos/a-杂鱼整理.md`） | ✅ github:quick-note（private） |
-| `bevy-env` | Bevy 工程环境仓（下辖 5 个子仓库） | ✅ github:bevy-env |
+| `bevy-env` | Bevy 工程环境仓（5 个既有活动子仓库；新学习规划筹备中） | ✅ github:bevy-env |
 
-#### `bevy-env/` 下 5 个独立子仓库
+#### `bevy-env/` 下 5 个既有活动子仓库
 
 | 子仓库 | 说明 | 远程 |
 | --- | --- | --- |
@@ -168,7 +168,9 @@ SDK、image、历史 ZIP 默认按原格式备份并记录来源与 SHA256，不
 | `bevy-sketch` | 画布/绘图 | ✅ github:bevy-sketch |
 | `bevy-app-foundation` | 共享应用基础层 | ✅ github:bevy-app-foundation |
 | `bevy-canvas-kit` | 画布组件库 | ✅ github:bevy-canvas-kit（private） |
-| `bevy-project-planner` | 项目进展看板 | ✅ github:bevy-project-planner（private） |
+| `bevy-colony` | 独立殖民地游戏 | 本地 Git，未配置远程 |
+
+旧 `bevy-project-planner` 已于2026-11-01按用户选择退役，本机完整工作目录归档至 `/data/project/.retired/bevy-project-planner-20261101/`，原私有远程保留；不再恢复构建/部署入口或中央活动登记。NUC旧产物与用户文档继续保护。`bevy-learning-map` 为本轮新建的独立学习规划筹备仓，尚无程序或部署。
 
 #### `xiaoqiang/` 主要 Git 工作目录
 
@@ -237,7 +239,8 @@ Git 历史：
 ├── bevy-sketch/
 ├── bevy-game/
 ├── bevy-canvas-kit/
-└── bevy-project-planner/
+├── bevy-app-foundation/
+└── bevy-colony/
 ```
 
 不要从 NUC 上的历史 `bevy-env` checkout 构建或部署，也不要让 `dufs-plus`
@@ -247,7 +250,6 @@ Git 历史：
 just deploy-sketch
 just deploy-game
 just deploy-game-app <app>
-just deploy-planner
 just deploy
 ```
 
@@ -263,7 +265,7 @@ just deploy
 - dufs-plus只同步自己的dist内容，必须排除`bevy-sketch/`、`bevy-game/`和`project-planner/`，不得覆盖Bevy产物。
 
 文件浏览器为`http://nuc.local:5006/#/`；独立应用直接使用`/dist/`路径：
-`/dist/project-planner/`、`/dist/bevy-sketch/index.html?...`、`/dist/bevy-game/<app>/`、
+`/dist/bevy-sketch/index.html?...`、`/dist/bevy-game/<app>/`、
 `/dist/quick-note/`，不能套用文件浏览器的`#/`路由。只有用户明确要求本地调试时才启动
 临时预览端口。
 

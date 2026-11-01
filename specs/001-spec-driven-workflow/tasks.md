@@ -41,3 +41,7 @@
 - [x] G3 白名单差异、链接、目标和xiaoqiang未变核验，提交推送后同步根projects摘要。
 
 当前3/3，剩余0项。32仓盘点、25仓59文件规则修订、21仓远程推送/4仓本地提交完成；24个薄同步入口与8项发布边界测试通过。根projects的33文件摘要/权限回验及36项个人资料保护通过，10个xiaoqiang仓库HEAD/工作树状态未变。证据归入workspace-overview-results.json。无产品部署、硬件操作或用户资料清理。
+
+## 旧 Planner 退役登记（2026-11-01）
+
+- [x] RP1 按用户退役选择从 config/agent-rules/project/projects.json 移除活动登记，更新根AGENTS活动清单和构建入口规则；本机归档/删除与缓存验证归bevy-env/specs/004-retire-planner，不重复计数。不删除NUC旧摘要/产物、用户文档或GitHub仓库。
