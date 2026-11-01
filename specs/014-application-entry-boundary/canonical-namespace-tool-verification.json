@@ -1,10 +1,10 @@
 {
   "schema": 1,
-  "source_commit": "f098f53",
-  "transaction_tests": 13,
+  "source_commit": "2e5b132",
+  "transaction_tests": 16,
   "original_release_tests": 3,
   "installed_packages": {
-    "manager": "/nix/store/5xcw726a51qn40cj2vd0nq0141jnz0yr-tag-native-release-manager",
+    "manager": "/nix/store/fkz9idgp15689b62yqsrqfp503c1lbf1-tag-native-release-manager",
     "driver": "/nix/store/8b8043kh193gh269p2hya657wgd2plvb-tag-workspace-namespace-driver",
     "installed_source_bytes_verified": true,
     "driver_imports": 7,
@@ -24,5 +24,7 @@
   "production_activated": false,
   "database_restored": false,
   "daily_profile_used": false,
-  "system_switched": false
+  "system_switched": false,
+  "browser_record_published_after_database_commit": true,
+  "supporting_core_required_and_gc_rooted_before_prepare": true
 }

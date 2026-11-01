@@ -3,7 +3,7 @@
 ## 当前情况
 - [DiskTree图形版0.11.0已固定官方包，Niri样例窗口及完整系统/HM构建通过，待用户手动应用并试用。](010-host-configuration/tasks.md#disktree-图形版安装阶段-dt2026-11-01)
 - [DOCX等文档默认AbiWord、表格默认Gnumeric已即时修复，14项关联及完整系统/HM构建验证通过，待实际双击确认。](010-host-configuration/tasks.md#文档与表格默认应用修复阶段-of2026-10-31)
-- [规范虚拟根切换事务已实现，13项事务测试和原发行器3项通过，两端服务单元候选未激活；Tag Browser nix.105及PC/NUC配套已发行：本机打开、PC Home及NUC17根可用；CI签名/五应用缓存和完整PC/HM候选通过，用户系统安装待执行。](014-application-entry-boundary/tag-browser-nix105-install-results.json)
+- [规范虚拟根切换事务已实现，16项事务测试和原发行器3项通过，两端服务单元候选未激活；Tag Browser nix.105及PC/NUC配套已发行：本机打开、PC Home及NUC17根可用；CI签名/五应用缓存和完整PC/HM候选通过，用户系统安装待执行。](014-application-entry-boundary/tag-browser-nix105-install-results.json)
 
 ## 后续计划
 - [手动应用DiskTree配置并试用图形界面（DT3）。](010-host-configuration/tasks.md#disktree-图形版安装阶段-dt2026-11-01)
@@ -17,12 +17,12 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-01 · Root the staged core package with prepared namespace inputs · `2e5b132`
+- 2026-11-01 · Require the canonical-capable core before preparing path migration · `d601088`
+- 2026-11-01 · Publish browser path migration records only after database commit · `a1856f2`
+- 2026-11-01 · Count the independent learning map among active Bevy repositories · `b80aafe`
 - 2026-11-01 · Coordinate canonical workspace cutovers without restoring databases · `f098f53`
 - 2026-11-01 · Register the independent directory learning map project · `3e5e465`
 - 2026-11-01 · Remove the retired Planner from active project registration · `3c48929`
 - 2026-11-01 · Validate the global NUC startup binding before directory writes · `96df2d9`
-- 2026-11-01 · Use verified browser directory transactions for NUC shared roots · `a481e2f`
-- 2026-11-01 · Add DiskTree graphical disk usage analyzer · `443c0b3`
-- 2026-10-31 · Use AbiWord and Gnumeric as default document and spreadsheet editors · `1916917`
-- 2026-10-31 · Summarize verified nix.104 browser installation candidate · `a128358`
 <!-- recent-commits:end -->
