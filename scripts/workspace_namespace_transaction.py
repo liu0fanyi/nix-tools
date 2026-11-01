@@ -227,10 +227,17 @@ class Cutover:
                         atomic(release/'backup-results.json',encode(result))
                     self.directories(plan['roots'])
                     try:
-                        transaction.install();transaction.verify_after()
-                        self.startup_inputs(plan)
+                        # A new App may start while services are inhibited. Never
+                        # expose its session migration record before SQLite commits.
+                        deferred={name for name in self.scope.targets if self.scope.name=='pc' and name.name=='namespace-migration.json'}
+                        if status=='legacy':
+                            transaction.install(exclude=deferred)
+                            before={str(name):transaction.load()['records'][str(name)]['before'] for name in deferred}
+                            transaction.verify_after(before)
+                            self.startup_inputs(plan)
                         self.apply_database(plan)
                         if self.database_status(plan)!='applied-expected':raise ValueError('Namespace database receipt missing')
+                        transaction.install();transaction.verify_after()
                         transaction.phase('database-migrated')
                     except BaseException:
                         # Inspect the receipt, including a crash after SQLite

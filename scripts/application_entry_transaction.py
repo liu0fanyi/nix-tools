@@ -162,9 +162,12 @@ class ConfigurationTransaction:
                 if path.exists() or path.is_symlink(): raise ValueError('Removed destination returned')
             else: raise ValueError('Unknown installed kind')
 
-    def install(self, rollback=False):
+    def install(self, rollback=False, *, exclude=()):
+        excluded = {str(Path(path)) for path in exclude}
+        if not excluded.issubset(self.allowed): raise ValueError('Deferred target is outside the transaction')
         value = self.load()
         for name, record in value['records'].items():
+            if name in excluded: continue
             path = Path(name); desired = record['before' if rollback else 'after']
             if desired['kind'] == 'file':
                 source = self.directory / 'before' / desired['saved'] if rollback else Path(desired['source'])
@@ -181,4 +184,4 @@ class ConfigurationTransaction:
                     if path.is_dir() and not path.is_symlink(): raise ValueError('Refusing directory removal')
                     path.unlink()
             else: raise ValueError('Unknown journal kind')
-        self.phase('configuration-restored' if rollback else 'configuration-installed')
+        self.phase('configuration-restored' if rollback else 'configuration-staged' if excluded else 'configuration-installed')

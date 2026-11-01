@@ -1,4 +1,4 @@
-from contextlib import contextmanager
+from contextlib import contextmanager, closing
 import json
 from pathlib import Path
 from types import SimpleNamespace
@@ -43,7 +43,7 @@ class CutoverTests(unittest.TestCase):
         self.state=root/'state';self.state.mkdir(mode=0o700)
         create_lock(self.state/'instance.lock')
         self.db=self.state/'core.db'
-        with sqlite3.connect(self.db) as db:
+        with closing(sqlite3.connect(self.db)) as db, db:
             db.executescript('CREATE TABLE namespace(version TEXT); CREATE TABLE notes(body TEXT); INSERT INTO notes VALUES("original");')
         self.db.chmod(0o600)
         self.a=root/'a.conf';atomic(self.a,'old-a')
@@ -52,13 +52,13 @@ class CutoverTests(unittest.TestCase):
         self.manager=FakeManager(self.scope)
         self.fail=None
         def status(plan):
-            with sqlite3.connect(self.db) as db:row=db.execute('SELECT version FROM namespace').fetchone()
+            with closing(sqlite3.connect(self.db)) as db, db:row=db.execute('SELECT version FROM namespace').fetchone()
             return 'applied-expected' if row==('canonical-v2',) else 'legacy' if row is None else 'other'
         def apply(plan):
             self.manager.stopped()
             if status(plan)=='applied-expected':return
             if self.fail=='before':raise RuntimeError('synthetic before commit')
-            with sqlite3.connect(self.db) as db:db.execute('INSERT INTO namespace VALUES("canonical-v2")')
+            with closing(sqlite3.connect(self.db)) as db, db:db.execute('INSERT INTO namespace VALUES("canonical-v2")')
             if self.fail=='after':raise SystemExit('synthetic after commit')
         self.cutover=Cutover(self.scope,self.manager,apply,status)
         self.plan={'schema':1,'scope':'pc','namespace':str(self.scope.namespace),'roots':['dufs','project','home'],
@@ -66,6 +66,41 @@ class CutoverTests(unittest.TestCase):
                        str(self.a):{'before_sha256':digest(self.a),'after':'new-a'},
                        str(self.b):{'before_sha256':None,'after':'new-b'}}}
         self.release=self.cutover.prepare(self.plan)
+    def browser_record(self, previous=None):
+        from dataclasses import replace
+        old=self.b;self.b=old.with_name('namespace-migration.json')
+        if previous is not None:atomic(self.b,previous)
+        self.scope=replace(self.scope,targets=frozenset([self.a,self.b]))
+        self.cutover.scope=self.scope
+        self.plan['files'][str(self.b)]=self.plan['files'].pop(str(old))
+        self.plan['files'][str(self.b)]['before_sha256']=digest(self.b) if previous is not None else None
+        self.release=self.cutover.prepare(self.plan)
+
+    def test_browser_record_is_not_visible_until_database_receipt_commits(self):
+        self.browser_record()
+        original=self.cutover.apply_database
+        def apply(plan):
+            self.assertFalse(self.b.exists(),'App must not migrate before the DB commits')
+            original(plan)
+        self.cutover.apply_database=apply
+        self.cutover.apply(self.release,editors_saved=True)
+        self.assertEqual(self.b.read_text(),'new-b')
+        self.assertEqual(self.cutover.database_status(self.plan),'applied-expected')
+
+    def test_browser_record_preserves_old_receipt_on_failure_then_recovers_forward(self):
+        self.browser_record('previous-browser-record')
+        self.fail='before'
+        with self.assertRaises(RuntimeError):self.cutover.apply(self.release,editors_saved=True)
+        self.assertEqual(self.b.read_text(),'previous-browser-record')
+        self.fail='after'
+        with self.assertRaises(SystemExit):self.cutover.apply(self.release,editors_saved=True)
+        self.assertEqual(self.cutover.database_status(self.plan),'applied-expected')
+        self.assertEqual(self.b.read_text(),'previous-browser-record')
+        with closing(sqlite3.connect(self.db)) as db, db:db.execute('INSERT INTO notes VALUES("after receipt")')
+        self.fail=None;self.cutover.apply(self.release,editors_saved=True)
+        self.assertEqual(self.b.read_text(),'new-b')
+        with closing(sqlite3.connect(self.db)) as db, db:self.assertEqual(db.execute('SELECT body FROM notes').fetchall(),[('original',),('after receipt',)])
+
     def test_preparation_retry_completes_missing_stage_files_and_never_accepts_changed_bytes(self):
         staged=self.release/'file-0';staged.unlink()
         self.assertEqual(self.cutover.prepare(self.plan),self.release)
@@ -104,16 +139,16 @@ class CutoverTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):self.cutover.apply(self.release,editors_saved=True)
         self.assertEqual(self.a.read_text(),'old-a');self.assertFalse(self.b.exists())
         self.assertTrue(self.manager.inhibited);self.assertFalse(self.manager.active)
-        with sqlite3.connect(self.db) as db:self.assertEqual(db.execute('SELECT * FROM namespace').fetchall(),[])
+        with closing(sqlite3.connect(self.db)) as db, db:self.assertEqual(db.execute('SELECT * FROM namespace').fetchall(),[])
     def test_commit_then_interruption_recovers_forward_and_keeps_new_writes(self):
         self.fail='after'
         with self.assertRaises(SystemExit):self.cutover.apply(self.release,editors_saved=True)
         self.assertEqual(self.a.read_text(),'new-a');self.assertEqual(self.b.read_text(),'new-b')
         self.assertTrue(self.manager.inhibited)
-        with sqlite3.connect(self.db) as db:db.execute('INSERT INTO notes VALUES("new after cutover")')
+        with closing(sqlite3.connect(self.db)) as db, db:db.execute('INSERT INTO notes VALUES("new after cutover")')
         self.fail=None
         self.cutover.apply(self.release,editors_saved=True)
-        with sqlite3.connect(self.db) as db:self.assertEqual(db.execute('SELECT body FROM notes').fetchall(),[('original',),('new after cutover',)])
+        with closing(sqlite3.connect(self.db)) as db, db:self.assertEqual(db.execute('SELECT body FROM notes').fetchall(),[('original',),('new after cutover',)])
         self.assertFalse(self.manager.inhibited)
     def test_external_configuration_edit_refuses_forward_recovery(self):
         self.fail='after'
@@ -166,14 +201,14 @@ class NamespaceProgramTests(unittest.TestCase):
     def test_legacy_program_is_refused_after_path_commit_and_new_program_keeps_current_data(self):
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder);database=root/'core.db'
-            with sqlite3.connect(database) as db:db.execute('CREATE TABLE workspace_namespace_state(singleton INTEGER PRIMARY KEY,version TEXT)')
+            with closing(sqlite3.connect(database)) as db, db:db.execute('CREATE TABLE workspace_namespace_state(singleton INTEGER PRIMARY KEY,version TEXT)')
             database.chmod(0o600);package=root/'package';package.mkdir()
             namespace_package(root,package)
-            with sqlite3.connect(database) as db:db.execute("INSERT INTO workspace_namespace_state VALUES(1,'canonical-v2')")
+            with closing(sqlite3.connect(database)) as db, db:db.execute("INSERT INTO workspace_namespace_state VALUES(1,'canonical-v2')")
             with self.assertRaisesRegex(ValueError,'forward recovery'):namespace_package(root,package)
             marker=package/'share/tag-all/workspace-namespace';marker.parent.mkdir(parents=True);marker.write_text('canonical-v2\n')
             namespace_package(root,package)
-            with sqlite3.connect(database) as db:self.assertEqual(db.execute('SELECT version FROM workspace_namespace_state').fetchone(),('canonical-v2',))
+            with closing(sqlite3.connect(database)) as db, db:self.assertEqual(db.execute('SELECT version FROM workspace_namespace_state').fetchone(),('canonical-v2',))
 
 
 class UpholdTests(unittest.TestCase):
