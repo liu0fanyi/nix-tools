@@ -17,12 +17,12 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-01 · Reclaim stale Codex plugin staging and unused runtime cache · `adfd5ba`
+- 2026-11-01 · Prepare signed nix.106 browser installation for canonical roots · `40d1e5e`
 - 2026-11-01 · Root the staged core package with prepared namespace inputs · `2e5b132`
 - 2026-11-01 · Require the canonical-capable core before preparing path migration · `d601088`
 - 2026-11-01 · Publish browser path migration records only after database commit · `a1856f2`
 - 2026-11-01 · Count the independent learning map among active Bevy repositories · `b80aafe`
 - 2026-11-01 · Coordinate canonical workspace cutovers without restoring databases · `f098f53`
 - 2026-11-01 · Register the independent directory learning map project · `3e5e465`
-- 2026-11-01 · Remove the retired Planner from active project registration · `3c48929`
-- 2026-11-01 · Validate the global NUC startup binding before directory writes · `96df2d9`
 <!-- recent-commits:end -->
