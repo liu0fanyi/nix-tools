@@ -17,6 +17,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-01 · Summarize completed canonical workspace rollout and desktop candidate · `d863b4c`
 - 2026-11-01 · Finish strict paired namespace cutover and require entry compatibility on updates · `0030d45`
 - 2026-11-01 · Prepare signed nix.107 desktop candidate for canonical workspace roots · `95fe114`
 - 2026-11-01 · Include the canonical card library client in the desktop candidate · `ac550c8`
@@ -24,5 +25,4 @@
 - 2026-11-01 · Prepare signed nix.106 browser installation for canonical roots · `40d1e5e`
 - 2026-11-01 · Root the staged core package with prepared namespace inputs · `2e5b132`
 - 2026-11-01 · Require the canonical-capable core before preparing path migration · `d601088`
-- 2026-11-01 · Publish browser path migration records only after database commit · `a1856f2`
 <!-- recent-commits:end -->
