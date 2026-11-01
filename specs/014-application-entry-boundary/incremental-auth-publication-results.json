@@ -1,0 +1,179 @@
+{
+  "started_unix": 1793551169.1793482,
+  "proof_validation_seconds": 0.09998882698710077,
+  "transfer": {
+    "seconds": 4.584,
+    "exit": 0
+  },
+  "pc_preview": {
+    "seconds": 1.234,
+    "exit": 0
+  },
+  "pc_prepare": {
+    "seconds": 2.46,
+    "exit": 0
+  },
+  "pc_release": "/home/liou/.local/share/tag-all/native-version-releases/98440442a246e4284e8d1831939e2279133c18f1c5433dbc931c9d8e557cd56e",
+  "nuc_preview": {
+    "seconds": 0.88,
+    "exit": 0
+  },
+  "nuc_prepare": {
+    "seconds": 0.927,
+    "exit": 0
+  },
+  "nuc_release": "/home/liou/.local/share/tag-all/native-version-releases/ff802afd78c790b1b7ce1dce5a26e98c97ecfae958d470e51431669ce779ac21",
+  "pc_apply": {
+    "seconds": 12.953,
+    "exit": 0
+  },
+  "nuc_apply": {
+    "seconds": 11.291,
+    "exit": 0
+  },
+  "applied_unix": 1793551269.500499,
+  "update_rollback_gate_seconds": 57.116,
+  "activation_elapsed_from_proof_start_seconds": 100.321,
+  "live_verification_completed_unix": 1793551401.2463326,
+  "elapsed_through_live_verification_seconds": 232.067,
+  "operation_seconds_sum": 34.329,
+  "candidate_reused": true,
+  "rust_recompiled_this_rollout": false,
+  "full_39_step_matrix_repeated": false,
+  "package": "/nix/store/9mazfhpsrf4dxvbn8q4pixl1dpk5abc1-tag-all-workspace-native-0.1.0",
+  "binary_sha256": "70f4b6b80d6c74389628c7ed419d568f6bea2fd2a6eb310705e6ab5778ed5e2c",
+  "targets": {
+    "pc": {
+      "scope": "pc",
+      "programs": {
+        "tag-all-core.service": {
+          "sha256": "70f4b6b80d6c74389628c7ed419d568f6bea2fd2a6eb310705e6ab5778ed5e2c",
+          "actual_unit_descendant_verified": true
+        }
+      },
+      "strict_signatures": true,
+      "package": "/nix/store/9mazfhpsrf4dxvbn8q4pixl1dpk5abc1-tag-all-workspace-native-0.1.0",
+      "frontend": "/nix/store/xar0s26qba9lw9s6x33sncgvi0i30hvq-dufs-plus-module-release-frontend",
+      "checked_unix": 1793551362.396251
+    },
+    "nuc": {
+      "scope": "nuc",
+      "programs": {
+        "tag-nuc-private-core.service": {
+          "sha256": "70f4b6b80d6c74389628c7ed419d568f6bea2fd2a6eb310705e6ab5778ed5e2c",
+          "actual_unit_descendant_verified": true
+        },
+        "tag-nuc-readonly-core.service": {
+          "sha256": "70f4b6b80d6c74389628c7ed419d568f6bea2fd2a6eb310705e6ab5778ed5e2c",
+          "actual_unit_descendant_verified": true
+        }
+      },
+      "strict_signatures": true,
+      "package": "/nix/store/9mazfhpsrf4dxvbn8q4pixl1dpk5abc1-tag-all-workspace-native-0.1.0",
+      "frontend": "/nix/store/xar0s26qba9lw9s6x33sncgvi0i30hvq-dufs-plus-module-release-frontend",
+      "anonymous_status": {
+        "5006": 401,
+        "5008": 401
+      },
+      "checked_unix": 1793551362.8915231
+    }
+  },
+  "pc_manifest_and_signature_gate": {
+    "/tag-api/v1/workspace-namespace": 200,
+    "manifest": {
+      "local_location_id": "loc_pc",
+      "manifest_sha256": "bbb443068ccc4148a60589cb6d987b29f2547d17f28181b870c2558f8bc9b4e1",
+      "migration_id": "canonical-roots-20261101",
+      "schema": 1,
+      "transitions": [
+        {
+          "location_id": "default",
+          "new_namespace": "canonical-v2",
+          "node_id": "nuc",
+          "old_namespace": "legacy-v1",
+          "rules": [
+            {
+              "new_root": "art",
+              "old_prefix": "media/Art"
+            },
+            {
+              "new_root": "project",
+              "old_prefix": "media/project"
+            },
+            {
+              "new_root": "dufs",
+              "old_prefix": ""
+            }
+          ]
+        },
+        {
+          "location_id": "loc_pc",
+          "new_namespace": "canonical-v2",
+          "node_id": "pc",
+          "old_namespace": "legacy-v1",
+          "rules": [
+            {
+              "new_root": "project",
+              "old_prefix": "project"
+            },
+            {
+              "new_root": "home",
+              "old_prefix": "_workspace-df487e938d5148418013c04e4823b458"
+            },
+            {
+              "new_root": "dufs",
+              "old_prefix": ""
+            }
+          ]
+        }
+      ],
+      "version": "canonical-v2"
+    },
+    "/tag-api/v1/sync/changes": 401
+  },
+  "live_api": {
+    "loc_pc_roots": [
+      "/dufs",
+      "/home",
+      "/project"
+    ],
+    "default_roots": [
+      "/art",
+      "/dufs",
+      "/project"
+    ],
+    "remote_missing_metadata_listing_is_empty": true,
+    "private_or_legacy_metadata_not_exposed": 6,
+    "old_owner_content_route_rejected": true,
+    "range_local": true,
+    "range_paired_owner": true,
+    "/dist/knowledge-cards/index.html": 200,
+    "/dist/learning-map/index.html": 200
+  },
+  "update_rollback_gate": {
+    "cases": [
+      "fresh_editor_confirmation_required_before_mutation",
+      "real_update_and_explicit_rollback_keep_new_database_writes_and_inode",
+      "post_start_failure_restores_old_program_and_keeps_current_data",
+      "controller_sigkill_after_install_recovers_old_program_without_state_restore",
+      "unrelated_unit_drift_refused_before_stop",
+      "active_queue_refused_without_stopping_current_service"
+    ],
+    "actual_old_and_new_packaged_programs": true,
+    "actual_owned_user_unit": true,
+    "actual_upholds_target_and_interrupted_recovery": true,
+    "latest_writes_retained_on_rollback": true,
+    "database_inode_preserved": true,
+    "owned_units_and_files_cleaned": true,
+    "production_access": false,
+    "production_activated": false,
+    "manager_package": "/nix/store/ff1hjnr0ja6g6fx3nkdh8mjz9ggzr8fp-tag-native-release-manager",
+    "old_package": "/nix/store/ilqv015pfdi113q9h24qxbkmsyila265-tag-all-workspace-native-0.1.0",
+    "new_package": "/nix/store/9mazfhpsrf4dxvbn8q4pixl1dpk5abc1-tag-all-workspace-native-0.1.0"
+  },
+  "database_restored": false,
+  "system_switch": false,
+  "frontend_changed": false,
+  "nuc_authenticated_browser_manual_check_pending": true,
+  "post_restart_signed_background_sync_success_observed": false
+}

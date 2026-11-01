@@ -1,7 +1,7 @@
 # Nix 配置与发布工具
 
 ## 当前情况
-- [系统盘已完成安全清理，使用率94%→86%、可用约57G；活跃构建期间保留Podman，操作记录见AGENTS第七节。](010-host-configuration/tasks.md#系统盘安全清理阶段-sc2026-11-01)
+- [401修复按产品037增量证据上线PC/NUC三项核心，原更新回退6项通过；两端激活约100秒，实际读回核验约232秒。保留严格签名、前端和数据。](014-application-entry-boundary/tasks.md)
 - [DiskTree图形版0.11.0已固定官方包，Niri样例窗口及完整系统/HM构建通过，待用户手动应用并试用。](010-host-configuration/tasks.md#disktree-图形版安装阶段-dt2026-11-01)
 - [PC/NUC规范三入口与严格签名已实际切换，数据库/关系/路径和原开机守卫核验通过；nix.107签名缓存、五应用精确缓存及完整PC/HM候选通过，临时恢复绑定已移除，用户系统安装仍自行执行。](014-application-entry-boundary/canonical-namespace-publication-results.json)
 
