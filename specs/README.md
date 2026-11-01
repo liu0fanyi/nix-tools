@@ -17,6 +17,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-01 · Remove the retired Planner from active project registration · `3c48929`
 - 2026-11-01 · Validate the global NUC startup binding before directory writes · `96df2d9`
 - 2026-11-01 · Use verified browser directory transactions for NUC shared roots · `a481e2f`
 - 2026-11-01 · Add DiskTree graphical disk usage analyzer · `443c0b3`
@@ -24,5 +25,4 @@
 - 2026-10-31 · Summarize verified nix.104 browser installation candidate · `a128358`
 - 2026-10-31 · Update Tag Browser to nix.104 with verified installation and caches · `f5af860`
 - 2026-10-31 · Summarize verified nix.103 browser delivery · `c55fa97`
-- 2026-10-31 · Update Tag Browser to nix.103 with verified installation and caches · `525c446`
 <!-- recent-commits:end -->
