@@ -1,0 +1,86 @@
+{
+  "schema": 1,
+  "browser_install_evidence": "tag-browser-nix106-install-results.json",
+  "system": {
+    "system_candidate": "/nix/store/0dq5kvha38k73zhpijdk20zpxpb13llh-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+    "home_candidate": "/nix/store/r4bn1wy2ga92f78r21mjfh96h3f90di7-home-manager-generation",
+    "browser_binary": "/nix/store/ly81iv2yl65ki59p4ifd6z0ybawms6zm-tag-browser-0.1.0",
+    "browser_source_revision": "38495e761ddac7a7dcff073e58604c72322cf866",
+    "changed_lock_nodes": [
+      "tag-browser-src"
+    ],
+    "five_native_templates_verified": true,
+    "default_target_link_verified": true,
+    "restore_after_reload_verified": true,
+    "system_menu_binary_and_release_version_verified": true,
+    "system_switch_by_agent": false,
+    "four_browser_mime_defaults_verified": true,
+    "concurrent_external_changes_at_build": {},
+    "runtime_inputs_unchanged_during_build": true,
+    "external_work_not_overwritten_by_release": true,
+    "authorized_runtime_changes": [
+      "flake.lock:tag-browser-src",
+      "packages/knowledge-cards.nix"
+    ],
+    "knowledge_cards_package": "/nix/store/kgycmilmqlkgjrwd8bxlszl2yaaag60j-knowledge-cards-0.1.0"
+  },
+  "desktop_caches": {
+    "clipboard-sync.outPath": {
+      "path": "/nix/store/jdchs28f8h7cghn4j9fpvhypwl6gs1cr-clipboard-sync-0.2.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "screen-cut-binary-path": {
+      "path": "/nix/store/arrsa3p4q795xkw02503wrz9xyr4wmq4-screen-cut-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "screen-mark-binary-path": {
+      "path": "/nix/store/j1cvwiafizx98f8qzwj2n6szalsqldm8-screen-mark-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "knowledge-cards-binary-path": {
+      "path": "/nix/store/kgycmilmqlkgjrwd8bxlszl2yaaag60j-knowledge-cards-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true,
+      "trusted_signature_verified": true
+    },
+    "tag-browser-binary-path": {
+      "path": "/nix/store/ly81iv2yl65ki59p4ifd6z0ybawms6zm-tag-browser-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    }
+  },
+  "knowledge_cards_cache": {
+    "package": "/nix/store/kgycmilmqlkgjrwd8bxlszl2yaaag60j-knowledge-cards-0.1.0",
+    "cache": "liu0fanyi-nix",
+    "trusted_signature_verified": true,
+    "pin": {
+      "createdOn": "2026-10-25T05:00:06.548466Z",
+      "keep": {
+        "contents": 1,
+        "tag": "Revisions"
+      },
+      "lastRevision": {
+        "artifacts": [],
+        "createdOn": "2026-11-01T12:51:10.009464Z",
+        "orphaned": false,
+        "revision": 4,
+        "storePath": "/nix/store/kgycmilmqlkgjrwd8bxlszl2yaaag60j-knowledge-cards-0.1.0"
+      },
+      "name": "knowledge-cards-latest"
+    },
+    "other_pins_unchanged": [
+      "clipboard-sync-latest",
+      "screen-cut-latest",
+      "screen-mark-latest",
+      "tag-browser-latest"
+    ],
+    "only_runtime_closure": true
+  },
+  "knowledge_cards_source_revision": "5d9d902",
+  "application_install_by_agent": false,
+  "system_switch_by_agent": false,
+  "production_migration": "pending final backend matrix and formal gates"
+}
