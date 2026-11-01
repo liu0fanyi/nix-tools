@@ -1,0 +1,83 @@
+{
+  "schema": 1,
+  "release": {
+    "release": "https://github.com/liu0fanyi/tag-browser/releases/tag/v0.1.0-nix.106",
+    "revision": "38495e761ddac7a7dcff073e58604c72322cf866",
+    "archive_sha256": "b46ec0688381c5d4033ebdce6125bed66fd6f83babc774a41903cf05ca9e5987",
+    "assets_verified": true,
+    "workflow_dispatched": true,
+    "user_requested_release": true
+  },
+  "ci": {
+    "run_id": 41306256748,
+    "conclusion": "success",
+    "store_path": "/nix/store/ly81iv2yl65ki59p4ifd6z0ybawms6zm-tag-browser-0.1.0",
+    "cachix_verified": true,
+    "ci_matches_local_package": true,
+    "workflow_creates_pin": true,
+    "latest_pin": {
+      "createdOn": "2026-10-24T10:09:14.207482Z",
+      "keep": {
+        "contents": 1,
+        "tag": "Revisions"
+      },
+      "lastRevision": {
+        "artifacts": [],
+        "createdOn": "2026-11-01T12:24:39.230998Z",
+        "orphaned": false,
+        "revision": 33,
+        "storePath": "/nix/store/ly81iv2yl65ki59p4ifd6z0ybawms6zm-tag-browser-0.1.0"
+      },
+      "name": "tag-browser-latest"
+    },
+    "trusted_signature_verified": true
+  },
+  "system": {
+    "system_candidate": "/nix/store/fsxx8gj14r7gsz3c2aqf4vl1pn1d4bvd-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+    "home_candidate": "/nix/store/xz9wm63g763kc3q5kqgf7vak80ka4i6c-home-manager-generation",
+    "browser_binary": "/nix/store/ly81iv2yl65ki59p4ifd6z0ybawms6zm-tag-browser-0.1.0",
+    "browser_source_revision": "38495e761ddac7a7dcff073e58604c72322cf866",
+    "changed_lock_nodes": [
+      "tag-browser-src"
+    ],
+    "five_native_templates_verified": true,
+    "default_target_link_verified": true,
+    "restore_after_reload_verified": true,
+    "system_menu_binary_and_release_version_verified": true,
+    "system_switch_by_agent": false,
+    "four_browser_mime_defaults_verified": true,
+    "concurrent_external_changes_at_build": {},
+    "runtime_inputs_unchanged_during_build": true,
+    "external_work_not_overwritten_by_release": true
+  },
+  "desktop_caches": {
+    "clipboard-sync.outPath": {
+      "path": "/nix/store/jdchs28f8h7cghn4j9fpvhypwl6gs1cr-clipboard-sync-0.2.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "screen-cut-binary-path": {
+      "path": "/nix/store/arrsa3p4q795xkw02503wrz9xyr4wmq4-screen-cut-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "screen-mark-binary-path": {
+      "path": "/nix/store/j1cvwiafizx98f8qzwj2n6szalsqldm8-screen-mark-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "knowledge-cards-binary-path": {
+      "path": "/nix/store/krc8vqrkf6mn7c0si3jgjkmisd0hj32a-knowledge-cards-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "tag-browser-binary-path": {
+      "path": "/nix/store/ly81iv2yl65ki59p4ifd6z0ybawms6zm-tag-browser-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    }
+  },
+  "production_service_migration": "pending complete backend release gates",
+  "daily_profile_used": false,
+  "system_switched": false
+}
