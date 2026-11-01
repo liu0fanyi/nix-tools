@@ -169,8 +169,9 @@ SDK、image、历史 ZIP 默认按原格式备份并记录来源与 SHA256，不
 | `bevy-app-foundation` | 共享应用基础层 | ✅ github:bevy-app-foundation |
 | `bevy-canvas-kit` | 画布组件库 | ✅ github:bevy-canvas-kit（private） |
 | `bevy-colony` | 独立殖民地游戏 | 本地 Git，未配置远程 |
+| `bevy-learning-map` | 目录学习规划卡片、层级与连线（Bevy0.20.1） | 本地 Git，未配置远程 |
 
-旧 `bevy-project-planner` 已于2026-11-01按用户选择退役，本机完整工作目录归档至 `/data/project/.retired/bevy-project-planner-20261101/`，原私有远程保留；不再恢复构建/部署入口或中央活动登记。NUC旧产物与用户文档继续保护。`bevy-learning-map` 为本轮新建的独立学习规划筹备仓，尚无程序或部署。
+旧 `bevy-project-planner` 已于2026-11-01按用户选择退役，本机完整工作目录归档至 `/data/project/.retired/bevy-project-planner-20261101/`，原私有远程保留；不再恢复构建/部署入口或中央活动登记。NUC旧产物与用户文档继续保护。`bevy-learning-map` 为本轮新建的独立学习规划仓，程序与隔离WASM验证已实现；生产部署状态以该仓specs/001-directory-learning-map为准，不自动建立远程。
 
 #### `xiaoqiang/` 主要 Git 工作目录
 
@@ -240,7 +241,8 @@ Git 历史：
 ├── bevy-game/
 ├── bevy-canvas-kit/
 ├── bevy-app-foundation/
-└── bevy-colony/
+├── bevy-colony/
+└── bevy-learning-map/
 ```
 
 不要从 NUC 上的历史 `bevy-env` checkout 构建或部署，也不要让 `dufs-plus`

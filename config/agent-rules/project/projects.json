@@ -39,6 +39,12 @@
       "category": "Bevy"
     },
     {
+      "name": "bevy-learning-map",
+      "root": "/data/project/bevy-env/bevy-learning-map",
+      "aliases": [],
+      "category": "Bevy"
+    },
+    {
       "name": "bevy-sketch",
       "root": "/data/project/bevy-env/bevy-sketch",
       "aliases": [],

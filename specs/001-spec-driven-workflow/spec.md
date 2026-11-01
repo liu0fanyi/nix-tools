@@ -56,3 +56,5 @@
 用户纠正范围后：xiaoqiang已排除，误加的10份本地进度总纲以反向提交恢复；原dufs专用发布区未触碰，新增projects摘要移除。此纠正不启动Gitee权限处理或任何产品发布。
 
 2026-11-01 用户明确退役旧 Planner：中央活动登记移除 bevy-project-planner；环境本机归档/清理的唯一验收归 bevy-env/specs/004-retire-planner。中央索引不再列活动项目，NUC旧摘要/产物/用户文档与GitHub远程保留，不扩大远端删除范围。
+
+2026-11-01：用户确认的独立学习规划产品bevy-learning-map登记在Bevy分类，权威源为其本地specs，正文/布局属于当前用户目录；未建立远程仓库，不重建退役Planner。登记不激活任何服务。
