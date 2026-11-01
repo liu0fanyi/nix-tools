@@ -955,3 +955,12 @@ ERC返回rule/primitives明细，包含ATTRMATCHCODE与SHOWDANDLING，均为警�
 HM home-path命令、desktop实际Exec与0.11.0标识、图标一致；hm-backup、系统
 pen-scroll ExecStart/input/uinput、内核uinput及udev求值核对通过，Office默认应用保留。
 阶段DT剩余1项DT3：用户手动运行 `nu rerun.nu liou --host liu-bigpc` 并从菜单打开试用。
+
+### 系统盘安全清理（阶段 SC，2026-11-01）
+
+- [x] SC1：按AGENTS统一入口定位系统盘大头、登记旧插件目录候选并检查占用，保存镜像/容器快照及活跃构建状态。
+- [x] SC2：仅清理确认无占用的旧插件临时目录与可重下载运行时缓存，保护源码、个人数据、服务与受保护镜像；活跃构建期间不清Podman。
+- [x] SC3：核对磁盘、保留项与镜像/容器快照，将清理操作记录追加到AGENTS第七节并同步登记总纲。
+
+清理明细统一记录在本仓AGENTS第七节，不另建清理文档。
+阶段SC三项完成，剩余0项；Podman因活跃构建保留，不将暂停其他任务或额外清理列入本阶段条件。

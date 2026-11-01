@@ -1,8 +1,8 @@
 # Nix 配置与发布工具
 
 ## 当前情况
+- [系统盘已完成安全清理，使用率94%→86%、可用约57G；活跃构建期间保留Podman，操作记录见AGENTS第七节。](010-host-configuration/tasks.md#系统盘安全清理阶段-sc2026-11-01)
 - [DiskTree图形版0.11.0已固定官方包，Niri样例窗口及完整系统/HM构建通过，待用户手动应用并试用。](010-host-configuration/tasks.md#disktree-图形版安装阶段-dt2026-11-01)
-- [DOCX等文档默认AbiWord、表格默认Gnumeric已即时修复，14项关联及完整系统/HM构建验证通过，待实际双击确认。](010-host-configuration/tasks.md#文档与表格默认应用修复阶段-of2026-10-31)
 - [规范虚拟根切换事务已实现，16项事务测试和原发行器3项通过，两端服务单元候选未激活；Tag Browser nix.105及PC/NUC配套已发行：本机打开、PC Home及NUC17根可用；CI签名/五应用缓存和完整PC/HM候选通过，用户系统安装待执行。](014-application-entry-boundary/tag-browser-nix105-install-results.json)
 
 ## 后续计划
