@@ -50,7 +50,8 @@ def controller(name,product):
     # This cutover does: stage the supporting program before preparing it.
     namespace_package(scope.state,executable.parent.parent,required=True)
     apply,status=product.ports(scope.state/'core.db')
-    return Cutover(scope,manager,apply,status)
+    inputs={str(path):digest(path) for path in [executable,executable.parent.parent/'share/tag-all/workspace-namespace']}
+    return Cutover(scope,manager,apply,status),inputs
 
 
 def verify_inputs(plan):
@@ -72,7 +73,8 @@ def main():
     args=parser.parse_args();product,hashes=driver(args.driver)
     for name in ['workspace_namespace_command.py','workspace_namespace_transaction.py','native_application_release.py','application_entry_transaction.py']:
         path=Path(__file__).parent/name;hashes[str(path)]=digest(path)
-    cutover=controller(args.scope,product)
+    cutover,program_inputs=controller(args.scope,product)
+    hashes.update(program_inputs)
     if args.action=='prepare':
         value=json.loads(private(args.request).read_text())
         if set(value)!={'files','roots','product_request','input_sha256','product_preview_sha256'}:
