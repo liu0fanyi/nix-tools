@@ -206,6 +206,8 @@ class NamespaceProgramTests(unittest.TestCase):
             namespace_package(root,package)
             with self.assertRaisesRegex(ValueError,'before migration'):namespace_package(root,package,required=True)
             marker=package/'share/tag-all/workspace-namespace';marker.parent.mkdir(parents=True);marker.write_text('canonical-v2\n')
+            with self.assertRaises(ValueError):namespace_package(root,package,required=True)
+            (marker.parent/'workspace-namespace-entry').write_text('canonical-v2\n')
             namespace_package(root,package,required=True)
             with closing(sqlite3.connect(database)) as db, db:self.assertFalse(db.execute("SELECT 1 FROM sqlite_schema WHERE name='workspace_namespace_state'").fetchone())
 
@@ -218,6 +220,8 @@ class NamespaceProgramTests(unittest.TestCase):
             with closing(sqlite3.connect(database)) as db, db:db.execute("INSERT INTO workspace_namespace_state VALUES(1,'canonical-v2')")
             with self.assertRaisesRegex(ValueError,'forward recovery'):namespace_package(root,package)
             marker=package/'share/tag-all/workspace-namespace';marker.parent.mkdir(parents=True);marker.write_text('canonical-v2\n')
+            with self.assertRaises(ValueError):namespace_package(root,package,required=True)
+            (marker.parent/'workspace-namespace-entry').write_text('canonical-v2\n')
             namespace_package(root,package)
             with closing(sqlite3.connect(database)) as db, db:self.assertEqual(db.execute('SELECT version FROM workspace_namespace_state').fetchone(),('canonical-v2',))
 

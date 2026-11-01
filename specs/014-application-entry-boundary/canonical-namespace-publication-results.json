@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "backend_evidence": "https://github.com/liu0fanyi/tag-all/blob/a6a62b9cc94c81432cb770b00f7dcaf94f2120db/specs/036-shared-local-directories/canonical-publication-results.json",
+  "browser_release": "v0.1.0-nix.107",
+  "system": {
+    "system_candidate": "/nix/store/ipam2iisv769a99pfb6hlnbkvgvik1km-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+    "home_candidate": "/nix/store/r4bn1wy2ga92f78r21mjfh96h3f90di7-home-manager-generation",
+    "browser_binary": "/nix/store/nmgzi137lrzbnmg7l58gsnqfvnnv2dbj-tag-browser-0.1.0",
+    "browser_source_revision": "1b39d8e508771ce2daad87bf1faefa8cfa02528e",
+    "changed_lock_nodes": [
+      "tag-browser-src"
+    ],
+    "five_native_templates_verified": true,
+    "default_target_link_verified": true,
+    "restore_after_reload_verified": true,
+    "system_menu_binary_and_release_version_verified": true,
+    "system_switch_by_agent": false,
+    "four_browser_mime_defaults_verified": true,
+    "concurrent_external_changes_at_build": {},
+    "runtime_inputs_unchanged_during_build": true,
+    "external_work_not_overwritten_by_release": true,
+    "authorized_runtime_changes": [
+      "flake.lock:tag-browser-src",
+      "packages/knowledge-cards.nix"
+    ],
+    "knowledge_cards_package": "/nix/store/kgycmilmqlkgjrwd8bxlszl2yaaag60j-knowledge-cards-0.1.0"
+  },
+  "final_system_derivation_unchanged": true,
+  "strict_signature_authorization": true,
+  "actual_namespace_activated": {
+    "pc": true,
+    "nuc": true
+  },
+  "final_manager": "/nix/store/ff1hjnr0ja6g6fx3nkdh8mjz9ggzr8fp-tag-native-release-manager",
+  "namespace_driver": "/nix/store/r8cmw8qvr7wfdyzjhcak3hk0gl3ynmcl-tag-workspace-namespace-driver",
+  "final_program": "/nix/store/86rq1dm9pivnarz4n3ilqzz65174g14d-tag-all-workspace-native-0.1.0",
+  "temporary_entry_bind_removed": true,
+  "routing_mode_restored_to_original_0644": true,
+  "known_non_secret_transport_and_actual_boot_guard_verified": true,
+  "database_restored": false,
+  "daily_profile_used": false,
+  "system_switch_by_agent": false
+}

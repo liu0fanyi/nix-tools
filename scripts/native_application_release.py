@@ -100,7 +100,8 @@ def namespace_package(state, package, *, required=False):
         row=db.execute('SELECT version FROM workspace_namespace_state WHERE singleton=1').fetchone() if exists else None
     if row is None and not required:return
     marker=Path(package)/'share/tag-all/workspace-namespace'
-    if (row is not None and row[0]!='canonical-v2') or not marker.is_file() or marker.read_text()!='canonical-v2\n':
+    entry_marker=Path(package)/'share/tag-all/workspace-namespace-entry'
+    if (row is not None and row[0]!='canonical-v2') or not marker.is_file() or marker.read_text()!='canonical-v2\n' or not entry_marker.is_file() or entry_marker.read_text()!='canonical-v2\n':
         raise ValueError('Canonical namespace program required before migration or forward recovery')
 
 

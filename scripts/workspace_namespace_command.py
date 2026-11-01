@@ -50,7 +50,7 @@ def controller(name,product):
     # This cutover does: stage the supporting program before preparing it.
     namespace_package(scope.state,executable.parent.parent,required=True)
     apply,status=product.ports(scope.state/'core.db')
-    inputs={str(path):digest(path) for path in [executable,executable.parent.parent/'share/tag-all/workspace-namespace']}
+    inputs={str(path):digest(path) for path in [executable,executable.parent.parent/'share/tag-all/workspace-namespace',executable.parent.parent/'share/tag-all/workspace-namespace-entry']}
     return Cutover(scope,manager,apply,status),inputs
 
 
