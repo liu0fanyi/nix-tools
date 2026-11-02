@@ -1,9 +1,9 @@
 # Nix 配置与发布工具
 
 ## 当前情况
+- [组合候选保护网完成：冻结后端/前端/共享WASM与验收器，12项真实组合及12项合同测试通过，内容实际渲染；输入漂移/不完整报告在prepare前拒绝。本阶段未发布。](016-application-release-bundle/tasks.md)
 - [401修复按产品037增量证据上线PC/NUC三项核心，原更新回退6项通过；两端激活约100秒，实际读回核验约232秒。保持严格签名和数据；另按用户键名补齐偏好/相同进度路径别名前端（11项WASM通过），真实PDF刷新待确认。](014-application-entry-boundary/tasks.md)
 - [DiskTree图形版0.11.0已固定官方包，Niri样例窗口及完整系统/HM构建通过，待用户手动应用并试用。](010-host-configuration/tasks.md#disktree-图形版安装阶段-dt2026-11-01)
-- [PC/NUC规范三入口与严格签名已实际切换，数据库/关系/路径和原开机守卫核验通过；nix.107签名缓存、五应用精确缓存及完整PC/HM候选通过，临时恢复绑定已移除，用户系统安装仍自行执行。](014-application-entry-boundary/canonical-namespace-publication-results.json)
 
 ## 后续计划
 - [手动应用DiskTree配置并试用图形界面（DT3）。](010-host-configuration/tasks.md#disktree-图形版安装阶段-dt2026-11-01)

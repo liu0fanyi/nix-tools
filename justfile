@@ -83,3 +83,13 @@ native-release target *args:
     #!/usr/bin/env bash
     set -euo pipefail
     python3 scripts/native_application_release.py --scope "$1" "${@:2}"
+
+# Fixed real-component combination gate; preparation only, no activation.
+native-bundle-create config output:
+    python3 scripts/application_release_bundle.py create {{quote(config)}} --output {{quote(output)}}
+
+check-native-bundle bundle result:
+    python3 scripts/application_release_bundle.py check {{quote(bundle)}} --result {{quote(result)}}
+
+native-bundle scope bundle result *args:
+    python3 scripts/application_release_bundle.py prepare {{quote(scope)}} {{quote(bundle)}} --result {{quote(result)}} {{args}}

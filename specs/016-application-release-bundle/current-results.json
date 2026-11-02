@@ -1,0 +1,61 @@
+{
+  "kind": "native-bundle-check-v1",
+  "bundle_id": "f5134205396efc277c09aad75138d98b934b8a1bd6f36e26637198bf5ae67517",
+  "controls": [
+    {
+      "path": "/home/liou/nix-tools/scripts/application_release_bundle.py",
+      "sha256": "988b97eb862cd5262c354146c4bcb50fc5058e439d74baf435626db271c730ec"
+    },
+    {
+      "path": "/home/liou/nix-tools/scripts/check_application_bundle.py",
+      "sha256": "919141f710b3f8869b7fb7ba5aa580f812ebfa9e21f7b3d37a1db2d0758cabb3"
+    },
+    {
+      "path": "/home/liou/nix-tools/scripts/application-bundle.browser.cjs",
+      "sha256": "480df39e8fbd8787f3f034108707b9d264c67632db17ded57efa4fa002776b7b"
+    },
+    {
+      "path": "/home/liou/nix-tools/justfile",
+      "sha256": "e0081198de8f543d4892a122aec35b509728d9b31a3a3b2e0cffe9141da0e45d"
+    }
+  ],
+  "cases": [
+    "basic_manifest",
+    "basic_locations",
+    "unsigned_sync_rejected",
+    "anonymous_rejected",
+    "foreign_origin_rejected",
+    "served_assets",
+    "fresh",
+    "aliases_content_reload",
+    "progress_conflict",
+    "unknown_operation",
+    "shared_wasm",
+    "cleaned"
+  ],
+  "logs": [
+    {
+      "path": "/home/liou/nix-tools/specs/016-application-release-bundle/current-results-files.log",
+      "sha256": "258c4df06109e25a6a39eae33a8183c1cae5fe1a813e8ae428b79036d6e9e2d1"
+    },
+    {
+      "path": "/home/liou/nix-tools/specs/016-application-release-bundle/current-results-initial.log",
+      "sha256": "b35331e2355818c28aaccefcd3d68d4b2f7c573f992ab6747e3540e52b5fcbc8"
+    },
+    {
+      "path": "/home/liou/nix-tools/specs/016-application-release-bundle/current-results-canonical.log",
+      "sha256": "2d2e98c8986bba8db2bda9672a8c0fbd2ecbe0d6f715bcb1fc5ffdb00aa5d673"
+    },
+    {
+      "path": "/home/liou/nix-tools/specs/016-application-release-bundle/current-results-browser.log",
+      "sha256": "864218caba6f70028de97a857af7c743eee5045768db5fd2b45aa34d74988596"
+    }
+  ],
+  "passed": true,
+  "cleaned": true,
+  "production_access": false,
+  "daily_profile_used": false,
+  "actual_rust_cli": true,
+  "actual_frontend": true,
+  "api_mocked": false
+}

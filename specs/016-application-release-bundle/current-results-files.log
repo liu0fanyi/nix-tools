@@ -1,0 +1,4 @@
+Listening on /tmp/native-bundle-wuh2a9i0/runtime/files.sock
+2026-11-02T10:50:45+08:00 INFO - - "GET /library/book.md" 200
+2026-11-02T10:50:46+08:00 INFO - - "GET /library/book.md?v=0&" 200
+2026-11-02T10:50:46+08:00 INFO - - "GET /library/book.md?v=0&" 200

@@ -1,0 +1,20 @@
+{
+  "bundle_id": "f5134205396efc277c09aad75138d98b934b8a1bd6f36e26637198bf5ae67517",
+  "unit_tests": 12,
+  "actual_combination_cases": 12,
+  "current_report_accepted": true,
+  "actual_report_negative_cases": [
+    "wrong_bundle",
+    "missing_browser_case",
+    "not_cleaned",
+    "mocked_api"
+  ],
+  "manager_calls": 0,
+  "production_activated": false,
+  "recompiled_products": false,
+  "limitations": [
+    "Packaged Rust CLI directly; existing launcher/manager runtime gates remain separate",
+    "Actual DUFS Plus Chromium UI and Firefox shared WASM adapter; native privileged Firefox UI not exercised",
+    "Initial backend admissibility lane is explicit 037 native-incremental-v1 proof"
+  ]
+}

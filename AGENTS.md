@@ -464,3 +464,14 @@ podman image prune -f          # 仅删 <none> 悬空镜像，不动有 tag 的
 发现服务检查进程和 CLI，后端检查 HTTP，最后验代理；旧服务镜像不同则在变更前拒绝。
 失败尝试恢复全部目标，单项重建失败不能阻断其余恢复；报告未恢复项，保留数据库备份。
 不自动恢复数据库、认证、模型或前端，不更改原运行用户和挂载属主。
+
+## 组合候选保护网（016）
+
+普通新原生组合候选使用 `just native-bundle-create <config> <bundle>`，再用
+`just check-native-bundle <bundle> <result>` 运行真实后端、前端、DUFS 的隔离验收。
+显式提供已有 `NODE_PATH`（Playwright）与 `CHROMIUM_PATH`，不下载浏览器、不读取日常 profile。
+配置必须列出固定组件及各产品证明，契约见 specs/016-application-release-bundle/contracts/bundle.md。
+`just native-bundle <pc|nuc> <bundle> <result>` 只核验并预演原管理器；追加 `--prepare`
+才委托原管理器准备，仍不激活。输入或验收器变化必须重建组合并重验。
+原 `native-release` 保留用于既有流程/恢复；旧结果不能冒充本组合证明。
+016 当前仅开发及隔离验收，未授权执行生产 prepare/apply 或系统 switch。
