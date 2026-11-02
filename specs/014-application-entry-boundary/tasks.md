@@ -506,3 +506,6 @@ nix.107最终候选：修正规范新根父节点展开恢复，七组2653项检
 
 
 DUFS前端别名冲突修复：前次401只更新后端，用户现报错来自仍旧前端。复核DUFS035已验制品后由固定ff1h原管理器激活PC/NUC h1zy前端，保持9maz后端、strict=true及原知识卡112/学习规划10文件；6项实际更新/回退验收通过，PC实际HTML/WASM摘要与新制品一致，NUC服务参数及持久指针一致，匿名401保持。没有站点数据清空、DB恢复或系统switch，真实用户Storage不读取，刷新PDF结果待确认。证据namespace-alias-frontend-publication-results.json；单纯后台401成功不再作为前端迁移成功证明。
+
+
+用户禁用缓存刷新后仍失败，随后仅提供键名并确认两份进度值相同：根因是前一前端只协调tree/scroll，漏了PATH_KEYS中的同目录偏好/进度尾斜杠别名。产品补齐按类型协调与不含值的定位诊断，283项应用/27项共享测试、private构建及11项实际WASM通过；原6项更新/回退门槛通过后，同一ff1h管理器将PC/NUC切到xv4p前端，9maz后端、strict=true和独立应用保持。PC实际HTTP制品摘要、双端实际参数/持久选择核验通过。未清缓存、读日常profile、存完整用户键名清单、恢复DB或系统switch。原页刷新仍待用户。证据namespace-path-alias-publication-results.json。

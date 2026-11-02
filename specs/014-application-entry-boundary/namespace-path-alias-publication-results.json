@@ -1,0 +1,147 @@
+{
+  "started_unix": 1793584546.0288825,
+  "frontend": "/nix/store/xv4pv2vgzv3f4fmsn6x3mz4lbr3pqn7c-dufs-plus-module-release-frontend",
+  "previous_frontend": "/nix/store/h1zy2xf465mfzxm4j5xbaxaang2fajxh-dufs-plus-module-release-frontend",
+  "source_sha256": {
+    "src/namespace_migration.rs": "e318e2944ca0cbc99c3a364c40a6a2508ef5f0aedf6656b2b4de7d7019339bf2",
+    "src/namespace_migration/tests.rs": "290fbbb90b3d3e7ca12ef5b70da0af8c8cfc152632b12eddf281ef5a4467b5ea",
+    "tests/namespace-migration.browser.cjs": "4318b7127524db06d61bcd523694e02462d2b38bf23cba4bf382ee2249c33c02"
+  },
+  "built_artifacts_sha256": {
+    "index.html": "1a52548340bd39e59b26ae703cf01465e730147d76cd2cff7a1b57552ee2b381",
+    "dufs-plus-5865db20c20cf277_bg.wasm": "467a0c26fd629c385cc14eae26491a47654b7839993110aa1f71a63d9da55c1b"
+  },
+  "actual_wasm_cases": 11,
+  "independent_applications_preserved": true,
+  "transfer": {
+    "seconds": 3.937,
+    "exit": 0
+  },
+  "pc_preview": {
+    "seconds": 0.419,
+    "exit": 0
+  },
+  "pc_prepare": {
+    "seconds": 0.605,
+    "exit": 0
+  },
+  "pc_release": "/home/liou/.local/share/tag-all/native-version-releases/6a22a82691263463fb8fab25ec9dbc4ad486a47b22e7095c8d916d92278c75be",
+  "nuc_preview": {
+    "seconds": 0.802,
+    "exit": 0
+  },
+  "nuc_prepare": {
+    "seconds": 0.86,
+    "exit": 0
+  },
+  "nuc_release": "/home/liou/.local/share/tag-all/native-version-releases/fd1a460891b8cfb4ddafa1db7f98590ce60b2e8bf9c031a4e68069279db4cef4",
+  "pc_apply": {
+    "seconds": 3.354,
+    "exit": 0
+  },
+  "nuc_apply": {
+    "seconds": 11.667,
+    "exit": 0
+  },
+  "applied_unix": 1793584699.4313068,
+  "live": {
+    "pc_served_assets": {
+      "index.html": {
+        "sha256": "1a52548340bd39e59b26ae703cf01465e730147d76cd2cff7a1b57552ee2b381",
+        "cache_control": "no-cache, must-revalidate"
+      },
+      "dufs-plus-5865db20c20cf277_bg.wasm": {
+        "sha256": "467a0c26fd629c385cc14eae26491a47654b7839993110aa1f71a63d9da55c1b",
+        "cache_control": null
+      }
+    },
+    "pc": {
+      "scope": "pc",
+      "programs": {
+        "tag-all-core.service": {
+          "sha256": "70f4b6b80d6c74389628c7ed419d568f6bea2fd2a6eb310705e6ab5778ed5e2c",
+          "actual_unit_descendant_verified": true
+        }
+      },
+      "strict_signatures": true,
+      "package": "/nix/store/9mazfhpsrf4dxvbn8q4pixl1dpk5abc1-tag-all-workspace-native-0.1.0",
+      "frontend": "/nix/store/xv4pv2vgzv3f4fmsn6x3mz4lbr3pqn7c-dufs-plus-module-release-frontend",
+      "checked_unix": 1793584699.7083073
+    },
+    "nuc": {
+      "scope": "nuc",
+      "programs": {
+        "tag-nuc-private-core.service": {
+          "sha256": "70f4b6b80d6c74389628c7ed419d568f6bea2fd2a6eb310705e6ab5778ed5e2c",
+          "actual_unit_descendant_verified": true
+        },
+        "tag-nuc-readonly-core.service": {
+          "sha256": "70f4b6b80d6c74389628c7ed419d568f6bea2fd2a6eb310705e6ab5778ed5e2c",
+          "actual_unit_descendant_verified": true
+        }
+      },
+      "strict_signatures": true,
+      "package": "/nix/store/9mazfhpsrf4dxvbn8q4pixl1dpk5abc1-tag-all-workspace-native-0.1.0",
+      "frontend": "/nix/store/xv4pv2vgzv3f4fmsn6x3mz4lbr3pqn7c-dufs-plus-module-release-frontend",
+      "anonymous_status": {
+        "5006": 401,
+        "5008": 401
+      },
+      "checked_unix": 1793584700.3272665
+    },
+    "scope": "fixed frontend update; same backend, strict signatures and database",
+    "user_storage_inspected": false
+  },
+  "update_rollback_gate": {
+    "cases": [
+      "fresh_editor_confirmation_required_before_mutation",
+      "real_update_and_explicit_rollback_keep_new_database_writes_and_inode",
+      "post_start_failure_restores_old_program_and_keeps_current_data",
+      "controller_sigkill_after_install_recovers_old_program_without_state_restore",
+      "unrelated_unit_drift_refused_before_stop",
+      "active_queue_refused_without_stopping_current_service"
+    ],
+    "actual_old_and_new_packaged_programs": true,
+    "actual_owned_user_unit": true,
+    "actual_upholds_target_and_interrupted_recovery": true,
+    "latest_writes_retained_on_rollback": true,
+    "database_inode_preserved": true,
+    "owned_units_and_files_cleaned": true,
+    "production_access": false,
+    "production_activated": false,
+    "manager_package": "/nix/store/ff1hjnr0ja6g6fx3nkdh8mjz9ggzr8fp-tag-native-release-manager",
+    "old_package": "/nix/store/ilqv015pfdi113q9h24qxbkmsyila265-tag-all-workspace-native-0.1.0",
+    "new_package": "/nix/store/9mazfhpsrf4dxvbn8q4pixl1dpk5abc1-tag-all-workspace-native-0.1.0"
+  },
+  "activated": true,
+  "application_rust_tests": 283,
+  "shared_markdown_tests": 27,
+  "user_provided_keys_confirmed_path_aliases": true,
+  "user_confirmed_duplicate_progress_equal": true,
+  "user_progress_values_received": false,
+  "agent_profile_access": false,
+  "complete_user_key_list_saved": false,
+  "user_refresh_pending": true,
+  "backend_recompiled": false,
+  "system_switch": false,
+  "database_restored": false,
+  "logs": {
+    "tests": {
+      "path": "/tmp/namespace-collision-audit-tests.log",
+      "sha256": "d1f9f8a51e331666acd858afd9de47ee108ad79610b9717910cad4d1929d2302"
+    },
+    "build": {
+      "path": "/tmp/namespace-collision-audit-build.log",
+      "sha256": "2a9c040187859961fdae835c479a02bf530944056af022648c890266dc5d6f5f"
+    },
+    "wasm": {
+      "path": "/tmp/namespace-path-alias-browser.log",
+      "sha256": "4c8833367fedc6e8bb57249e8bef9f9b9461bbcc8fde8a0cfc1086faf9a96c68"
+    },
+    "update_rollback": {
+      "path": "/tmp/namespace-path-alias-update-gate.log",
+      "sha256": "92faa381054b84723847a62eeed9d9df883174df6284961f7c2ac1baee6c51f4"
+    }
+  },
+  "verification_completed_unix": 1793584742.7632833
+}
