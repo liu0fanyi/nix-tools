@@ -18,6 +18,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-02 · Pin signed nix.108 and record verified PC and NUC companion rollout · `0bfc8ab`
 - 2026-11-02 · Require real frontend and backend combination evidence before bundle preparation · `da0cb27`
 - 2026-11-02 · Refresh infrastructure overview after incremental rollout · `d52a00c`
 - 2026-11-01 · Summarize completed canonical workspace rollout and desktop candidate · `d863b4c`
@@ -25,5 +26,4 @@
 - 2026-11-01 · Prepare signed nix.107 desktop candidate for canonical workspace roots · `95fe114`
 - 2026-11-01 · Include the canonical card library client in the desktop candidate · `ac550c8`
 - 2026-11-01 · Reclaim stale Codex plugin staging and unused runtime cache · `adfd5ba`
-- 2026-11-01 · Prepare signed nix.106 browser installation for canonical roots · `40d1e5e`
 <!-- recent-commits:end -->
