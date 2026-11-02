@@ -121,6 +121,12 @@
       "category": "ESP32"
     },
     {
+      "name": "esp32-p4-pixel-editor",
+      "root": "/data/project/esp32-p4-pixel-editor",
+      "aliases": [],
+      "category": "ESP32"
+    },
+    {
       "name": "esp32-p4-ipkvm",
       "root": "/data/project/esp32-p4-ipkvm",
       "aliases": [],
