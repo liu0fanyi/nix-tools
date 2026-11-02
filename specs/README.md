@@ -18,6 +18,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-03 · Pin signed nix.109 and verify desktop candidate with live semantic frontends · `c15c3c1`
 - 2026-11-02 · Refresh verified nix.108 delivery overview · `00b5f0e`
 - 2026-11-02 · Pin signed nix.108 and record verified PC and NUC companion rollout · `0bfc8ab`
 - 2026-11-02 · Require real frontend and backend combination evidence before bundle preparation · `da0cb27`
@@ -25,5 +26,4 @@
 - 2026-11-01 · Summarize completed canonical workspace rollout and desktop candidate · `d863b4c`
 - 2026-11-01 · Finish strict paired namespace cutover and require entry compatibility on updates · `0030d45`
 - 2026-11-01 · Prepare signed nix.107 desktop candidate for canonical workspace roots · `95fe114`
-- 2026-11-01 · Include the canonical card library client in the desktop candidate · `ac550c8`
 <!-- recent-commits:end -->
