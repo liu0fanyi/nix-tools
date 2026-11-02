@@ -17,6 +17,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-02 · Require real frontend and backend combination evidence before bundle preparation · `da0cb27`
 - 2026-11-02 · Refresh infrastructure overview after incremental rollout · `d52a00c`
 - 2026-11-01 · Summarize completed canonical workspace rollout and desktop candidate · `d863b4c`
 - 2026-11-01 · Finish strict paired namespace cutover and require entry compatibility on updates · `0030d45`
@@ -24,5 +25,4 @@
 - 2026-11-01 · Include the canonical card library client in the desktop candidate · `ac550c8`
 - 2026-11-01 · Reclaim stale Codex plugin staging and unused runtime cache · `adfd5ba`
 - 2026-11-01 · Prepare signed nix.106 browser installation for canonical roots · `40d1e5e`
-- 2026-11-01 · Root the staged core package with prepared namespace inputs · `2e5b132`
 <!-- recent-commits:end -->
