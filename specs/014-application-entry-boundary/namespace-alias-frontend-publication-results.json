@@ -1,0 +1,123 @@
+{
+  "started_unix": 1793583658.083426,
+  "frontend": "/nix/store/h1zy2xf465mfzxm4j5xbaxaang2fajxh-dufs-plus-module-release-frontend",
+  "preserved": {
+    "knowledge-cards": {
+      "files": 112,
+      "unchanged": true
+    },
+    "learning-map": {
+      "files": 10,
+      "unchanged": true
+    }
+  },
+  "transfer": {
+    "seconds": 0.265,
+    "exit": 0
+  },
+  "pc_preview": {
+    "seconds": 0.357,
+    "exit": 0
+  },
+  "pc_prepare": {
+    "seconds": 0.624,
+    "exit": 0
+  },
+  "pc_release": "/home/liou/.local/share/tag-all/native-version-releases/5d61bec96d0d8199d5a196d3dca4b475f3b763a3c9cb480ddbea4ae34506fdfc",
+  "nuc_preview": {
+    "seconds": 0.756,
+    "exit": 0
+  },
+  "nuc_prepare": {
+    "seconds": 0.863,
+    "exit": 0
+  },
+  "nuc_release": "/home/liou/.local/share/tag-all/native-version-releases/25bb18fcd3aa757e1231b8b147df272f432e7c3aa0bac05b4396073f95be220b",
+  "pc_apply": {
+    "seconds": 2.976,
+    "exit": 0
+  },
+  "nuc_apply": {
+    "seconds": 10.452,
+    "exit": 0
+  },
+  "applied_unix": 1793583800.101824,
+  "live": {
+    "pc_served_assets": {
+      "index.html": {
+        "sha256": "e6223c0acff001bc0a1f49b0da75faf59bf4342ba528102abeac09d78774af4b",
+        "cache_control": "no-cache, must-revalidate"
+      },
+      "dufs-plus-8f30b8b7e509a927_bg.wasm": {
+        "sha256": "194cf7ffb5a06a28f35b71c599e75e3410e0062cefe878995693a166090f33e8",
+        "cache_control": null
+      }
+    },
+    "pc": {
+      "scope": "pc",
+      "programs": {
+        "tag-all-core.service": {
+          "sha256": "70f4b6b80d6c74389628c7ed419d568f6bea2fd2a6eb310705e6ab5778ed5e2c",
+          "actual_unit_descendant_verified": true
+        }
+      },
+      "strict_signatures": true,
+      "package": "/nix/store/9mazfhpsrf4dxvbn8q4pixl1dpk5abc1-tag-all-workspace-native-0.1.0",
+      "frontend": "/nix/store/h1zy2xf465mfzxm4j5xbaxaang2fajxh-dufs-plus-module-release-frontend",
+      "checked_unix": 1793583828.0320275
+    },
+    "nuc": {
+      "scope": "nuc",
+      "programs": {
+        "tag-nuc-private-core.service": {
+          "sha256": "70f4b6b80d6c74389628c7ed419d568f6bea2fd2a6eb310705e6ab5778ed5e2c",
+          "actual_unit_descendant_verified": true
+        },
+        "tag-nuc-readonly-core.service": {
+          "sha256": "70f4b6b80d6c74389628c7ed419d568f6bea2fd2a6eb310705e6ab5778ed5e2c",
+          "actual_unit_descendant_verified": true
+        }
+      },
+      "strict_signatures": true,
+      "package": "/nix/store/9mazfhpsrf4dxvbn8q4pixl1dpk5abc1-tag-all-workspace-native-0.1.0",
+      "frontend": "/nix/store/h1zy2xf465mfzxm4j5xbaxaang2fajxh-dufs-plus-module-release-frontend",
+      "anonymous_status": {
+        "5006": 401,
+        "5008": 401
+      },
+      "checked_unix": 1793583828.673472
+    },
+    "scope": "fixed frontend update; same backend, strict signatures and database",
+    "user_storage_inspected": false
+  },
+  "updated_unix": 1793583874.456323,
+  "candidate_proof": "namespace-alias-results.json",
+  "update_rollback_gate_seconds": 79.181,
+  "update_rollback_gate": {
+    "cases": [
+      "fresh_editor_confirmation_required_before_mutation",
+      "real_update_and_explicit_rollback_keep_new_database_writes_and_inode",
+      "post_start_failure_restores_old_program_and_keeps_current_data",
+      "controller_sigkill_after_install_recovers_old_program_without_state_restore",
+      "unrelated_unit_drift_refused_before_stop",
+      "active_queue_refused_without_stopping_current_service"
+    ],
+    "actual_old_and_new_packaged_programs": true,
+    "actual_owned_user_unit": true,
+    "actual_upholds_target_and_interrupted_recovery": true,
+    "latest_writes_retained_on_rollback": true,
+    "database_inode_preserved": true,
+    "owned_units_and_files_cleaned": true,
+    "production_access": false,
+    "production_activated": false,
+    "manager_package": "/nix/store/ff1hjnr0ja6g6fx3nkdh8mjz9ggzr8fp-tag-native-release-manager",
+    "old_package": "/nix/store/ilqv015pfdi113q9h24qxbkmsyila265-tag-all-workspace-native-0.1.0",
+    "new_package": "/nix/store/9mazfhpsrf4dxvbn8q4pixl1dpk5abc1-tag-all-workspace-native-0.1.0"
+  },
+  "activated": true,
+  "user_storage_inspected": false,
+  "real_user_refresh_pending": true,
+  "backend_rebuilt": false,
+  "browser_rebuilt": false,
+  "database_restored": false
+}
