@@ -1,0 +1,71 @@
+{
+  "date": "2026-11-02T16:16:01.314995+00:00",
+  "status": "nix109_signed_release_pc_candidate_verified_and_pc_nuc_frontends_deployed",
+  "frontend": "/nix/store/am74v5hhzcg3m9w2hkkvbj9fvrc46zlm-dufs-plus-semantic-release-frontend",
+  "backend_retained": "/nix/store/9mazfhpsrf4dxvbn8q4pixl1dpk5abc1-tag-all-workspace-native-0.1.0",
+  "shared_revision": "2ad7ee4cbff5e6edd87246636064819435ff3fa9",
+  "browser_release": {
+    "release": "https://github.com/liu0fanyi/tag-browser/releases/tag/v0.1.0-nix.109",
+    "revision": "e84e276454ada0473e8c7e10334a68fe11e36b16",
+    "archive_sha256": "e6bdd4f49aab142fa307e19588b9f715aa9549408ce53a2b40e9a66dd602b472",
+    "assets_verified": true,
+    "workflow_dispatched": true,
+    "user_requested_release": true
+  },
+  "browser_ci": {
+    "run_id": 41478946098,
+    "conclusion": "success",
+    "store_path": "/nix/store/vxjdzmnn6w8s3dgc9jvc5kdc26k199kj-tag-browser-0.1.0",
+    "cachix_verified": true,
+    "ci_matches_local_package": true,
+    "workflow_creates_pin": true,
+    "latest_pin": {
+      "createdOn": "2026-10-24T10:09:14.207482Z",
+      "keep": {
+        "contents": 1,
+        "tag": "Revisions"
+      },
+      "lastRevision": {
+        "artifacts": [],
+        "createdOn": "2026-11-02T16:12:45.582927Z",
+        "orphaned": false,
+        "revision": 36,
+        "storePath": "/nix/store/vxjdzmnn6w8s3dgc9jvc5kdc26k199kj-tag-browser-0.1.0"
+      },
+      "name": "tag-browser-latest"
+    },
+    "other_application_pins_unchanged": true,
+    "trusted_signature_verified": true
+  },
+  "pc_candidate": {
+    "system_candidate": "/nix/store/kl6v4w96yabhnyyb3rcjwz6j83v5f1d5-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+    "home_candidate": "/nix/store/r4bn1wy2ga92f78r21mjfh96h3f90di7-home-manager-generation",
+    "browser_binary": "/nix/store/vxjdzmnn6w8s3dgc9jvc5kdc26k199kj-tag-browser-0.1.0",
+    "browser_source_revision": "e84e276454ada0473e8c7e10334a68fe11e36b16",
+    "changed_lock_nodes": [
+      "tag-browser-src"
+    ],
+    "five_native_templates_verified": true,
+    "default_target_link_verified": true,
+    "restore_after_reload_verified": true,
+    "system_menu_binary_and_release_version_verified": true,
+    "system_switch_by_agent": false,
+    "four_browser_mime_defaults_verified": true,
+    "concurrent_external_changes_at_build": {
+      "specs/014-application-entry-boundary/tasks.md": "83b5cf61edb49d94fce0a2a792b93c22f96691d90abb34d1dd856e53d93f0b81"
+    },
+    "runtime_inputs_unchanged_during_build": true,
+    "external_work_not_overwritten_by_release": true,
+    "authorized_runtime_changes": [
+      "flake.lock:tag-browser-src"
+    ]
+  },
+  "firefox_resource_build_seconds": 41.55,
+  "firefox_assertions": 2653,
+  "firefox_groups": 7,
+  "production_account_theme_modified": false,
+  "system_switch": false,
+  "release_remaining_steps": 0,
+  "canonical_stage": "DUFS029/SCR",
+  "canonical_evidence": "dufs-plus/specs/029-shared-appearance/semantic-publication-results.json"
+}

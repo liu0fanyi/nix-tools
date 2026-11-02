@@ -513,3 +513,9 @@ DUFS前端别名冲突修复：前次401只更新后端，用户现报错来自�
 ## 浏览器nix.108与配套前端交付
 
 唯一发行计数沿用Tag Browser047/R1–R3，3项完成、剩余0。本轮只改tag-browser-src锁至d83979e；60份正式资源与七组2653项零失败/TODO、CI同一精确输出/可信签名/latest Pin保留1版及五应用缓存通过。完整liu-bigpc系统/HM、菜单/版本/四类MIME、五模板/default target/restore顺序通过。PC/NUC原固定管理器已激活nfar前端并保留9maz后端，12项实际组合、6项更新回退、PC资源摘要/NUC双区实际参数、严格签名和匿名401通过；知识卡112/学习规划10文件未变，原数据保持、无数据库恢复。见[交付证据](tag-browser-nix108-install-results.json)。Constitution Check：本机构建与固定私有发行，原签名缓存/组合门槛和回退保持，不碰日常profile、不执行system switch，不发布后续metadata writer源码；真实日常大目录性能仍归共享017/A1人工验收。用户普通终端执行nu rerun.nu liou --host liu-bigpc，并正常完整重开确认108。
+
+## 语义配色nix.109配套交付
+
+本轮依用户上线指令准备固定nix.109、严格签名缓存与完整PC/HM候选；唯一跨仓交付计数DUFS029/SCR，不重复计步。仅允许消费锁tag-browser-src更新，原服务模板/默认target/restore顺序及MIME和菜单入口核验保持；不系统switch、不覆盖外部改动。PC/NUC固定前端已切换，9maz后端和strict签名/鉴权、数据库inode及独立应用保留已核验。
+
+SCR交付完成，剩余0步，见[109安装候选与上线证据](tag-browser-nix109-install-results.json)。仅tag-browser-src锁至e84e276，正式资源/2653项Firefox、CI同一精确输出/可信签名/latest Pin及五应用缓存、完整PC/HM/菜单/版本/MIME/原生注册均通过；PC/NUC前端am74保持9maz后端、严格签名/认证及原数据。未执行系统switch；用户普通终端执行nu rerun.nu liou --host liu-bigpc，完整重开确认109并显式应用新Helix映射。
