@@ -509,3 +509,7 @@ DUFS前端别名冲突修复：前次401只更新后端，用户现报错来自�
 
 
 用户禁用缓存刷新后仍失败，随后仅提供键名并确认两份进度值相同：根因是前一前端只协调tree/scroll，漏了PATH_KEYS中的同目录偏好/进度尾斜杠别名。产品补齐按类型协调与不含值的定位诊断，283项应用/27项共享测试、private构建及11项实际WASM通过；原6项更新/回退门槛通过后，同一ff1h管理器将PC/NUC切到xv4p前端，9maz后端、strict=true和独立应用保持。PC实际HTTP制品摘要、双端实际参数/持久选择核验通过。未清缓存、读日常profile、存完整用户键名清单、恢复DB或系统switch。原页刷新仍待用户。证据namespace-path-alias-publication-results.json。
+
+## 浏览器nix.108与配套前端交付
+
+唯一发行计数沿用Tag Browser047/R1–R3，3项完成、剩余0。本轮只改tag-browser-src锁至d83979e；60份正式资源与七组2653项零失败/TODO、CI同一精确输出/可信签名/latest Pin保留1版及五应用缓存通过。完整liu-bigpc系统/HM、菜单/版本/四类MIME、五模板/default target/restore顺序通过。PC/NUC原固定管理器已激活nfar前端并保留9maz后端，12项实际组合、6项更新回退、PC资源摘要/NUC双区实际参数、严格签名和匿名401通过；知识卡112/学习规划10文件未变，原数据保持、无数据库恢复。见[交付证据](tag-browser-nix108-install-results.json)。Constitution Check：本机构建与固定私有发行，原签名缓存/组合门槛和回退保持，不碰日常profile、不执行system switch，不发布后续metadata writer源码；真实日常大目录性能仍归共享017/A1人工验收。用户普通终端执行nu rerun.nu liou --host liu-bigpc，并正常完整重开确认108。
