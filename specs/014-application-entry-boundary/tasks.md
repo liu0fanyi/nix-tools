@@ -519,3 +519,7 @@ DUFS前端别名冲突修复：前次401只更新后端，用户现报错来自�
 本轮依用户上线指令准备固定nix.109、严格签名缓存与完整PC/HM候选；唯一跨仓交付计数DUFS029/SCR，不重复计步。仅允许消费锁tag-browser-src更新，原服务模板/默认target/restore顺序及MIME和菜单入口核验保持；不系统switch、不覆盖外部改动。PC/NUC固定前端已切换，9maz后端和strict签名/鉴权、数据库inode及独立应用保留已核验。
 
 SCR交付完成，剩余0步，见[109安装候选与上线证据](tag-browser-nix109-install-results.json)。仅tag-browser-src锁至e84e276，正式资源/2653项Firefox、CI同一精确输出/可信签名/latest Pin及五应用缓存、完整PC/HM/菜单/版本/MIME/原生注册均通过；PC/NUC前端am74保持9maz后端、严格签名/认证及原数据。未执行系统switch；用户普通终端执行nu rerun.nu liou --host liu-bigpc，完整重开确认109并显式应用新Helix映射。
+
+## 自动入口及统一底栏nix.110配套交付
+
+用户2026-11-03“上线”授权：仅tag-browser-src消费锁至4b849a8；实际Firefox七组2664项、私有Release、CI同一精确输出/可信签名/latest Pin保留1版及五应用缓存、完整PC/HM/菜单/版本/MIME/五原生模板/默认target/restore顺序通过。PC/NUC配套前端gz3已激活，9maz后端、严格签名/认证、数据库inode及独立应用保持。见[110安装候选与上线证据](tag-browser-nix110-install-results.json)。跨仓唯一计数Tag Browser027/NER；未执行系统switch，用户普通终端运行nu rerun.nu liou --host liu-bigpc并完整退出重开确认110。独立Android首版归产品048，不改本消费锁或声称包含在Linux包内。

@@ -1,0 +1,328 @@
+{
+  "package": {
+    "release_tag": "v0.1.0-nix.110",
+    "package": "/nix/store/8hp4z9gw7lg2r3lxvmi8iad2h83h552n-tag-browser-0.1.0",
+    "archive": "/data/project/tag-browser/engine/obj-tag-browser/dist/tagbrowser-156.0.1.en-US.linux-x86_64.tar.xz",
+    "archive_sha256": "cf25935562d4cd9e4d868132af18eae29847a32085081b1ab83f8ae617eee749",
+    "archive_size": 83337304,
+    "runtime_resource_sha256": {
+      "TagBrowserEndpoints.mjs": "445552a44b75d08454cbfb41f3f01b0a31595be3e0e68fdc246c3c7205683542",
+      "TagBrowserStatePlan.mjs": "95fce63b8a8742d5eeb5bf92c1dc41b518dda7e27d1309eea85b80bb49115260",
+      "TagBrowserStateRegistry.mjs": "6f5a5fc8ddc138b2b74cf65031133b11d23f69e0ce7f8b177be7623f9b316c88",
+      "TagBrowserNamespace.mjs": "ea4774ce58306c31156f6f0425e95c75b3686afd4bbff9769eba7c30e142f92a",
+      "TagBrowserNamespaceStartup.mjs": "6405de0276309fec47f4018356c35d2de06de81c232f67b2d9f172f038daf96e",
+      "TagBrowserNativeFiles.mjs": "0f633af506fe5f50bafb213c90f1ac96e2bfe992670540d155e91f4f37611124",
+      "TagBrowserWorkspaceSettings.mjs": "908bd72058495f85340634f4e30f6d055048bd9078f0b79c234fc91968ca5c4a",
+      "TagBrowserAppearance.mjs": "e26780705199d5cbd23c272b97e575709240c7911e68c4f103f0a07cfe3fb731",
+      "TagBrowserSleepCore.mjs": "ed2aa124a45624051300e372975e8d750e2935875140bb40c5c5ecc4361216f8",
+      "TagBrowserSleep.mjs": "cdb2fe853bd4e601a754d9cb876d4015893363337c66c933cd655df9aa0de0d6",
+      "TagBrowserSleepChild.mjs": "d36bc21d408d595d513aa51e380b4c46f2910ebd187d8ebf72a3664e2947dba5",
+      "TagBrowserIcons.mjs": "e462609c59baa22561174e9535f72e7f7ad1ce34193d2d919ebe8a1b9c23d5a6",
+      "TagBrowserAutoTag.mjs": "b9d7bb3b3c5d5ed712aceaab9ad1eac1c8aac8d9fcc438d82c2b201db380377a",
+      "TagBrowserAutoTagKey.mjs": "fb0aa4c3b012412e0b2527439014190817bb723276b3f0cdfafd7cf0905bcc4c",
+      "TagBrowserAutoTagController.mjs": "62bb045b0ef80e7a825562325cf2ff29b9c48140e037058941d2379eef519b3d",
+      "TagBrowserRecoveryCore.mjs": "2dc05fea460d51485766a5ab30d0fe0c9ebc45a6518270b55d3c476185db0883",
+      "TagBrowserRecovery.mjs": "d2d2a5e952999b5dc063db9aaac01c849d430ddc97f8fafe5ef99d274e3c67fb",
+      "TagBrowserIdentityController.mjs": "e1fc59579b582b4f16deb054b9e3d8eee561179bf97ba24ff219e0712d3e7e13",
+      "TagBrowserCollectionView.mjs": "2b993009cc87394740d469293d8e2beb056722b2e304190a9d99320abbdec384",
+      "TagBrowserResultView.mjs": "cf96f8037a14445ef16a7617690a6ee07d39fabd6ad6e543d5bb3b9bb42529d9",
+      "TagBrowserFileActionsController.mjs": "b151507f506131b577984b8197c56f63c98b6d3302a47cedd5f1b587bf752457",
+      "TagBrowserSelectionController.mjs": "b603f72894125bde736c4150c964736c33fb22c1ca8476153062ffad75c0296b",
+      "TagBrowserSidebar.mjs": "d67fd47a86976be72a807b15a9438f2552f34c8684dbb08602e894c2dd6e5514",
+      "TagBrowserConstants.mjs": "fde9fb86dedbb6a2cf7b6bb5ea2cdabc059cd36a00e6cca8ba88025c63f87e4a",
+      "TagBrowserView.mjs": "1e7ab70f7c398cc396b1b65ae2bc183cb0b727b4ef1cc8b84f3ed726558ece29",
+      "TagBrowserConnection.mjs": "50a80fd43d8e6a2a73a698410001497c33db52e8f19309e3cfa9946cbc958d89",
+      "TagBrowserSession.mjs": "32f10a14d060f05d0a8d695f7d15534698c809eb40305d1732a73a072c187c23",
+      "TagBrowserScroll.mjs": "93f9502a52181aea2ea232493f78798e1439323ad61451666ee9e90db4efa256",
+      "TagBrowserCollections.mjs": "35b7c37d12057cb9ba3918d066f4d6ed9289a22c27fc760d47e88ed7abe21300",
+      "TagBrowserDirectoryTree.mjs": "662e5daaae4a5000d338485c14ae04145705c89b71385ca41b1937c29c8a3b48",
+      "TagBrowserTreeView.mjs": "2d61985568cdb0db63c9913ee4523eb38eb604f840c6b32d37034e4c1b40c65d",
+      "TagBrowserTreeIntegration.mjs": "0d3a5310952c474e0f6d98e2721229f609c4431997ac40266e0176f1116ec6b8",
+      "TagBrowserCollectionController.mjs": "d933e6edbfca0fd8006fcd00c9c25d789d28fc996aaac17cbc5d193c0003125e",
+      "TagBrowserZenImport.mjs": "272ac4c55447e3f776d52f5fabcb86d3012e5b6eaffb2f9992051ded167dffcb",
+      "TagBrowserImportController.mjs": "f60e10cac0cd3aa53023a666e97b1801bc7042eb32bfbddf7c510b521e7d4217",
+      "TagBrowserControllers.mjs": "03c37362f1f1f146e1dd4a719756b911e641710e088c55bff86ea0060fd80abd",
+      "TagBrowserPageController.mjs": "b2a61fcf6809ba79c2ab203f055d2defe47c8c2a1658a5e2cef4ff31191b86a5",
+      "TagBrowserDirectoryRead.mjs": "99da7f93b996754903b0396069a0e6b11cc1ffa6ab9bbb6a0f8734bc19b060a8",
+      "TagBrowserQueryRead.mjs": "751f5fb45c7e49979a2a32cacbc9b90d1d7d462b063afb94821b9e67519a9626",
+      "TagBrowserWebRead.mjs": "694e6c80209f5909d3b9457d9936a1ffbaa77eeb498f0f28949c85558afa981f",
+      "TagBrowserDataEvents.mjs": "1a7ba0a63114eb117a6b05c76c15355b95b936c6dd2e3f3fe05566527bd7fa2b",
+      "TagBrowserReadScheduler.mjs": "8cf8ed43a7268ea878d2ec529967fbe01dde5ab977e8f841fa6d92f1ddc9b98f",
+      "TagBrowserWindowLifecycle.mjs": "fede37ed4e75ff1b943b6a3407c470dc8f2073689c58b5d7671e3930e66cc9e2",
+      "TagBrowserStartup.mjs": "8f7a2d864eba3e6d0065816714a9cca6d8a5f25a1d029fa8a5369b3567892eb6",
+      "TagBrowserTodoController.mjs": "ee80f73c5c8f98595d64c663bf0a733dd46fc771dfe671bd098976cdbe20ff4a",
+      "TagBrowserTaggingController.mjs": "0f8bdd0e82e42188a4fa1ddbce2383176da44a61bbd77651f52378bce3cdafa5",
+      "TagBrowserSearchController.mjs": "f6a23f6872dfa72ec4db7c86bdfbbc2aa554e998d9ff9c15ffdfca03bc908f3d",
+      "TagBrowserSearchView.mjs": "f9b2451b7ac21dfecab660a060950b5f209bad3bbda8c4f63877536b252e8440",
+      "TagBrowserSearchWorker.js": "3db5d9b86256e2cfb1e3e8bd52bee058c87e9b496cd06a0782e292a7268a4347",
+      "TagBrowserSearchWorkerClient.mjs": "dc114a8dec7b81b6ae4dd999c5ea84f0c954304d334f56d7e9ddb2154f1ff160",
+      "TagBrowserSearchProviders.mjs": "360a25173003e242c6099bac211fefbdd347c245381e6fd55f9246589e3d595c",
+      "TagBrowserFileSearch.mjs": "7f954f2305528fa5d8994e2f7faf836f31ae9f5d7aadd464e0e895fbe6543b72",
+      "TagBrowserMultiSearch.mjs": "008dd890922f3f23f9c8c49578ba396690f6c226cf9e6032f28d7902d0ec5fec",
+      "TagBrowserTagCore.mjs": "ed435eb8cf380d2df17b6ec229f5d4cc29df27781ee6d5aef20d651577b13c21",
+      "TagBrowserTodo.mjs": "5cbd6bc1799c330623555937145aaca40efe69c4c2916a853c9e3b98c51db16c",
+      "TagBrowserScrollFrame.js": "9d4cf928b033d45dd230d45d9f68523c6291c250ed2cac08c0a2d5f4e7e0803f",
+      "tag-browser-sidebar.css": "5a3e4c013171c018846acb6ce18d72e5df495b2ac47be75a1ed686d285827873",
+      "tag-browser-tag-core.wasm": "3e0880d7ffd468e36b149c5173eeb87852a3b85f0fa2467c90386078479e0474",
+      "tag-browser-icons-LICENSE": "1e7290b35280a048667bbf0ebabac1c7fd52a75300e8b2946ac165715997f2bc",
+      "TagBrowserYaml.mjs": "5b4536e72a2203aa6f159630caeefde35a95d8f95620f5a1d3c48efe3a0e76fa",
+      "tag-browser-yaml-LICENSE": "a07bc24468b9654ce76a547d47a2db282d07733b715db4c73a98bd63961f9550"
+    },
+    "runtime_resources": 61,
+    "firefox_assertions": 2664,
+    "firefox_groups": 7,
+    "failures": 0,
+    "todo": 0,
+    "firefox_raw_log_sha256": "0a4779994170f641898767aa802f8b2c4e9bd369480c25c72fcd199b40e59cce",
+    "standalone_isolated_profile_version": "Mozilla TagBrowser 156.0.1",
+    "latest_pin": "tag-browser-latest",
+    "keep_revisions": 1,
+    "daily_profile_used": false,
+    "production_services_updated": false
+  },
+  "release": {
+    "release": "https://github.com/liu0fanyi/tag-browser/releases/tag/v0.1.0-nix.110",
+    "revision": "4b849a8ee9bc6323a9c304e4e766fc4aaa0aae8d",
+    "archive_sha256": "cf25935562d4cd9e4d868132af18eae29847a32085081b1ab83f8ae617eee749",
+    "assets_verified": true,
+    "workflow_dispatched": true,
+    "user_requested_release": true
+  },
+  "ci": {
+    "run_id": 41649118210,
+    "conclusion": "success",
+    "store_path": "/nix/store/8hp4z9gw7lg2r3lxvmi8iad2h83h552n-tag-browser-0.1.0",
+    "cachix_verified": true,
+    "ci_matches_local_package": true,
+    "workflow_creates_pin": true,
+    "latest_pin": {
+      "createdOn": "2026-10-24T10:09:14.207482Z",
+      "keep": {
+        "contents": 1,
+        "tag": "Revisions"
+      },
+      "lastRevision": {
+        "artifacts": [],
+        "createdOn": "2026-11-03T13:59:43.249527Z",
+        "orphaned": false,
+        "revision": 37,
+        "storePath": "/nix/store/8hp4z9gw7lg2r3lxvmi8iad2h83h552n-tag-browser-0.1.0"
+      },
+      "name": "tag-browser-latest"
+    },
+    "other_application_pins_unchanged": true,
+    "trusted_signature_verified": true
+  },
+  "system": {
+    "system_candidate": "/nix/store/383wrxgczdv5l6vbj7y71gbksihlppp1-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+    "home_candidate": "/nix/store/r4bn1wy2ga92f78r21mjfh96h3f90di7-home-manager-generation",
+    "browser_binary": "/nix/store/8hp4z9gw7lg2r3lxvmi8iad2h83h552n-tag-browser-0.1.0",
+    "browser_source_revision": "4b849a8ee9bc6323a9c304e4e766fc4aaa0aae8d",
+    "changed_lock_nodes": [
+      "tag-browser-src"
+    ],
+    "five_native_templates_verified": true,
+    "default_target_link_verified": true,
+    "restore_after_reload_verified": true,
+    "system_menu_binary_and_release_version_verified": true,
+    "system_switch_by_agent": false,
+    "four_browser_mime_defaults_verified": true,
+    "concurrent_external_changes_at_build": {},
+    "runtime_inputs_unchanged_during_build": true,
+    "external_work_not_overwritten_by_release": true,
+    "authorized_runtime_changes": [
+      "flake.lock:tag-browser-src"
+    ]
+  },
+  "caches": {
+    "clipboard-sync.outPath": {
+      "path": "/nix/store/jdchs28f8h7cghn4j9fpvhypwl6gs1cr-clipboard-sync-0.2.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "screen-cut-binary-path": {
+      "path": "/nix/store/arrsa3p4q795xkw02503wrz9xyr4wmq4-screen-cut-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "screen-mark-binary-path": {
+      "path": "/nix/store/j1cvwiafizx98f8qzwj2n6szalsqldm8-screen-mark-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "knowledge-cards-binary-path": {
+      "path": "/nix/store/kgycmilmqlkgjrwd8bxlszl2yaaag60j-knowledge-cards-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "tag-browser-binary-path": {
+      "path": "/nix/store/8hp4z9gw7lg2r3lxvmi8iad2h83h552n-tag-browser-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    }
+  },
+  "frontends": {
+    "combination": {
+      "kind": "native-bundle-check-v1",
+      "bundle_id": "20b382fbfe7146e56dd1fb22f7f6dd00c26398dbf5b6ada9038232f1313e2deb",
+      "controls": [
+        {
+          "path": "/home/liou/nix-tools/scripts/application_release_bundle.py",
+          "sha256": "988b97eb862cd5262c354146c4bcb50fc5058e439d74baf435626db271c730ec"
+        },
+        {
+          "path": "/home/liou/nix-tools/scripts/check_application_bundle.py",
+          "sha256": "919141f710b3f8869b7fb7ba5aa580f812ebfa9e21f7b3d37a1db2d0758cabb3"
+        },
+        {
+          "path": "/home/liou/nix-tools/scripts/application-bundle.browser.cjs",
+          "sha256": "480df39e8fbd8787f3f034108707b9d264c67632db17ded57efa4fa002776b7b"
+        },
+        {
+          "path": "/home/liou/nix-tools/justfile",
+          "sha256": "e0081198de8f543d4892a122aec35b509728d9b31a3a3b2e0cffe9141da0e45d"
+        }
+      ],
+      "cases": [
+        "basic_manifest",
+        "basic_locations",
+        "unsigned_sync_rejected",
+        "anonymous_rejected",
+        "foreign_origin_rejected",
+        "served_assets",
+        "fresh",
+        "aliases_content_reload",
+        "progress_conflict",
+        "unknown_operation",
+        "shared_wasm",
+        "cleaned"
+      ],
+      "logs": [
+        {
+          "path": "/tmp/endpoint-release-combination-v2-results-files.log",
+          "sha256": "7c97c2735c5b5e5e2480e3ec5743b5a1187ec251ca878312a33738579f90fe3c"
+        },
+        {
+          "path": "/tmp/endpoint-release-combination-v2-results-initial.log",
+          "sha256": "2156e0e32e8a95b61bfc6d9a5a334be972263bfa8c29301fcfda7aa6d6bb7938"
+        },
+        {
+          "path": "/tmp/endpoint-release-combination-v2-results-canonical.log",
+          "sha256": "eef6315b713a319f557879a62af32610414902702585501c1348e40031886da4"
+        },
+        {
+          "path": "/tmp/endpoint-release-combination-v2-results-browser.log",
+          "sha256": "864218caba6f70028de97a857af7c743eee5045768db5fd2b45aa34d74988596"
+        }
+      ],
+      "passed": true,
+      "cleaned": true,
+      "production_access": false,
+      "daily_profile_used": false,
+      "actual_rust_cli": true,
+      "actual_frontend": true,
+      "api_mocked": false
+    },
+    "rollback": {
+      "cases": [
+        "fresh_editor_confirmation_required_before_mutation",
+        "real_update_and_explicit_rollback_keep_new_database_writes_and_inode",
+        "post_start_failure_restores_old_program_and_keeps_current_data",
+        "controller_sigkill_after_install_recovers_old_program_without_state_restore",
+        "unrelated_unit_drift_refused_before_stop",
+        "active_queue_refused_without_stopping_current_service"
+      ],
+      "actual_backend_unchanged": true,
+      "actual_owned_user_unit": true,
+      "actual_upholds_target_and_interrupted_recovery": true,
+      "latest_writes_retained_on_rollback": true,
+      "database_inode_preserved": true,
+      "owned_units_and_files_cleaned": true,
+      "production_access": false,
+      "production_activated": false,
+      "manager_package": "/nix/store/ff1hjnr0ja6g6fx3nkdh8mjz9ggzr8fp-tag-native-release-manager",
+      "old_package": "/nix/store/9mazfhpsrf4dxvbn8q4pixl1dpk5abc1-tag-all-workspace-native-0.1.0",
+      "new_package": "/nix/store/9mazfhpsrf4dxvbn8q4pixl1dpk5abc1-tag-all-workspace-native-0.1.0",
+      "backend_only": false,
+      "old_frontend": "/nix/store/vybznzdyyi6xgc2fsl1imy78rkl7lrqi-dufs-plus-selection-range-release-frontend",
+      "new_frontend": "/nix/store/gz3mvb8n00ii8hadxckx35rip1hb6gcm-dufs-plus-endpoint-status-release-frontend",
+      "actual_frontend_roundtrip_verified": true
+    },
+    "activation": {
+      "pc": {
+        "seconds": 4.403,
+        "exit": 0,
+        "receipt": "/home/liou/.local/share/tag-all/native-version-releases/1d9d5bc20633b36ed49a1e902f9fa93e921f938e30062d5b6ae5f32fc3cf9827",
+        "result": {
+          "phase": "activated",
+          "manifest": "1d9d5bc20633b36ed49a1e902f9fa93e921f938e30062d5b6ae5f32fc3cf9827",
+          "backup": "/home/liou/.local/share/tag-all/native-version-releases/1d9d5bc20633b36ed49a1e902f9fa93e921f938e30062d5b6ae5f32fc3cf9827/backup",
+          "database_restored": false
+        }
+      },
+      "nuc": {
+        "seconds": 16.36,
+        "exit": 0,
+        "receipt": "/home/liou/.local/share/tag-all/native-version-releases/839c0038a24bec5959e54a1491200449035324740d7b90e6b523f6e772095755",
+        "result": {
+          "phase": "activated",
+          "manifest": "839c0038a24bec5959e54a1491200449035324740d7b90e6b523f6e772095755",
+          "backup": "/home/liou/.local/share/tag-all/native-version-releases/839c0038a24bec5959e54a1491200449035324740d7b90e6b523f6e772095755/backup",
+          "database_restored": false
+        }
+      }
+    },
+    "pc": {
+      "scope": "pc",
+      "programs": {
+        "tag-all-core.service": {
+          "sha256": "70f4b6b80d6c74389628c7ed419d568f6bea2fd2a6eb310705e6ab5778ed5e2c",
+          "actual_unit_descendant_verified": true
+        }
+      },
+      "strict_signatures": true,
+      "package": "/nix/store/9mazfhpsrf4dxvbn8q4pixl1dpk5abc1-tag-all-workspace-native-0.1.0",
+      "frontend": "/nix/store/gz3mvb8n00ii8hadxckx35rip1hb6gcm-dufs-plus-endpoint-status-release-frontend",
+      "served_assets": {
+        "index.html": "629b96cbd971401e2611c943dced331e2b37b0f9cb891b424348c3fe67e39a60",
+        "lib/js/epub/http-range.js": "e253e1fee61ec8a1c32bb1be5b2c639c8accaa5a43825c0f2c18f450002ece3c",
+        "dufs-plus-3e00c735218ac9a9.js": "af3b67975cf188b59d3be340c0048eb1c6f5248d0f25ce51038c8429c28cdd30",
+        "dufs-plus-3e00c735218ac9a9_bg.wasm": "10bb89868bf7982d9123e97b5785c273db62e705100103baffc99828f7ef6e08",
+        "epub-viewer-2529ae2aa954e0e0.js": "bf15ddee827cc2cac8a1434e14aa3a0d811c8e7cf54afe3c6f99f1813a5ca88a",
+        "markdown_morph-8fcfad04ef1347e7.js": "b678f8932b47dc6c2731d78d3338e621b36f9762f43cc21c5e28650f63cfa43d",
+        "codemirror_editor-b2559bc7109c4807.js": "2535cc301a5572c08377582801957c9eecb95a237bc24440c23e773214b73ab4",
+        "helix_editor.bundle-fdd177686b4f9c3d.js": "77882cf1b3b0ae5a330dcd562555947f6e242987f9f4e8594402f28a7b112ed5"
+      },
+      "backup_integrity_and_hashes_verified": true,
+      "current_database_inodes_preserved": true,
+      "original_upholds_restored": true,
+      "checked_unix": 1793714189.1015847
+    },
+    "nuc": {
+      "scope": "nuc",
+      "programs": {
+        "tag-nuc-private-core.service": {
+          "sha256": "70f4b6b80d6c74389628c7ed419d568f6bea2fd2a6eb310705e6ab5778ed5e2c",
+          "actual_unit_descendant_verified": true
+        },
+        "tag-nuc-readonly-core.service": {
+          "sha256": "70f4b6b80d6c74389628c7ed419d568f6bea2fd2a6eb310705e6ab5778ed5e2c",
+          "actual_unit_descendant_verified": true
+        }
+      },
+      "strict_signatures": true,
+      "package": "/nix/store/9mazfhpsrf4dxvbn8q4pixl1dpk5abc1-tag-all-workspace-native-0.1.0",
+      "frontend": "/nix/store/gz3mvb8n00ii8hadxckx35rip1hb6gcm-dufs-plus-endpoint-status-release-frontend",
+      "anonymous_status": {
+        "5006": 401,
+        "5008": 401
+      },
+      "backup_integrity_and_hashes_verified": true,
+      "current_database_inodes_preserved": true,
+      "original_upholds_restored": true,
+      "checked_unix": 1793714191.8063104
+    },
+    "independent_apps_unchanged": true
+  },
+  "system_switched_by_agent": false
+}
