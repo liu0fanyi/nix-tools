@@ -19,12 +19,12 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-03 · Pin signed nix.110 and verify full desktop candidate with endpoint frontends · `9937d37`
+- 2026-11-03 · Summarize live EdgeOne checks and pending authenticated PDF verification · `a869731`
 - 2026-11-03 · Verify live EdgeOne response lengths ranges and anonymous authorization · `037fccb`
 - 2026-11-03 · Summarize frontend rollout and pending EdgeOne console update · `92f5ddb`
 - 2026-11-03 · Summarize pending NAS edge response verification · `61ae389`
 - 2026-11-03 · Preserve identity response lengths for PDF range support · `6a2c486`
 - 2026-11-03 · Refresh infrastructure overview after nix.109 delivery · `eeddace`
 - 2026-11-03 · Pin signed nix.109 and verify desktop candidate with live semantic frontends · `c15c3c1`
-- 2026-11-02 · Refresh verified nix.108 delivery overview · `00b5f0e`
-- 2026-11-02 · Pin signed nix.108 and record verified PC and NUC companion rollout · `0bfc8ab`
 <!-- recent-commits:end -->
