@@ -445,6 +445,24 @@ podman image prune -f          # 仅删 <none> 悬空镜像，不动有 tag 的
      最终报告为 `/tmp/disk-clean-report-20261101.json`。
 
 
+- 2026-11-04（用户授权清理系统与/data）：宿主系统盘 `/dev/sda4` 由96%降至65%，
+  可用约19G→142G；数据盘 `/dev/sdd1` 由97%降至77%，可用约16G→103G。
+  系统实际删除窗口占用净下降约107.4GiB；盘点期间已有外部Nix回收活动，
+  因而96%起点到最终的总降幅不能全部归因于本次清理。
+  1. 通过临时用户systemd单元取得真实宿主进程和文件占用信息，确认无活跃构建；
+     删除350个超过一小时且无打开文件的插件staging，保留正式安装与聊天记录。
+  2. 通过已有宿主Podman socket，删除302个Storage/PID0构建working-container
+     （含数字后缀），再仅image prune；镜像115GB→30.52GB。逐项核对163组
+     原有镜像标签及ID全部保留，5个服务容器ID/名称/状态/镜像/退出码不变；
+     Storage残留归零，交叉编译、生产镜像及卷保留。
+  3. /data精确清理12个带Cargo/CACHEDIR.TAG的Rust target及3个带CMakeCache
+     的.build，共释放93,273,690,112字节（约86.9GiB）；每项复查Git未跟踪文件、
+     活跃构建和打开文件。源码、SDK、三个Bevy保护目录、xiaoqiang和个人资料未动；
+     后续构建需重建对应缓存。本次未运行Nix GC、system/container prune、-a或switch。
+  4. 本机审计、清理白名单及前后快照在 `/tmp/disk-clean-*-20261104*`，
+     汇总报告为 `/tmp/disk-clean-report-20261104.json`；未将本机明细上传服务器。
+
+
 ## Clip 规格归属
 
 按用户绑定维护决定，clipboard-sync 子模块的功能规格统一位于本仓库 specs/005-clipboard-core、006-clipboard-reliability、007-clipboard-release。子模块只留手册与指向本仓库的入口，代码/Git/构建保持独立。其他产品仍在各自仓库管理规格。本规则明确恢复既有父仓库规格归属，不恢复已经取消的 dsh Web 或 Clip 2 分钟过期需求。
