@@ -25,8 +25,11 @@ async function forwardRequest(request, deviceApi) {
     console.log(JSON.stringify({ request_id: requestId, stage: "forward",
       status: response.status, elapsed_ms: Date.now() - started }));
     const resultHeaders = new Headers(response.headers);
+    // PDF.js needs the identity representation's length to enable Range.
+    // Only a decoded compressed body has a stale wire byte length.
+    const encoding = (resultHeaders.get("Content-Encoding") || "identity").trim().toLowerCase();
     resultHeaders.delete("Content-Encoding");
-    resultHeaders.delete("Content-Length");
+    if (encoding !== "identity") resultHeaders.delete("Content-Length");
     // This origin advertises its private :5009 HTTP/3 listener.
     resultHeaders.delete("Alt-Svc");
     const result = new Response(response.body, {
