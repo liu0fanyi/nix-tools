@@ -19,6 +19,14 @@ PASSWORD='bundle-fixture-password'  # Public synthetic fixture only.
 PASSWORD_HASH='$2a$14$Dl6w7usPIeiGYeLhnDonFeWNh2NC75plTVIezSgqiU.OeFAQ5qNsi'
 
 
+def fixture_applications(frontend):
+    # Reserved application routes require their own configured root, including
+    # when their unchanged static files are present in a private frontend bundle.
+    return ''.join('[[applications]]\nname='+json.dumps(name)+'\nroot='+json.dumps(str(Path(frontend)/name))+'\n'
+                   for name in ('devices','transcriptions','recorder-bean')
+                   if (Path(frontend)/name).is_dir())
+
+
 def check(bundle,result_path):
     verify(bundle);c=bundle['configuration'];result_path=Path(result_path).resolve()
     result_path.parent.mkdir(parents=True,exist_ok=True);result_path.unlink(missing_ok=True)
@@ -51,7 +59,7 @@ def check(bundle,result_path):
             def configure(path):
                 config.write_text('[node]\nid="bundle-fixture"\n[[locations]]\nid="default"\nnode_id="bundle-fixture"\nname="Fixture"\npath='+json.dumps(str(path))+'\n[sync]\nenabled=true\nauto_broadcast=false\npoll_interval_secs=0\npeers=[]\nrequire_signatures=true\n[discovery]\nenabled=false\n[pairing]\nenabled=true\n');config.chmod(0o600)
             def entry_config(roots):
-                entry.write_text('lan=true\nauthorities='+json.dumps([base.removeprefix('http://')])+'\nallowed_sources=["127.0.0.0/8"]\ncanonical_namespace='+('true' if roots else 'false')+'\n'+''.join('[[shared_roots]]\n'+''.join(k+'='+json.dumps(v)+'\n' for k,v in row.items()) for row in roots));entry.chmod(0o600)
+                entry.write_text('lan=true\nauthorities='+json.dumps([base.removeprefix('http://')])+'\nallowed_sources=["127.0.0.0/8"]\ncanonical_namespace='+('true' if roots else 'false')+'\n'+''.join('[[shared_roots]]\n'+''.join(k+'='+json.dumps(v)+'\n' for k,v in row.items()) for row in roots)+fixture_applications(c['frontend']));entry.chmod(0o600)
             sock=runtime/'files.sock';dufs=Path(c['file_server_package'])/'bin/dufs'
             def launch(args,name,environment=None):
                 path=root/(name+'.log');logs.append(path)
@@ -99,7 +107,7 @@ def check(bundle,result_path):
             for name,sha in bundle['frontend']['declared_assets'].items():
                 code,raw=request('/'+('' if name=='index.html' else name))
                 import hashlib
-                if code!=200 or hashlib.sha256(raw).hexdigest()!=sha:raise ValueError('Actual served frontend mismatch')
+                if code!=200 or hashlib.sha256(raw).hexdigest()!=sha:raise ValueError(f'Actual served frontend mismatch: {name} status={code}')
             if request('/library/book.md')!=(200,b'# Synthetic original file\n'):raise ValueError('Canonical content request failed')
             passed('served_assets')
             fixture={'base':base,'username':'fixture','password':PASSWORD,'bundle_id':bundle['bundle_id'],'bridge':bundle['shared']['wasm']['path'],'bridge_module':str(Path(c['browser_source'])/'src/firefox/tag-browser/TagBrowserTagCore.mjs')}

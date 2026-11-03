@@ -531,3 +531,7 @@ SCR交付完成，剩余0步，见[109安装候选与上线证据](tag-browser-n
 
 
 该配套候选与服务交付已验证，见[tag-browser-nix111-install-results.json](tag-browser-nix111-install-results.json)：私有CI41667490580的实际输出skx3、Cachix可信签名/latest Pin保留1版、其他应用Pin不变、五应用缓存及完整PC/HM候选通过。仅tag-browser-src锁节点更新至3d15ae4；菜单/四类MIME、五模板/default target/恢复顺序不变。PC/NUC固定fwmb前端已上线，保留原9maz后端/严格签名/数据inode与独立应用。唯一跨仓计数Tag Browser027/ATR；未执行系统switch或操作日常profile。用户普通终端在本仓执行`nu rerun.nu liou --host liu-bigpc`，正常退出全部旧窗口并重开确认111，实际使用仍单列。
+
+## 原生主题首屏与Markdown nix.112配套交付
+
+用户本轮“上线”授权。nix.112原生62份资源与七组2686项、私有Release/CI41673716233精确ggpn包、可信签名/latest Pin保留1版、其他应用Pin及五应用精确缓存核验通过。仅更新tag-browser-src锁到e7a6329；完整PC/HM候选、菜单/四类MIME、五模板/default target及restore顺序通过，未system switch。PC/NUC网页cayb上线6.517/11.651秒，现用9maz后端、严格签名、备份完整性/inode/Upholds及独立应用保持。12项实际组合保留全部350份HTTP摘要、13项夹具单测及6项隔离回退通过。组合夹具缺reserved应用根导致404，审批拒绝缩减集合；改夹具按后端固定applications映射补齐，生产路由未改，失败记录保留。唯一交付计数Tag Browser036/NFR，见[完整安装核验](tag-browser-nix112-install-results.json)。用户普通终端应用liu-bigpc并正常完整重开确认112，真实日常体验仍另行验收。

@@ -58,4 +58,18 @@ class BundleTests(unittest.TestCase):
         proof=specs/'proof.json';proof.write_text(__import__('json').dumps({'frontend':'/fixed','source_sha256':{'source.rs':'old'},'built_artifacts_sha256':{'index.html':'old'}}))
         with self.assertRaisesRegex(ValueError,'source drift'):b.frontend({'dufs_source':str(self.root),'frontend_proof':str(proof),'frontend':'/fixed'})
 
+class FixtureApplicationTests(unittest.TestCase):
+    def test_reserved_assets_have_fixed_separate_roots(self):
+        import sys, tomllib
+        with patch.dict(sys.modules, {'application_release_bundle':b}):
+            spec=importlib.util.spec_from_file_location('combination_fixture',Path(__file__).resolve().parents[1]/'check_application_bundle.py')
+            fixture=importlib.util.module_from_spec(spec);spec.loader.exec_module(fixture)
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary)
+            self.assertEqual(fixture.fixture_applications(root),'')
+            for name in ('devices','recorder-bean','unknown'):(root/name).mkdir()
+            apps=tomllib.loads(fixture.fixture_applications(root))['applications']
+            self.assertEqual([a['name'] for a in apps],['devices','recorder-bean'])
+            self.assertEqual([a['root'] for a in apps],[str(root/'devices'),str(root/'recorder-bean')])
+
 if __name__=='__main__':unittest.main()

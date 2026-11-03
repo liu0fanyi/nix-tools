@@ -1,0 +1,321 @@
+{
+  "system_candidate": "/nix/store/hd1wc3jf11j2rdkf1890i7nmwlf1hmpd-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "home_candidate": "/nix/store/r4bn1wy2ga92f78r21mjfh96h3f90di7-home-manager-generation",
+  "browser_binary": "/nix/store/ggpn9lg24rqkwgwwy2qhpmz2cichv50v-tag-browser-0.1.0",
+  "browser_source_revision": "e7a63297f4166a60f834617bba491b29798286f2",
+  "changed_lock_nodes": [
+    "tag-browser-src"
+  ],
+  "five_native_templates_verified": true,
+  "default_target_link_verified": true,
+  "restore_after_reload_verified": true,
+  "system_menu_binary_and_release_version_verified": true,
+  "system_switch_by_agent": false,
+  "four_browser_mime_defaults_verified": true,
+  "concurrent_external_changes_at_build": {
+    "scripts/check_application_bundle.py": "e251e4ad222ab4587c434fba5dc52f9a3b5794318f11e8f375840ee9147aefa9",
+    "scripts/tests/test_application_release_bundle.py": "fbba88db1dd0f80421c6365083e63b37286ab34b8550b77d425f77f4a047aef4",
+    "specs/016-application-release-bundle/tasks.md": "37683a8a3a6f9b95e6eb05987409c4447382f1684f8c90df73ccfded09f4bcae"
+  },
+  "runtime_inputs_unchanged_during_build": true,
+  "external_work_not_overwritten_by_release": true,
+  "authorized_runtime_changes": [
+    "flake.lock:tag-browser-src"
+  ],
+  "ci": {
+    "run_id": 41673716233,
+    "conclusion": "success",
+    "store_path": "/nix/store/ggpn9lg24rqkwgwwy2qhpmz2cichv50v-tag-browser-0.1.0",
+    "cachix_verified": true,
+    "ci_matches_local_package": true,
+    "workflow_creates_pin": true,
+    "latest_pin": {
+      "createdOn": "2026-10-24T10:09:14.207482Z",
+      "keep": {
+        "contents": 1,
+        "tag": "Revisions"
+      },
+      "lastRevision": {
+        "artifacts": [],
+        "createdOn": "2026-11-03T16:25:12.97696Z",
+        "orphaned": false,
+        "revision": 39,
+        "storePath": "/nix/store/ggpn9lg24rqkwgwwy2qhpmz2cichv50v-tag-browser-0.1.0"
+      },
+      "name": "tag-browser-latest"
+    },
+    "other_application_pins_unchanged": true,
+    "trusted_signature_verified": true
+  },
+  "desktop_caches": {
+    "clipboard-sync.outPath": {
+      "path": "/nix/store/jdchs28f8h7cghn4j9fpvhypwl6gs1cr-clipboard-sync-0.2.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "screen-cut-binary-path": {
+      "path": "/nix/store/arrsa3p4q795xkw02503wrz9xyr4wmq4-screen-cut-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "screen-mark-binary-path": {
+      "path": "/nix/store/j1cvwiafizx98f8qzwj2n6szalsqldm8-screen-mark-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "knowledge-cards-binary-path": {
+      "path": "/nix/store/kgycmilmqlkgjrwd8bxlszl2yaaag60j-knowledge-cards-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "tag-browser-binary-path": {
+      "path": "/nix/store/ggpn9lg24rqkwgwwy2qhpmz2cichv50v-tag-browser-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    }
+  },
+  "frontends": {
+    "status": "pc_nuc_frontend_delivery_complete",
+    "date": "2026-11-04T00:25:36.695035+08:00",
+    "combination": {
+      "kind": "native-bundle-check-v1",
+      "bundle_id": "95a057ebf21e894a4881f66107c5fe9e9f77723ce699215bc24a69936fb79cc9",
+      "controls": [
+        {
+          "path": "/home/liou/nix-tools/scripts/application_release_bundle.py",
+          "sha256": "988b97eb862cd5262c354146c4bcb50fc5058e439d74baf435626db271c730ec"
+        },
+        {
+          "path": "/home/liou/nix-tools/scripts/check_application_bundle.py",
+          "sha256": "e251e4ad222ab4587c434fba5dc52f9a3b5794318f11e8f375840ee9147aefa9"
+        },
+        {
+          "path": "/home/liou/nix-tools/scripts/application-bundle.browser.cjs",
+          "sha256": "480df39e8fbd8787f3f034108707b9d264c67632db17ded57efa4fa002776b7b"
+        },
+        {
+          "path": "/home/liou/nix-tools/justfile",
+          "sha256": "e0081198de8f543d4892a122aec35b509728d9b31a3a3b2e0cffe9141da0e45d"
+        }
+      ],
+      "cases": [
+        "basic_manifest",
+        "basic_locations",
+        "unsigned_sync_rejected",
+        "anonymous_rejected",
+        "foreign_origin_rejected",
+        "served_assets",
+        "fresh",
+        "aliases_content_reload",
+        "progress_conflict",
+        "unknown_operation",
+        "shared_wasm",
+        "cleaned"
+      ],
+      "logs": [
+        {
+          "path": "/tmp/theme-release-combination-final-results-files.log",
+          "sha256": "6075f3fd8d4a4101159b07c7cb5b6299639f17ccfc3f5c080d7a6eace0ff534a"
+        },
+        {
+          "path": "/tmp/theme-release-combination-final-results-initial.log",
+          "sha256": "f6bbcd55edc76904ce1da6e9e7de9c31ac4a0d43e31b952b5629bfdafc30f232"
+        },
+        {
+          "path": "/tmp/theme-release-combination-final-results-canonical.log",
+          "sha256": "bd780f3f74a92e46107654088edf0c27263eb8ec0edacfd863db4267c3c12e82"
+        },
+        {
+          "path": "/tmp/theme-release-combination-final-results-browser.log",
+          "sha256": "864218caba6f70028de97a857af7c743eee5045768db5fd2b45aa34d74988596"
+        }
+      ],
+      "passed": true,
+      "cleaned": true,
+      "production_access": false,
+      "daily_profile_used": false,
+      "actual_rust_cli": true,
+      "actual_frontend": true,
+      "api_mocked": false
+    },
+    "rollback": {
+      "cases": [
+        "fresh_editor_confirmation_required_before_mutation",
+        "real_update_and_explicit_rollback_keep_new_database_writes_and_inode",
+        "post_start_failure_restores_old_program_and_keeps_current_data",
+        "controller_sigkill_after_install_recovers_old_program_without_state_restore",
+        "unrelated_unit_drift_refused_before_stop",
+        "active_queue_refused_without_stopping_current_service"
+      ],
+      "actual_backend_unchanged": true,
+      "actual_owned_user_unit": true,
+      "actual_upholds_target_and_interrupted_recovery": true,
+      "latest_writes_retained_on_rollback": true,
+      "database_inode_preserved": true,
+      "owned_units_and_files_cleaned": true,
+      "production_access": false,
+      "production_activated": false,
+      "manager_package": "/nix/store/ff1hjnr0ja6g6fx3nkdh8mjz9ggzr8fp-tag-native-release-manager",
+      "old_package": "/nix/store/9mazfhpsrf4dxvbn8q4pixl1dpk5abc1-tag-all-workspace-native-0.1.0",
+      "new_package": "/nix/store/9mazfhpsrf4dxvbn8q4pixl1dpk5abc1-tag-all-workspace-native-0.1.0",
+      "backend_only": false,
+      "old_frontend": "/nix/store/fwmb4mqm5n7a3q9fj8w5wbp4vhin5z9h-dufs-plus-alias-reader-release-frontend",
+      "new_frontend": "/nix/store/caybd3nl8vncjnsm5fy1bvnw1zwr926j-dufs-plus-theme-startup-markdown-release-frontend",
+      "actual_frontend_roundtrip_verified": true
+    },
+    "transfer": {
+      "frontend": "/nix/store/caybd3nl8vncjnsm5fy1bvnw1zwr926j-dufs-plus-theme-startup-markdown-release-frontend",
+      "closure": {
+        "/nix/store/caybd3nl8vncjnsm5fy1bvnw1zwr926j-dufs-plus-theme-startup-markdown-release-frontend": {
+          "narHash": "sha256-N/JwSSAPM99HEk3/JizLjTsDFhkqXUKr1pUjirb/zIs=",
+          "narSize": 71419944
+        }
+      },
+      "existing_trusted_user_verified": true,
+      "remote_nar_hashes_verified": true,
+      "system_trust_unchanged": true,
+      "method": "existing own-artifact per-copy import, native-nuc-prepare policy"
+    },
+    "activation": {
+      "pc": {
+        "seconds": 6.517,
+        "exit": 0,
+        "receipt": "/home/liou/.local/share/tag-all/native-version-releases/298955eeef72ca401aa488869160c106e6a25d208bfaaa1f933a6a1a04a3bedb",
+        "result": {
+          "phase": "activated",
+          "manifest": "298955eeef72ca401aa488869160c106e6a25d208bfaaa1f933a6a1a04a3bedb",
+          "backup": "/home/liou/.local/share/tag-all/native-version-releases/298955eeef72ca401aa488869160c106e6a25d208bfaaa1f933a6a1a04a3bedb/backup",
+          "database_restored": false
+        }
+      },
+      "nuc": {
+        "seconds": 11.651,
+        "exit": 0,
+        "receipt": "/home/liou/.local/share/tag-all/native-version-releases/00007aa3c8dc2574afe0111150ed90641b7806e47cb507c19ae9a0a456e21c1a",
+        "result": {
+          "phase": "activated",
+          "manifest": "00007aa3c8dc2574afe0111150ed90641b7806e47cb507c19ae9a0a456e21c1a",
+          "backup": "/home/liou/.local/share/tag-all/native-version-releases/00007aa3c8dc2574afe0111150ed90641b7806e47cb507c19ae9a0a456e21c1a/backup",
+          "database_restored": false
+        }
+      }
+    },
+    "pc": {
+      "scope": "pc",
+      "programs": {
+        "tag-all-core.service": {
+          "sha256": "70f4b6b80d6c74389628c7ed419d568f6bea2fd2a6eb310705e6ab5778ed5e2c",
+          "actual_unit_descendant_verified": true
+        }
+      },
+      "strict_signatures": true,
+      "package": "/nix/store/9mazfhpsrf4dxvbn8q4pixl1dpk5abc1-tag-all-workspace-native-0.1.0",
+      "frontend": "/nix/store/caybd3nl8vncjnsm5fy1bvnw1zwr926j-dufs-plus-theme-startup-markdown-release-frontend",
+      "served_assets": {
+        "index.html": "a1408b3e52453f8aa2c6c60db1bc12918ba019dc67253cac367c599fd9e9e99c",
+        "lib/js/epub/http-range.js": "e253e1fee61ec8a1c32bb1be5b2c639c8accaa5a43825c0f2c18f450002ece3c",
+        "codemirror_editor-b2559bc7109c4807.js": "2535cc301a5572c08377582801957c9eecb95a237bc24440c23e773214b73ab4",
+        "dufs-plus-920c0ceb20beafd7.js": "912c5110a7e0ef13ec19b633e8a70785071b8e1d9622a8837a5076ee4ff22a80",
+        "dufs-plus-920c0ceb20beafd7_bg.wasm": "cfd3d50fb3b1997efdc77defe740f01dc65de55622ade33f7d3290df6cda9f64",
+        "epub-viewer-2529ae2aa954e0e0.js": "bf15ddee827cc2cac8a1434e14aa3a0d811c8e7cf54afe3c6f99f1813a5ca88a",
+        "helix_editor.bundle-fdd177686b4f9c3d.js": "77882cf1b3b0ae5a330dcd562555947f6e242987f9f4e8594402f28a7b112ed5",
+        "markdown_morph-8fcfad04ef1347e7.js": "b678f8932b47dc6c2731d78d3338e621b36f9762f43cc21c5e28650f63cfa43d"
+      },
+      "backup_integrity_and_hashes_verified": true,
+      "current_database_inodes_preserved": true,
+      "original_upholds_restored": true,
+      "checked_unix": 1793723103.655281,
+      "independent_apps_snapshot_sha256": "dadeaae30c1049b34e8f3f1b7b6e4a03423d503f7a058f28531b3e0430ab0d47"
+    },
+    "nuc": {
+      "scope": "nuc",
+      "programs": {
+        "tag-nuc-private-core.service": {
+          "sha256": "70f4b6b80d6c74389628c7ed419d568f6bea2fd2a6eb310705e6ab5778ed5e2c",
+          "actual_unit_descendant_verified": true
+        },
+        "tag-nuc-readonly-core.service": {
+          "sha256": "70f4b6b80d6c74389628c7ed419d568f6bea2fd2a6eb310705e6ab5778ed5e2c",
+          "actual_unit_descendant_verified": true
+        }
+      },
+      "strict_signatures": true,
+      "package": "/nix/store/9mazfhpsrf4dxvbn8q4pixl1dpk5abc1-tag-all-workspace-native-0.1.0",
+      "frontend": "/nix/store/caybd3nl8vncjnsm5fy1bvnw1zwr926j-dufs-plus-theme-startup-markdown-release-frontend",
+      "anonymous_status": {
+        "5006": 401,
+        "5008": 401
+      },
+      "backup_integrity_and_hashes_verified": true,
+      "current_database_inodes_preserved": true,
+      "original_upholds_restored": true,
+      "checked_unix": 1793723106.3431833,
+      "independent_apps_snapshot_sha256": "045f23607231ff5a35bdd72dedbf01eeb5d93faf002a7e80da758a5b3ae71e45"
+    },
+    "nas_anonymous_status": 302,
+    "independent_apps_unchanged": true,
+    "private_packaged_apps_unchanged_from_previous_frontend": {
+      "devices": {
+        "files": 5,
+        "unchanged_from_active_candidate": true,
+        "sha256": {
+          "app.css": "273d57cb422bd736fc4e72afacb5f430fef0bc394a0612adbb484f4a17a45d03",
+          "index.html": "5abc560b243917d23c834c598d39705fe08e902b9f18fef1903e361065b886e3",
+          "tabs.css": "75f2f586005e01b49d056dd1fc47bbda16008a3b3db41d58a9aa2272acc78e24",
+          "app.js": "fd6cc6f6d391add2da0dc99f98b7bdffdb54340ded3581031964f592a716b962",
+          "policy.mjs": "c83dfa0f788363f0eb16f6df66204221a9726264c41bb618f3f98a6d92323c3c"
+        }
+      },
+      "transcriptions": {
+        "files": 3,
+        "unchanged_from_active_candidate": true,
+        "sha256": {
+          "app.css": "a7d7714d64ff1a9a4f43b3265320ba9438ed7d87628fb79be50f1aa900eb5242",
+          "index.html": "c04eb19f38a8c78b455946240800a4f0367baf5c48b5b4a84748bf07a10c2072",
+          "app.js": "47ffd5db8dcf9e741084b84cc2507596ad14a41b60fdf684786a185c5eee7661"
+        }
+      },
+      "recorder-bean": {
+        "files": 8,
+        "unchanged_from_active_candidate": true,
+        "sha256": {
+          "manifest.webmanifest": "ee0a6b59e5a31799fea1d6b35b84f37e8866c52b2b8b869c332fb7cb52c0b1e0",
+          "app.css": "53d3301b78775471255c29d5c3f278f8ef48a747f29fbf18e4e8a595eb66fa91",
+          "index.html": "2f5e700ea914e4e675e4d88ddc461ec35257d6dcaf930820e0ff719815be1156",
+          "icon-192.png": "94d31f29fc2acb6f977131f59024763840d33a46978a277cbea71b1ee5e46f1c",
+          "app.js": "61e6f60236967f0bc91c78b3e09df08963930b1c14020f65e767138c76236564",
+          "icon-512.png": "7bdd9d4358f7d3231ab0f5ed2c34b4b39db71980a5847ef6cae42d0ff0ebf2a0",
+          "README.md": "54873444380dfd5ec88417e68654efc38b1a0353e6f356def36ede88816f3df3",
+          "sw.js": "0d85db2a7a72ada4fc02b87d0655a09f4773562c34aa16268bf6fd704a4df873"
+        }
+      }
+    },
+    "all_combination_http_assets": 350,
+    "live_entry_asset_families": 8,
+    "backend_rebuilt": false,
+    "production_account_theme_changed": false,
+    "system_switch_by_agent": false,
+    "daily_profile_used": false,
+    "failure_qualification": {
+      "initial_combination": "devices/app.css 404: isolated fixture lacked explicit reserved application roots. Approval rejected shrinking the asset set; checker fixture now configures the same three named application roots. All 350 HTTP digest assertions retained and passed with all 12 cases.",
+      "fixture_unit_tests": 13,
+      "initial_post_switch_read_check": "Missing temporary live-assets input after rejected preparatory command. Both activations had succeeded; input recreated and read-only live checks rerun without another service switch.",
+      "logs_retained": [
+        "/tmp/theme-release-combination.log",
+        "/tmp/theme-release-diagnostic.log",
+        "/tmp/theme-release-combination-final.log",
+        "/tmp/theme-release-activation.log"
+      ]
+    }
+  },
+  "fixture_control_change": {
+    "files": [
+      "scripts/check_application_bundle.py",
+      "scripts/tests/test_application_release_bundle.py"
+    ],
+    "unit_tests": 13,
+    "full_http_assets_retained": 350,
+    "production_configuration_changed": false,
+    "reason": "Map three fixed reserved application roots in the isolated checker; all assets now checked over actual HTTP."
+  }
+}
