@@ -18,12 +18,12 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-04 · Pin signed nix.112 and verify reserved application assets in release fixtures · `ab442cd`
+- 2026-11-03 · Refresh overview after verified nix.111 candidate · `5114d6f`
 - 2026-11-03 · Pin signed nix.111 and verify paired reader desktop candidate · `4dfcf02`
 - 2026-11-03 · Refresh overview after signed nix.110 desktop candidate · `bd62b7f`
 - 2026-11-03 · Pin signed nix.110 and verify full desktop candidate with endpoint frontends · `9937d37`
 - 2026-11-03 · Summarize live EdgeOne checks and pending authenticated PDF verification · `a869731`
 - 2026-11-03 · Verify live EdgeOne response lengths ranges and anonymous authorization · `037fccb`
 - 2026-11-03 · Summarize frontend rollout and pending EdgeOne console update · `92f5ddb`
-- 2026-11-03 · Summarize pending NAS edge response verification · `61ae389`
-- 2026-11-03 · Preserve identity response lengths for PDF range support · `6a2c486`
 <!-- recent-commits:end -->
