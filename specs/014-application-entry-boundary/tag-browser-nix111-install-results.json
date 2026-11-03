@@ -1,0 +1,161 @@
+{
+  "system_candidate": "/nix/store/fi9bxag266d346h4hglsg7npa1dfnv0f-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "home_candidate": "/nix/store/r4bn1wy2ga92f78r21mjfh96h3f90di7-home-manager-generation",
+  "browser_binary": "/nix/store/skx3pab2cji1cym4jijygxvay4qpfwil-tag-browser-0.1.0",
+  "browser_source_revision": "3d15ae4c52f2a1987b49a14c477ee3f4fb9d30b7",
+  "changed_lock_nodes": [
+    "tag-browser-src"
+  ],
+  "five_native_templates_verified": true,
+  "default_target_link_verified": true,
+  "restore_after_reload_verified": true,
+  "system_menu_binary_and_release_version_verified": true,
+  "system_switch_by_agent": false,
+  "four_browser_mime_defaults_verified": true,
+  "concurrent_external_changes_at_build": {
+    "specs/014-application-entry-boundary/tasks.md": "38428b591214464ef917e11ad524a64829b084ee64fbcc15259411110a80a900"
+  },
+  "runtime_inputs_unchanged_during_build": true,
+  "external_work_not_overwritten_by_release": true,
+  "authorized_runtime_changes": [
+    "flake.lock:tag-browser-src"
+  ],
+  "ci": {
+    "run_id": 41667490580,
+    "conclusion": "success",
+    "store_path": "/nix/store/skx3pab2cji1cym4jijygxvay4qpfwil-tag-browser-0.1.0",
+    "cachix_verified": true,
+    "ci_matches_local_package": true,
+    "workflow_creates_pin": true,
+    "latest_pin": {
+      "createdOn": "2026-10-24T10:09:14.207482Z",
+      "keep": {
+        "contents": 1,
+        "tag": "Revisions"
+      },
+      "lastRevision": {
+        "artifacts": [],
+        "createdOn": "2026-11-03T15:48:42.56385Z",
+        "orphaned": false,
+        "revision": 38,
+        "storePath": "/nix/store/skx3pab2cji1cym4jijygxvay4qpfwil-tag-browser-0.1.0"
+      },
+      "name": "tag-browser-latest"
+    },
+    "other_application_pins_unchanged": true,
+    "trusted_signature_verified": true
+  },
+  "desktop_caches": {
+    "clipboard-sync.outPath": {
+      "path": "/nix/store/jdchs28f8h7cghn4j9fpvhypwl6gs1cr-clipboard-sync-0.2.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "screen-cut-binary-path": {
+      "path": "/nix/store/arrsa3p4q795xkw02503wrz9xyr4wmq4-screen-cut-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "screen-mark-binary-path": {
+      "path": "/nix/store/j1cvwiafizx98f8qzwj2n6szalsqldm8-screen-mark-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "knowledge-cards-binary-path": {
+      "path": "/nix/store/kgycmilmqlkgjrwd8bxlszl2yaaag60j-knowledge-cards-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "tag-browser-binary-path": {
+      "path": "/nix/store/skx3pab2cji1cym4jijygxvay4qpfwil-tag-browser-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    }
+  },
+  "frontends": {
+    "activation": {
+      "pc": {
+        "seconds": 2.574,
+        "exit": 0,
+        "receipt": "/home/liou/.local/share/tag-all/native-version-releases/1af86a84c52cb12ccd921bfd71187326d17aa840c599502b9ad26ff1028fb278",
+        "result": {
+          "phase": "activated",
+          "manifest": "1af86a84c52cb12ccd921bfd71187326d17aa840c599502b9ad26ff1028fb278",
+          "backup": "/home/liou/.local/share/tag-all/native-version-releases/1af86a84c52cb12ccd921bfd71187326d17aa840c599502b9ad26ff1028fb278/backup",
+          "database_restored": false
+        }
+      },
+      "nuc": {
+        "seconds": 16.444,
+        "exit": 0,
+        "receipt": "/home/liou/.local/share/tag-all/native-version-releases/60700268b5ea259051896848c9f80244c726bf56e43a8fde52e2ad543df6e569",
+        "result": {
+          "phase": "activated",
+          "manifest": "60700268b5ea259051896848c9f80244c726bf56e43a8fde52e2ad543df6e569",
+          "backup": "/home/liou/.local/share/tag-all/native-version-releases/60700268b5ea259051896848c9f80244c726bf56e43a8fde52e2ad543df6e569/backup",
+          "database_restored": false
+        }
+      }
+    },
+    "pc": {
+      "scope": "pc",
+      "programs": {
+        "tag-all-core.service": {
+          "sha256": "70f4b6b80d6c74389628c7ed419d568f6bea2fd2a6eb310705e6ab5778ed5e2c",
+          "actual_unit_descendant_verified": true
+        }
+      },
+      "strict_signatures": true,
+      "package": "/nix/store/9mazfhpsrf4dxvbn8q4pixl1dpk5abc1-tag-all-workspace-native-0.1.0",
+      "frontend": "/nix/store/fwmb4mqm5n7a3q9fj8w5wbp4vhin5z9h-dufs-plus-alias-reader-release-frontend",
+      "served_assets": {
+        "index.html": "1d43a1e38654265b01da31221fe95eef0353194976aa3aa8de17718deff482f2",
+        "lib/js/epub/http-range.js": "e253e1fee61ec8a1c32bb1be5b2c639c8accaa5a43825c0f2c18f450002ece3c",
+        "dufs-plus-cfdc5a21fa917694.js": "8394c015710c0c691ee980f79f7c787f9e878064c8f36fb7847c62c14429e7d2",
+        "dufs-plus-cfdc5a21fa917694_bg.wasm": "c02b99d8829d33f67815f9b0cc84340d257e6a2f04e6315dadd408bf4afaa9ef",
+        "epub-viewer-2529ae2aa954e0e0.js": "bf15ddee827cc2cac8a1434e14aa3a0d811c8e7cf54afe3c6f99f1813a5ca88a",
+        "markdown_morph-8fcfad04ef1347e7.js": "b678f8932b47dc6c2731d78d3338e621b36f9762f43cc21c5e28650f63cfa43d",
+        "codemirror_editor-b2559bc7109c4807.js": "2535cc301a5572c08377582801957c9eecb95a237bc24440c23e773214b73ab4",
+        "helix_editor.bundle-fdd177686b4f9c3d.js": "77882cf1b3b0ae5a330dcd562555947f6e242987f9f4e8594402f28a7b112ed5"
+      },
+      "backup_integrity_and_hashes_verified": true,
+      "current_database_inodes_preserved": true,
+      "original_upholds_restored": true,
+      "checked_unix": 1793721013.29414
+    },
+    "nuc": {
+      "scope": "nuc",
+      "programs": {
+        "tag-nuc-private-core.service": {
+          "sha256": "70f4b6b80d6c74389628c7ed419d568f6bea2fd2a6eb310705e6ab5778ed5e2c",
+          "actual_unit_descendant_verified": true
+        },
+        "tag-nuc-readonly-core.service": {
+          "sha256": "70f4b6b80d6c74389628c7ed419d568f6bea2fd2a6eb310705e6ab5778ed5e2c",
+          "actual_unit_descendant_verified": true
+        }
+      },
+      "strict_signatures": true,
+      "package": "/nix/store/9mazfhpsrf4dxvbn8q4pixl1dpk5abc1-tag-all-workspace-native-0.1.0",
+      "frontend": "/nix/store/fwmb4mqm5n7a3q9fj8w5wbp4vhin5z9h-dufs-plus-alias-reader-release-frontend",
+      "anonymous_status": {
+        "5006": 401,
+        "5008": 401
+      },
+      "backup_integrity_and_hashes_verified": true,
+      "current_database_inodes_preserved": true,
+      "original_upholds_restored": true,
+      "checked_unix": 1793721015.5970392
+    },
+    "independent_apps_unchanged": true
+  },
+  "private_release": {
+    "release": "https://github.com/liu0fanyi/tag-browser/releases/tag/v0.1.0-nix.111",
+    "revision": "3d15ae4c52f2a1987b49a14c477ee3f4fb9d30b7",
+    "archive_sha256": "f44299602543c20a825932be616c103af1bd3407816f4bca5e3625d6ae565fd3",
+    "assets_verified": true,
+    "workflow_dispatched": true,
+    "user_requested_release": true
+  },
+  "daily_profile_used": false
+}

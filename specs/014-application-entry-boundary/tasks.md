@@ -523,3 +523,11 @@ SCR交付完成，剩余0步，见[109安装候选与上线证据](tag-browser-n
 ## 自动入口及统一底栏nix.110配套交付
 
 用户2026-11-03“上线”授权：仅tag-browser-src消费锁至4b849a8；实际Firefox七组2664项、私有Release、CI同一精确输出/可信签名/latest Pin保留1版及五应用缓存、完整PC/HM/菜单/版本/MIME/五原生模板/默认target/restore顺序通过。PC/NUC配套前端gz3已激活，9maz后端、严格签名/认证、数据库inode及独立应用保持。见[110安装候选与上线证据](tag-browser-nix110-install-results.json)。跨仓唯一计数Tag Browser027/NER；未执行系统switch，用户普通终端运行nu rerun.nu liou --host liu-bigpc并完整退出重开确认110。独立Android首版归产品048，不改本消费锁或声称包含在Linux包内。
+
+
+## 标签页切换与PDF筛选nix.111配套交付
+
+用户2026-11-03“上线”授权Tag Browser027/ATR与dufs-plus002/FR配套发布；跨仓唯一四步计数在产品027/ATR。本仓只在精确CI/签名缓存通过后更新`flake.lock:tag-browser-src`，保留其余运行配置，并验证五应用缓存、完整PC/HM候选、菜单/MIME及五模板/默认target/恢复顺序。服务前端通过已授权原生事务变更，现用后端、严格签名、数据及独立应用保持；不执行系统switch，不读取日常profile或改账号主题。符合本仓宪法、本机单向构建、组合门槛及工作区Spec/来源分层，无新依赖或参考资料。
+
+
+该配套候选与服务交付已验证，见[tag-browser-nix111-install-results.json](tag-browser-nix111-install-results.json)：私有CI41667490580的实际输出skx3、Cachix可信签名/latest Pin保留1版、其他应用Pin不变、五应用缓存及完整PC/HM候选通过。仅tag-browser-src锁节点更新至3d15ae4；菜单/四类MIME、五模板/default target/恢复顺序不变。PC/NUC固定fwmb前端已上线，保留原9maz后端/严格签名/数据inode与独立应用。唯一跨仓计数Tag Browser027/ATR；未执行系统switch或操作日常profile。用户普通终端在本仓执行`nu rerun.nu liou --host liu-bigpc`，正常退出全部旧窗口并重开确认111，实际使用仍单列。
