@@ -149,8 +149,12 @@ health check rather than merely a performance metric.
 公网实测：请求br时响应声明Content-Encoding: br，但正文实际是未压缩JS，Node Brotli解码失败；无压缩请求取得完整JS。转发子请求现显式请求identity，包装响应移除旧Content-Encoding、Content-Length及源站Alt-Svc，保留CSP与认证边界。运行`node deploy/tests/test_edge_response.cjs`覆盖7种场景；这是模拟运行时已解码正文的回归，不代替EdgeOne实测。
 控制台用`deploy/edge-functions/authelia-edge-auth.js`完整纯JS替换原函数，先验证调试域名，再验证公网JS/CSS/favicon的identity/gzip/br及登录。未认证私有资源仍应跳登录、device-api仍须令牌，不能因为资源可加载就把App401/502标为修复。
 
-## identity响应长度与PDF Range（2026-11-03，尚未控制台发布）
+## identity响应长度与PDF Range（2026-11-03，用户已部署，登录态验收待完成）
 
 转发器不再无条件删除Content-Length：无Content-Encoding或identity时保留原长度；br/gzip等被运行时解码时继续删除旧编码与旧长度。206的Content-Range、Accept-Ranges和版本头及请求Range/If-Range原样保留，正文仍流式传递。PDF.js在缺失Content-Length时不启用Range，因此即使源站206正确，无条件删头也会阻碍前端按需读取；这仍需nas已认证实测确认当前控制台版本。
 
 运行`node deploy/tests/test_edge_response.cjs`：10场景验证无编码/identity、br/gzip旧头清理、认证后206与HEAD长度、拒绝/放行、POST+401及安全502。沿用上方控制台整段替换及调试域名流程，源代码提交不表示边缘已生效。上线后分别检查大PDF首个200的长度及后续206；后端SSR失败原因另行核对，不用Range修正冒充SSR修复。
+
+### 2026-11-03公网回查
+
+用户报告控制台部署成功后，18次真实公网请求通过：未认证私有入口/PDF范围请求和重复缓存路径仍302到Authelia；公开JS的identity长度与579026字节正文一致，gzip解码正常、br请求回退identity，内容摘要相同。Range/If-Range保留206、1024长度、总长和版本。见`specs/009-infrastructure/nas-edge-live-results.json`（仓库根相对路径）。登录后的真实PDF和SSR仍待浏览器会话核验，未读取/导出用户Cookie，也未据公开资源成功宣称PDF已修好。

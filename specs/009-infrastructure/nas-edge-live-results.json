@@ -1,0 +1,331 @@
+{
+  "checked_at": "2026-11-03T20:49:37.769299+08:00",
+  "status": "user reports console deployment; public response fix observed; authenticated PDF verification pending",
+  "production_mutation_by_agent": false,
+  "credentials_used": false,
+  "daily_browser_profile_accessed": false,
+  "public_probes": [
+    {
+      "path": "/",
+      "method": "GET",
+      "accept_encoding": "identity",
+      "range": null,
+      "status": 302,
+      "headers": {
+        "content-type": "text/plain;charset=UTF-8",
+        "content-length": "0",
+        "cache-control": "private, no-store"
+      },
+      "header_seconds": 0.432,
+      "login_redirect": true
+    },
+    {
+      "path": "/dist/devices/",
+      "method": "GET",
+      "accept_encoding": "identity",
+      "range": null,
+      "status": 302,
+      "headers": {
+        "content-type": "text/plain;charset=UTF-8",
+        "content-length": "0",
+        "cache-control": "private, no-store"
+      },
+      "header_seconds": 0.71,
+      "login_redirect": true
+    },
+    {
+      "path": "/tag-api/v1/workspace-namespace",
+      "method": "GET",
+      "accept_encoding": "identity",
+      "range": null,
+      "status": 302,
+      "headers": {
+        "content-type": "text/plain;charset=UTF-8",
+        "content-length": "0",
+        "cache-control": "private, no-store"
+      },
+      "header_seconds": 0.408,
+      "login_redirect": true
+    },
+    {
+      "path": "[user-supplied protected PDF]",
+      "method": "GET",
+      "accept_encoding": "identity",
+      "range": "bytes=0-1023",
+      "status": 302,
+      "headers": {
+        "content-type": "text/plain;charset=UTF-8",
+        "content-length": "0",
+        "cache-control": "private, no-store"
+      },
+      "header_seconds": 0.342,
+      "login_redirect": true
+    },
+    {
+      "path": "/authelia/",
+      "method": "GET",
+      "accept_encoding": "identity",
+      "range": null,
+      "status": 200,
+      "headers": {
+        "content-type": "text/html; charset=utf-8",
+        "content-length": "1145",
+        "x-request-id": "edge-1793710174016-f3f6b855bb26e8",
+        "eo-cache-status": "MISS"
+      },
+      "header_seconds": 0.393,
+      "login_redirect": false,
+      "wire_bytes": 1145,
+      "body_bounded": true,
+      "decode_ok": true,
+      "decoded_sha256": "9eb3600919e948676d49fba8b59b5bae0f96b43ff7669fa2f64f152043af8cc1",
+      "length_matches_wire": true
+    },
+    {
+      "path": "/authelia/favicon.ico",
+      "method": "HEAD",
+      "accept_encoding": "identity",
+      "range": null,
+      "status": 200,
+      "headers": {
+        "content-type": "image/vnd.microsoft.icon",
+        "content-length": "4542",
+        "accept-ranges": "bytes",
+        "cache-control": "public, must-revalidate, max-age=0",
+        "x-request-id": "edge-1793710174445-e192a41fc689c8",
+        "etag": "e4a38bfd3322ca12494dbb88ad50325315f29814",
+        "eo-cache-status": "MISS"
+      },
+      "header_seconds": 0.397,
+      "login_redirect": false
+    },
+    {
+      "path": "/authelia/favicon.ico",
+      "method": "GET",
+      "accept_encoding": "identity",
+      "range": null,
+      "status": 200,
+      "headers": {
+        "content-type": "image/vnd.microsoft.icon",
+        "content-length": "4542",
+        "accept-ranges": "bytes",
+        "cache-control": "public, must-revalidate, max-age=0",
+        "x-request-id": "edge-1793710174806-38d00655682628",
+        "etag": "e4a38bfd3322ca12494dbb88ad50325315f29814",
+        "eo-cache-status": "HIT"
+      },
+      "header_seconds": 0.185,
+      "login_redirect": false,
+      "wire_bytes": 4542,
+      "body_bounded": true,
+      "decode_ok": true,
+      "decoded_sha256": "f435e7c21b7c31da5c34fc7ff11a0c577c174ac393b8ea1de330852e5b33dc7a",
+      "length_matches_wire": true
+    },
+    {
+      "path": "/authelia/favicon.ico",
+      "method": "GET",
+      "accept_encoding": "gzip",
+      "range": null,
+      "status": 200,
+      "headers": {
+        "content-type": "image/vnd.microsoft.icon",
+        "content-length": "4542",
+        "accept-ranges": "bytes",
+        "cache-control": "public, must-revalidate, max-age=0",
+        "x-request-id": "edge-1793710175232-883260a2e15c88",
+        "etag": "e4a38bfd3322ca12494dbb88ad50325315f29814",
+        "age": "1",
+        "eo-cache-status": "HIT"
+      },
+      "header_seconds": 0.196,
+      "login_redirect": false,
+      "wire_bytes": 4542,
+      "body_bounded": true,
+      "decode_ok": true,
+      "decoded_sha256": "f435e7c21b7c31da5c34fc7ff11a0c577c174ac393b8ea1de330852e5b33dc7a",
+      "length_matches_wire": true
+    },
+    {
+      "path": "/authelia/favicon.ico",
+      "method": "GET",
+      "accept_encoding": "br",
+      "range": null,
+      "status": 200,
+      "headers": {
+        "content-type": "image/vnd.microsoft.icon",
+        "content-length": "4542",
+        "accept-ranges": "bytes",
+        "cache-control": "public, must-revalidate, max-age=0",
+        "x-request-id": "edge-1793710175419-d2e4e6c40db0c",
+        "etag": "e4a38bfd3322ca12494dbb88ad50325315f29814",
+        "age": "1",
+        "eo-cache-status": "HIT"
+      },
+      "header_seconds": 0.184,
+      "login_redirect": false,
+      "wire_bytes": 4542,
+      "body_bounded": true,
+      "decode_ok": true,
+      "decoded_sha256": "f435e7c21b7c31da5c34fc7ff11a0c577c174ac393b8ea1de330852e5b33dc7a",
+      "length_matches_wire": true
+    },
+    {
+      "path": "/authelia/static/js/index.CXslS62G.js",
+      "method": "HEAD",
+      "accept_encoding": "identity",
+      "range": null,
+      "status": 200,
+      "headers": {
+        "content-type": "text/javascript; charset=utf-8",
+        "content-length": "579026",
+        "accept-ranges": "bytes",
+        "cache-control": "public, must-revalidate, max-age=0",
+        "x-request-id": "edge-1793710175620-99da8f86184978",
+        "etag": "758504754fc9fc6eaf1440dea318eb172b942842",
+        "eo-cache-status": "MISS"
+      },
+      "header_seconds": 0.381,
+      "login_redirect": false
+    },
+    {
+      "path": "/authelia/static/js/index.CXslS62G.js",
+      "method": "GET",
+      "accept_encoding": "identity",
+      "range": null,
+      "status": 200,
+      "headers": {
+        "content-type": "text/javascript; charset=utf-8",
+        "content-length": "579026",
+        "accept-ranges": "bytes",
+        "cache-control": "public, must-revalidate, max-age=0",
+        "x-request-id": "edge-1793710175981-c99e1f0540a7f8",
+        "etag": "758504754fc9fc6eaf1440dea318eb172b942842",
+        "age": "1",
+        "eo-cache-status": "HIT"
+      },
+      "header_seconds": 0.209,
+      "login_redirect": false,
+      "wire_bytes": 579026,
+      "body_bounded": true,
+      "decode_ok": true,
+      "decoded_sha256": "0d43c22db75cacb565a783b4f0a06fafa56c02725d117cb738cd2f647408a830",
+      "length_matches_wire": true
+    },
+    {
+      "path": "/authelia/static/js/index.CXslS62G.js",
+      "method": "GET",
+      "accept_encoding": "gzip",
+      "range": null,
+      "status": 200,
+      "headers": {
+        "content-type": "text/javascript; charset=utf-8",
+        "content-encoding": "gzip",
+        "accept-ranges": "bytes",
+        "cache-control": "public, must-revalidate, max-age=0",
+        "x-request-id": "edge-1793710176719-254be8ea1ea0f",
+        "etag": "758504754fc9fc6eaf1440dea318eb172b942842",
+        "age": "1",
+        "eo-cache-status": "HIT"
+      },
+      "header_seconds": 0.202,
+      "login_redirect": false,
+      "wire_bytes": 185110,
+      "body_bounded": true,
+      "decode_ok": true,
+      "decoded_sha256": "0d43c22db75cacb565a783b4f0a06fafa56c02725d117cb738cd2f647408a830",
+      "length_matches_wire": null
+    },
+    {
+      "path": "/authelia/static/js/index.CXslS62G.js",
+      "method": "GET",
+      "accept_encoding": "br",
+      "range": null,
+      "status": 200,
+      "headers": {
+        "content-type": "text/javascript; charset=utf-8",
+        "content-length": "579026",
+        "accept-ranges": "bytes",
+        "cache-control": "public, must-revalidate, max-age=0",
+        "x-request-id": "edge-1793710177025-fe291c25f93b5",
+        "etag": "758504754fc9fc6eaf1440dea318eb172b942842",
+        "age": "2",
+        "eo-cache-status": "HIT"
+      },
+      "header_seconds": 0.17,
+      "login_redirect": false,
+      "wire_bytes": 579026,
+      "body_bounded": true,
+      "decode_ok": true,
+      "decoded_sha256": "0d43c22db75cacb565a783b4f0a06fafa56c02725d117cb738cd2f647408a830",
+      "length_matches_wire": true
+    },
+    {
+      "path": "/device-api/v1/enrollments",
+      "method": "GET",
+      "accept_encoding": "identity",
+      "range": null,
+      "status": 404,
+      "headers": {
+        "content-type": "text/plain;charset=UTF-8",
+        "content-length": "0",
+        "cache-control": "private, no-store",
+        "x-request-id": "edge-1793710177382-75a6675d89fc38",
+        "eo-cache-status": "MISS"
+      },
+      "header_seconds": 0.39,
+      "login_redirect": false
+    }
+  ],
+  "range_and_repeated_auth_probes": [
+    {
+      "path": "/authelia/favicon.ico",
+      "status": 206,
+      "length": "1024",
+      "content_range": "bytes 0-1023/4542",
+      "accept_ranges": null,
+      "encoding": null,
+      "bytes_read": 1024,
+      "etag_matches": true,
+      "seconds": 0.178
+    },
+    {
+      "path": "/authelia/static/js/index.CXslS62G.js",
+      "status": 206,
+      "length": "1024",
+      "content_range": "bytes 0-1023/579026",
+      "accept_ranges": null,
+      "encoding": null,
+      "bytes_read": 1024,
+      "etag_matches": true,
+      "seconds": 0.207
+    },
+    {
+      "path": "/dist/devices/",
+      "repeat": 1,
+      "status": 302,
+      "login_redirect": true,
+      "cache_control": "private, no-store"
+    },
+    {
+      "path": "/dist/devices/",
+      "repeat": 2,
+      "status": 302,
+      "login_redirect": true,
+      "cache_control": "private, no-store"
+    }
+  ],
+  "public_requests": 18,
+  "verified": [
+    "Protected root/device page/API/PDF Range all redirect anonymous requests to Authelia.",
+    "Repeated anonymous device page requests stay 302 private,no-store.",
+    "Portal JS HEAD/identity GET retain Content-Length 579026, matching body.",
+    "Requested gzip decodes correctly; requested br falls back to valid identity. Decoded JS hashes match all three responses.",
+    "Public forwarded assets Range plus If-Range return 206 with length 1024 and correct total/version.",
+    "Device API enrollment GET remains 404 private,no-store, not a browser login redirect."
+  ],
+  "limitations": [
+    "No authenticated NAS cookie available: protected PDF full response/Range and renderer remain unverified.",
+    "Public asset range tests exercise forwarding but do not prove private PDF performance or solve SSR errors."
+  ]
+}
