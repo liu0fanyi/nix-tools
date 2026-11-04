@@ -41,6 +41,11 @@ eD2k与Kad均连接；eD2k为Low ID，Kad为有防火墙；UPnP报告未发现WA
 运行时mihomo配置已备份、通过 `mihomo -t`，controller热加载后查询确认
 aMule两条DIRECT规则及原qBittorrent直连规则存在；未重启代理服务。
 
+同日用户手动应用并打开后，真实主窗口、TCP4662及UDP4665/4672监听确认；
+防火墙含上述端口的重载脚本已成功执行。eD2k/Kad均连接，5条活动连接
+全部使用DIRECT，但仍显示Low ID/Kad有防火墙，UPnP未发现WAN服务。
+下一步检查路由器映射及WAN公网IPv4；当前未确认公网入站可达。
+
 ## 应用配置
 
 完整系统与Home Manager候选已构建验证；Agent不执行系统switch。

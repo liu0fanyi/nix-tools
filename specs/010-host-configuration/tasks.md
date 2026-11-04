@@ -1011,4 +1011,12 @@ PC新增TCP4662、UDP4665/4672放行尚未切换；不开放EC/Web控制端口�
 仅mihomo两条aMule进程直连规则已热加载并通过controller核验，原qBittorrent直连保留；
 运行时配置保留0600备份，仓库secrets索引仍为git-crypt加密，未将凭据加入Nix store。
 证据留 `/tmp/amule-setup-20261104/`；使用说明见 `docs/ed2k-download.md`。
-阶段AM剩余1项AM3，下一步用户运行 `nu rerun.nu liou --host liu-bigpc` 并打开aMule。
+AM3实机检查（2026-11-04）：用户已手动应用并打开aMule，当前系统指向上述
+完整候选；实际主窗口app_id为org.amule.aMule，TCP4662和UDP4665/4672均监听。
+防火墙ExecReload执行上述含端口放行的脚本并成功退出（status=0）。
+当前真实日志确认eD2k服务器与Kad均连接，仍为Low ID/Kad有防火墙；
+UPnP报告WAN Service not detected。mihomo处于rule模式，5条aMule活动连接
+均使用DIRECT，两条aMule及原qBittorrent直连规则仍存在。
+未修改运行中的aMule配置、下载任务或路由器。PC侧安装与端口配置已应用，
+不能将本次结果称为公网入站可达或High ID验收完成。
+阶段AM剩余1项AM3的路由器映射检查，下一步核对路由器端口转发与WAN公网IPv4。
