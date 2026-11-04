@@ -463,6 +463,21 @@ podman image prune -f          # 仅删 <none> 悬空镜像，不动有 tag 的
      汇总报告为 `/tmp/disk-clean-report-20261104.json`；未将本机明细上传服务器。
 
 
+- 2026-11-04（第二轮，用户要求继续清理）：系统盘65%→63%，可用约144G→149G；
+  /data为77%→67%，可用约103G→146G。本轮实测再释放约48.5GiB，
+  其中系统盘约5.6GiB、/data约42.9GiB。
+  1. 精确删除Tag Browser/Firefox两个带config.status/Makefile且Git未跟踪的
+     obj目录（约34.9GiB）及临时DUFS工作树的Rust target（约3.0GiB）；
+     仅清ESP公共ccache的16个十六进制分片（约5.0GiB），SDK和工具链保留。
+  2. 清理无打开文件的Gradle、npm、Codex运行时、pip与Cargo下载归档缓存，
+     缓存根目录保留；每项复查宿主活跃构建和lsof。相关构建将重新编译/下载。
+  3. 163组原镜像标签及ID、5个服务容器状态核对保持不变，未执行Podman删除。
+     源码、已安装浏览器、SDK、学习资料、uv环境、回收站及Bevy保护目录保留；
+     未运行Nix GC或系统switch。无法核对Git归属的旧工作副本缓存未清理。
+  4. 明细、精确白名单与本机报告在 `/tmp/disk-clean-more-*-20261104*`，
+     汇总报告为 `/tmp/disk-clean-more-report-20261104.json`，未上传本机审计。
+
+
 ## Clip 规格归属
 
 按用户绑定维护决定，clipboard-sync 子模块的功能规格统一位于本仓库 specs/005-clipboard-core、006-clipboard-reliability、007-clipboard-release。子模块只留手册与指向本仓库的入口，代码/Git/构建保持独立。其他产品仍在各自仓库管理规格。本规则明确恢复既有父仓库规格归属，不恢复已经取消的 dsh Web 或 Clip 2 分钟过期需求。
