@@ -478,6 +478,21 @@ podman image prune -f          # 仅删 <none> 悬空镜像，不动有 tag 的
      汇总报告为 `/tmp/disk-clean-more-report-20261104.json`，未上传本机审计。
 
 
+- 2026-11-04（第三轮，用户指定68G低延迟麦克风.build）：仅处理
+  `/data/project/xiaoqiang/esp32-p4-cmt2300a-lowlatency-mic/.build`，
+  实测67.25GiB→15.41GiB，释放55,658,340,352字节（约51.84GiB）；
+  /data由67%降至55%，可用约146G→198G。
+  1. 核对234套顶层CMake配置及嵌套构建标记，确认Git未跟踪、宿主无活跃构建，
+     lsof未发现候选文件占用；删除精确白名单397,937个.o/.a/.obj/.pch编译文件。
+     仅限有CMakeCache及Ninja/Make标记的esp-idf/CMakeFiles生成目录，不整删.build。
+  2. 删除前按inode、大小、mtime逐项核对；对其余89,329个文件保存并回查
+     元数据，全部保留且无变化，候选残留为0。固件、ELF、map、配置、日志、
+     发布/测试证据与备份均保留，源码与共用Git工作树未动。后续编译将重建对象。
+  3. 未操作串口、板卡、射频、固件发布、服务、镜像或Nix。白名单、保留清单、
+     占用检查与审计在 `/tmp/cmt-build-*-20261104*`，汇总报告为
+     `/tmp/cmt-build-clean-report-20261104.json`；详细本机审计不上传服务器。
+
+
 ## Clip 规格归属
 
 按用户绑定维护决定，clipboard-sync 子模块的功能规格统一位于本仓库 specs/005-clipboard-core、006-clipboard-reliability、007-clipboard-release。子模块只留手册与指向本仓库的入口，代码/Git/构建保持独立。其他产品仍在各自仓库管理规格。本规则明确恢复既有父仓库规格归属，不恢复已经取消的 dsh Web 或 Clip 2 分钟过期需求。
