@@ -1019,4 +1019,12 @@ UPnP报告WAN Service not detected。mihomo处于rule模式，5条aMule活动连
 均使用DIRECT，两条aMule及原qBittorrent直连规则仍存在。
 未修改运行中的aMule配置、下载任务或路由器。PC侧安装与端口配置已应用，
 不能将本次结果称为公网入站可达或High ID验收完成。
-阶段AM剩余1项AM3的路由器映射检查，下一步核对路由器端口转发与WAN公网IPv4。
+AM3路由器检查：确认网关YR1900G已开启UPnP，标准设备描述和WANIPConnection
+接口可用；WAN与用户提供值、国内直连出口一致，未发现上级NAT证据。
+完整只读枚举有64条映射，aMule三端口均缺失。新增第一条被路由器拒绝，
+明确返回 `Port mapping table id full !`，没有新增或删除任何条目。
+当前PC已有3条MiniTP SDK映射不视为垃圾；其他设备映射也保留。
+公网服务器只读连接PC TCP4662超时，未上传资料或修改服务器配置。
+诊断证据留 `/tmp/amule-setup-20261104/router-*.json` 及同目录设备描述。
+用户选择自行登录设置；已准备手册中的三条虚拟服务器规则。
+阶段AM剩余1项AM3的映射应用及公网复测，下一步用户在主路由器手动添加规则。

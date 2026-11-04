@@ -2,12 +2,12 @@
 
 ## 当前情况
 - [nix.112首屏主题与Markdown配套已发行，精确签名缓存及完整PC/HM候选通过；PC/NUC网页上线，350份组合资源与回退/数据认证保留通过，未系统switch。](014-application-entry-boundary/tag-browser-nix112-install-results.json) [组合保护网补齐三种保留应用根：13项单测、全350份HTTP摘要/12项实际组合及6项隔离回退通过，原断言和失败记录保留。](014-application-entry-boundary/tasks.md)
-- [aMule已实机应用并打开，eD2k/Kad连接与5条活动连接直连通过；本机端口监听和防火墙重载通过，仍为Low ID，待检查路由器映射。](010-host-configuration/tasks.md#amule-安装与网络引导阶段-am2026-11-04) [DiskTree图形版构建通过，待手动应用试用。](010-host-configuration/tasks.md#disktree-图形版安装阶段-dt2026-11-01)
+- [aMule实机连接与PC端口配置通过；主路由UPnP已开启但64条映射表已满，新增被拒绝，待用户手动设置虚拟服务器后复测。](010-host-configuration/tasks.md#amule-安装与网络引导阶段-am2026-11-04) [DiskTree图形版构建通过，待手动应用试用。](010-host-configuration/tasks.md#disktree-图形版安装阶段-dt2026-11-01)
 - [系统盘与/data安全清理：当前分别为64%/55%，CMT编译文件再回收约51.8GiB；原镜像标签、服务容器与源码保留；详细清理记录统一见AGENTS第七节。](010-host-configuration/tasks.md#cmt低延迟实验编译缓存清理阶段-sf2026-11-04)
 
 ## 后续计划
 - [用户手动应用nix.112，正常完整重开确认版本；真实日常目录体验另行验收。](014-application-entry-boundary/tasks.md)
-- [检查aMule路由器映射及WAN公网IPv4，解决剩余入站限制（AM3）。](010-host-configuration/tasks.md#amule-安装与网络引导阶段-am2026-11-04) [同时试用DiskTree（DT3）。](010-host-configuration/tasks.md#disktree-图形版安装阶段-dt2026-11-01)
+- [用户在主路由添加三条aMule虚拟服务器规则，再核验公网入站（AM3）。](010-host-configuration/tasks.md#amule-安装与网络引导阶段-am2026-11-04) [同时试用DiskTree（DT3）。](010-host-configuration/tasks.md#disktree-图形版安装阶段-dt2026-11-01)
 - [在文件管理器双击文档和表格确认默认应用（OF3）。](010-host-configuration/tasks.md#文档与表格默认应用修复阶段-of2026-10-31)
 - [手动应用 dsh 运行时修复并确认实际界面使用（DS3）。](010-host-configuration/tasks.md#dsh-更新与-nix-node-兼容修复阶段-ds2026-10-30)
 
