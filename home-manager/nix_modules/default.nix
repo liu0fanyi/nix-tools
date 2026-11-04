@@ -4,6 +4,7 @@
     ./eda.nix
     ./baidunetdisk.nix
     ./qbittorrent.nix
+    ./amule.nix
     ./helix.nix
     ./alacritty.nix
     ./sakura.nix

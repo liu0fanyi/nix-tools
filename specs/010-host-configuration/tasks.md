@@ -992,3 +992,23 @@ pen-scroll ExecStart/input/uinput、内核uinput及udev求值核对通过，Offi
 - [x] SF3：复核保留文件、目录与磁盘空间，将操作记录追加AGENTS第七节并同步登记总纲。
 
 阶段SF三项完成，剩余0项；明细统一记录在AGENTS第七节。
+
+### aMule 安装与网络引导（阶段 AM，2026-11-04）
+
+- [x] AM1：为liu-bigpc声明aMule、ed2k关联和专用数据盘目录，核验服务器/Kad引导原件与摘要，保留现有磁力协议和应用可写配置。
+- [x] AM2：完整系统/HM构建及配置求值，隔离空任务验证图形窗口、服务器更新与双网络连接；初始化本机应用配置，核验mihomo直连并维护手册和登记总纲。
+- [ ] AM3：用户在普通终端手动应用系统配置，从菜单打开aMule，确认实际eD2k/Kad状态；若仍受限，按手册检查路由器映射。
+
+aMule 3.0.1由当前flake锁定的nixpkgs提供，未刷新锁文件。
+完整系统 `/nix/store/1yyq7n4542q7xcpgqvwhppsm1qyxzh0z-nixos-system-liu-bigpc-26.11.20260922.b6c98e9`
+与HM `/nix/store/5sg6jj7rhf6i5123ffm91i3c6jyllm4b-home-manager-generation` 构建通过。
+求值及产物核验ed2k入口、原http/https/magnet/codex关联、HM备份环境、
+已有pen-scroll ExecStart及input/uinput组、内核uinput和udev配置。
+PC新增TCP4662、UDP4665/4672放行尚未切换；不开放EC/Web控制端口。
+首次初始化已单独应用到 `~/.aMule/` 及 `/data/Downloads/aMule/`，未激活整套HM，
+未导入个人下载链接，下载目录为空。隔离测试窗口已停止。
+网络实测已连接eD2k与Kad，当前为Low ID/Kad有防火墙，UPnP未发现WAN服务。
+仅mihomo两条aMule进程直连规则已热加载并通过controller核验，原qBittorrent直连保留；
+运行时配置保留0600备份，仓库secrets索引仍为git-crypt加密，未将凭据加入Nix store。
+证据留 `/tmp/amule-setup-20261104/`；使用说明见 `docs/ed2k-download.md`。
+阶段AM剩余1项AM3，下一步用户运行 `nu rerun.nu liou --host liu-bigpc` 并打开aMule。

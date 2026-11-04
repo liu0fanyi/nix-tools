@@ -13,6 +13,10 @@
 
   networking.hostName = "liu-bigpc";
 
+  # aMule peer traffic. Its EC and web management interfaces stay disabled.
+  networking.firewall.allowedTCPPorts = [ 4662 ];
+  networking.firewall.allowedUDPPorts = [ 4665 4672 ];
+
   # Diagnostic capture is finished. Keep the CLI below for manual replay, but
   # do not register recorder/accounting/rotation units or copy logs at boot.
   programs.atop.enable = false;

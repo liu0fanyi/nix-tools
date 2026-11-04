@@ -11,6 +11,8 @@ PC 磁盘清理规范、保护清单与操作记录见 [AGENTS.md 第七节](AGE
 
 磁力链接与 BT 下载使用 qBittorrent，国内访问的 Tracker 列表订阅与操作说明见 [磁力下载](docs/magnet-download.md)。
 
+ed2k 电驴链接使用 aMule，服务器/Kad 引导及端口说明见 [ed2k 下载](docs/ed2k-download.md)。
+
 `liu-bigpc` 向日葵个人版的安装、服务检查和 Niri 桌面兼容性说明见 [向日葵远程控制](docs/sunlogin-client.md)。
 
 混合缩放屏幕下的 XWayland 大字、应用清单和统一 150% 设置见 [桌面应用缩放](docs/desktop-scaling.md)。
