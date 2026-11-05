@@ -1038,3 +1038,27 @@ AM3最终实机验收：用户确认已断开重连，真实日志先显示连�
 随后显示“已连接至 Kad (ok）”。6条当前aMule连接均为DIRECT，其中包含UDP4672。
 本轮仅调整路由器运行时映射，未新增Nix配置，用户无需再次rerun。
 阶段AM三项完成，剩余0项；不把微信长期配额或跨路由器重启持久化另加为阶段条件。
+
+
+### Codex 桌面卡顿排查与升级（阶段 CX，2026-11-06）
+
+- [x] CX1：检查宿主资源与桌面日志，核对当前版本及官方 Linux 更新包，只刷新 chatgpt-deb 输入。
+- [x] CX2：完整 liu-bigpc toplevel/HM generation 构建及生成入口、既有权限和核心 MIME 关联核验，记录结果并发布登记总纲。
+- [ ] CX3：用户在普通终端手动应用系统配置，完全退出后重开 Codex，确认版本与空闲卡顿是否改善。
+
+运行中桌面为26.928.31416，官方latest DEB为26.1103.31037；仅更新flake.lock中
+chatgpt-deb的narHash，其他输入不变。启动后有明显I/O等待，随后短采样已回落；
+内存充足、无swap使用，未观察到GPU资源紧张。桌面日志持续重试41个找不到的旧聊天，
+并重连不可达的已保存远程主机；插件安装两次因复制后的临时目录只读而失败。
+上述为观察结果，不能单独证明卡顿根因，也不能宣称升级已经修复。
+未删除聊天、修改运行中全局状态、重启桌面或执行系统switch；诊断明细仅留本机
+`/tmp/codex-check-20261106/diagnosis.json`，不发布个人聊天或远程主机资料。
+完整构建沿用工作树原有Helix改动，未修改或提交该文件；未处理无关girl.md。
+
+CX2：完整系统 `/nix/store/ram2bsyhzqrwc7irw2i3mmnflqryggr9-nixos-system-liu-bigpc-26.11.20260922.b6c98e9`
+与HM `/nix/store/d8ba79dqbcbgwl3q9jaglf9bdqp466mf-home-manager-generation` 构建通过。
+生成包元数据确认为26.1103.31037；HM入口指向新FHS包装，保留原生Wayland和缩放。
+HM备份环境为hm-backup，生成pen-scroll服务的ExecStart、input/uinput组、内核模块、
+udev及http/https/html/xhtml、magnet/bittorrent、codex和网盘协议基线均核验通过。
+阶段CX剩余1项CX3；下一步由用户在普通终端执行
+`nu rerun.nu liou --host liu-bigpc`，再完全退出重开Codex确认版本与实际体验。
