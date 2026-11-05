@@ -1044,7 +1044,7 @@ AM3最终实机验收：用户确认已断开重连，真实日志先显示连�
 
 - [x] CX1：检查宿主资源与桌面日志，核对当前版本及官方 Linux 更新包，只刷新 chatgpt-deb 输入。
 - [x] CX2：完整 liu-bigpc toplevel/HM generation 构建及生成入口、既有权限和核心 MIME 关联核验，记录结果并发布登记总纲。
-- [ ] CX3：用户在普通终端手动应用系统配置，完全退出后重开 Codex，确认版本与空闲卡顿是否改善。
+- [x] CX3：用户在普通终端手动应用系统配置，完全退出后重开 Codex，确认版本与空闲卡顿是否改善。
 
 运行中桌面为26.928.31416，官方latest DEB为26.1103.31037；仅更新flake.lock中
 chatgpt-deb的narHash，其他输入不变。启动后有明显I/O等待，随后短采样已回落；
@@ -1062,3 +1062,15 @@ HM备份环境为hm-backup，生成pen-scroll服务的ExecStart、input/uinput�
 udev及http/https/html/xhtml、magnet/bittorrent、codex和网盘协议基线均核验通过。
 阶段CX剩余1项CX3；下一步由用户在普通终端执行
 `nu rerun.nu liou --host liu-bigpc`，再完全退出重开Codex确认版本与实际体验。
+
+CX3复核（2026-11-06）：用户已手动rerun并完全重开；当前系统精确指向上述完整候选，
+运行中桌面元数据为26.1103.31037。重开后本次日志未见thread not found；
+不可达远程主机仍反复重连，插件复制和清理仍报EACCES。启动界面约3.8秒可见，
+侧栏ready仍约20秒，不能认定所有启动耗时都改善。
+约10秒宿主采样：后端codex约49%单核CPU，读647MB、写234MB，系统I/O压力明显；
+内存约27GiB可用、swap未使用。该后端持有rollout-maintenance锁，正在读历史会话并写
+rollout-compress临时文件，后续快照已处理到另一批文件，证明历史压缩维护有实际推进；
+不将所有磁盘读写或卡顿单独归因于压缩。未停止维护、改运行中状态或删除历史记录。
+仅本机证据为 `/tmp/codex-check-20261106/reopened-diagnosis.json` 和
+`reopened-resources.json`。阶段CX三项复核完成，剩余0项；升级已生效，
+实际卡顿仍有高I/O及既有错误，不能记为修复成功，也无需再次rerun。
