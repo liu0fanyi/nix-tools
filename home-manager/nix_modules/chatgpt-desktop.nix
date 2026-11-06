@@ -47,6 +47,30 @@ let
 
   chatgptFhs = pkgs.buildFHSEnv {
     name = "chatgpt";
+    # fs.cp preserves source modes. Store files are read-only, but Codex edits
+    # copied plugin manifests before activating its runtime marketplace.
+    # Keep the bundle read-only inside FHS while supplying normal copy modes.
+    extraPreBwrapCmds = ''
+      ${pkgs.python3}/bin/python3 ${../../scripts/chatgpt-pending-settings.py} || exit 1
+      chatgpt_plugin_cache="''${XDG_CACHE_HOME:-$HOME/.cache}/chatgpt/nix-plugin-sources/${baseNameOf chatgptFiles}"
+      ${pkgs.coreutils}/bin/mkdir -p -m 700 "$chatgpt_plugin_cache" || exit 1
+      (
+        set -e
+        ${pkgs.util-linux}/bin/flock 9
+        if [ ! -d "$chatgpt_plugin_cache/openai-bundled" ]; then
+          plugin_stage="$(${pkgs.coreutils}/bin/mktemp -d "$chatgpt_plugin_cache/.staging.XXXXXX")"
+          trap '${pkgs.coreutils}/bin/rm -rf -- "$plugin_stage"' EXIT
+          ${pkgs.coreutils}/bin/cp -a \
+            ${chatgptFiles}/lib/chatgpt/resources/plugins/openai-bundled \
+            "$plugin_stage/openai-bundled"
+          ${pkgs.coreutils}/bin/chmod -R u+w "$plugin_stage/openai-bundled"
+          ${pkgs.coreutils}/bin/mv -- "$plugin_stage/openai-bundled" "$chatgpt_plugin_cache/openai-bundled"
+        fi
+      ) 9>"$chatgpt_plugin_cache/.lock" || exit 1
+    '';
+    extraBwrapArgs = [
+      ''--ro-bind "$chatgpt_plugin_cache/openai-bundled" "${chatgptFiles}/lib/chatgpt/resources/plugins/openai-bundled"''
+    ];
     targetPkgs = p: [
       chatgptFiles
       p.alsa-lib
