@@ -541,3 +541,5 @@ SCR交付完成，剩余0步，见[109安装候选与上线证据](tag-browser-n
 010/C7：独立知识卡固定候选xfwz…已通过旧入口prepare；350份非所属资源摘要不变，未apply。现行016组合准入的037后端证据与当前源码不一致，verify_incremental拒绝；该prepare不等同016放行，未启动后端编译/矩阵，未改系统包固定或执行switch。
 
 010/C7追加核对：隔离恢复已验证版本后，037历史后端证据通过，无需重编；016继续在当前浏览器消费者6f46…与线上固定前端960a…不同时拒绝。知识卡84q64…桌面包签名缓存/latest Pin发布通过，其他四应用Pin不变；本仓消费者固定未改，尚未组合放行、apply或system switch。
+
+2026-11-09用户“上线安装”并确认已保存：010/C7固定源码桥真实重建且字节一致，12项实际组合通过，PC/NUC正式更新器已激活xfwz…；136份知识卡资源HTTP/磁盘摘要匹配，旧9maz后端不变，未恢复数据库。Android同包同证书覆盖安装成功。桌面知识卡固定84q64…，隔离基础配置完整system/HM候选通过，ExecStart、可执行文件及组/内核/udev已核对；未执行system switch，未包含其他聊天未提交Helix改动。阶段C1–C7完成，0项自动交付步骤剩余，用户手动系统切换及日常验收分开记录。权威结果在knowledge-cards/specs/010-capture-reliability/install-results.json。
