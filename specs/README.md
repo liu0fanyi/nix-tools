@@ -21,12 +21,12 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-09 · Pin Knowledge Cards with verified native input and paste fixes · `eb912fa`
+- 2026-11-09 · Refresh overview after the card capture rollout · `33e025a`
 - 2026-11-09 · Pin the installed Knowledge Cards capture update · `d4c9dbe`
 - 2026-11-09 · Refresh overview for the Knowledge Cards candidate · `bff8643`
 - 2026-11-09 · Allow the fixed shared editor in Knowledge Cards candidates · `9c29c48`
 - 2026-11-06 · Fix Codex bundled plugin copy permissions and queue connection changes safely · `ab7cd05`
 - 2026-11-06 · Upgrade Codex desktop to 26.1103.31037 · `94adeb3`
 - 2026-11-05 · Pin the server-authoritative My Cards package · `d90083d`
-- 2026-11-05 · Pin the merged My Cards list desktop package · `6465e7e`
-- 2026-11-05 · Pin the dufs/waiting intake desktop package · `872f042`
 <!-- recent-commits:end -->
