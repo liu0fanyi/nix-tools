@@ -543,3 +543,5 @@ SCR交付完成，剩余0步，见[109安装候选与上线证据](tag-browser-n
 010/C7追加核对：隔离恢复已验证版本后，037历史后端证据通过，无需重编；016继续在当前浏览器消费者6f46…与线上固定前端960a…不同时拒绝。知识卡84q64…桌面包签名缓存/latest Pin发布通过，其他四应用Pin不变；本仓消费者固定未改，尚未组合放行、apply或system switch。
 
 2026-11-09用户“上线安装”并确认已保存：010/C7固定源码桥真实重建且字节一致，12项实际组合通过，PC/NUC正式更新器已激活xfwz…；136份知识卡资源HTTP/磁盘摘要匹配，旧9maz后端不变，未恢复数据库。Android同包同证书覆盖安装成功。桌面知识卡固定84q64…，隔离基础配置完整system/HM候选通过，ExecStart、可执行文件及组/内核/udev已核对；未执行system switch，未包含其他聊天未提交Helix改动。阶段C1–C7完成，0项自动交付步骤剩余，用户手动系统切换及日常验收分开记录。权威结果在knowledge-cards/specs/010-capture-reliability/install-results.json。
+
+2026-11-09知识卡010/H原生桌面修复：仅将packages/knowledge-cards.nix从84q64…固定至实际Tauri/WebKit拼音/Rime各七组通过的p8zlqa…；可信签名缓存/latest Pin保留1版、其他四应用Pin不变，完整隔离PC/HM候选及内嵌可执行文件/快捷键/菜单、组/内核/udev通过。Android同包同证书更新且摘要一致。未激活服务、重跑Tag All后端或执行system switch；隔离候选排除其他聊天未提交Helix改动，原改动保持。唯一阶段计数knowledge-cards010/H1–H4完成，剩余0步，用户手动切换与日常验收分开。权威结果knowledge-cards/specs/010-capture-reliability/webkit-delivery-results.json。

@@ -2,7 +2,7 @@
 let
   cached = builtins.fetchClosure {
     fromStore = "https://liu0fanyi-nix.cachix.org";
-    fromPath = "/nix/store/84q64xwvj7942rbz92p3x0p66m0cw6ip-knowledge-cards-0.1.0";
+    fromPath = "/nix/store/p8zlqa37plyddx11c0zr2gyfj3vycgaf-knowledge-cards-0.1.0";
     inputAddressed = true;
   };
 in pkgs.symlinkJoin {
