@@ -21,6 +21,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-09 · Allow the fixed shared editor in Knowledge Cards candidates · `9c29c48`
 - 2026-11-06 · Fix Codex bundled plugin copy permissions and queue connection changes safely · `ab7cd05`
 - 2026-11-06 · Upgrade Codex desktop to 26.1103.31037 · `94adeb3`
 - 2026-11-05 · Pin the server-authoritative My Cards package · `d90083d`
@@ -28,5 +29,4 @@
 - 2026-11-05 · Pin the dufs/waiting intake desktop package · `872f042`
 - 2026-11-04 · Add aMule with ED2K and Kad bootstrap on the PC · `d6d3e65`
 - 2026-11-04 · Summarize verified nix.112 theme delivery · `f62968f`
-- 2026-11-04 · Pin signed nix.112 and verify reserved application assets in release fixtures · `ab442cd`
 <!-- recent-commits:end -->
