@@ -26,5 +26,24 @@ class KnowledgeCardArtifactTests(unittest.TestCase):
             with self.assertRaises(AssertionError):
                 module.frontend_files(root)
 
+    def test_shared_helix_runtime_is_an_exact_allowlist(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / 'index.html').write_text('fixture')
+            for name in ['helix/index.html', 'helix/terminal.bundle.js', 'helix/pkg/helix_web_bg.wasm', 'helix/pkg/LICENSE', 'helix/pkg/DUFS-HOST.json']:
+                p = root / name
+                p.parent.mkdir(parents=True, exist_ok=True)
+                p.write_bytes(b'fixture')
+            self.assertEqual(len(module.frontend_files(root)), 6)
+            for name in ['helix/secret.json', 'helix/pkg/credential.json', 'helix/arbitrary.html', 'helix/pkg/program.sh']:
+                p = root / name
+                p.write_text('fixture')
+                with self.assertRaises(AssertionError):
+                    module.frontend_files(root)
+                p.unlink()
+            (root / 'helix/pkg/link.js').symlink_to(root / 'index.html')
+            with self.assertRaises(AssertionError):
+                module.frontend_files(root)
+
 if __name__ == '__main__':
     unittest.main()

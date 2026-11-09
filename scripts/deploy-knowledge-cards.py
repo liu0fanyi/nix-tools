@@ -4,14 +4,16 @@ import argparse,hashlib,json,os,shlex,shutil,subprocess,tempfile,time
 from pathlib import Path
 HOST='liou@nuc.local'
 CURRENT=Path('/home/liou/.local/share/tag-all/native-version-releases/current.json')
-MANAGER=Path('/nix/store/vb0phbx5f56nnhgm7bc1xf03cmrwhy73-tag-native-release-manager')
+MANAGER=Path('/nix/store/ff1hjnr0ja6g6fx3nkdh8mjz9ggzr8fp-tag-native-release-manager')
 def run(args):return subprocess.check_output(args,text=True).strip()
 def digest(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 def frontend_files(source):
  files=[f for f in source.rglob('*') if f.is_file()]
  assert files and not any(f.is_symlink() for f in source.rglob('*')), 'Symlink artifact'
  allowed={'.js','.css','.wasm','.woff','.woff2','.ttf'}
- assert all(f.relative_to(source).as_posix()=='index.html' or f.relative_to(source).parts[0]=='assets' and f.suffix in allowed for f in files),'Unexpected artifact'
+ # Exact consumer-owned shared-editor runtime and notices, never arbitrary HTML/JSON.
+ helix={'helix/pkg/helix_web.d.ts', 'helix/pkg/XTERM-LICENSE', 'helix/pkg/LICENSE', 'helix/pkg/package.json', 'helix/pkg/DUFS-HOST-NOTICE.md', 'helix/pkg/PATH-BROWSERIFY-LICENSE', 'helix/pkg/MARKDOWN-LSP-NOTICES.md', 'helix/pkg/XTERM-FIT-LICENSE', 'helix/markdown-lsp.bundle.js', 'helix/pkg/helix_web_bg.wasm.d.ts', 'helix/pkg/MARKDOWN-IT-FRONT-MATTER-LICENSE', 'helix/pkg/helix_web.js', 'helix/pkg/VSCODE-LANGUAGESERVER-TEXTDOCUMENT-LICENSE', 'helix/pkg/GRAMMARS.txt', 'helix/pkg/NOTICE.md', 'helix/pkg/MARKDOWN-IT-LICENSE', 'helix/pkg/helix_web_bg.wasm', 'helix/terminal.bundle.js', 'helix/pkg/DUFS-HOST.json', 'helix/index.html', 'helix/pkg/CHANGELOG.md', 'helix/terminal.bundle.css', 'helix/pkg/VSCODE-URI-LICENSE', 'helix/pkg/VSCODE-MARKDOWN-LANGUAGESERVICE-LICENSE'}
+ assert all(f.relative_to(source).as_posix()=='index.html' or f.relative_to(source).as_posix() in helix or f.relative_to(source).parts[0]=='assets' and f.suffix in allowed for f in files),'Unexpected artifact'
  return files
 
 def main():

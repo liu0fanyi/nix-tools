@@ -535,3 +535,7 @@ SCR交付完成，剩余0步，见[109安装候选与上线证据](tag-browser-n
 ## 原生主题首屏与Markdown nix.112配套交付
 
 用户本轮“上线”授权。nix.112原生62份资源与七组2686项、私有Release/CI41673716233精确ggpn包、可信签名/latest Pin保留1版、其他应用Pin及五应用精确缓存核验通过。仅更新tag-browser-src锁到e7a6329；完整PC/HM候选、菜单/四类MIME、五模板/default target及restore顺序通过，未system switch。PC/NUC网页cayb上线6.517/11.651秒，现用9maz后端、严格签名、备份完整性/inode/Upholds及独立应用保持。12项实际组合保留全部350份HTTP摘要、13项夹具单测及6项隔离回退通过。组合夹具缺reserved应用根导致404，审批拒绝缩减集合；改夹具按后端固定applications映射补齐，生产路由未改，失败记录保留。唯一交付计数Tag Browser036/NFR，见[完整安装核验](tag-browser-nix112-install-results.json)。用户普通终端应用liu-bigpc并正常完整重开确认112，真实日常体验仍另行验收。
+
+2026-11-09知识卡010/C7配套：独立网页组合发布器仅追加固定共享Helix运行时及许可证的精确路径白名单，任意HTML/JSON/脚本和符号链接仍拒绝；使用已实际发行的ff1hjnr…原生更新器替代旧vb0…固定版本。两个制品边界单测通过，功能/发行唯一计数仍在knowledge-cards010/C1–C7，不增加基础设施切换或系统switch。
+
+010/C7：独立知识卡固定候选xfwz…已通过旧入口prepare；350份非所属资源摘要不变，未apply。现行016组合准入的037后端证据与当前源码不一致，verify_incremental拒绝；该prepare不等同016放行，未启动后端编译/矩阵，未改系统包固定或执行switch。
