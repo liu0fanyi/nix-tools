@@ -1,15 +1,15 @@
 # Nix 配置与发布工具
 
 ## 当前情况
-- [Trime中文九宫格已加专用Helix页，知识卡QA真实normal/select/insert、前后词、行首尾、方向和撤销重做逐键通过；中文仅提交一次，原草稿保留。底部留白已收起，搜狗保留；正式知识卡与电脑系统未改。](010-host-configuration/android-trime-helix-results.json)
-- [知识卡011已上线PC/NUC并更新手机；桌面iqc1h1…签名缓存/固定及隔离完整安装候选通过，未system switch；唯一D1–D4完成。](014-application-entry-boundary/tasks.md)
+- [Trime中文九宫格的专用Helix页已真机验证并随知识卡正式手机版更新；中文单次提交、模式/选区和撤销重做通过，搜狗保留。PC系统未切换。](010-host-configuration/android-trime-helix-results.json)
+- [知识卡精简界面与标签已同步到PC/NUC网页，NUC学习规划及现用后端保留；桌面wflj303…可信缓存/固定与隔离完整PC/HM候选已通过，未system switch；唯一阶段沿知识卡012/W。](014-application-entry-boundary/tasks.md)
 - [Codex桌面26.1103.31037修复已实机生效：不可达主机停止自动重连，NUC保持开启；6个内置插件成功物化并复用，无新增权限错误，聊天记录未动。](010-host-configuration/tasks.md#codex-桌面卡顿排查与升级阶段-cx2026-11-06)
 - [nix.112首屏主题与Markdown配套已发行，精确签名缓存及完整PC/HM候选通过；PC/NUC网页上线，350份组合资源与回退/数据认证保留通过，未系统switch。](014-application-entry-boundary/tag-browser-nix112-install-results.json) [组合保护网补齐三种保留应用根：13项单测、全350份HTTP摘要/12项实际组合及6项隔离回退通过，原断言和失败记录保留。](014-application-entry-boundary/tasks.md)
 - [aMule实机High ID与Kad OK验收通过，公网TCP4662可达；清理41条微信映射，其他23条保留，路由表64→26，本轮无需再次rerun。](010-host-configuration/tasks.md#amule-安装与网络引导阶段-am2026-11-04) [DiskTree图形版构建通过，待手动应用试用。](010-host-configuration/tasks.md#disktree-图形版安装阶段-dt2026-11-01)
 - [系统盘与/data安全清理：当前分别为64%/55%，CMT编译文件再回收约51.8GiB；原镜像标签、服务容器与源码保留；详细清理记录统一见AGENTS第七节。](010-host-configuration/tasks.md#cmt低延迟实验编译缓存清理阶段-sf2026-11-04)
 
 ## 后续计划
-- [用户在独立知识卡QA试用Trime专用Helix页；正式应用发行另行确认。](010-host-configuration/tasks.md#android-同文中文九宫格阶段-tr2026-11-10)
+- [用户试用正式手机/网页知识卡；PC桌面系统候选需用户手动激活。](010-host-configuration/tasks.md#android-同文中文九宫格阶段-tr2026-11-10)
 - [用户手动应用nix.112，正常完整重开确认版本；真实日常目录体验另行验收。](014-application-entry-boundary/tasks.md)
 - [手动试用DiskTree（DT3）；aMule阶段AM已完成，无需再次rerun，微信长期映射配额未配置。](010-host-configuration/tasks.md#disktree-图形版安装阶段-dt2026-11-01)
 - [在文件管理器双击文档和表格确认默认应用（OF3）。](010-host-configuration/tasks.md#文档与表格默认应用修复阶段-of2026-10-31)
@@ -23,12 +23,12 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-10 · Pin the verified Knowledge Cards desktop update · `0e7a9f3`
+- 2026-11-10 · Summarize the Trime Helix QA verification · `fb7e16e`
 - 2026-11-10 · Add a dedicated Trime Helix command keyboard · `cecddeb`
 - 2026-11-10 · Configure Android Trime Chinese T9 and Helix Escape key · `f4887db`
 - 2026-11-10 · Refresh overview after the card-management rollout · `bb717bb`
 - 2026-11-10 · Pin the deployed Knowledge Cards management update · `3620794`
 - 2026-11-09 · Refresh overview for the native editor hotfix · `7a0d411`
 - 2026-11-09 · Pin Knowledge Cards with verified native input and paste fixes · `eb912fa`
-- 2026-11-09 · Refresh overview after the card capture rollout · `33e025a`
-- 2026-11-09 · Pin the installed Knowledge Cards capture update · `d4c9dbe`
 <!-- recent-commits:end -->
