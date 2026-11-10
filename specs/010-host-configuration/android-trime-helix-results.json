@@ -1,0 +1,21 @@
+{
+  "status": "independent QA only; no production release",
+  "package": "top.wttliou.knowledgecards.qa",
+  "apk_sha256": "a5de6079f190d90d02f813ebf6899719eafc65319d2dadba0abda2c5fe91e1d1",
+  "installed_apk_matches": true,
+  "trime_patch_sha256": "151a59b8e977a5286f04962dc205b377312138d001be5f4db77c4ce37f45d488",
+  "device_patch_matches": true,
+  "compiled_modified_shortcuts": true,
+  "native_chinese": {
+    "passed": true,
+    "checks": [
+      "native T9 64426 committed exactly one 你好",
+      "native undo restored exact original draft without z/y",
+      "native redo restored only the temporary commit",
+      "final editor and persisted draft exactly match pre-update snapshot"
+    ]
+  },
+  "original_editor_and_persisted_draft_unchanged": true,
+  "production_data_accessed": false,
+  "user_private_text_in_evidence": false
+}

@@ -1,5 +1,53 @@
-# Keep an explicit Esc in the system keyboard's editing page.
-# Preserve the original key's size/colors; replace only the destructive Clear action.
+# Generic editing remains available by long-pressing the Helix entry.
+# The dedicated page requires Knowledge Cards' explicit command-keyboard bridge.
 patch:
+  "preset_keyboards/default/import_preset": clover_jiugong
   "preset_keyboards/use/keys/@18/click": Escape
   "preset_keyboards/use/keys/@18/label": Esc
+  "preset_keyboards/luna_jiugong/keys/@14/click": Helix_enter
+  "preset_keyboards/luna_jiugong/keys/@14/label": Helix
+  "preset_keyboards/luna_jiugong/keys/@14/long_click": Helix_generic_edit
+  "preset_keyboards/clover_jiugong/keys/@14/click": Helix_enter
+  "preset_keyboards/clover_jiugong/keys/@14/label": Helix
+  "preset_keyboards/clover_jiugong/keys/@14/long_click": Helix_generic_edit
+  "preset_keys/Helix_enter": {label: Helix, text: "{Control+Alt+F12}{Helix_keyboard}"}
+  "preset_keys/Helix_keyboard": {send: Eisu_toggle, select: helix}
+  "preset_keys/Helix_generic_edit": {label: 通用编辑, send: Eisu_toggle, select: use}
+  "preset_keys/Helix_chinese": {send: Eisu_toggle, select: clover_jiugong}
+  "preset_keys/Helix_input": {label: 输入, text: "{Control+Alt+F11}{Helix_chinese}"}
+  "preset_keys/Helix_normal": {label: Esc, send: Control+Alt+F12, functional: false}
+  "preset_keys/Helix_prev_word": {label: 前词, send: Control+Alt+F1, functional: false, repeatable: true}
+  "preset_keys/Helix_next_word": {label: 后词, send: Control+Alt+F2, functional: false, repeatable: true}
+  "preset_keys/Helix_line_start": {label: 行首, send: Control+Alt+F3, functional: false}
+  "preset_keys/Helix_line_end": {label: 行尾, send: Control+Alt+F4, functional: false}
+  "preset_keys/Helix_undo": {label: 撤销, send: Control+Alt+F5, functional: false}
+  "preset_keys/Helix_redo": {label: 重做, send: Control+Alt+F6, functional: false}
+  "preset_keys/Helix_select": {label: 选区, send: Control+Alt+F10, functional: false}
+  "preset_keyboards/helix":
+    name: Helix
+    ascii_mode: 1
+    lock: false
+    height: 58
+    horizontal_gap: 6
+    vertical_gap: 6
+    width: 24
+    keys:
+      - {click: Helix_normal, width: 14}
+      - {click: Helix_prev_word}
+      - {click: Up, label: ↑ k}
+      - {click: Helix_next_word}
+      - {click: Helix_input, width: 14}
+      - {click: Helix_undo, width: 14}
+      - {click: Left, label: ← h}
+      - {click: Helix_select}
+      - {click: Right, label: → l}
+      - {click: Helix_redo, width: 14}
+      - {width: 14}
+      - {click: Helix_line_start}
+      - {click: Down, label: ↓ j}
+      - {click: Helix_line_end}
+      - {width: 14}
+      - {click: Tab, width: 14}
+      - {click: Helix_normal, width: 24}
+      - {click: Helix_input, width: 48}
+      - {click: Hide, width: 14}
