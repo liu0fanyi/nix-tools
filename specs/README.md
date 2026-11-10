@@ -1,6 +1,7 @@
 # Nix 配置与发布工具
 
 ## 当前情况
+- [Android已切换官方Trime 3.3.13＋中文九宫格，真实候选、Helix左右移动和系统键盘Esc通过，底部额外导航留白已收起；搜狗保留。Helix选区仍有兼容缺口，本轮未改正式应用或电脑系统配置。](010-host-configuration/android-trime-results.json)
 - [知识卡011已上线PC/NUC并更新手机；桌面iqc1h1…签名缓存/固定及隔离完整安装候选通过，未system switch；唯一D1–D4完成。](014-application-entry-boundary/tasks.md)
 - [Codex桌面26.1103.31037修复已实机生效：不可达主机停止自动重连，NUC保持开启；6个内置插件成功物化并复用，无新增权限错误，聊天记录未动。](010-host-configuration/tasks.md#codex-桌面卡顿排查与升级阶段-cx2026-11-06)
 - [nix.112首屏主题与Markdown配套已发行，精确签名缓存及完整PC/HM候选通过；PC/NUC网页上线，350份组合资源与回退/数据认证保留通过，未系统switch。](014-application-entry-boundary/tag-browser-nix112-install-results.json) [组合保护网补齐三种保留应用根：13项单测、全350份HTTP摘要/12项实际组合及6项隔离回退通过，原断言和失败记录保留。](014-application-entry-boundary/tasks.md)
@@ -8,6 +9,7 @@
 - [系统盘与/data安全清理：当前分别为64%/55%，CMT编译文件再回收约51.8GiB；原镜像标签、服务容器与源码保留；详细清理记录统一见AGENTS第七节。](010-host-configuration/tasks.md#cmt低延迟实验编译缓存清理阶段-sf2026-11-04)
 
 ## 后续计划
+- [用户试用Trime九宫格与候选手感；Helix选区和精简手机操作入口仍需应用侧处理，未假定换输入法即可全部解决。](010-host-configuration/tasks.md#android-同文中文九宫格阶段-tr2026-11-10)
 - [用户手动应用nix.112，正常完整重开确认版本；真实日常目录体验另行验收。](014-application-entry-boundary/tasks.md)
 - [手动试用DiskTree（DT3）；aMule阶段AM已完成，无需再次rerun，微信长期映射配额未配置。](010-host-configuration/tasks.md#disktree-图形版安装阶段-dt2026-11-01)
 - [在文件管理器双击文档和表格确认默认应用（OF3）。](010-host-configuration/tasks.md#文档与表格默认应用修复阶段-of2026-10-31)
@@ -21,12 +23,12 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-10 · Configure Android Trime Chinese T9 and Helix Escape key · `f4887db`
+- 2026-11-10 · Refresh overview after the card-management rollout · `bb717bb`
 - 2026-11-10 · Pin the deployed Knowledge Cards management update · `3620794`
 - 2026-11-09 · Refresh overview for the native editor hotfix · `7a0d411`
 - 2026-11-09 · Pin Knowledge Cards with verified native input and paste fixes · `eb912fa`
 - 2026-11-09 · Refresh overview after the card capture rollout · `33e025a`
 - 2026-11-09 · Pin the installed Knowledge Cards capture update · `d4c9dbe`
 - 2026-11-09 · Refresh overview for the Knowledge Cards candidate · `bff8643`
-- 2026-11-09 · Allow the fixed shared editor in Knowledge Cards candidates · `9c29c48`
-- 2026-11-06 · Fix Codex bundled plugin copy permissions and queue connection changes safely · `ab7cd05`
 <!-- recent-commits:end -->
