@@ -1,0 +1,5 @@
+# Keep an explicit Esc in the system keyboard's editing page.
+# Preserve the original key's size/colors; replace only the destructive Clear action.
+patch:
+  "preset_keyboards/use/keys/@18/click": Escape
+  "preset_keyboards/use/keys/@18/label": Esc

@@ -1,0 +1,47 @@
+{
+  "application": "com.osfans.trime",
+  "version": "3.3.13",
+  "official_apk_sha256": "e7535ea421a25962eb2ea37c46ff867838e69d33ba6d935876ab84d108de5020",
+  "installed_apk_matches": true,
+  "scheme": "clover_jiugong",
+  "theme": "tongwenfeng_plus",
+  "custom_files_match": true,
+  "local_installation_identity_preserved": true,
+  "existing_sogou_installed": true,
+  "current_ime_is_trime": true,
+  "native_t9_commit": {
+    "actual_native_t9": "64426",
+    "candidate": "你好",
+    "commit_once": true,
+    "existing_draft_untouched": true
+  },
+  "native_direction_keys": {
+    "before": {
+      "row": 1,
+      "col": 9
+    },
+    "left": {
+      "row": 1,
+      "col": 8
+    },
+    "right": {
+      "row": 1,
+      "col": 9
+    },
+    "unchanged_document": true,
+    "works": true
+  },
+  "native_escape": {
+    "real_trime_esc_returns_helix_normal": true,
+    "qa_draft_preserved": true
+  },
+  "selection": "Shift+Left in Helix insert did not extend selection; unresolved app compatibility",
+  "test_scope": "independent knowledge-cards QA only; user draft preserved; no production app changes",
+  "system_switch": false,
+  "bottom_blank": {
+    "cause": "Trime FULL navigation-bar background reserves system gesture/navigation frame inset; theme keyboardPaddingBottom is zero",
+    "advanced_ignore_system_gesture_insets": true,
+    "large_bottom_blank_removed_visually_verified": true,
+    "system_navigation_mode_changed": false
+  }
+}

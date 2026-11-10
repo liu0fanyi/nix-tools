@@ -375,3 +375,7 @@ Constitution Check：仅 PC 构建，不代用户 switch；依赖沿用锁定 ni
 不运行上游安装脚本或系统switch，不触碰现有设计数据。
 Constitution Check：来源/版本/哈希固定，构建在PC，用户应用与实际API验收分开；
 总纲按中央登记单文件发布，不全量同步规格。实际构建及剩余项见ED4任务。
+
+## TR：Android 同文中文九宫格
+
+下载官方固定release APK并核对发行SHA256及包身份，配置使用rime-pure固定发布的原始trime.7z；作为正常安装依赖按URL/摘要管理，不复制外部Git工作目录。配置与恢复说明保存在config/android/trime及docs；手机只写新Trime自己的资料目录，不覆盖其他输入法、正式知识卡或PC Rime用户词库。真机测试仅使用独立知识卡QA合成数据。Constitution Check：不构建/部署服务器，不执行系统switch；规格在本仓010，资料与源分层，不新增参考仓；仅发布projects登记摘要。

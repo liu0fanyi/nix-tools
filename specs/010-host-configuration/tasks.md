@@ -1113,3 +1113,18 @@ HM启动入口为 `/nix/store/l8hsyv3rmbxz25r2s4dqw9y9xph2l8s3-chatgpt-bwrap`。
 本机证据 `/tmp/codex-fix-20261106/live-verification.json`。
 阶段CY三项完成，剩余0项；两项指定修复已实机生效，无需再次rerun或重开。
 不将本轮连接/插件验收泛化为所有界面卡顿均已消除。
+
+## Android 同文中文九宫格（阶段 TR，2026-11-10）
+
+- [x] TR1 核对官方APK、九宫格配置版本/摘要与手机安装边界。
+- [x] TR2 安装并启用同文，部署中文九宫格，保留搜狗回退。
+- [x] TR3 实测中文候选、移动/选区及Helix控制键；明确兼容结果。
+- [ ] TR4 保存配置/恢复说明，提交推送并同步总纲。
+
+同一跨仓阶段只计TR1–TR4；不把旧T阶段或测试子项重复累加。
+
+TR验证：官方3.3.13 ARM64正式APK已安装并与发行SHA256逐字节核对，rime-pure 2.0.0原始trime.7z摘要一致；clover_jiugong + tongwenfeng_plus生效，手机自有installation_id保持，本地两份补丁与手机一致。搜狗包保留，未迁移其词库；当前输入法为Trime。实际九宫格64426出现“你好”并只提交一次，编辑页左右键能移动Helix光标且正文不变；本仓小补丁将Clear换成Esc，实测回到Helix normal。Shift+Left未扩展Helix选区，明确保留为应用兼容问题，不能宣称选区已修。
+
+只测试独立知识卡QA。用户暂停操作后，临时后缀通过Helix撤销，原有QA草稿逐字核对保持；未修改正式知识卡/PC/NUC网页或电脑Rime，未执行系统switch或任何完整构建。手机触控测试已结束并明确交还用户；结果不记录私人正文或词库。证据为android-trime-results.json；恢复方法见docs/android-trime.md。
+
+用户补充底部空白反馈：核对v3.3.13源码，主题底部padding为0，实际额外空白来自FULL导航栏模式的系统手势/导航frame避让。开启“高级→忽略系统手势边衬区”，UI开关读回true并在QA实屏确认大块空白消失；没有更改系统导航方式。这属于同一TR配置验收，不新增阶段计数。

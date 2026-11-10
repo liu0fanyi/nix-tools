@@ -1,0 +1,4 @@
+# Chinese T9; upstream dictionaries and theme are pinned in sources.json.
+patch:
+  schema_list:
+    - {schema: clover_jiugong}

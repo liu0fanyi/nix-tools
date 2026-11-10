@@ -1,0 +1,34 @@
+{
+  "application": {
+    "repo": "osfans/trime",
+    "tag": "v3.3.13",
+    "name": "com.osfans.trime-v3.3.13-0-gb5cad1a4-arm64-v8a-release.apk",
+    "url": "https://github.com/osfans/trime/releases/download/v3.3.13/com.osfans.trime-v3.3.13-0-gb5cad1a4-arm64-v8a-release.apk",
+    "sha256": "e7535ea421a25962eb2ea37c46ff867838e69d33ba6d935876ab84d108de5020",
+    "certificate_sha256": "39f51b81bc3e0eeb7c3ae381755e33bdbf6bd9f4623719ca9ed82392f81a06a8"
+  },
+  "configuration": {
+    "repo": "SivanLaai/rime-pure",
+    "tag": "2.0.0",
+    "name": "trime.7z",
+    "url": "https://github.com/SivanLaai/rime-pure/releases/download/2.0.0/trime.7z",
+    "sha256": "743e33dcc4e4d156059d155a56c76bd5d77a74a908368a7c182c22008ccb3208"
+  },
+  "theme": "tongwenfeng_plus",
+  "schema": "clover_jiugong",
+  "device_data_directory": "/sdcard/Android/data/com.osfans.trime/files/rime",
+  "exclude_from_configuration_import": [
+    "installation.yaml",
+    "user.yaml",
+    "*.userdb*",
+    "sync/",
+    "build/"
+  ],
+  "local_patches": [
+    "default.custom.yaml",
+    "tongwenfeng_plus.trime.custom.yaml"
+  ],
+  "ui_settings": {
+    "高级/忽略系统手势边衬区": true
+  }
+}
