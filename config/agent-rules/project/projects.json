@@ -220,6 +220,12 @@
       "root": "/data/project/course-library",
       "aliases": [],
       "category": "应用与工具"
+    },
+    {
+      "name": "trime-mobile",
+      "root": "/data/project/trime-mobile",
+      "aliases": [],
+      "category": "应用与工具"
     }
   ]
 }
