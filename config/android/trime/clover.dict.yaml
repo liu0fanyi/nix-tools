@@ -1,0 +1,13 @@
+# Same dictionary identity and T9 scheme; keep the existing user dictionary.
+# Dictionary data is from the fixed desktop rime-ice package in sources.json.
+---
+name: clover
+version: "mobile-ice-2026.06.30"
+sort: by_weight
+import_tables:
+  - clover.base
+  - cn_dicts/8105
+  - cn_dicts/base
+  - cn_dicts/ext
+  - cn_dicts/others
+...

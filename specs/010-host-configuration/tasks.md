@@ -1136,3 +1136,18 @@ TR1–TR4四项完成，剩余0步。配置和恢复说明已提交推送，总�
 用户反馈默认编辑页角键为Home/End和Ctrl+z/y、Shift选择无效且不切换Helix模式，确认此前示意图并未对应已安装配置。本仓维护专用Helix键盘补丁及协议/恢复说明，应用接入与候选验收在knowledge-cards/specs/012-mobile-touch-editor的K1–K4，不另建重复阶段、不重开已完成TR安装事实。控制页必须明确标为Helix，保留通用编辑入口，不把输入法Shift当编辑器select。
 
 K1–K3真机验证完成：Ctrl+Alt功能键绕开Rime裸F4方案菜单；Helix/输入实现真实normal/insert，中心选区进入select并扩展。前后词、行首尾与四向逐键通过；真实中文提交一次，撤销/重做后既有草稿完全恢复。default与返回输入均明确九宫格布局，系统手势留白设置保留。证据android-trime-helix-results.json；仅独立无网络QA更新，正式应用未替换。K4提交与总纲回查沿知识卡012，不重复计数。
+
+## Trime词库与键盘精简（KX，2026-11-12）
+
+- [x] KX1 核对手机实际方案、词库和主题动作，明确交互方案及问题根因。
+- [x] KX2 准备词库/精简Helix/符号工具栏候选，并完成隔离检查。
+- [ ] KX3 核实九宫格拼音消歧的实现边界，给出可审核方案；不冒充已实现。
+- [x] KX4 用户暂停后备份/部署白名单配置，真机验证词语、混合符号和Helix撤销重做，保留原草稿与学习库。
+- [ ] KX5 提交推送、维护手册/总纲与镜像回查。
+
+KX1：实际手机仍为官方3.3.13、clover_jiugong、tongwenfeng_plus；静态配置与本地固定版本一致。Helix页上下重复Esc/输入且Tab误标“字词”。主题尾部重复定义liquid_keyboard_switch为旧_liquid_keyboard开关，覆盖前面的有效FUNCTION动作。手机clover.dict只导入clover.base/huayu，未包含黄仁勋；既有Nix rime-ice基础词库包含该词。尚未修改手机配置或操作手机界面。原未提交Helix配置/暂存补丁继续保留。
+
+
+KX2/KX4：候选工具校验固定公共表，生成7文件；手机完整资料目录已私有备份，只覆盖6份变化文件并经官方部署，读回build主题为15格、Esc/输入各1、工具栏6、独立FUNCTION符号动作。隔离librime1.17查询旧词库604候选无目标，新词库黄仁勋首位；真机数字48264736986单次提交该词。中文模式工具栏#/:/-均为ASCII，实际左下符打开英文面板并提交*；Ctrl+Alt F5/F6使正文撤销/恢复。QA原cards/drafts/edits/removals逐表恢复，QA已停止并交还手机；未替换APK、未改正式应用/PC Rime或服务，未清除学习库。证据android-trime-keyboard-results.json不含私人正文。
+
+KX3仍待原型验证：手册已给出“独立选音行→词候选行”的交互和filter/processor隔离验证步骤，官方现版本主题/候选注音不能直接当作可点选音。未实现、不部署未经验证的候选回调，不擅自维护替代签名APK。当前阶段剩余KX3及KX5；KX5完成后仍剩1项KX3，下一步验证选音不提交正文、退格/取消与用户词频保留。

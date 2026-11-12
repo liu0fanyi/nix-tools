@@ -1,18 +1,15 @@
-# Generic editing remains available by long-pressing the Helix entry.
-# The dedicated page requires Knowledge Cards' explicit command-keyboard bridge.
+# Dedicated Helix controls use the Knowledge Cards command-keyboard bridge.
+# Symbols commit literal half-width text without changing the Chinese mode.
 patch:
   "preset_keyboards/default/import_preset": clover_jiugong
   "preset_keyboards/use/keys/@18/click": Escape
   "preset_keyboards/use/keys/@18/label": Esc
   "preset_keyboards/luna_jiugong/keys/@14/click": Helix_enter
   "preset_keyboards/luna_jiugong/keys/@14/label": Helix
-  "preset_keyboards/luna_jiugong/keys/@14/long_click": Helix_generic_edit
   "preset_keyboards/clover_jiugong/keys/@14/click": Helix_enter
   "preset_keyboards/clover_jiugong/keys/@14/label": Helix
-  "preset_keyboards/clover_jiugong/keys/@14/long_click": Helix_generic_edit
   "preset_keys/Helix_enter": {label: Helix, text: "{Control+Alt+F12}{Helix_keyboard}"}
   "preset_keys/Helix_keyboard": {send: Eisu_toggle, select: helix}
-  "preset_keys/Helix_generic_edit": {label: 通用编辑, send: Eisu_toggle, select: use}
   "preset_keys/Helix_chinese": {send: Eisu_toggle, select: clover_jiugong}
   "preset_keys/Helix_input": {label: 输入, text: "{Control+Alt+F11}{Helix_chinese}"}
   "preset_keys/Helix_normal": {label: Esc, send: Control+Alt+F12, functional: false}
@@ -46,8 +43,48 @@ patch:
       - {click: Helix_line_start}
       - {click: Down, label: ↓ j}
       - {click: Helix_line_end}
-      - {width: 14}
-      - {click: Tab, width: 14}
-      - {click: Helix_normal, width: 24}
-      - {click: Helix_input, width: 48}
       - {click: Hide, width: 14}
+
+  # Repair the overridden old liquid-keyboard toggle; preserve clipboard long press.
+  "preset_keys/Mobile_symbols": {label: 符, send: FUNCTION, command: liquid_keyboard, option: "英文"}
+  "preset_keys/Mobile_clipboard": {label: 剪贴, send: FUNCTION, command: liquid_keyboard, option: "剪贴"}
+  "preset_keyboards/luna_jiugong/keys/@16/click": Mobile_symbols
+  "preset_keyboards/luna_jiugong/keys/@16/long_click": Mobile_clipboard
+  "preset_keyboards/clover_jiugong/keys/@16/click": Mobile_symbols
+  "preset_keyboards/clover_jiugong/keys/@16/long_click": Mobile_clipboard
+  "preset_keys/ASCII_comma": {"label": ",", "commit": ","}
+  "preset_keys/ASCII_period": {"label": ".", "commit": "."}
+  "preset_keys/ASCII_colon": {"label": ":", "commit": ":"}
+  "preset_keys/ASCII_semicolon": {"label": ";", "commit": ";"}
+  "preset_keys/ASCII_slash": {"label": "/", "commit": "/"}
+  "preset_keys/ASCII_backslash": {"label": "\\", "commit": "\\"}
+  "preset_keys/ASCII_minus": {"label": "-", "commit": "-"}
+  "preset_keys/ASCII_underscore": {"label": "_", "commit": "_"}
+  "preset_keys/ASCII_equals": {"label": "=", "commit": "="}
+  "preset_keys/ASCII_plus": {"label": "+", "commit": "+"}
+  "preset_keys/ASCII_star": {"label": "*", "commit": "*"}
+  "preset_keys/ASCII_hash": {"label": "#", "commit": "#"}
+  "preset_keys/ASCII_backtick": {"label": "`", "commit": "`"}
+  "preset_keys/ASCII_lparen": {"label": "(", "commit": "("}
+  "preset_keys/ASCII_rparen": {"label": ")", "commit": ")"}
+  "preset_keys/ASCII_lbracket": {"label": "[", "commit": "["}
+  "preset_keys/ASCII_rbracket": {"label": "]", "commit": "]"}
+  "preset_keys/ASCII_lbrace": {"label": "{", "commit": "{"}
+  "preset_keys/ASCII_rbrace": {"label": "}", "commit": "}"}
+  "preset_keys/ASCII_quote": {"label": "\"", "commit": "\""}
+  "preset_keys/ASCII_apostrophe": {"label": "'", "commit": "'"}
+  "preset_keyboards/luna_jiugong/keys/@0/long_click": ASCII_comma
+  "preset_keyboards/luna_jiugong/keys/@5/long_click": ASCII_period
+  "preset_keyboards/luna_jiugong/keys/@10/long_click": ASCII_lparen
+  "preset_keyboards/luna_jiugong/keys/@15/long_click": ASCII_lbracket
+  "preset_keyboards/clover_jiugong/keys/@0/long_click": ASCII_comma
+  "preset_keyboards/clover_jiugong/keys/@5/long_click": ASCII_period
+  "preset_keyboards/clover_jiugong/keys/@10/long_click": ASCII_lparen
+  "preset_keyboards/clover_jiugong/keys/@15/long_click": ASCII_lbracket
+  "tool_bar/buttons":
+    - {"foreground": {"style": "更多", "font_size": 18, "padding": 8}, "action": "Mobile_symbols"}
+    - {"foreground": {"style": "`", "font_size": 18, "padding": 8}, "action": "ASCII_backtick"}
+    - {"foreground": {"style": "#", "font_size": 18, "padding": 8}, "action": "ASCII_hash"}
+    - {"foreground": {"style": "/", "font_size": 18, "padding": 8}, "action": "ASCII_slash"}
+    - {"foreground": {"style": ":", "font_size": 18, "padding": 8}, "action": "ASCII_colon"}
+    - {"foreground": {"style": "-", "font_size": 18, "padding": 8}, "action": "ASCII_minus"}

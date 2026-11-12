@@ -1,0 +1,46 @@
+{
+  "passed": true,
+  "checks": [
+    "actual numeric T9 48264736986 commits 黄仁勋 once",
+    "toolbar commits # / : - as literal ASCII without switching Chinese mode",
+    "same 符 action opens literal English symbol panel and inserts an ASCII star",
+    "real Android Ctrl+Alt F5/F6 execute Helix undo/redo and restore exact temporary text without z/y",
+    "original QA draft, cards, edits and removal intents restored exactly"
+  ],
+  "device_apk_replaced": false,
+  "private_text_in_results": false,
+  "production_writes": false,
+  "dictionary_query": [
+    {
+      "target": "黄仁勋",
+      "numeric_code": "48264736986",
+      "rank": -1,
+      "examined": 604,
+      "engine": "1.17.0",
+      "personal_data_accessed": false,
+      "variant": "baseline"
+    },
+    {
+      "target": "黄仁勋",
+      "numeric_code": "48264736986",
+      "rank": 1,
+      "examined": 1,
+      "engine": "1.17.0",
+      "personal_data_accessed": false,
+      "variant": "updated"
+    }
+  ],
+  "compiled_phone_theme": {
+    "helix_keys": 15,
+    "escape_keys": 1,
+    "input_keys": 1,
+    "toolbar_buttons": 6,
+    "symbol_action": "FUNCTION/liquid_keyboard/英文"
+  },
+  "verification_limits": [
+    "Phone numeric word input, literal toolbar symbols, bottom-left symbol panel and Android command protocol tested in QA only",
+    "15-key Helix layout checked in compiled phone theme; not all canvas keys retapped",
+    "Two-stage pinyin selection not implemented",
+    "Isolated dictionary query uses librime 1.17.0, not an Android engine equivalence claim"
+  ]
+}

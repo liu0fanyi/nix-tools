@@ -379,3 +379,7 @@ Constitution Check：来源/版本/哈希固定，构建在PC，用户应用与�
 ## TR：Android 同文中文九宫格
 
 下载官方固定release APK并核对发行SHA256及包身份，配置使用rime-pure固定发布的原始trime.7z；作为正常安装依赖按URL/摘要管理，不复制外部Git工作目录。配置与恢复说明保存在config/android/trime及docs；手机只写新Trime自己的资料目录，不覆盖其他输入法、正式知识卡或PC Rime用户词库。真机测试仅使用独立知识卡QA合成数据。Constitution Check：不构建/部署服务器，不执行系统switch；规格在本仓010，资料与源分层，不新增参考仓；仅发布projects登记摘要。
+
+### KX：Trime词库、符号和控制页
+
+仅维护config/android/trime与相关手册/规格。复用现有Nix锁定的rime-ice公共词库，保留clover方案/词典身份与user学习库；候选先在隔离目录验证，再显式白名单部署。主题修复被重复覆盖的liquid_keyboard动作，Helix控制页保留一组Esc/中文输入，去除误导Tab“字词”；已有Ctrl+Alt协议不改变。顶部空闲工具栏提供少量高频ASCII直出键，完整符号面板补全；候选拼音消歧作为独立能力评估，不用注音替代选音。Constitution Check：不增加外部Git参考，不更新系统/PC Rime/官方APK，不触碰原Helix暂存改动和私人词库；只改当前输入法配置及受保护的QA临时内容。
