@@ -1,7 +1,7 @@
 # Nix 配置与发布工具
 
 ## 当前情况
-- [Trime扩充固定公共词库、精简Helix重复键并修复符号入口；真机九宫格“黄仁勋”、中文混合ASCII和撤销重做通过，QA原草稿恢复，APK及学习库保留。独立拼音栏转由本机trime-mobile维护；QA首轮出现空白已回正式，修正版QA2通过336单测/打包检查，待再次手机验收。](010-host-configuration/android-trime-keyboard-results.json)
+- [Trime扩充固定公共词库、精简Helix重复键并修复符号入口；真机九宫格“黄仁勋”、中文混合ASCII和撤销重做通过，QA原草稿恢复，APK及学习库保留。独立拼音栏转由本机trime-mobile维护；QA2页面稳定但主题回退、拼音栏未出现，已回正式并核验原草稿；QA3修正主题标识与状态读取，通过337单测/主题和打包检查，等待新的手机暂停验收。](010-host-configuration/android-trime-keyboard-results.json)
 - [知识卡空光标/滚轮与精简侧栏网格已验证；PC/NUC网页上线并保留学习规划/后端，正式Android同证书更新；桌面8kg9n4…可信固定与完整PC/HM候选通过，未system switch，唯一阶段沿知识卡012/F。](014-application-entry-boundary/tasks.md)
 - [Codex桌面26.1103.31037修复已实机生效：不可达主机停止自动重连，NUC保持开启；6个内置插件成功物化并复用，无新增权限错误，聊天记录未动。](010-host-configuration/tasks.md#codex-桌面卡顿排查与升级阶段-cx2026-11-06)
 - [nix.112首屏主题与Markdown配套已发行，精确签名缓存及完整PC/HM候选通过；PC/NUC网页上线，350份组合资源与回退/数据认证保留通过，未系统switch。](014-application-entry-boundary/tag-browser-nix112-install-results.json) [组合保护网补齐三种保留应用根：13项单测、全350份HTTP摘要/12项实际组合及6项隔离回退通过，原断言和失败记录保留。](014-application-entry-boundary/tasks.md)
@@ -24,12 +24,12 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-13 · Register Trime QA and record pending phone acceptance · `705cb8d`
+- 2026-11-12 · Summarize Trime keyboard improvements and pending pinyin selection · `8d66a28`
 - 2026-11-12 · Improve Trime vocabulary, symbols and Helix controls · `99fbdec`
 - 2026-11-10 · Summarize the verified Knowledge Cards grid delivery · `f37d7da`
 - 2026-11-10 · Pin Knowledge Cards with visible empty cursor and native scrolling · `e863577`
 - 2026-11-10 · Summarize Knowledge Cards desktop and frontend delivery · `edf2fed`
 - 2026-11-10 · Pin the verified Knowledge Cards desktop update · `0e7a9f3`
 - 2026-11-10 · Summarize the Trime Helix QA verification · `fb7e16e`
-- 2026-11-10 · Add a dedicated Trime Helix command keyboard · `cecddeb`
-- 2026-11-10 · Configure Android Trime Chinese T9 and Helix Escape key · `f4887db`
 <!-- recent-commits:end -->
