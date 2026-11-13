@@ -30,3 +30,36 @@ class CommandBoundary(unittest.TestCase):
     def test_reset_is_accepted_multiple_process_commands_are_refused(self):
         self.assertEqual(command_line('[Service]\nExecStart=\nExecStart='+self.old+'\n'), self.old)
         with self.assertRaises(ValueError): command_line('ExecStart=/first\nExecStart=/second\n')
+
+class LearningRegistration(unittest.TestCase):
+    def test_preserves_other_settings_and_rejects_duplicate_registration(self):
+        import tomllib
+        from native_application_release import learning_map_binding
+        before='lan=true\nauthorities=["nuc.local:5006"]\n[[applications]]\nname="quick-note"\nroot="/apps/quick-note"\n'
+        after=learning_map_binding(before,Path('/apps/learning-map'))
+        a,b=tomllib.loads(before),tomllib.loads(after)
+        self.assertEqual(b['applications'][:-1],a['applications'])
+        self.assertEqual(b['applications'][-1],{'name':'learning-map','root':'/apps/learning-map'})
+        self.assertEqual(b['authorities'],a['authorities'])
+        with self.assertRaises(ValueError):learning_map_binding(after,Path('/apps/learning-map'))
+
+    def test_registration_config_is_an_owned_transaction_target_and_rolls_back(self):
+        import tempfile,os
+        from native_application_release import Manager,Scope,learning_map_binding
+        from application_entry_transaction import ConfigurationTransaction,digest
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);config=root/'private/config/application-entry.toml'
+            config.parent.mkdir(parents=True)
+            original='lan=true\n'
+            config.write_text(original);config.chmod(0o600)
+            source=root/'prepared.toml';source.write_text(learning_map_binding(original,root/'private/apps/learning-map'));source.chmod(0o600)
+            scope=Scope('nuc',('private.service','readonly.service'),(root/'private/state',root/'readonly/state'),(),(),root/'releases',root/'units')
+            manager=Manager(scope);plan={'application_registration':{'target':str(config)}}
+            targets=manager.targets(plan)
+            self.assertIn(config,targets);self.assertNotIn(root/'readonly/config/application-entry.toml',targets)
+            transaction=ConfigurationTransaction(root/'transaction',{config})
+            transaction.create({config:{'kind':'file','source':str(source),'sha256':digest(source)}})
+            transaction.verify_before();transaction.install();transaction.verify_after()
+            self.assertIn('learning-map',config.read_text())
+            transaction.install(rollback=True);transaction.verify_before()
+            self.assertEqual(config.read_text(),original);self.assertEqual(config.stat().st_mode&0o777,0o600)

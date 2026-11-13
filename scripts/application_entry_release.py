@@ -12,7 +12,7 @@ from application_nuc_ingress import candidate_ingress, candidate_profile, candid
 ROOTS={'pc':'/home/liou/.local/share/tag-all/pc-native','nuc':'/home/liou/.local/share/tag-all/nuc-native'}
 KEEP={'caddy','authelia','readonly-gateway','ddns-go'}
 REMOVED={'dufs','dufs-readonly','tag-server','tag-server-readonly','tag-peer-discovery'}
-APP_NAMES={'devices','transcriptions','recorder-bean','bevy-game','bevy-sketch','project-planner','quick-note'}
+APP_NAMES={'devices','transcriptions','recorder-bean','bevy-game','bevy-sketch','project-planner','quick-note','learning-map'}
 
 def digest(path):
     with Path(path).open('rb') as stream:return hashlib.file_digest(stream,'sha256').hexdigest()

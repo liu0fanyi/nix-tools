@@ -14,6 +14,7 @@ import socket
 import sqlite3
 import subprocess
 import time
+import tomllib
 import uuid
 
 from application_entry_transaction import ConfigurationTransaction, atomic, backup_state, create_lock, digest, exclusive, offline_states, private
@@ -32,6 +33,21 @@ class Scope:
     release_root: Path
     unit_root: Path
     uphold_target: str | None = None
+
+
+def learning_map_binding(content, root):
+    """Append one known static application, preserving every existing setting."""
+    parsed = tomllib.loads(content)
+    matches = [a for a in parsed.get('applications', []) if a.get('name') == 'learning-map']
+    if matches:
+        raise ValueError('Learning map already registered; publish its static files directly')
+    addition = "\n\n[[applications]]\nname = \"learning-map\"\nroot = " + json.dumps(str(root)) + "\n"
+    result = content.rstrip() + addition
+    expected = dict(parsed)
+    expected['applications'] = [*parsed.get('applications', []), {'name': 'learning-map', 'root': str(root)}]
+    if tomllib.loads(result) != expected:
+        raise ValueError('Independent registration would change other configuration')
+    return result
 
 
 def fixed_scope(name):
@@ -256,7 +272,7 @@ class Manager:
             if executable.name!='tag-all-core' or executable.parent.name!='bin':raise ValueError('Unexpected native command')
             namespace_package(state,executable.parent.parent)
 
-    def plan(self, package, frontend):
+    def plan(self, package, frontend, register_learning_map=False):
         package, frontend = Path(package), Path(frontend)
         for path in (package, frontend):
             if not re.fullmatch(r'/nix/store/[a-z0-9]{32}-[^/]+', str(path)) or not path.is_dir():
@@ -273,14 +289,30 @@ class Manager:
         self.namespace_commands(commands)
         pointer = self.scope.release_root / 'current.json'
         if pointer.is_symlink(): raise ValueError('Version pointer symlink refused')
-        return {'scope': self.scope.name, 'upholding': upholding, 'units': inputs, 'commands': commands, 'package': str(package),
+        plan = {'scope': self.scope.name, 'upholding': upholding, 'units': inputs, 'commands': commands, 'package': str(package),
                 'binary_sha256': digest(package / 'libexec/tag-server-workspace'), 'frontend': str(frontend),
                 'frontend_sha256': fingerprint(frontend), 'previous_outputs': sorted(set(previous)),
                 'pointer_before': digest(private(pointer)) if pointer.exists() else None,
                 'state_policy': 'reuse-current-state-never-restore-backup'}
+        if register_learning_map:
+            if self.scope.name != 'nuc': raise ValueError('Learning registration is scoped to NUC')
+            private_root = self.scope.states[0].parent
+            config = private_root / 'config/application-entry.toml'
+            root = private_root / 'apps/learning-map'
+            arguments = shlex.split(inputs[self.scope.units[0]]['command'])
+            flag = '--workspace-entry-config'
+            if arguments.count(flag) != 1 or arguments[arguments.index(flag)+1] != str(config):
+                raise ValueError('Unexpected private application config')
+            if root.is_symlink() or root.resolve() != root or not root.is_dir() or not (root/'index.html').is_file():
+                raise ValueError('Stage verified learning assets in the owned native root first')
+            content = learning_map_binding(private(config).read_text(), root)
+            plan['application_registration'] = {'target': str(config), 'root': str(root),
+                'before_sha256': digest(config), 'content': content,
+                'sha256': hashlib.sha256(content.encode()).hexdigest()}
+        return plan
 
-    def prepare(self, package, frontend):
-        plan = self.plan(package, frontend)
+    def prepare(self, package, frontend, register_learning_map=False):
+        plan = self.plan(package, frontend, register_learning_map)
         root = self.scope.release_root
         if not root.exists():
             root.mkdir(mode=0o700)
@@ -296,6 +328,8 @@ class Manager:
             return release
         release.mkdir(mode=0o700)
         atomic(release / 'manifest.json', encoded)
+        if 'application_registration' in plan:
+            atomic(release / 'learning-map-entry.toml', plan['application_registration']['content'])
         for unit, command in plan['commands'].items():
             atomic(release / unit, HEADER + '[Service]\nExecStart=\nExecStart=' + command + '\n')
         atomic(release / 'current.json', json.dumps({'manifest': identity, 'package': plan['package'], 'frontend': plan['frontend']}) + '\n')
@@ -335,18 +369,32 @@ class Manager:
             pointer = self.scope.release_root / 'current.json'
             actual = digest(private(pointer)) if pointer.exists() else None
             if actual != plan['pointer_before']: raise ValueError('Current version changed')
+        registration = plan.get('application_registration')
+        if registration:
+            expected = self.scope.states[0].parent / 'config/application-entry.toml'
+            if self.scope.name != 'nuc' or registration['target'] != str(expected):
+                raise ValueError('Unexpected application configuration target')
+            source = private(release / 'learning-map-entry.toml')
+            if digest(source) != registration['sha256'] or source.read_text() != registration['content']:
+                raise ValueError('Prepared application registration drifted')
+            allowed = (registration['before_sha256'], registration['sha256']) if rollback else (registration['before_sha256'],)
+            if digest(private(expected)) not in allowed: raise ValueError('Private application configuration drifted')
         self.namespace_commands({unit:plan['units'][unit]['command'] if rollback else plan['commands'][unit] for unit in self.scope.units})
         return plan
 
-    def targets(self):
+    def targets(self, plan=None):
         targets = {self.scope.unit_root / (unit + '.d') / MANAGED for unit in self.scope.units}
+        if plan and plan.get('application_registration'):
+            targets.add(Path(plan['application_registration']['target']))
         return targets | {self.scope.release_root / 'current.json'}
 
     def known_transaction(self, transaction, plan, release):
         journal = transaction.load()
         for name, record in journal['records'].items():
             target = Path(name)
-            if target == self.scope.release_root / 'current.json':
+            if plan.get('application_registration') and str(target) == plan['application_registration']['target']:
+                source = release / 'learning-map-entry.toml'; before_sha = plan['application_registration']['before_sha256']
+            elif target == self.scope.release_root / 'current.json':
                 source = release / 'current.json'; before_sha = plan['pointer_before']
             else:
                 unit = target.parent.name.removesuffix('.d')
@@ -375,7 +423,7 @@ class Manager:
         with exclusive(root / 'update.lock'):
             plan = self.validate(release, rollback)
             release = Path(release)
-            transaction = ConfigurationTransaction(release / 'transaction', self.targets())
+            transaction = ConfigurationTransaction(release / 'transaction', self.targets(plan))
             self.tasks_idle()
             if rollback:
                 phase = self.known_transaction(transaction, plan, release)['phase']
@@ -386,6 +434,9 @@ class Manager:
                 replacements = {self.scope.unit_root / (unit + '.d') / MANAGED:
                                 {'kind': 'file', 'source': str(release / unit), 'sha256': digest(release / unit)} for unit in self.scope.units}
                 replacements[root / 'current.json'] = {'kind': 'file', 'source': str(release / 'current.json'), 'sha256': digest(release / 'current.json')}
+                if plan.get('application_registration'):
+                    reg = plan['application_registration']
+                    replacements[Path(reg['target'])] = {'kind': 'file', 'source': str(release / 'learning-map-entry.toml'), 'sha256': reg['sha256']}
                 for target in replacements:
                     if not target.parent.exists(): target.parent.mkdir(mode=0o700)
                     if target.parent.is_symlink() or target.parent.stat().st_uid != os.getuid() or target.parent.stat().st_mode & 0o022: raise ValueError('Unsafe managed drop-in directory')
@@ -434,6 +485,7 @@ def main():
     parser.add_argument('--scope', choices=('pc', 'nuc'), required=True)
     action = parser.add_mutually_exclusive_group()
     action.add_argument('--prepare', action='store_true'); action.add_argument('--apply'); action.add_argument('--rollback')
+    parser.add_argument('--register-learning-map', action='store_true', help='Bind the staged independent learning root in the same transaction')
     parser.add_argument('--package'); parser.add_argument('--frontend'); parser.add_argument('--editors-saved', action='store_true')
     args = parser.parse_args(); manager = Manager(fixed_scope(args.scope))
     if args.apply or args.rollback:
@@ -441,9 +493,9 @@ def main():
     else:
         if not args.package or not args.frontend: parser.error('--package and --frontend required')
         if args.prepare:
-            result = {'prepared': str(manager.prepare(args.package, args.frontend)), 'activated': False}
+            result = {'prepared': str(manager.prepare(args.package, args.frontend, args.register_learning_map)), 'activated': False}
         else:
-            plan = manager.plan(args.package, args.frontend)
+            plan = manager.plan(args.package, args.frontend, args.register_learning_map)
             result = {'scope': args.scope, 'package': plan['package'], 'frontend': plan['frontend'], 'core_units': list(manager.scope.units), 'processing_idle': True, 'activated': False}
     print(json.dumps(result, indent=2))
 
