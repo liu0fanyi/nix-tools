@@ -11,3 +11,7 @@ check先重新核对所有绑定，真实运行后写result；只有全部必需
 结果中的实际CLI/前端、无mock和无日常profile/生产访问声明必须匹配；日志须存在且摘要相同。
 清单与日志是本机可信工具执行的一致性证据，不是对恶意本机用户的签名证明。
 实际组合启动包内Rust CLI，不替代原应用监督器/更新回退门槛，也不声称覆盖Firefox特权UI。
+
+## 可选独立学习地图登记
+
+组合配置可显式提供bool `register_learning_map`，省略或false保持旧行为。true仅允许NUC：组合夹具在选定不可变前端的learning-map目录存在时配置同名应用，prepare向已选管理器传递`--register-learning-map`；生产根仍由017管理器固定为private/apps/learning-map，不从该字段接受路径或任意应用名。标志和控制代码均参与组合身份，改变后必须重新创建与验证，不复用旧组合报告。

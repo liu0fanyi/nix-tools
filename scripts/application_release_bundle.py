@@ -113,7 +113,9 @@ def controls():
 
 def create(config_file):
     config_file=Path(config_file).resolve();c=read(config_file)
-    if set(c)!=CONFIG_KEYS or c['schema']!=1 or any(not isinstance(c[k],str) or not Path(c[k]).is_absolute() for k in CONFIG_KEYS-{'schema'}):
+    if (set(c) not in (CONFIG_KEYS, CONFIG_KEYS | {'register_learning_map'}) or c['schema']!=1
+            or any(not isinstance(c[k],str) or not Path(c[k]).is_absolute() for k in CONFIG_KEYS-{'schema'})
+            or type(c.get('register_learning_map', False)) is not bool):
         raise ValueError('Explicit bundle-v1 configuration required')
     for k in ['package','frontend','manager','file_server_package']:output(c[k])
     result={'schema':1,'kind':'native-application-bundle-v1','config':record(config_file),'configuration':c,'protocols':PROTOCOLS,
@@ -147,6 +149,9 @@ def prepare(bundle,result,scope, *, perform=False, run=subprocess.run):
     result_check(bundle,result)
     c=bundle['configuration'];args=[c['manager']+'/bin/tag-native-release','--scope',scope,'--package',c['package'],'--frontend',c['frontend']]
     if scope not in ['pc','nuc']:raise ValueError('Fixed native scope required')
+    if c.get('register_learning_map'):
+        if scope != 'nuc':raise ValueError('Learning registration is scoped to NUC')
+        args.append('--register-learning-map')
     if perform:args.append('--prepare')
     return run(args,check=True)
 

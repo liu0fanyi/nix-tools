@@ -19,12 +19,14 @@ PASSWORD='bundle-fixture-password'  # Public synthetic fixture only.
 PASSWORD_HASH='$2a$14$Dl6w7usPIeiGYeLhnDonFeWNh2NC75plTVIezSgqiU.OeFAQ5qNsi'
 
 
-def fixture_applications(frontend):
+def fixture_applications(frontend, register_learning_map=False):
     # Reserved application routes require their own configured root, including
     # when their unchanged static files are present in a private frontend bundle.
+    if register_learning_map and not (Path(frontend)/'learning-map').is_dir():
+        raise ValueError('Selected learning-map frontend root is missing')
+    names = ('devices','transcriptions','recorder-bean') + (('learning-map',) if register_learning_map else ())
     return ''.join('[[applications]]\nname='+json.dumps(name)+'\nroot='+json.dumps(str(Path(frontend)/name))+'\n'
-                   for name in ('devices','transcriptions','recorder-bean')
-                   if (Path(frontend)/name).is_dir())
+                   for name in names if (Path(frontend)/name).is_dir())
 
 
 def check(bundle,result_path):
@@ -59,7 +61,7 @@ def check(bundle,result_path):
             def configure(path):
                 config.write_text('[node]\nid="bundle-fixture"\n[[locations]]\nid="default"\nnode_id="bundle-fixture"\nname="Fixture"\npath='+json.dumps(str(path))+'\n[sync]\nenabled=true\nauto_broadcast=false\npoll_interval_secs=0\npeers=[]\nrequire_signatures=true\n[discovery]\nenabled=false\n[pairing]\nenabled=true\n');config.chmod(0o600)
             def entry_config(roots):
-                entry.write_text('lan=true\nauthorities='+json.dumps([base.removeprefix('http://')])+'\nallowed_sources=["127.0.0.0/8"]\ncanonical_namespace='+('true' if roots else 'false')+'\n'+''.join('[[shared_roots]]\n'+''.join(k+'='+json.dumps(v)+'\n' for k,v in row.items()) for row in roots)+fixture_applications(c['frontend']));entry.chmod(0o600)
+                entry.write_text('lan=true\nauthorities='+json.dumps([base.removeprefix('http://')])+'\nallowed_sources=["127.0.0.0/8"]\ncanonical_namespace='+('true' if roots else 'false')+'\n'+''.join('[[shared_roots]]\n'+''.join(k+'='+json.dumps(v)+'\n' for k,v in row.items()) for row in roots)+fixture_applications(c['frontend'], c.get('register_learning_map', False)));entry.chmod(0o600)
             sock=runtime/'files.sock';dufs=Path(c['file_server_package'])/'bin/dufs'
             def launch(args,name,environment=None):
                 path=root/(name+'.log');logs.append(path)

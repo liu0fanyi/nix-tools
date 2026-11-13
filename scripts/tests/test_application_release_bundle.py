@@ -34,6 +34,20 @@ class BundleTests(unittest.TestCase):
             run=Mock();b.prepare(self.bundle,self.report,'nuc',perform=perform,run=run)
             expected=['/fixed-manager/bin/tag-native-release','--scope','nuc','--package','/fixed-backend','--frontend','/fixed-frontend']+(['--prepare'] if perform else [])
             run.assert_called_once_with(expected,check=True)
+    def test_learning_registration_is_explicit_and_nuc_only(self):
+        self.bundle['configuration']['register_learning_map']=True
+        run=Mock();b.prepare(self.bundle,self.report,'nuc',perform=True,run=run)
+        self.assertIn('--register-learning-map',run.call_args.args[0])
+        run=Mock()
+        with self.assertRaisesRegex(ValueError,'scoped to NUC'):b.prepare(self.bundle,self.report,'pc',run=run)
+        run.assert_not_called()
+    def test_learning_registration_rejects_truthy_non_boolean_values(self):
+        import json
+        for value in ('yes',1,[],None):
+            config={k:'/fixed' for k in b.CONFIG_KEYS-{'schema'}}
+            config.update(schema=1,register_learning_map=value)
+            path=self.root/'config.json';path.write_text(json.dumps(config))
+            with self.assertRaisesRegex(ValueError,'bundle-v1 configuration'):b.create(path)
     def test_reject_scope(self):
         run=Mock()
         with self.assertRaises(ValueError):b.prepare(self.bundle,self.report,'all',run=run)
@@ -71,5 +85,18 @@ class FixtureApplicationTests(unittest.TestCase):
             apps=tomllib.loads(fixture.fixture_applications(root))['applications']
             self.assertEqual([a['name'] for a in apps],['devices','recorder-bean'])
             self.assertEqual([a['root'] for a in apps],[str(root/'devices'),str(root/'recorder-bean')])
+
+    def test_learning_root_requires_explicit_registration_and_existing_directory(self):
+        import sys, tomllib
+        with patch.dict(sys.modules, {'application_release_bundle':b}):
+            spec=importlib.util.spec_from_file_location('learning_fixture',Path(__file__).resolve().parents[1]/'check_application_bundle.py')
+            fixture=importlib.util.module_from_spec(spec);spec.loader.exec_module(fixture)
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary)
+            with self.assertRaisesRegex(ValueError,'root is missing'):fixture.fixture_applications(root,True)
+            (root/'learning-map').mkdir()
+            self.assertEqual(fixture.fixture_applications(root),'')
+            apps=tomllib.loads(fixture.fixture_applications(root,True))['applications']
+            self.assertEqual(apps,[{'name':'learning-map','root':str(root/'learning-map')}])
 
 if __name__=='__main__':unittest.main()

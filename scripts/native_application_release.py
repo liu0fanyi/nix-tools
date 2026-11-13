@@ -33,6 +33,7 @@ class Scope:
     release_root: Path
     unit_root: Path
     uphold_target: str | None = None
+    startup_control: Path | None = None
 
 
 def learning_map_binding(content, root):
@@ -50,6 +51,18 @@ def learning_map_binding(content, root):
     return result
 
 
+def learning_startup_binding(content, target, before_sha, after_sha):
+    """Rebind exactly the existing entry digest; retain every other startup input."""
+    control = json.loads(content)
+    files = control.get('files')
+    if not isinstance(files, dict) or files.get(str(target)) != before_sha:
+        raise ValueError('Startup control must pin the original application configuration')
+    if not re.fullmatch('[0-9a-f]{64}', after_sha):
+        raise ValueError('Expected application configuration digest required')
+    files[str(target)] = after_sha
+    return json.dumps(control, sort_keys=True, indent=2) + '\n'
+
+
 def fixed_scope(name):
     expected = {'pc': 'liu-bigpc', 'nuc': 'nuc'}
     if name not in expected or socket.gethostname() != expected[name] or os.getuid() != 1000:
@@ -65,7 +78,8 @@ def fixed_scope(name):
     return Scope(name, ('tag-nuc-private-core.service', 'tag-nuc-readonly-core.service'),
                  tuple(root / role / 'state' for role in ('private', 'readonly')),
                  tuple('unix://' + str(root / role / 'tools/runtime.sock') for role in ('private', 'readonly')),
-                 ((5006, '/', 401), (5008, '/', 401)), data / 'native-version-releases', unit_root, 'tag-native-nuc.target')
+                 ((5006, '/', 401), (5008, '/', 401)), data / 'native-version-releases', unit_root, 'tag-native-nuc.target',
+                 Path('/home/liou/.local/share/dufs-plus/runtime/home/native-nuc-control.json'))
 
 
 def execute(argv):
@@ -309,6 +323,20 @@ class Manager:
             plan['application_registration'] = {'target': str(config), 'root': str(root),
                 'before_sha256': digest(config), 'content': content,
                 'sha256': hashlib.sha256(content.encode()).hexdigest()}
+            if self.scope.startup_control:
+                control = private(self.scope.startup_control)
+                before_content = control.read_text()
+                for name, sha in json.loads(before_content).get('files', {}).items():
+                    pinned = Path(name)
+                    if pinned.is_symlink() or not pinned.is_file() or pinned.stat().st_uid != os.getuid() or pinned.stat().st_mode & 0o022:
+                        raise ValueError('Unsafe pinned startup input')
+                    if digest(pinned) != sha:
+                        raise ValueError('Pinned startup input already drifted')
+                updated = learning_startup_binding(before_content, config, digest(config),
+                                                   plan['application_registration']['sha256'])
+                plan['startup_registration'] = {'target': str(control), 'before_content': before_content,
+                    'before_sha256': digest(control), 'content': updated,
+                    'sha256': hashlib.sha256(updated.encode()).hexdigest()}
         return plan
 
     def prepare(self, package, frontend, register_learning_map=False):
@@ -330,6 +358,8 @@ class Manager:
         atomic(release / 'manifest.json', encoded)
         if 'application_registration' in plan:
             atomic(release / 'learning-map-entry.toml', plan['application_registration']['content'])
+        if 'startup_registration' in plan:
+            atomic(release / 'learning-map-startup.json', plan['startup_registration']['content'])
         for unit, command in plan['commands'].items():
             atomic(release / unit, HEADER + '[Service]\nExecStart=\nExecStart=' + command + '\n')
         atomic(release / 'current.json', json.dumps({'manifest': identity, 'package': plan['package'], 'frontend': plan['frontend']}) + '\n')
@@ -379,6 +409,22 @@ class Manager:
                 raise ValueError('Prepared application registration drifted')
             allowed = (registration['before_sha256'], registration['sha256']) if rollback else (registration['before_sha256'],)
             if digest(private(expected)) not in allowed: raise ValueError('Private application configuration drifted')
+        startup = plan.get('startup_registration')
+        if bool(startup) != bool(registration and self.scope.startup_control):
+            raise ValueError('Prepared startup control binding required')
+        if startup:
+            if startup['target'] != str(self.scope.startup_control):
+                raise ValueError('Unexpected startup control target')
+            expected_content = learning_startup_binding(startup['before_content'], Path(registration['target']),
+                registration['before_sha256'], registration['sha256'])
+            if hashlib.sha256(startup['before_content'].encode()).hexdigest() != startup['before_sha256'] or expected_content != startup['content']:
+                raise ValueError('Unrelated startup control change')
+            source = private(release / 'learning-map-startup.json')
+            if source.read_text() != expected_content or digest(source) != startup['sha256']:
+                raise ValueError('Prepared startup control drifted')
+            allowed = (startup['before_sha256'], startup['sha256']) if rollback else (startup['before_sha256'],)
+            if digest(private(self.scope.startup_control)) not in allowed:
+                raise ValueError('Startup control drifted')
         self.namespace_commands({unit:plan['units'][unit]['command'] if rollback else plan['commands'][unit] for unit in self.scope.units})
         return plan
 
@@ -386,6 +432,8 @@ class Manager:
         targets = {self.scope.unit_root / (unit + '.d') / MANAGED for unit in self.scope.units}
         if plan and plan.get('application_registration'):
             targets.add(Path(plan['application_registration']['target']))
+        if plan and plan.get('startup_registration'):
+            targets.add(Path(plan['startup_registration']['target']))
         return targets | {self.scope.release_root / 'current.json'}
 
     def known_transaction(self, transaction, plan, release):
@@ -394,6 +442,8 @@ class Manager:
             target = Path(name)
             if plan.get('application_registration') and str(target) == plan['application_registration']['target']:
                 source = release / 'learning-map-entry.toml'; before_sha = plan['application_registration']['before_sha256']
+            elif plan.get('startup_registration') and str(target) == plan['startup_registration']['target']:
+                source = release / 'learning-map-startup.json'; before_sha = plan['startup_registration']['before_sha256']
             elif target == self.scope.release_root / 'current.json':
                 source = release / 'current.json'; before_sha = plan['pointer_before']
             else:
@@ -437,6 +487,9 @@ class Manager:
                 if plan.get('application_registration'):
                     reg = plan['application_registration']
                     replacements[Path(reg['target'])] = {'kind': 'file', 'source': str(release / 'learning-map-entry.toml'), 'sha256': reg['sha256']}
+                if plan.get('startup_registration'):
+                    reg = plan['startup_registration']
+                    replacements[Path(reg['target'])] = {'kind': 'file', 'source': str(release / 'learning-map-startup.json'), 'sha256': reg['sha256']}
                 for target in replacements:
                     if not target.parent.exists(): target.parent.mkdir(mode=0o700)
                     if target.parent.is_symlink() or target.parent.stat().st_uid != os.getuid() or target.parent.stat().st_mode & 0o022: raise ValueError('Unsafe managed drop-in directory')

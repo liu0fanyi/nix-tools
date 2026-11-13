@@ -63,3 +63,15 @@ class LearningRegistration(unittest.TestCase):
             self.assertIn('learning-map',config.read_text())
             transaction.install(rollback=True);transaction.verify_before()
             self.assertEqual(config.read_text(),original);self.assertEqual(config.stat().st_mode&0o777,0o600)
+
+class StartupRegistration(unittest.TestCase):
+    def test_rebinds_only_existing_entry_and_refuses_wrong_original_hash(self):
+        import json
+        from native_application_release import learning_startup_binding
+        target=Path('/fixed/application-entry.toml')
+        original={'root':'/fixed','files':{str(target):'a'*64,'/other':'b'*64},'compose':['podman','compose']}
+        after=json.loads(learning_startup_binding(json.dumps(original),target,'a'*64,'c'*64))
+        expected=json.loads(json.dumps(original));expected['files'][str(target)]='c'*64
+        self.assertEqual(after,expected)
+        with self.assertRaises(ValueError):learning_startup_binding(json.dumps(original),target,'d'*64,'c'*64)
+        with self.assertRaises(ValueError):learning_startup_binding(json.dumps(original),Path('/unknown'),'a'*64,'c'*64)
