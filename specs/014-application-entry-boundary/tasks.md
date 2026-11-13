@@ -567,3 +567,7 @@ SCR交付完成，剩余0步，见[109安装候选与上线证据](tag-browser-n
 ### Tag Browser nix.114 下载按钮修复交付
 
 用户授权发行后，仅更新tag-browser-src消费锁至887261c，产品源码14b1305及同版共享UI固定；CI43372683135用74秒装配同一0643fq…精确输出，可信签名与latest保留1版已核对，无Firefox重编。完整PC/HM、菜单、MIME、五原生模板、默认target及恢复顺序通过；既有Helix修改与暂存补丁、未跟踪资料保持，其他锁节点不变。未执行系统switch或关闭用户窗口，普通终端手动切换并完整重开。见[安装证据](tag-browser-nix114-install-results.json)。跨仓执行计数仍归产品049，不另建Android计划。
+
+## 知识卡015卡片样式0.1.3发布（2026-11-13）
+
+仅知识卡消费者由599gii…/0.1.2固定到可信签名rd8qg…/0.1.3，latest保留1版且其他Pin保持。以a7f7be4已提交源为基底，仅叠加该消费者的完整隔离系统krqgdi…及内嵌/独立HM通过；菜单/Ctrl+Alt+K、五原生模板、恢复顺序、MIME和当前内核保持，未提交Helix修改与暂存补丁原样保留且排除，Agent未switch。Android0.1.3/code1003原证书GitHub/国内渠道回下载与实时清单核验通过；按既有用户选择仅发布、不操作手机。正式前端139文件与已验收样式候选完全一致，复用原行为证据。网页版只新建，展示交DUFS网格，本轮不切网页或重建后端/TagBrowser。唯一R001–R004计数归[知识卡015](https://github.com/liu0fanyi/knowledge-cards/blob/02fa9393553f4e82f1c94b1b02ab4f3b437630c0/specs/015-grid-card-presentation/tasks.md)，发布阶段剩余0，不另建基础设施任务计数。
