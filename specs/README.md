@@ -1,7 +1,7 @@
 # Nix 配置与发布工具
 
 ## 当前情况
-- [Trime扩充固定公共词库、精简Helix重复键并修复符号入口；真机九宫格“黄仁勋”、中文混合ASCII和撤销重做通过，QA原草稿恢复，APK及学习库保留。独立拼音栏转由本机trime-mobile维护；独立拼音栏QA6已装并通过真实点按选音/选词、退格取消及撤销重做，原QA数据完整恢复，当前同文QA可试用；338单测和APK接口/安装字节校验通过，正式同文/学习库保留。](010-host-configuration/android-trime-keyboard-results.json)
+- [Trime扩充固定公共词库、精简Helix重复键并修复符号入口；真机九宫格“黄仁勋”、中文混合ASCII和撤销重做通过，QA原草稿恢复，APK及学习库保留。独立拼音栏转由本机trime-mobile维护；独立拼音栏QA7已装，默认隐藏绿色原始输入串，真实点按筛选/选词正常；原QA草稿和四表完整恢复，338单测及APK/安装字节校验通过，正式同文/学习库保留。](010-host-configuration/android-trime-keyboard-results.json)
 - [知识卡空光标/滚轮与精简侧栏网格已验证；PC/NUC网页上线并保留学习规划/后端，正式Android同证书更新；桌面8kg9n4…可信固定与完整PC/HM候选通过，未system switch，唯一阶段沿知识卡012/F。](014-application-entry-boundary/tasks.md)
 - [Codex桌面26.1103.31037修复已实机生效：不可达主机停止自动重连，NUC保持开启；6个内置插件成功物化并复用，无新增权限错误，聊天记录未动。](010-host-configuration/tasks.md#codex-桌面卡顿排查与升级阶段-cx2026-11-06)
 - [nix.112首屏主题与Markdown配套已发行，精确签名缓存及完整PC/HM候选通过；PC/NUC网页上线，350份组合资源与回退/数据认证保留通过，未系统switch。](014-application-entry-boundary/tag-browser-nix112-install-results.json) [组合保护网补齐三种保留应用根：13项单测、全350份HTTP摘要/12项实际组合及6项隔离回退通过，原断言和失败记录保留。](014-application-entry-boundary/tasks.md)
