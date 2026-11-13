@@ -24,6 +24,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-13 · release: pin verified Knowledge Cards 0.1.2 · `958b13e`
 - 2026-11-13 · Pin signed shared Tag Browser nix.113 and verify the complete PC candidate · `4d81b48`
 - 2026-11-13 · feat: pin Knowledge Cards 0.1.1 and record verified platform delivery · `384694b`
 - 2026-11-13 · Register Trime QA and record pending phone acceptance · `705cb8d`
@@ -31,5 +32,4 @@
 - 2026-11-12 · Improve Trime vocabulary, symbols and Helix controls · `99fbdec`
 - 2026-11-10 · Summarize the verified Knowledge Cards grid delivery · `f37d7da`
 - 2026-11-10 · Pin Knowledge Cards with visible empty cursor and native scrolling · `e863577`
-- 2026-11-10 · Summarize Knowledge Cards desktop and frontend delivery · `edf2fed`
 <!-- recent-commits:end -->
