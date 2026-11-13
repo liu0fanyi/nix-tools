@@ -1,6 +1,7 @@
 # Nix 配置与发布工具
 
 ## 当前情况
+- [学习地图可选首次登记已纳入原版本事务并通过合成回退检查；尚未激活，现网本轮前端切换由浏览器聊天负责。](017-independent-learning-map/tasks.md)
 - [定制Trime已由独立产品正式签名发行3.3.14，输入/更新按钮通过；旧原版与知识卡QA已按用户明确授权双份备份后退役，当前默认定制输入法保留。](010-host-configuration/tasks.md#trime正式发行与旧手机包退役2026-11-13状态)
 - [知识卡0.1.4共享标题/侧栏已发布并原UID覆盖手机，真实两页标题和侧栏核验；PC可信缓存/消费者及完整系统/HM候选通过，用户自行rerun，网页/后端与Helix外部改动保持。](014-application-entry-boundary/tasks.md)
 - [Codex桌面26.1103.31037修复已实机生效：不可达主机停止自动重连，NUC保持开启；6个内置插件成功物化并复用，无新增权限错误，聊天记录未动。](010-host-configuration/tasks.md#codex-桌面卡顿排查与升级阶段-cx2026-11-06)
@@ -24,6 +25,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-13 · Prepare transactional registration for the independent learning map · `d493e9e`
 - 2026-11-13 · release: pin verified Knowledge Cards 0.1.4 · `c42afc0`
 - 2026-11-13 · release: pin verified Knowledge Cards 0.1.3 · `05cd75c`
 - 2026-11-13 · Refresh browser delivery progress overview · `a7f7be4`
@@ -31,5 +33,4 @@
 - 2026-11-13 · release: pin verified Knowledge Cards 0.1.2 · `958b13e`
 - 2026-11-13 · Pin signed shared Tag Browser nix.113 and verify the complete PC candidate · `4d81b48`
 - 2026-11-13 · feat: pin Knowledge Cards 0.1.1 and record verified platform delivery · `384694b`
-- 2026-11-13 · Register Trime QA and record pending phone acceptance · `705cb8d`
 <!-- recent-commits:end -->
