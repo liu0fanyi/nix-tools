@@ -1,0 +1,164 @@
+{
+  "system_candidate": "/nix/store/mpgd7i1ysi4vnvgw87dwvh33h8sp34fc-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "home_candidate": "/nix/store/0m3kfagj5qdwfr5abcjnb1hpm6nfyssa-home-manager-generation",
+  "baseline_system_same_worktree": "/nix/store/x6vqnl9yr4vgr5j8rdr5glimk1ibha5f-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "temporary_browser_input_only": false,
+  "browser_source_revision": "21803f21b05aae49271e1f4f7f4f2ceda08f873f",
+  "browser_binary": "/nix/store/2700dns503n2yqapb73n1wcldfan354i-tag-browser-0.1.0",
+  "five_native_templates_equal_to_baseline": true,
+  "default_target_link_unchanged": true,
+  "restore_after_reload_verified": true,
+  "system_browser_verified_home_has_no_competing_install": true,
+  "visible_release_and_menu_verified": true,
+  "four_mime_defaults_and_desktop_declarations_verified": true,
+  "external_source_changes_preserved": {
+    "head": "25af53950de458f44c523e67870483e2c724fa4e",
+    "tracked_external_changes": {
+      "home-manager/nix_modules/helix.nix": "3a29c3e34b20b0ce88d0d5f3462defd340e286ff21fe87bd5063d6db7139c343",
+      "home-manager/patches/helix-softwrap-double-width.patch": "e8b257b1a1d432ce94674e4368dac616d0c868bba8ef77c0117013c4c0208e04"
+    },
+    "real_lock_sha256": "ded60146332521e23e98495e417b71193c0edcf4c2150d0c1c1cd878497fdbfa",
+    "untracked_paths": [
+      "girl.md",
+      "ref/colorchecker24/README.md",
+      "ref/colorchecker24/build_cc24.py",
+      "ref/colorchecker24/cc24-card-dark.png",
+      "ref/colorchecker24/cc24-card-dark.svg",
+      "ref/colorchecker24/cc24-card-print.png",
+      "ref/colorchecker24/cc24-card-print.svg",
+      "ref/colorchecker24/cc24-table.md",
+      "ref/colorchecker24/colorchecker24.csv",
+      "ref/colorchecker24/colorchecker24.json"
+    ],
+    "head_at_check": "25af53950de458f44c523e67870483e2c724fa4e",
+    "concurrent_commit_files": []
+  },
+  "real_lock_changed": true,
+  "system_switch_executed": false,
+  "activation_executed": false,
+  "signed_cache_pending_approval": false,
+  "release_tag": "v0.1.0-nix.113",
+  "changed_lock_nodes": [
+    "tag-browser-src"
+  ],
+  "ci": {
+    "run_id": 43366255343,
+    "url": "https://github.com/liu0fanyi/tag-browser/actions/runs/43366255343",
+    "conclusion": "success",
+    "source_checkout": "147a2e95055f60715988fe05fb33ef46dcfc0665",
+    "workflow_commit": "16aae8e8dea61bb1d8c45dd9abe39b8c9f3e21ee",
+    "package_matches_local": true,
+    "job_elapsed_seconds": 73.0,
+    "steps": [
+      {
+        "name": "Set up job",
+        "conclusion": "success",
+        "startedAt": "2026-11-13T04:33:11Z",
+        "completedAt": "2026-11-13T04:33:12Z"
+      },
+      {
+        "name": "Run actions/checkout@v6",
+        "conclusion": "success",
+        "startedAt": "2026-11-13T04:33:12Z",
+        "completedAt": "2026-11-13T04:33:14Z"
+      },
+      {
+        "name": "Run cachix/install-nix-action@v31",
+        "conclusion": "success",
+        "startedAt": "2026-11-13T04:33:14Z",
+        "completedAt": "2026-11-13T04:33:18Z"
+      },
+      {
+        "name": "Run cachix/cachix-action@v17",
+        "conclusion": "success",
+        "startedAt": "2026-11-13T04:33:18Z",
+        "completedAt": "2026-11-13T04:33:21Z"
+      },
+      {
+        "name": "Check release and profile boundaries",
+        "conclusion": "success",
+        "startedAt": "2026-11-13T04:33:21Z",
+        "completedAt": "2026-11-13T04:33:26Z"
+      },
+      {
+        "name": "Verify fixed input and assemble shared host without engine build",
+        "conclusion": "success",
+        "startedAt": "2026-11-13T04:33:26Z",
+        "completedAt": "2026-11-13T04:34:13Z"
+      },
+      {
+        "name": "Publish verified runtime and preserve latest pin policy",
+        "conclusion": "success",
+        "startedAt": "2026-11-13T04:34:13Z",
+        "completedAt": "2026-11-13T04:34:19Z"
+      },
+      {
+        "name": "Post Run cachix/cachix-action@v17",
+        "conclusion": "success",
+        "startedAt": "2026-11-13T04:34:19Z",
+        "completedAt": "2026-11-13T04:34:21Z"
+      },
+      {
+        "name": "Post Run actions/checkout@v6",
+        "conclusion": "success",
+        "startedAt": "2026-11-13T04:34:21Z",
+        "completedAt": "2026-11-13T04:34:22Z"
+      },
+      {
+        "name": "Complete job",
+        "conclusion": "success",
+        "startedAt": "2026-11-13T04:34:22Z",
+        "completedAt": "2026-11-13T04:34:22Z"
+      }
+    ]
+  },
+  "trusted_signature_verified": true,
+  "latest_pin": {
+    "createdOn": "2026-10-24T10:09:14.207482Z",
+    "keep": {
+      "contents": 1,
+      "tag": "Revisions"
+    },
+    "lastRevision": {
+      "artifacts": [],
+      "createdOn": "2026-11-13T04:34:18.258751Z",
+      "orphaned": false,
+      "revision": 40,
+      "storePath": "/nix/store/2700dns503n2yqapb73n1wcldfan354i-tag-browser-0.1.0"
+    },
+    "name": "tag-browser-latest"
+  },
+  "other_four_application_pins_unchanged": true,
+  "desktop_caches": {
+    "clipboard-sync": {
+      "path": "/nix/store/jdchs28f8h7cghn4j9fpvhypwl6gs1cr-clipboard-sync-0.2.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "knowledge-cards": {
+      "path": "/nix/store/2ybz591zq956zfx8lp7n3s1d97af7fzq-knowledge-cards-0.1.1",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "screen-cut": {
+      "path": "/nix/store/arrsa3p4q795xkw02503wrz9xyr4wmq4-screen-cut-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "screen-mark": {
+      "path": "/nix/store/j1cvwiafizx98f8qzwj2n6szalsqldm8-screen-mark-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    },
+    "tag-browser": {
+      "path": "/nix/store/2700dns503n2yqapb73n1wcldfan354i-tag-browser-0.1.0",
+      "exact_cache_hit": true,
+      "prefetched": true
+    }
+  },
+  "service_activation_executed": false,
+  "phone_accessed": false,
+  "user_profile_accessed": false,
+  "remaining_product_stage_items": 1,
+  "remaining_item": "user workstation switch and complete normal browser reopen"
+}

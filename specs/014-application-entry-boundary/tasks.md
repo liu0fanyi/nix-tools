@@ -555,3 +555,7 @@ SCR交付完成，剩余0步，见[109安装候选与上线证据](tag-browser-n
 知识卡012/F配套收尾：产品正式Android候选e2b477…已在用户追加确认后同包/永久证书覆盖安装，摘要与UID10294、实际启动通过；未清数据或迁移QA。产品F1–F5交付完成，剩0步，PC仍需用户手动激活0wl0v8…候选（GC根/data/project/knowledge-cards/.devenv/F-pc-system），Agent未切换系统。三项目总纲白名单发布与checksum回查通过，原未提交Helix配置/暂存补丁摘要保持。
 
 知识卡013三端收尾（2026-11-13）：消费者仅固定到可信签名2ybz591…/0.1.1；最新提交基底的隔离完整系统7xk4a…及内嵌HM jhnqhy…通过，菜单/Ctrl+Alt+K均指新版，5个原生模板/恢复顺序、当前内核及原Helix修改保持。用户最终选择自己跑rerun，Agent未system switch。两端各12项组合通过后，仅知识卡目录从各自当前前端组合激活；现有2wf6后端/数据库、382/396份非所属资源及NUC14份学习规划/685份磁盘摘要、认证只读保持。实际NUC精简Web零写入/列表DOM检查通过。Android已接私有GitHub主发行+国内镜像并原证书覆盖安装，旧手机包按用户授权独立双备份后清理；唯一计数见[知识卡013](https://github.com/liu0fanyi/knowledge-cards/blob/3146e570742443175561967e3d96ff6d787a4027/specs/013-platform-release/tasks.md)，不另建基础设施阶段。
+
+## 共享PC宿主nix.113消费（2026-11-13）
+
+沿用产品Tag Browser049的三项唯一交付计数，不重复计步。当前已获具体GitHub／Cachix载荷授权；CI43366255343与本机2700dns…相同、可信签名和其他4个应用Pin保持已核验。仅tag-browser-src消费锁更新至21803f2；实际完整系统mpgd7i…与HM0m3kfa…、五应用缓存预取、菜单／可见版本／四类MIME／五原生模板／默认target与恢复顺序通过。CI仅73秒、无Firefox重编。用户既有Helix改动及补丁、知识卡0.1.1消费者与其他输入保持；Agent未system switch、未访问日常profile或操作手机。产品049本阶段剩1项：用户普通终端执行`nu rerun.nu liou --host liu-bigpc`并正常完整重开确认113；不另装Nix profile。见[安装证据](tag-browser-nix113-install-results.json)。

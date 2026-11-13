@@ -386,3 +386,9 @@ nix.83消费者Constitution Check：只更新tag-browser-src锁及本项发行�
 目录配置发行补正：NUC安装器复用正式App助手的声明/校验/后台任务与配置事务，额外仅绑定固定私有入口的native-nuc-control.json中该entry摘要。实际node.toml未声明locations时沿后端隐式default规则读取，不写回配置；五项自有配置回退（entry、registry、两项40覆盖、原启动控制），先回退目录再回退程序。控制文件其他键/输入摘要和只读域保持；中断及外部漂移拒绝覆盖。此前目录应用拒绝均已恢复配置，数据库未恢复；最终激活另按实际证据记录。
 
 实际NUC控制根为整个nuc-native，私有目录数据根为nuc-native/private；安装器在预演和写入前复用同一范围及当前entry摘要校验。11项回归与实际17根激活通过。PC Home在最终HEAD核验发现隐藏符号链接可读后已停用；修复由tag-all036公共路径解析承担，唯一发行计数Tag Browser038/P仍未完成；不靠收窄测试或临时改文件服务隐藏参数完成发行。
+
+## 共享PC宿主nix.113消费者配套
+
+唯一执行计数在Tag Browser049的“PC正式交付准备”三项，不另建基础设施阶段。用户明确授权已核验清单／归档上传私有GitHub Release与Cachix发布；本仓仅在CI与本机2700dns…包一致、可信签名／latest及其他应用Pin保持后更新tag-browser-src消费锁。构建实际liu-bigpc系统和内嵌Home Manager，核对菜单、可见版本、MIME、五模板/default target及恢复顺序；不激活服务或系统、不读日常profile、不操作手机。
+
+Constitution Check：已核对工作区、本仓与产品AGENTS／宪法；本机固定构建，无新依赖／参考／浮动gitlink。Helix未提交源码及已暂存补丁保持，不纳入本次提交；当前知识卡0.1.1消费者保持。此次真实锁仅允许tag-browser-src节点变更；其他输入不移动。完整候选包含用户已有Helix工作，供用户在普通终端决定switch；不以临时override通过代替实际锁核验。
