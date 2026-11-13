@@ -1,5 +1,8 @@
 # Android 同文中文九宫格
 
+当前状态（2026-11-13）：常用包为独立产品trime-mobile的永久签名 `com.osfans.trime.qa` / 3.3.14；输入和更新按钮已真机通过。用户明确要求清理后，旧原版 `com.osfans.trime` 已双份备份其完整外部目录后卸载，旧知识卡QA也已归档退役。以下原版安装/QA10步骤保留作历史手册，不代表这些旧包仍在手机。恢复备份含私人资料，仅在本机 `~/.local/share/knowledge-cards/retired-apps/20261113-verified/`，不可上传；不应以旧记录覆盖当前定制同文的新学习数据。
+
+
 本配置针对用户选择的 Trime + 四叶草九宫格。APK和配置原包版本、URL、SHA256、官方签名指纹在 [sources.json](../config/android/trime/sources.json)，本地默认方案补丁在 [default.custom.yaml](../config/android/trime/default.custom.yaml)。官方正式APK与第三方词库/主题分开，不安装配置项目提供的debug整合APK。
 
 手机包名 `com.osfans.trime`，已选应用专属数据目录 `/sdcard/Android/data/com.osfans.trime/files/rime`；主题 `tongwenfeng_plus`，方案 `clover_jiugong`。输入方案与键盘布局需同时匹配，单改九宫格外观不能替代方案。

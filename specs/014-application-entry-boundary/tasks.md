@@ -553,3 +553,5 @@ SCR交付完成，剩余0步，见[109安装候选与上线证据](tag-browser-n
 2026-11-10知识卡012/F配套：只将知识卡消费者从wflj303…更新到可信签名8kg9n4…；真实WebKit空光标宽高/位置、中文、图片和系统滚轮通过。完整隔离系统0wl0v8…、内嵌HM7rdkpy…和独立HM候选构建通过，预演13个装配派生物不含Firefox/后端重编译；菜单/Ctrl+Alt+K、五模板/恢复顺序、当前内核/组/模块/udev保持，未执行system switch，用户原Helix修改/暂存补丁保持且未纳入。PC/NUC各自12项组合通过，用户对本次准备事务确认已保存后正式更新器激活40f2b6…/b0d5ec…，两端236份知识卡和35份网格资源HTTP匹配，NUC学习规划14份及632份磁盘摘要、5008只读保留，现用9maz后端未变、无数据库恢复。唯一计数沿knowledge-cards012/F1–F5；Android正式包仍在产品侧准备，不把QA通过当正式安装。
 
 知识卡012/F配套收尾：产品正式Android候选e2b477…已在用户追加确认后同包/永久证书覆盖安装，摘要与UID10294、实际启动通过；未清数据或迁移QA。产品F1–F5交付完成，剩0步，PC仍需用户手动激活0wl0v8…候选（GC根/data/project/knowledge-cards/.devenv/F-pc-system），Agent未切换系统。三项目总纲白名单发布与checksum回查通过，原未提交Helix配置/暂存补丁摘要保持。
+
+知识卡013三端收尾（2026-11-13）：消费者仅固定到可信签名2ybz591…/0.1.1；最新提交基底的隔离完整系统7xk4a…及内嵌HM jhnqhy…通过，菜单/Ctrl+Alt+K均指新版，5个原生模板/恢复顺序、当前内核及原Helix修改保持。用户最终选择自己跑rerun，Agent未system switch。两端各12项组合通过后，仅知识卡目录从各自当前前端组合激活；现有2wf6后端/数据库、382/396份非所属资源及NUC14份学习规划/685份磁盘摘要、认证只读保持。实际NUC精简Web零写入/列表DOM检查通过。Android已接私有GitHub主发行+国内镜像并原证书覆盖安装，旧手机包按用户授权独立双备份后清理；唯一计数见[知识卡013](https://github.com/liu0fanyi/knowledge-cards/blob/3146e570742443175561967e3d96ff6d787a4027/specs/013-platform-release/tasks.md)，不另建基础设施阶段。
