@@ -24,6 +24,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-13 · feat: pin Knowledge Cards 0.1.1 and record verified platform delivery · `384694b`
 - 2026-11-13 · Register Trime QA and record pending phone acceptance · `705cb8d`
 - 2026-11-12 · Summarize Trime keyboard improvements and pending pinyin selection · `8d66a28`
 - 2026-11-12 · Improve Trime vocabulary, symbols and Helix controls · `99fbdec`
@@ -31,5 +32,4 @@
 - 2026-11-10 · Pin Knowledge Cards with visible empty cursor and native scrolling · `e863577`
 - 2026-11-10 · Summarize Knowledge Cards desktop and frontend delivery · `edf2fed`
 - 2026-11-10 · Pin the verified Knowledge Cards desktop update · `0e7a9f3`
-- 2026-11-10 · Summarize the Trime Helix QA verification · `fb7e16e`
 <!-- recent-commits:end -->
