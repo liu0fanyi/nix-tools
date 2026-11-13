@@ -160,5 +160,11 @@
   "phone_accessed": false,
   "user_profile_accessed": false,
   "remaining_product_stage_items": 1,
-  "remaining_item": "user workstation switch and complete normal browser reopen"
+  "remaining_item": "normal complete browser reopen and visible version confirmation",
+  "external_system_switch_observed": {
+    "system": "/nix/store/mpgd7i1ysi4vnvgw87dwvh33h8sp34fc-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+    "browser": "/nix/store/2700dns503n2yqapb73n1wcldfan354i-tag-browser-0.1.0/bin/tag-browser",
+    "initiated_by_agent": false,
+    "matches_candidate": true
+  }
 }

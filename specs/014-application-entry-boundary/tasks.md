@@ -558,4 +558,4 @@ SCR交付完成，剩余0步，见[109安装候选与上线证据](tag-browser-n
 
 ## 共享PC宿主nix.113消费（2026-11-13）
 
-沿用产品Tag Browser049的三项唯一交付计数，不重复计步。当前已获具体GitHub／Cachix载荷授权；CI43366255343与本机2700dns…相同、可信签名和其他4个应用Pin保持已核验。仅tag-browser-src消费锁更新至21803f2；实际完整系统mpgd7i…与HM0m3kfa…、五应用缓存预取、菜单／可见版本／四类MIME／五原生模板／默认target与恢复顺序通过。CI仅73秒、无Firefox重编。用户既有Helix改动及补丁、知识卡0.1.1消费者与其他输入保持；Agent未system switch、未访问日常profile或操作手机。产品049本阶段剩1项：用户普通终端执行`nu rerun.nu liou --host liu-bigpc`并正常完整重开确认113；不另装Nix profile。见[安装证据](tag-browser-nix113-install-results.json)。
+沿用产品Tag Browser049的三项唯一交付计数，不重复计步。当前已获具体GitHub／Cachix载荷授权；CI43366255343与本机2700dns…相同、可信签名和其他4个应用Pin保持已核验。仅tag-browser-src消费锁更新至21803f2；实际完整系统mpgd7i…与HM0m3kfa…、五应用缓存预取、菜单／可见版本／四类MIME／五原生模板／默认target与恢复顺序通过。CI仅73秒、无Firefox重编。用户既有Helix改动及补丁、知识卡0.1.1消费者与其他输入保持；Agent未system switch、未访问日常profile或操作手机。收尾只读检查已观测系统在外部切换到同一mpgd7i…候选、入口2700dns…，Agent未执行switch。产品049本阶段仍剩1项：正常完整重开确认113；无需重复切换，不另装Nix profile。见[安装证据](tag-browser-nix113-install-results.json)。
