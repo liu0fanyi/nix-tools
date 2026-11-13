@@ -559,3 +559,7 @@ SCR交付完成，剩余0步，见[109安装候选与上线证据](tag-browser-n
 ## 共享PC宿主nix.113消费（2026-11-13）
 
 沿用产品Tag Browser049的三项唯一交付计数，不重复计步。当前已获具体GitHub／Cachix载荷授权；CI43366255343与本机2700dns…相同、可信签名和其他4个应用Pin保持已核验。仅tag-browser-src消费锁更新至21803f2；实际完整系统mpgd7i…与HM0m3kfa…、五应用缓存预取、菜单／可见版本／四类MIME／五原生模板／默认target与恢复顺序通过。CI仅73秒、无Firefox重编。用户既有Helix改动及补丁、知识卡0.1.1消费者与其他输入保持；Agent未system switch、未访问日常profile或操作手机。收尾只读检查已观测系统在外部切换到同一mpgd7i…候选、入口2700dns…，Agent未执行switch。产品049本阶段仍剩1项：正常完整重开确认113；无需重复切换，不另装Nix profile。见[安装证据](tag-browser-nix113-install-results.json)。
+
+## 知识卡014重构0.1.2发布（2026-11-13）
+
+仅知识卡消费者由2ybz591…/0.1.1固定到可信签名599gii…/0.1.2，latest Pin保留1版且其他Pin保持。以67dfe36提交为基底，仅叠加该消费者的隔离完整系统mla8fg…和内嵌/独立HM构建核验；菜单/Ctrl+Alt+K、五原生模板、恢复顺序、MIME、当前内核保持，未提交Helix改动原样保留且未纳入候选，Agent未switch。网页从PC/NUC各自当前frontend只叠加知识卡，旧hash保留，两端12项真实组合和prepare通过，用户本次确认已保存后经正式更新器激活；各139份HTTP摘要、382/396份非所属资源、NUC14份学习规划/736份磁盘摘要和认证只读保持，实际入口刷新零业务写入/列表。Android0.1.2/code1002原证书GitHub/国内镜像发布回下载通过；用户选择仅发布渠道暂不安装，未改手机数据。唯一R001–R005计数均在[知识卡014任务](https://github.com/liu0fanyi/knowledge-cards/blob/a66e91d/specs/014-list-editor-boundaries/tasks.md)，发布阶段剩余0，不另起基础设施计步。
