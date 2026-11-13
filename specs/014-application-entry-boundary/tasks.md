@@ -563,3 +563,7 @@ SCR交付完成，剩余0步，见[109安装候选与上线证据](tag-browser-n
 ## 知识卡014重构0.1.2发布（2026-11-13）
 
 仅知识卡消费者由2ybz591…/0.1.1固定到可信签名599gii…/0.1.2，latest Pin保留1版且其他Pin保持。以67dfe36提交为基底，仅叠加该消费者的隔离完整系统mla8fg…和内嵌/独立HM构建核验；菜单/Ctrl+Alt+K、五原生模板、恢复顺序、MIME、当前内核保持，未提交Helix改动原样保留且未纳入候选，Agent未switch。网页从PC/NUC各自当前frontend只叠加知识卡，旧hash保留，两端12项真实组合和prepare通过，用户本次确认已保存后经正式更新器激活；各139份HTTP摘要、382/396份非所属资源、NUC14份学习规划/736份磁盘摘要和认证只读保持，实际入口刷新零业务写入/列表。Android0.1.2/code1002原证书GitHub/国内镜像发布回下载通过；用户选择仅发布渠道暂不安装，未改手机数据。唯一R001–R005计数均在[知识卡014任务](https://github.com/liu0fanyi/knowledge-cards/blob/a66e91da4638e0fcc800d06828e2ba9578798b81/specs/014-list-editor-boundaries/tasks.md)，发布阶段剩余0，不另起基础设施计步。
+
+### Tag Browser nix.114 下载按钮修复交付
+
+用户授权发行后，仅更新tag-browser-src消费锁至887261c，产品源码14b1305及同版共享UI固定；CI43372683135用74秒装配同一0643fq…精确输出，可信签名与latest保留1版已核对，无Firefox重编。完整PC/HM、菜单、MIME、五原生模板、默认target及恢复顺序通过；既有Helix修改与暂存补丁、未跟踪资料保持，其他锁节点不变。未执行系统switch或关闭用户窗口，普通终端手动切换并完整重开。见[安装证据](tag-browser-nix114-install-results.json)。跨仓执行计数仍归产品049，不另建Android计划。
