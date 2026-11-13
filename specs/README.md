@@ -24,6 +24,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-13 · release: pin verified Knowledge Cards 0.1.4 · `c42afc0`
 - 2026-11-13 · release: pin verified Knowledge Cards 0.1.3 · `05cd75c`
 - 2026-11-13 · Refresh browser delivery progress overview · `a7f7be4`
 - 2026-11-13 · Update Tag Browser to signed nix.114 download button fix · `3469664`
@@ -31,5 +32,4 @@
 - 2026-11-13 · Pin signed shared Tag Browser nix.113 and verify the complete PC candidate · `4d81b48`
 - 2026-11-13 · feat: pin Knowledge Cards 0.1.1 and record verified platform delivery · `384694b`
 - 2026-11-13 · Register Trime QA and record pending phone acceptance · `705cb8d`
-- 2026-11-12 · Summarize Trime keyboard improvements and pending pinyin selection · `8d66a28`
 <!-- recent-commits:end -->
