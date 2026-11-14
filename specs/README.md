@@ -13,7 +13,7 @@
 ## 后续计划
 - [输入法实现与正式发行交付已转trime-mobile；旧包退役和当前状态见对应产品，历史QA试用不再作为当前安装状态。](010-host-configuration/tasks.md#trime正式发行与旧手机包退役2026-11-13状态)
 - [用户试用正式手机/网页知识卡；PC桌面系统候选需用户手动激活。](010-host-configuration/tasks.md#android-同文中文九宫格阶段-tr2026-11-10)
-- [共享PC交付剩1项：正常完整重开，在工作区设置确认113（系统已在外部切到同一候选）；整体三端验收与真实日常体验另列。](014-application-entry-boundary/tasks.md)
+- [PC nix.115消费候选已通过，待用户手动rerun及正常完整重开；整体三端验收与真实日常体验另列。](014-application-entry-boundary/tasks.md)
 - [手动试用DiskTree（DT3）；aMule阶段AM已完成，无需再次rerun，微信长期映射配额未配置。](010-host-configuration/tasks.md#disktree-图形版安装阶段-dt2026-11-01)
 - [在文件管理器双击文档和表格确认默认应用（OF3）。](010-host-configuration/tasks.md#文档与表格默认应用修复阶段-of2026-10-31)
 - [手动应用 dsh 运行时修复并确认实际界面使用（DS3）。](010-host-configuration/tasks.md#dsh-更新与-nix-node-兼容修复阶段-ds2026-10-30)
@@ -26,12 +26,12 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-14 · Update Tag Browser consumer to signed nix.115 release · `da6027f`
+- 2026-11-14 · Refresh mobile peer gateway preparation overview · `ceae42f`
 - 2026-11-14 · Prepare bounded mobile peer routes behind mandatory backend signatures · `3366bb8`
 - 2026-11-13 · Refresh learning-map release status overview · `f678148`
 - 2026-11-13 · Enable learning-map registration with atomic startup digest updates · `14da43b`
 - 2026-11-13 · Refresh learning static delivery status without enabling new registration · `6a0e1bc`
 - 2026-11-13 · Prepare transactional registration for the independent learning map · `d493e9e`
 - 2026-11-13 · release: pin verified Knowledge Cards 0.1.4 · `c42afc0`
-- 2026-11-13 · release: pin verified Knowledge Cards 0.1.3 · `05cd75c`
-- 2026-11-13 · Refresh browser delivery progress overview · `a7f7be4`
 <!-- recent-commits:end -->
