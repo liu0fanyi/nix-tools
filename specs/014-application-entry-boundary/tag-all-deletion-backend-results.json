@@ -1,0 +1,58 @@
+{
+  "owner_evidence": "https://github.com/liu0fanyi/tag-all/blob/cf95db7fa70cc043a7077c9a0b1591504219b658/specs/038-metadata-writer/native-deletion-publication-results.json",
+  "owner_evidence_sha256": "2a8de2441b3c24ae4a043c9016c69eabf3476ae5f4bd14a4ff21a1f43e5ac66b",
+  "backend_package": "/nix/store/b0121qxsssz9rvaf52yg1ixwljaa92sv-tag-all-workspace-native-0.1.0",
+  "live": {
+    "pc": {
+      "scope": "pc",
+      "frontend": "/nix/store/jdwb7n7m441cciv4ng8p4k5pwzp7qlb3-dufs-plus-nix117-pc-frontend",
+      "backend": "/nix/store/b0121qxsssz9rvaf52yg1ixwljaa92sv-tag-all-workspace-native-0.1.0",
+      "actual_process_and_frontend_verified": true,
+      "all_assets_verified": 761,
+      "authentication_probes_passed": true,
+      "served_index_verified": true,
+      "backup_integrity_and_sha_verified": true,
+      "database_inode_preserved": true,
+      "upholds_restored": true,
+      "rollback_inputs_valid_after_activation": true,
+      "database_restored": false
+    },
+    "nuc": {
+      "scope": "nuc",
+      "frontend": "/nix/store/20ah9zyk6yp0p596z6h78iv59k8nalfr-dufs-plus-nix117-nuc-frontend",
+      "backend": "/nix/store/b0121qxsssz9rvaf52yg1ixwljaa92sv-tag-all-workspace-native-0.1.0",
+      "actual_process_and_frontend_verified": true,
+      "all_assets_verified": 775,
+      "authentication_probes_passed": true,
+      "served_index_verified": false,
+      "backup_integrity_and_sha_verified": true,
+      "database_inode_preserved": true,
+      "upholds_restored": true,
+      "rollback_inputs_valid_after_activation": true,
+      "database_restored": false
+    }
+  },
+  "activation": {
+    "pc": {
+      "phase": "activated",
+      "manifest": "7992fb0f50bf4cd9bffa6b7b71e9a4ade36da313ef55a50972a5fb26c4f8cac5",
+      "backup": "/home/liou/.local/share/tag-all/native-version-releases/7992fb0f50bf4cd9bffa6b7b71e9a4ade36da313ef55a50972a5fb26c4f8cac5/backup",
+      "database_restored": false
+    },
+    "nuc": {
+      "phase": "activated",
+      "manifest": "129d18507c3a74c6fa5ac6d6e1758a15f9151aaec81d5322bdefa8773a100974",
+      "backup": "/home/liou/.local/share/tag-all/native-version-releases/129d18507c3a74c6fa5ac6d6e1758a15f9151aaec81d5322bdefa8773a100974/backup",
+      "database_restored": false
+    }
+  },
+  "processing_archive_unchanged": true,
+  "frontend_kept_at_nix117": true,
+  "database_restored": false,
+  "system_switch_executed": false,
+  "host_configuration_changed_for_backend": false,
+  "external_helix_hashes_preserved": {
+    "home-manager/nix_modules/helix.nix": "3a29c3e34b20b0ce88d0d5f3462defd340e286ff21fe87bd5063d6db7139c343",
+    "home-manager/patches/helix-softwrap-double-width.patch": "e8b257b1a1d432ce94674e4368dac616d0c868bba8ef77c0117013c4c0208e04"
+  }
+}

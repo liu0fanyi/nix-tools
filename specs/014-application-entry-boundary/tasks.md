@@ -599,3 +599,7 @@ nix.116正式包与可信缓存发布通过，固定Firefox引擎，CI与本地�
 ## Tag Browser nix.117 复测修复消费
 
 正式117固定包与签名缓存核验通过，UI d4cba265ec46；仅更新tag-browser-src到f22aeab。完整liu-bigpc系统和内嵌HM候选、菜单/MIME与五个原生模板一致性通过，现有Helix修改和其他输入完整保留；没有system switch或操作日常profile。PC/NUC共享前端已由原哈希事务更新，保留各自后端与数据inode。后端删除仍在原完整矩阵中，不能把前三项前端交付当作删除修复生效。见[tag-browser-nix117-install-results.json](tag-browser-nix117-install-results.json)。用户需自行rerun并完整重开浏览器，设置应显示117及上述UI摘要。
+
+## Tag All 删除后清理修复交付
+
+038新完整基线及当前程序通过矩阵/源码/宿主隔离、包装6组/双栈7组、7组实际更新回退和嵌套文件/sidecar/临时DB清理验证。014原管理器已准备、预演并激活PC及NUC两区b012包，117前端与处理归档保持；实际进程、认证、备份完整性、DB inode及回退输入核验通过，NAS匿名HEAD仍302到Authelia/private no-store。未重删用户文件、恢复数据库、system switch或改变宿主配置，外部Helix两文件保持。证据[tag-all-deletion-backend-results.json](tag-all-deletion-backend-results.json)及产品038权威回执；前文117交付时后端尚旧的历史记录保留。
