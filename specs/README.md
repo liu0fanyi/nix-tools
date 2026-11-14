@@ -26,12 +26,12 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-14 · Prepare bounded mobile peer routes behind mandatory backend signatures · `3366bb8`
+- 2026-11-13 · Refresh learning-map release status overview · `f678148`
 - 2026-11-13 · Enable learning-map registration with atomic startup digest updates · `14da43b`
 - 2026-11-13 · Refresh learning static delivery status without enabling new registration · `6a0e1bc`
 - 2026-11-13 · Prepare transactional registration for the independent learning map · `d493e9e`
 - 2026-11-13 · release: pin verified Knowledge Cards 0.1.4 · `c42afc0`
 - 2026-11-13 · release: pin verified Knowledge Cards 0.1.3 · `05cd75c`
 - 2026-11-13 · Refresh browser delivery progress overview · `a7f7be4`
-- 2026-11-13 · Update Tag Browser to signed nix.114 download button fix · `3469664`
-- 2026-11-13 · release: pin verified Knowledge Cards 0.1.2 · `958b13e`
 <!-- recent-commits:end -->
