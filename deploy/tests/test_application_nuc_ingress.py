@@ -25,6 +25,20 @@ class EntryTests(unittest.TestCase):
         self.assertNotIn('uri strip_prefix /tag-api', candidate)
         self.assertNotIn('file_server', candidate)
         self.assertNotIn('$2a$', candidate)
+    def test_mobile_transport_is_exact_and_keeps_administration_authenticated(self):
+        candidate,_=entry.candidate_ingress(self.original,self.config)
+        for name in ('@mobile_signed_read','@mobile_signed_write'):
+            block=candidate.split(name+' {',1)[1].split('}',1)[0]
+            for h in ('X-Tag-Peer-Node','X-Tag-Peer-Time','X-Tag-Peer-Nonce','X-Tag-Peer-Signature'):self.assertIn('header '+h+' *',block)
+            self.assertNotIn('web/outbound',block)
+            self.assertNotIn('invitations',block)
+        self.assertIn('/tag-api/v1/peers/outbound/incoming',candidate)
+        self.assertIn('/tag-api/v1/peers/outbound/poll',candidate)
+        self.assertIn('private-peer.sock',candidate)
+        self.assertIn('forward_auth',candidate)
+        self.assertIn('header_up -X-Tag-Admin-Token',candidate)
+        self.assertIn('header_up -Remote-User',candidate)
+
     def test_missing_duplicate_and_already_converted_fail_closed(self):
         candidate, _ = entry.candidate_ingress(self.original, self.config)
         for text in (candidate, self.original.replace('http://:5006','http://:5106'), self.original + '\nhttp://:5006 { respond 200 }'):

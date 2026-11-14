@@ -73,6 +73,44 @@ route {{
 handle @external_device {{
 {proxy('unix//run/tag-native/private-peer.sock')}
 }}
+# These fixed mobile operations are authenticated by the native peer socket.
+# No browser identity or administrative token can be forwarded through it.
+@mobile_enrollment {{
+method GET
+path /tag-api/v1/peers/identity
+}}
+handle @mobile_enrollment {{
+{proxy('unix//run/tag-native/private-peer.sock')}
+}}
+@mobile_proof {{
+method POST
+path /tag-api/v1/peers/challenge /tag-api/v1/peers/outbound/incoming /tag-api/v1/peers/outbound/poll
+}}
+handle @mobile_proof {{
+{proxy('unix//run/tag-native/private-peer.sock')}
+}}
+@mobile_signed_read {{
+method GET
+header X-Tag-Peer-Node *
+header X-Tag-Peer-Time *
+header X-Tag-Peer-Nonce *
+header X-Tag-Peer-Signature *
+path /tag-api/v1/sync/changes /tag-api/listing /tag-api/items /tag-api/v1/locations/*/search /tag-api/v1/locations/*/search/capabilities /tag-api/v1/locations/*/search/session /tag-api/v1/proxy/move-jobs /tag-api/v1/proxy/move-jobs/*
+}}
+handle @mobile_signed_read {{
+{proxy('unix//run/tag-native/private-peer.sock')}
+}}
+@mobile_signed_write {{
+method POST
+header X-Tag-Peer-Node *
+header X-Tag-Peer-Time *
+header X-Tag-Peer-Nonce *
+header X-Tag-Peer-Signature *
+path /tag-api/v1/sync/apply /tag-api/v1/proxy/text/read /tag-api/v1/proxy/text/write /tag-api/v1/proxy/delete /tag-api/v1/proxy/rename /tag-api/v1/proxy/mkdir /tag-api/v1/proxy/move /tag-api/v1/proxy/move-jobs
+}}
+handle @mobile_signed_write {{
+{proxy('unix//run/tag-native/private-peer.sock')}
+}}
 @node_peer path {PEER_PATHS}
 handle @node_peer {{
 route {{

@@ -392,3 +392,7 @@ nix.83消费者Constitution Check：只更新tag-browser-src锁及本项发行�
 唯一执行计数在Tag Browser049的“PC正式交付准备”三项，不另建基础设施阶段。用户明确授权已核验清单／归档上传私有GitHub Release与Cachix发布；本仓仅在CI与本机2700dns…包一致、可信签名／latest及其他应用Pin保持后更新tag-browser-src消费锁。构建实际liu-bigpc系统和内嵌Home Manager，核对菜单、可见版本、MIME、五模板/default target及恢复顺序；不激活服务或系统、不读日常profile、不操作手机。
 
 Constitution Check：已核对工作区、本仓与产品AGENTS／宪法；本机固定构建，无新依赖／参考／浮动gitlink。Helix未提交源码及已暂存补丁保持，不纳入本次提交；当前知识卡0.1.1消费者保持。此次真实锁仅允许tag-browser-src节点变更；其他输入不移动。完整候选包含用户已有Helix工作，供用户在普通终端决定switch；不以临时override通过代替实际锁核验。
+
+## Tag Browser051配套范围
+
+仅修改application_nuc_ingress及既有Edge函数的精确传输匹配；原渲染器的LAN限制保留。生成源站候选、保留未拥有站点及清除身份头，沿原发布事务预演，不系统switch。先验证tag-all原生peer入口强制签名及重放，再允许组合发布；Edge控制台无自动部署能力时交付具体可审查文件，不要求用户重新授权已确认范围。Constitution Check：PC唯一源码、认证分层、无私有数据上传／Bevy覆盖，现有Helix改动不纳入提交或候选。

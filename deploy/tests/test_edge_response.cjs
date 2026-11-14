@@ -27,5 +27,16 @@ async function run(path,fetchMock,opts){const c={URL,Headers,Request,Response,co
  calls=0;r=await run('/private',async()=>{calls++;return calls===1?new Response(null,{status:200}):new Response('private')});assert.equal(calls,2);assert.equal(await r.text(),'private');
  r=await run('/device-api/v1/transcriptions',async(req,opts)=>{assert.equal(req.method,'POST');assert.equal(await req.text(),'test-body');assert.equal(opts.headers.get('Authorization'),'Bearer test-only');return new Response('unauthorized',{status:401})},{method:'POST',body:'test-body',headers:{Authorization:'Bearer test-only'}});assert.equal(r.status,401);assert.equal(await r.text(),'unauthorized');assert.equal(r.headers.get('cache-control'),'private, no-store');
  r=await run('/device-api/v1/transcriptions',async()=>{throw new Error('private secret')});assert.equal(r.status,502);const b=await r.text();assert.ok(!b.includes('private secret'));assert.ok(b.includes('unknown'));
+ const proof={'X-Tag-Peer-Node':'fixture','X-Tag-Peer-Time':'1','X-Tag-Peer-Nonce':'nonce','X-Tag-Peer-Signature':'not-a-real-signature'};
+ for(const [method,path,headers] of [
+  ['GET','/tag-api/v1/peers/identity',{}],['POST','/tag-api/v1/peers/outbound/incoming',{}],['POST','/tag-api/v1/peers/outbound/poll',{}],
+  ['GET','/tag-api/v1/sync/changes',proof],['POST','/tag-api/v1/sync/apply',proof],['GET','/tag-api/listing',proof],['GET','/tag-api/v1/locations/default/search/session',proof],['POST','/tag-api/v1/proxy/text/write',proof]]){
+  let n=0;const r=await run(path,async(req,opts)=>{n++;assert.equal(req.method,method);assert.equal(opts.redirect,'manual');return new Response('native-proof-rejected',{status:401});},{method,headers});
+  assert.equal(n,1);assert.equal(r.status,401);assert.equal(await r.text(),'native-proof-rejected');assert.equal(r.headers.get('Cache-Control'),'private, no-store');
+ }
+ for(const [method,path,headers]of [['GET','/tag-api/v1/sync/changes',{}],['GET','/tag-api/v1/peers/outbound/incoming',proof],['POST','/tag-api/v1/peers/outbound/incoming/extra',proof],['POST','/tag-api/v1/peers/web/outbound/invitations',proof],['GET','/tag-api/v1/peers/outbound/requests',proof],['POST','/tag-api/v1/sync/peer',proof],['GET','/tag-api/v1/proxy/stream/default/private',proof],['GET','/tag-api/v1/locations/default/search/extra',proof]]){
+  let n=0;const r=await run(path,async req=>{n++;assert.ok(String(req).startsWith('https://nas.wttliou.top/authelia/api/authz/'));return new Response(null,{status:401});},{method,headers});assert.equal(n,1);assert.equal(r.status,302);
+ }
+ console.log('Mobile proof routing: 8 native-proof failures preserved, 8 browser/admin/wrong-path requests remain behind Authelia');
  console.log('10 scenarios passed: identity/absent/br/gzip headers, authenticated Range and HEAD, auth deny/allow, POST+401 preservation, safe 502');
 })().catch(e=>{console.error(e);process.exitCode=1});

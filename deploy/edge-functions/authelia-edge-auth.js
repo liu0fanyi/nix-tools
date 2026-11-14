@@ -63,8 +63,21 @@ function loginRedirect(request) {
   });
 }
 
+// Noninteractive mobile enrollment has its own one-use invitation proof. Sync
+// and file operations additionally require paired signatures at the native peer
+// socket; header presence here is routing only, never an authentication result.
+function mobilePeerRequest(request, path) {
+  if (request.method === "GET" && path === "/tag-api/v1/peers/identity") return true;
+  if (request.method === "POST" && ["/tag-api/v1/peers/challenge", "/tag-api/v1/peers/outbound/incoming", "/tag-api/v1/peers/outbound/poll"].includes(path)) return true;
+  if (!["X-Tag-Peer-Node", "X-Tag-Peer-Time", "X-Tag-Peer-Nonce", "X-Tag-Peer-Signature"].every(name => request.headers.has(name))) return false;
+  if (request.method === "GET") return ["/tag-api/v1/sync/changes", "/tag-api/listing", "/tag-api/items"].includes(path) || /^\/tag-api\/v1\/locations\/[^/%]+\/search(?:\/(?:capabilities|session))?$/.test(path) || /^\/tag-api\/v1\/proxy\/move-jobs(?:\/[A-Za-z0-9_-]{1,128})?$/.test(path);
+  return request.method === "POST" && ["/tag-api/v1/sync/apply", "/tag-api/v1/proxy/text/read", "/tag-api/v1/proxy/text/write", "/tag-api/v1/proxy/delete", "/tag-api/v1/proxy/rename", "/tag-api/v1/proxy/mkdir", "/tag-api/v1/proxy/move", "/tag-api/v1/proxy/move-jobs"].includes(path);
+}
+
 async function handleRequest(request) {
   const url = new URL(request.url);
+
+  if (mobilePeerRequest(request, url.pathname)) return forwardRequest(request, true);
 
   // Authelia itself and the token-authenticated mobile API do not use the
   // interactive browser login.

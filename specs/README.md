@@ -1,6 +1,7 @@
 # Nix 配置与发布工具
 
 ## 当前情况
+- [手机出站配对与签名文件请求的原生网关白名单已准备并通过 Edge/Caddy专项；未发布，须与具强制Peer签名的新后端按序激活，不能单独扩大公网路由。](014-application-entry-boundary/tasks.md)
 - [学习地图独立登记已按037增量候选启用；配置与启动保护摘要同事务切换，后续14文件静态发布不重启，用户学习资料保持。](017-independent-learning-map/tasks.md)
 - [定制Trime已由独立产品正式签名发行3.3.14，输入/更新按钮通过；旧原版与知识卡QA已按用户明确授权双份备份后退役，当前默认定制输入法保留。](010-host-configuration/tasks.md#trime正式发行与旧手机包退役2026-11-13状态)
 - [知识卡0.1.4共享标题/侧栏已发布并原UID覆盖手机，真实两页标题和侧栏核验；PC可信缓存/消费者及完整系统/HM候选通过，用户自行rerun，网页/后端与Helix外部改动保持。](014-application-entry-boundary/tasks.md)
