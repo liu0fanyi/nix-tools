@@ -579,3 +579,9 @@ SCR交付完成，剩余0步，见[109安装候选与上线证据](tag-browser-n
 ### Tag Browser051公网移动同步配套
 - [ ] 精确传输源码、原生签名负例和Caddy候选验证；浏览器／管理路径仍认证。
 - [ ] 按原事务核对并交付源站及EdgeOne版本；真实手机个人域同步验收由Tag Browser051 S3持有，不另计步。
+
+## 2026-11-14 Tag Browser nix.115 发行消费
+
+- [x] 固定 Firefox 内核，仅组装正式共享宿主；CI 43563375741 与本机输出一致且 Cachix 签名存在。
+- [x] 仅更新 tag-browser-src 至 d5ae5f7；完整 PC 系统/HM 候选、原生服务模板、菜单/MIME及外部 Helix 修改保留检查通过。详见 tag-browser-nix115-install-results.json。
+- [ ] 用户自行运行原 rerun 入口及完全重开验证；本轮未执行系统 switch，不读写日常浏览器 profile。

@@ -6,7 +6,7 @@
 - [定制Trime已由独立产品正式签名发行3.3.14，输入/更新按钮通过；旧原版与知识卡QA已按用户明确授权双份备份后退役，当前默认定制输入法保留。](010-host-configuration/tasks.md#trime正式发行与旧手机包退役2026-11-13状态)
 - [知识卡0.1.4共享标题/侧栏已发布并原UID覆盖手机，真实两页标题和侧栏核验；PC可信缓存/消费者及完整系统/HM候选通过，用户自行rerun，网页/后端与Helix外部改动保持。](014-application-entry-boundary/tasks.md)
 - [Codex桌面26.1103.31037修复已实机生效：不可达主机停止自动重连，NUC保持开启；6个内置插件成功物化并复用，无新增权限错误，聊天记录未动。](010-host-configuration/tasks.md#codex-桌面卡顿排查与升级阶段-cx2026-11-06)
-- [nix.114下载按钮修复已发行，固定引擎CI74秒装配同一精确包及可信签名；仅浏览器消费锁更新，完整PC/HM、菜单／MIME／五原生服务模板和恢复顺序通过，外部Helix改动保留；未执行系统switch。](014-application-entry-boundary/tag-browser-nix114-install-results.json)
+- [Tag Browser nix.115已发行，固定内核及可信签名缓存核对通过；仅浏览器消费锁更新，完整PC/HM、菜单／MIME／五原生服务模板和恢复顺序通过，外部Helix改动保留；待用户手动rerun，未执行系统switch。](014-application-entry-boundary/tag-browser-nix115-install-results.json)
 - [aMule实机High ID与Kad OK验收通过，公网TCP4662可达；清理41条微信映射，其他23条保留，路由表64→26，本轮无需再次rerun。](010-host-configuration/tasks.md#amule-安装与网络引导阶段-am2026-11-04) [DiskTree图形版构建通过，待手动应用试用。](010-host-configuration/tasks.md#disktree-图形版安装阶段-dt2026-11-01)
 - [系统盘与/data安全清理：当前分别为64%/55%，CMT编译文件再回收约51.8GiB；原镜像标签、服务容器与源码保留；详细清理记录统一见AGENTS第七节。](010-host-configuration/tasks.md#cmt低延迟实验编译缓存清理阶段-sf2026-11-04)
 

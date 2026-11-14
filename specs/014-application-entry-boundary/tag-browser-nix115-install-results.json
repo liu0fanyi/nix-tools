@@ -1,0 +1,31 @@
+{
+  "system_candidate": "/nix/store/1lzvy8nq93pxps7ai1kpsjgbc8mxkaqi-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "home_candidate": "/nix/store/ghylh2jbzvba0pd5mv6ki4420c6v8b86-home-manager-generation",
+  "baseline_system_same_worktree": "/nix/store/v8ycnas07xrgbvhhgplj2xs7adwn0ivf-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "temporary_browser_input_only": false,
+  "browser_source_revision": "d5ae5f7a4bacc1aef062142e77530be8a1078ca7",
+  "browser_binary": "/nix/store/yk4sbsl0gvr79hb993wircs8vz7wz1mv-tag-browser-0.1.0",
+  "five_native_templates_equal_to_baseline": true,
+  "default_target_link_unchanged": true,
+  "restore_after_reload_verified": true,
+  "system_browser_verified_home_has_no_competing_install": true,
+  "visible_release_and_menu_verified": true,
+  "four_mime_defaults_and_desktop_declarations_verified": true,
+  "external_source_changes_preserved": {
+    "head": "4bd54228c1b035bd21728369c5a5666c3d6b8745",
+    "tracked_external_changes": {
+      "home-manager/nix_modules/helix.nix": "3a29c3e34b20b0ce88d0d5f3462defd340e286ff21fe87bd5063d6db7139c343",
+      "home-manager/patches/helix-softwrap-double-width.patch": "e8b257b1a1d432ce94674e4368dac616d0c868bba8ef77c0117013c4c0208e04"
+    },
+    "head_at_check": "4bd54228c1b035bd21728369c5a5666c3d6b8745",
+    "concurrent_commit_files": []
+  },
+  "real_lock_changed": true,
+  "system_switch_executed": false,
+  "activation_executed": false,
+  "signed_cache_pending_approval": false,
+  "release_tag": "v0.1.0-nix.115",
+  "release_ci": "https://github.com/liu0fanyi/tag-browser/actions/runs/43563375741",
+  "browser_package": "/nix/store/yk4sbsl0gvr79hb993wircs8vz7wz1mv-tag-browser-0.1.0",
+  "other_dependencies_changed": false
+}
