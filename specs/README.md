@@ -26,6 +26,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-14 · Update Knowledge Cards to verified 0.1.6 workbench release · `fdcf3f3`
 - 2026-11-14 · Refresh verified nix.116 consumer overview · `e09214d`
 - 2026-11-14 · Update Tag Browser to verified nix.116 shared frontend release · `d5db5fa`
 - 2026-11-14 · release: consume verified Knowledge Cards 0.1.5 font controls · `501c1e4`
@@ -33,5 +34,4 @@
 - 2026-11-14 · Update Tag Browser consumer to signed nix.115 release · `da6027f`
 - 2026-11-14 · Refresh mobile peer gateway preparation overview · `ceae42f`
 - 2026-11-14 · Prepare bounded mobile peer routes behind mandatory backend signatures · `3366bb8`
-- 2026-11-13 · Refresh learning-map release status overview · `f678148`
 <!-- recent-commits:end -->
