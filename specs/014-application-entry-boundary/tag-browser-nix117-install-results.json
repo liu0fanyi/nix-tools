@@ -1,0 +1,23 @@
+{
+  "system_candidate": "/nix/store/kr5yi61lj0w3q30b8m4411sqazjgb07q-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "home_candidate": "/nix/store/kj0yhfdv17jqcy805pdqplcxzj35hg85-home-manager-generation",
+  "baseline_home": "/nix/store/ckm5bhl13k951s0g78hj9mhkpyznpqvv-home-manager-generation",
+  "native_templates_equal_to_baseline": [
+    "tag-all-core.service",
+    "tag-all-tools.service",
+    "tag-native-files.service",
+    "tag-native-stack.target",
+    "tag-native-workspace.service"
+  ],
+  "browser_binary": "/nix/store/l810yl00ldclm1094wvz06j4b3ay5syw-tag-browser-0.1.0",
+  "browser_source_revision": "f22aeab24c3a12579a1724e63cde472160794671",
+  "only_browser_input_updated": true,
+  "external_changes_preserved": true,
+  "system_switch_executed": false,
+  "activation_executed": false,
+  "release_tag": "v0.1.0-nix.117",
+  "release_url": "https://github.com/liu0fanyi/tag-browser/releases/tag/v0.1.0-nix.117",
+  "ci_run": "https://github.com/liu0fanyi/tag-browser/actions/runs/43584981409",
+  "ci_conclusion": "success",
+  "ci_package_matches_local": true
+}
