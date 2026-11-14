@@ -585,3 +585,7 @@ SCR交付完成，剩余0步，见[109安装候选与上线证据](tag-browser-n
 - [x] 固定 Firefox 内核，仅组装正式共享宿主；CI 43563375741 与本机输出一致且 Cachix 签名存在。
 - [x] 仅更新 tag-browser-src 至 d5ae5f7；完整 PC 系统/HM 候选、原生服务模板、菜单/MIME及外部 Helix 修改保留检查通过。详见 tag-browser-nix115-install-results.json。
 - [ ] 用户自行运行原 rerun 入口及完全重开验证；本轮未执行系统 switch，不读写日常浏览器 profile。
+
+## 知识卡0.1.5字号渠道发布
+
+用户授权发布。PC原签名可信缓存/latest知识卡pin已更新为8z7mlv…0.1.5；其他pin保持。仅更新packages/knowledge-cards.nix，固定4bd5422已提交配置加该消费者的完整系统5mbw7b…与内嵌HM核验通过，独立HM不安装知识卡。菜单/Ctrl+Alt+K、五原生模板及恢复顺序、MIME/内核保持；用户Helix未提交修改保持且不纳入候选，不代执行switch。Android原证书0.1.5/code1005渠道由产品018发布，手机未安装本轮，网页/后端和真实卡片保持。证据[PC候选](knowledge-cards-015-font-release-results.json)，产品权威任务为knowledge-cards/specs/018-editor-font-size。
