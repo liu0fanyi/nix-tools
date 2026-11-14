@@ -45,6 +45,12 @@
       "category": "Bevy"
     },
     {
+      "name": "bevy-math-plot",
+      "root": "/data/project/bevy-env/bevy-math-plot",
+      "aliases": [],
+      "category": "Bevy"
+    },
+    {
       "name": "bevy-sketch",
       "root": "/data/project/bevy-env/bevy-sketch",
       "aliases": [],
