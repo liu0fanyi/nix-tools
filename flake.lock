@@ -342,11 +342,11 @@
       },
       "locked": {
         "exportIgnore": true,
-        "lastModified": 1794635597,
-        "narHash": "sha256-ck08ka37xsnLMsZGo9gUTUEg/Y7+/GG8d9ICSm8Vv+Y=",
+        "lastModified": 1794645923,
+        "narHash": "sha256-865Bgh4ZeIFtonEY1Nq90Ezk7ggI7WzeYIkJt0etsEA=",
         "ref": "product-stable",
-        "rev": "d5ae5f7a4bacc1aef062142e77530be8a1078ca7",
-        "revCount": 880,
+        "rev": "93069d2896c81ba219db1755cf7885878a05df6e",
+        "revCount": 888,
         "type": "git",
         "url": "ssh://git@github.com/liu0fanyi/tag-browser.git"
       },

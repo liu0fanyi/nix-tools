@@ -589,3 +589,7 @@ SCR交付完成，剩余0步，见[109安装候选与上线证据](tag-browser-n
 ## 知识卡0.1.5字号渠道发布
 
 用户授权发布。PC原签名可信缓存/latest知识卡pin已更新为8z7mlv…0.1.5；其他pin保持。仅更新packages/knowledge-cards.nix，固定4bd5422已提交配置加该消费者的完整系统5mbw7b…与内嵌HM核验通过，独立HM不安装知识卡。菜单/Ctrl+Alt+K、五原生模板及恢复顺序、MIME/内核保持；用户Helix未提交修改保持且不纳入候选，不代执行switch。Android原证书0.1.5/code1005渠道由产品018发布，手机未安装本轮，网页/后端和真实卡片保持。证据[PC候选](knowledge-cards-015-font-release-results.json)，产品权威任务为knowledge-cards/specs/018-editor-font-size。
+
+## Tag Browser nix.116 配套修复消费
+
+nix.116正式包与可信缓存发布通过，固定Firefox引擎，CI与本地包c8vp8j…一致。仅更新tag-browser-src到93069d2；同一工作树完整liu-bigpc系统及内嵌HM候选构建通过，五个原生模板逐文件与nix.115候选一致，外部Helix两文件摘要保持且不纳入提交。只构建、未switch/激活系统或操作用户profile；PC/NUC Web前端另由原事务激活且现用后端保持，删除后端完整候选与Android目录尚未完成。见[tag-browser-nix116-install-results.json](tag-browser-nix116-install-results.json)。用户仍须自行rerun与完整重开，核对设置实际nix.116。
