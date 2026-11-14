@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "systemCandidate": "/nix/store/y7v494l60nsy6ciiqvxkcm792j7xbfpl-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "embeddedHomeCandidate": "/nix/store/9cinn37805xpm5wq40f12g88snzwybb7-home-manager-generation",
+  "standaloneHomeCandidate": "/nix/store/kk5hqv6z9pc4r2vpqj2h91cm0dvnhn9n-home-manager-generation",
+  "standaloneIncludesKnowledgeCards": false,
+  "desktopPackage": "/nix/store/qj3m6j1lcyam5bp91iy2dwpkaz54ycic-knowledge-cards-0.1.6",
+  "menuAndShortcutVerified": true,
+  "niriConfigValid": true,
+  "fiveNativeTemplatesPreserved": true,
+  "defaultTargetLinkVerified": true,
+  "existingRuntimeRestoredAfterReload": true,
+  "browserMimeDefaultsPreserved": true,
+  "currentKernelPreserved": true,
+  "unrelatedHelixChangesExcludedAndPreserved": true,
+  "consumerMatchesIsolatedCandidate": true,
+  "isolatedSourceBase": "e09214dfeaaf126dd0c35f78f6b69e2e6756e61e",
+  "systemActivated": false
+}

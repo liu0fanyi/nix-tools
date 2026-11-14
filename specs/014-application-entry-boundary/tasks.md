@@ -593,3 +593,5 @@ SCR交付完成，剩余0步，见[109安装候选与上线证据](tag-browser-n
 ## Tag Browser nix.116 配套修复消费
 
 nix.116正式包与可信缓存发布通过，固定Firefox引擎，CI与本地包c8vp8j…一致。仅更新tag-browser-src到93069d2；同一工作树完整liu-bigpc系统及内嵌HM候选构建通过，五个原生模板逐文件与nix.115候选一致，外部Helix两文件摘要保持且不纳入提交。只构建、未switch/激活系统或操作用户profile；PC/NUC Web前端另由原事务激活且现用后端保持，删除后端完整候选与Android目录尚未完成。见[tag-browser-nix116-install-results.json](tag-browser-nix116-install-results.json)。用户仍须自行rerun与完整重开，核对设置实际nix.116。
+
+知识卡017已实现子集0.1.6发布：PC可信签名缓存/latest及唯一消费者固定qj3m6j…，完整系统y7v494…/内嵌HM/独立HM候选、菜单/Ctrl+Alt+K、五原生模板/恢复顺序、MIME和当前内核检查通过。基于e09214d已提交配置，仅改变知识卡消费者，用户Helix源码与已暂存补丁保持且排除于候选；未system switch。Android原证书code1006双渠道由产品发布，未安装手机。PC/NUC网页基于各自nix.116前端和不同后端准备，仅知识卡目录变化，尚等本次编辑内容已保存确认，不能宣称已激活。唯一阶段计数归knowledge-cards017/R01–R04，不新增平行阶段；候选证据knowledge-cards-016-workbench-results.json。
