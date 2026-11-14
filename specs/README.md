@@ -26,6 +26,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-14 · release: consume verified Knowledge Cards 0.1.5 font controls · `501c1e4`
 - 2026-11-14 · Refresh nix.115 installation overview · `96980ef`
 - 2026-11-14 · Update Tag Browser consumer to signed nix.115 release · `da6027f`
 - 2026-11-14 · Refresh mobile peer gateway preparation overview · `ceae42f`
@@ -33,5 +34,4 @@
 - 2026-11-13 · Refresh learning-map release status overview · `f678148`
 - 2026-11-13 · Enable learning-map registration with atomic startup digest updates · `14da43b`
 - 2026-11-13 · Refresh learning static delivery status without enabling new registration · `6a0e1bc`
-- 2026-11-13 · Prepare transactional registration for the independent learning map · `d493e9e`
 <!-- recent-commits:end -->
