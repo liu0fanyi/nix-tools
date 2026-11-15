@@ -1,0 +1,19 @@
+{
+  "system_candidate": "/nix/store/7c2636zbfgzyvhmy1m8nwdn8n7kf077b-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "same_worktree_baseline": "/nix/store/6sks5npa9nplixwznxwhvd3x8g9zjl3l-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "home_candidate": "/nix/store/plzbfq2qpff84qr0mp4imsg6qcyyqfzp-home-manager-generation",
+  "only_lock_node_changed": [
+    "tag-browser-src"
+  ],
+  "unchanged_home_manager_generation": true,
+  "native_templates_equal": {
+    "tag-native-workspace.service": "fc46ddf3a8f1e856810a4fa9aba5c54519d670a48f33919081e265958118c63a",
+    "tag-all-core.service": "c185a69d7ae258b8369e8bd67bb46a4d6044af8452dfdc9cd8fdb7c4f89c17a9",
+    "tag-all-tools.service": "4a80667a62f4550fb729c76a8f33a18e60878b2dbbcf8357be1d6b3536883ded",
+    "tag-native-files.service": "9253be407af0b894c818bbdd24e499cd142f22b82fec455b66b9598233a891f8",
+    "tag-native-stack.target": "7942389d5c5bb00d5a12bf82342d4484879d65c656e12eff547d634f226e037b"
+  },
+  "browser": "/nix/store/ikm8p1606vzhhd0mkb5vvq3jc5zq8l2l-tag-browser-0.1.0",
+  "system_switch_executed": false,
+  "activation_executed": false
+}
