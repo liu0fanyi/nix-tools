@@ -27,12 +27,12 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-16 · Use verified nix.121 browser and preserve paired workspace backend · `13ccd70`
+- 2026-11-15 · Update verified nix.120 consumer and activation overview · `d660ca8`
 - 2026-11-15 · Verify nix.120 frontend and backend activation with preserved data · `9622c50`
 - 2026-11-15 · Use verified Tag Browser nix.120 shared UI release · `780c99a`
 - 2026-11-15 · Register affected observation terminal overview · `56e8de8`
 - 2026-11-15 · Register dedicated hardware source and software link boundary · `9ab4ecf`
 - 2026-11-15 · Update verified nix.119 paired application delivery overview · `34b1796`
 - 2026-11-15 · Verify nix.119 frontend and backend activation and safe rollback · `367f324`
-- 2026-11-15 · Use verified Tag Browser nix.119 shared frontend release · `5216040`
-- 2026-11-15 · Clarify preserved startup inputs and delivered browser overview · `a33f99d`
 <!-- recent-commits:end -->
