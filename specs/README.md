@@ -27,6 +27,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-15 · Update Tag Browser to nix.118 and retain verified startup protection · `71f4d77`
 - 2026-11-15 · Add Z-Library terminal client to Nix packages · `4e4ce53`
 - 2026-11-15 · Update verified LAN mobile pairing overview · `4eabaa9`
 - 2026-11-15 · Add bounded LAN pairing routes to installed NUC ingress · `e6abbdf`
@@ -34,5 +35,4 @@
 - 2026-11-14 · Update verified nix117 consumer overview · `697973f`
 - 2026-11-14 · Update Tag Browser consumer to verified nix.117 follow-up release · `a6d6da0`
 - 2026-11-14 · Refresh Knowledge Cards 0.1.6 consumer overview · `72e428e`
-- 2026-11-14 · Update Knowledge Cards to verified 0.1.6 workbench release · `fdcf3f3`
 <!-- recent-commits:end -->
