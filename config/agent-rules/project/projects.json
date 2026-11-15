@@ -238,6 +238,12 @@
       "root": "/data/project/hardware",
       "aliases": [],
       "category": "硬件"
+    },
+    {
+      "name": "observation-terminal",
+      "root": "/data/project/observation-terminal",
+      "aliases": [],
+      "category": "ESP32"
     }
   ]
 }
