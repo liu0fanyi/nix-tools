@@ -1,0 +1,47 @@
+{
+  "system_candidate": "/nix/store/jarlx9abjflr3lh21affrw8hjvvp3gz2-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "home_candidate": "/nix/store/plzbfq2qpff84qr0mp4imsg6qcyyqfzp-home-manager-generation",
+  "baseline_system_same_worktree": "/nix/store/ad92k4qjvsxd3khj33b14nf7yxrzfy96-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "temporary_browser_input_only": false,
+  "browser_source_revision": "135aa7abea8c1cf92a80e27d58e86ecda9d04e5c",
+  "browser_binary": "/nix/store/qwcwjyf4kfmn2x6hmjvnqk8swyd27p3b-tag-browser-0.1.0",
+  "five_native_templates_equal_to_baseline": true,
+  "default_target_link_unchanged": true,
+  "restore_after_reload_verified": true,
+  "system_browser_verified_home_has_no_competing_install": true,
+  "visible_release_and_menu_verified": true,
+  "four_mime_defaults_and_desktop_declarations_verified": true,
+  "external_source_changes_preserved": {
+    "head": "41f3923769708d8f95cf2d8bc383e6a0c395ce17",
+    "tracked_external_changes": {
+      "AGENTS.md": "1b1fbfabc49b755dce0a7798243fe5556546465c5a4e7e65c38ac0ae3cf9e25c",
+      "home-manager/nix_modules/helix.nix": "3a29c3e34b20b0ce88d0d5f3462defd340e286ff21fe87bd5063d6db7139c343",
+      "home-manager/patches/helix-softwrap-double-width.patch": "e8b257b1a1d432ce94674e4368dac616d0c868bba8ef77c0117013c4c0208e04"
+    },
+    "untracked_paths": [
+      "girl.md",
+      "ref/colorchecker24/README.md",
+      "ref/colorchecker24/build_cc24.py",
+      "ref/colorchecker24/cc24-card-dark.png",
+      "ref/colorchecker24/cc24-card-dark.svg",
+      "ref/colorchecker24/cc24-card-print.png",
+      "ref/colorchecker24/cc24-card-print.svg",
+      "ref/colorchecker24/cc24-table.md",
+      "ref/colorchecker24/colorchecker24.csv",
+      "ref/colorchecker24/colorchecker24.json"
+    ],
+    "head_at_check": "41f3923769708d8f95cf2d8bc383e6a0c395ce17",
+    "concurrent_commit_files": []
+  },
+  "real_lock_changed": true,
+  "system_switch_executed": false,
+  "activation_executed": false,
+  "signed_cache_pending_approval": false,
+  "release_tag": "v0.1.0-nix.118",
+  "release_url": "https://github.com/liu0fanyi/tag-browser/releases/tag/v0.1.0-nix.118",
+  "ci_run": "https://github.com/liu0fanyi/tag-browser/actions/runs/43702025463",
+  "ci_conclusion": "success",
+  "cache_package_matches_local": true,
+  "external_changes_preserved": true,
+  "web_activated_pc_nuc": true
+}

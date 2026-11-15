@@ -611,3 +611,9 @@ nix.116正式包与可信缓存发布通过，固定Firefox引擎，CI与本地�
 - [x] 增加现用原生配置的精确补丁：只插入 nuc.local、LAN 来源、POST 的两个路径；保留全部原配置与认证，不部署 EdgeOne，不修改公网入口。
 - [x] 8项合成配置边界测试、实际 Caddy 校验及空载荷422拒绝；原配置私有备份后受控reload，inode/600/属主保持；公网Host、错误方法和网页管理拒绝与之前相同。见[现网回执](android-lan-pairing-ingress-results.json)。
 - [x] 核对并取消过期旧申请，新邀请经正常登录NUC页面核对完整手机指纹后批准，手机签名确认后列出PC及NUC；真实同步/目录验收由产品051/S2b继续持有，不另计步。
+
+## Tag Browser nix.118 交付
+
+正式签名缓存与本机包一致；当前工作树新旧PC/HM候选对比通过，仅tag-browser锁节点变化，外部AGENTS/Helix改动保持，未system switch。PC/NUC仅前端激活已核验，后端保持fmg且DB inode/备份不变。见[tag-browser-nix118-install-results.json](tag-browser-nix118-install-results.json)。
+
+PC沙盒/proc误判沿原样宿主检查解决。NUC现有LAN配对Caddy修改漏更新启动清单，按此前精确原/新SHA证明修复唯一绑定，保留Caddy正文和其余19项保护；两区已恢复并上线，失败事务保留。[恢复证据](tag-browser-nix118-startup-recovery.json)。后续网关事务须绑定启动清单，停服前先运行完整已安装启动守卫；不可因HTTP当前正常跳过。用户手动rerun及完整重开仍待执行，未读取/修改日常profile。

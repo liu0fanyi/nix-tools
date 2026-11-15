@@ -1,0 +1,15 @@
+{
+  "only_binding_changed": "/home/liou/.local/share/dufs-plus/runtime/home/Caddyfile",
+  "matched_prior_authorized_ingress_proof": true,
+  "backup": "/home/liou/.local/share/dufs-plus/runtime/home/.nix118-startup-control-before.json",
+  "before_sha256": "b6b14cd50cacbfc29dfcdda3c81dd977acadb47e1ce3682d3921bb3693bdd257",
+  "after_sha256": "ab8e58fe42a3eaad1ce44aafa187056014e82542dfe545357d552284885a7952",
+  "caddy_bytes_changed": false,
+  "authorized_ingress_proof": "android-lan-pairing-ingress-results.json",
+  "only_known_caddy_digest_binding_updated": true,
+  "all_other_pinned_files_verified": true,
+  "startup_guard_not_disabled": true,
+  "both_original_and_new_frontend_started": true,
+  "database_restored": false,
+  "followup": "Run the full installed startup guard before stopping a service; include pinned control bindings in any ingress transaction."
+}
