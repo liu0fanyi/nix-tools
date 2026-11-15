@@ -7,14 +7,14 @@
 - [定制Trime已由独立产品正式签名发行3.3.14，输入/更新按钮通过；旧原版与知识卡QA已按用户明确授权双份备份后退役，当前默认定制输入法保留。](010-host-configuration/tasks.md#trime正式发行与旧手机包退役2026-11-13状态)
 - [知识卡0.1.6预览/公式及PC数学/识图入口已发布可信缓存与Android双渠道，完整PC/HM候选通过；未安装手机或switch，网页事务待本次保存确认，后端及Helix外部改动保持。](014-application-entry-boundary/tasks.md)
 - [Codex桌面26.1103.31037修复已实机生效：不可达主机停止自动重连，NUC保持开启；6个内置插件成功物化并复用，无新增权限错误，聊天记录未动。](010-host-configuration/tasks.md#codex-桌面卡顿排查与升级阶段-cx2026-11-06)
-- [Tag Browser nix.118已发行、完整PC/HM候选对比通过；PC/NUC共享前端已激活，当前后端/数据保持，既有LAN配对启动摘要遗漏已精确修复；外部Helix修改未动，未system switch。](014-application-entry-boundary/tag-browser-nix118-install-results.json)
+- [Tag Browser nix.119签名发行及完整PC/HM消费验证通过；PC/NUC前端和q6后端已实际激活，原启动守卫、认证/备份/DB inode保持；外部Helix修改未动，未system switch。](014-application-entry-boundary/tag-browser-nix119-install-results.json)
 - [aMule实机High ID与Kad OK验收通过，公网TCP4662可达；清理41条微信映射，其他23条保留，路由表64→26，本轮无需再次rerun。](010-host-configuration/tasks.md#amule-安装与网络引导阶段-am2026-11-04) [DiskTree图形版构建通过，待手动应用试用。](010-host-configuration/tasks.md#disktree-图形版安装阶段-dt2026-11-01)
 - [系统盘与/data安全清理：当前分别为64%/55%，CMT编译文件再回收约51.8GiB；原镜像标签、服务容器与源码保留；详细清理记录统一见AGENTS第七节。](010-host-configuration/tasks.md#cmt低延迟实验编译缓存清理阶段-sf2026-11-04)
 
 ## 后续计划
 - [输入法实现与正式发行交付已转trime-mobile；旧包退役和当前状态见对应产品，历史QA试用不再作为当前安装状态。](010-host-configuration/tasks.md#trime正式发行与旧手机包退役2026-11-13状态)
 - [用户试用正式手机/网页知识卡；PC桌面系统候选需用户手动激活。](010-host-configuration/tasks.md#android-同文中文九宫格阶段-tr2026-11-10)
-- [PC nix.118消费候选已通过，待用户手动rerun及正常完整重开；整体三端验收与真实日常体验另列。](014-application-entry-boundary/tasks.md)
+- [PC nix.119消费候选已通过，待用户手动rerun及正常完整重开；整体三端验收与真实日常体验另列。](014-application-entry-boundary/tasks.md)
 - [手动试用DiskTree（DT3）；aMule阶段AM已完成，无需再次rerun，微信长期映射配额未配置。](010-host-configuration/tasks.md#disktree-图形版安装阶段-dt2026-11-01)
 - [在文件管理器双击文档和表格确认默认应用（OF3）。](010-host-configuration/tasks.md#文档与表格默认应用修复阶段-of2026-10-31)
 - [手动应用 dsh 运行时修复并确认实际界面使用（DS3）。](010-host-configuration/tasks.md#dsh-更新与-nix-node-兼容修复阶段-ds2026-10-30)
@@ -27,12 +27,12 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-15 · Verify nix.119 frontend and backend activation and safe rollback · `367f324`
+- 2026-11-15 · Use verified Tag Browser nix.119 shared frontend release · `5216040`
+- 2026-11-15 · Clarify preserved startup inputs and delivered browser overview · `a33f99d`
 - 2026-11-15 · Update Tag Browser to nix.118 and retain verified startup protection · `71f4d77`
 - 2026-11-15 · Add Z-Library terminal client to Nix packages · `4e4ce53`
 - 2026-11-15 · Update verified LAN mobile pairing overview · `4eabaa9`
 - 2026-11-15 · Add bounded LAN pairing routes to installed NUC ingress · `e6abbdf`
 - 2026-11-14 · Align deployment overview with verified deletion backend · `582ed56`
-- 2026-11-14 · Update verified nix117 consumer overview · `697973f`
-- 2026-11-14 · Update Tag Browser consumer to verified nix.117 follow-up release · `a6d6da0`
-- 2026-11-14 · Refresh Knowledge Cards 0.1.6 consumer overview · `72e428e`
 <!-- recent-commits:end -->
