@@ -1,0 +1,269 @@
+{
+  "schema": 1,
+  "release_tag": "v0.1.0-nix.121",
+  "release_url": "https://github.com/liu0fanyi/tag-browser/releases/tag/v0.1.0-nix.121",
+  "ci_run": "https://github.com/liu0fanyi/tag-browser/actions/runs/43740160551",
+  "ci_conclusion": "success",
+  "browser_source": "9f68b8f1f4054ee836d0e96ce1f7d1d8065dba21",
+  "browser_package": "/nix/store/4vadzk7x8hziw45kg6r7psxjx23cd483-tag-browser-0.1.0",
+  "cache_package_matches_local": true,
+  "shared_ui_sha256": "744843d20fcdf945d524eab53a6ba44a654c7ffd67d8433a48dc25b16d9d5311",
+  "backend_package": "/nix/store/x8b6fvr3mgrblflfawd7x6gnz9vs94bz-tag-all-workspace-native-0.1.0",
+  "backend_unchanged": true,
+  "backend_rebuilt": false,
+  "firefox_rebuilt": false,
+  "android_changed": false,
+  "formal_content": {
+    "actualPackagedFirefox": true,
+    "originalDufsFrontend": "/tmp/dufs-plus-candidate-hclmhl9v",
+    "sharedSidebarOpen": true,
+    "helixActualWasmAndKeyboard": true,
+    "markdownSave": true,
+    "ordinaryTextOriginalEditorAndScopedCas": true,
+    "sidebarHasNoTextEditor": true,
+    "repeatEditPreservesPhysicalDocumentAndDraft": true,
+    "failedCloseRetainsDirtyDraft": true,
+    "successfulCloseSavesDraft": true,
+    "pdfActualPageRasterAndToc": true,
+    "pdfTocJumpAndProgress": true,
+    "sidebarFilterPreservesPdfDocument": true,
+    "epubActualFoliateAndToc": true,
+    "epubChapterJumpAndProgress": true,
+    "readerCloseDisposesToc": true,
+    "syntheticCommitCount": 2,
+    "syntheticProgressWrites": 3,
+    "productionAccess": false,
+    "productionWrites": 0,
+    "realAccountRestartVerified": false,
+    "originalGridMoveOwnerAndExplicitCommit": true,
+    "normalShellThreeArtifactsNewWindows": true,
+    "activeWindowDocumentPinnedDuringUpdate": true,
+    "normalShellExplicitRollback": true,
+    "normalShellBadCurrentUsesPrevious": true,
+    "normalShellBothInvalidRecoverableNoLegacy": true,
+    "selectorRepairRestoresNewWindow": true,
+    "normalIdentitySharedShell": true,
+    "privateWindowNoWorkspaceConnection": true,
+    "exampleModulesExcluded": true,
+    "inheritedTestFlagsIgnored": true,
+    "bundledAssetsWithoutSelector": true,
+    "failedConnectionRecoverable": true,
+    "legacyBusinessStartupDisabled": true,
+    "nativeChromeRetained": true,
+    "isolatedHomeAndProfile": true,
+    "productionActivated": false,
+    "phoneAccessed": false
+  },
+  "update_rollback": {
+    "cases": [
+      "fresh_editor_confirmation_required_before_mutation",
+      "actual_new_cli_deletes_owned_file_and_metadata_without_post_delete_path_error",
+      "real_update_and_explicit_rollback_keep_new_database_writes_and_inode",
+      "post_start_failure_restores_old_program_and_keeps_current_data",
+      "controller_sigkill_after_install_recovers_old_program_without_state_restore",
+      "unrelated_unit_drift_refused_before_stop",
+      "active_queue_refused_without_stopping_current_service"
+    ],
+    "backend_unchanged": true,
+    "old_frontend": "/nix/store/x3wfvnac5rgq6f2kn9hwq2d2a5qww66w-dufs-plus-nix120-pc-frontend",
+    "new_frontend": "/nix/store/say2gp32g1yyw40x29094i68lz8h6l9r-dufs-plus-nix121-pc-frontend",
+    "actual_old_and_new_packaged_programs": true,
+    "actual_owned_user_unit": true,
+    "actual_upholds_target_and_interrupted_recovery": true,
+    "latest_writes_retained_on_rollback": true,
+    "database_inode_preserved": true,
+    "owned_units_and_files_cleaned": true,
+    "production_access": false,
+    "production_activated": false,
+    "manager_package": "/nix/store/ff1hjnr0ja6g6fx3nkdh8mjz9ggzr8fp-tag-native-release-manager",
+    "old_package": "/nix/store/x8b6fvr3mgrblflfawd7x6gnz9vs94bz-tag-all-workspace-native-0.1.0",
+    "new_package": "/nix/store/x8b6fvr3mgrblflfawd7x6gnz9vs94bz-tag-all-workspace-native-0.1.0"
+  },
+  "bundles": {
+    "pc": {
+      "kind": "native-bundle-check-v1",
+      "bundle_id": "ccdd5e90b4d3b2ceeff1b79ddc17630d3f7b274acc2af1cb49407fa03f5160a4",
+      "controls": [
+        {
+          "path": "/home/liou/nix-tools/scripts/application_release_bundle.py",
+          "sha256": "6378c31d562e8bab07ea0d4bbb30b4539a3f657be6c1139452174a3ced64ae14"
+        },
+        {
+          "path": "/home/liou/nix-tools/scripts/check_application_bundle.py",
+          "sha256": "f47437de1f458e9a6011b50fc6000eca01d246e20f584be07ce81fe6e1d6ea71"
+        },
+        {
+          "path": "/home/liou/nix-tools/scripts/application-bundle.browser.cjs",
+          "sha256": "480df39e8fbd8787f3f034108707b9d264c67632db17ded57efa4fa002776b7b"
+        },
+        {
+          "path": "/home/liou/nix-tools/justfile",
+          "sha256": "e0081198de8f543d4892a122aec35b509728d9b31a3a3b2e0cffe9141da0e45d"
+        }
+      ],
+      "cases": [
+        "basic_manifest",
+        "basic_locations",
+        "unsigned_sync_rejected",
+        "anonymous_rejected",
+        "foreign_origin_rejected",
+        "served_assets",
+        "fresh",
+        "aliases_content_reload",
+        "progress_conflict",
+        "unknown_operation",
+        "shared_wasm",
+        "cleaned"
+      ],
+      "logs": [
+        {
+          "path": "/tmp/nix121-release/pc-bundle-results-files.log",
+          "sha256": "d93826031da7f0e322eb7c7902df37dde844bef574995c685d4993eb788f49fb"
+        },
+        {
+          "path": "/tmp/nix121-release/pc-bundle-results-initial.log",
+          "sha256": "9e5dd4128f65bf18138f0e106b53a3f8437e58d1cca841637f6c449ec95636d3"
+        },
+        {
+          "path": "/tmp/nix121-release/pc-bundle-results-canonical.log",
+          "sha256": "9984bce5204535919329b3b453606185e2f352bb7e168cd9eb33aa59efff7fb8"
+        },
+        {
+          "path": "/tmp/nix121-release/pc-bundle-results-browser.log",
+          "sha256": "864218caba6f70028de97a857af7c743eee5045768db5fd2b45aa34d74988596"
+        }
+      ],
+      "passed": true,
+      "cleaned": true,
+      "production_access": false,
+      "daily_profile_used": false,
+      "actual_rust_cli": true,
+      "actual_frontend": true,
+      "api_mocked": false
+    },
+    "nuc": {
+      "kind": "native-bundle-check-v1",
+      "bundle_id": "5a62744c8a5bf31a4b0bd94adfd5a48b613f48e7bb8f3a5cfdf323c95df1cc32",
+      "controls": [
+        {
+          "path": "/home/liou/nix-tools/scripts/application_release_bundle.py",
+          "sha256": "6378c31d562e8bab07ea0d4bbb30b4539a3f657be6c1139452174a3ced64ae14"
+        },
+        {
+          "path": "/home/liou/nix-tools/scripts/check_application_bundle.py",
+          "sha256": "f47437de1f458e9a6011b50fc6000eca01d246e20f584be07ce81fe6e1d6ea71"
+        },
+        {
+          "path": "/home/liou/nix-tools/scripts/application-bundle.browser.cjs",
+          "sha256": "480df39e8fbd8787f3f034108707b9d264c67632db17ded57efa4fa002776b7b"
+        },
+        {
+          "path": "/home/liou/nix-tools/justfile",
+          "sha256": "e0081198de8f543d4892a122aec35b509728d9b31a3a3b2e0cffe9141da0e45d"
+        }
+      ],
+      "cases": [
+        "basic_manifest",
+        "basic_locations",
+        "unsigned_sync_rejected",
+        "anonymous_rejected",
+        "foreign_origin_rejected",
+        "served_assets",
+        "fresh",
+        "aliases_content_reload",
+        "progress_conflict",
+        "unknown_operation",
+        "shared_wasm",
+        "cleaned"
+      ],
+      "logs": [
+        {
+          "path": "/tmp/nix121-release/nuc-bundle-results-files.log",
+          "sha256": "3457b194b115ae3efbc59f94a9c45dcaea934b77373783433d1c6a8be1f683b7"
+        },
+        {
+          "path": "/tmp/nix121-release/nuc-bundle-results-initial.log",
+          "sha256": "bcdddf4fa13f065c52f6d3b77243016b8dd11102e50a19c3c923ae26cb6edcab"
+        },
+        {
+          "path": "/tmp/nix121-release/nuc-bundle-results-canonical.log",
+          "sha256": "c61c47656242a439af23a08f6a63fd12f2fbafb24d14d79981a0886f718ceb44"
+        },
+        {
+          "path": "/tmp/nix121-release/nuc-bundle-results-browser.log",
+          "sha256": "864218caba6f70028de97a857af7c743eee5045768db5fd2b45aa34d74988596"
+        }
+      ],
+      "passed": true,
+      "cleaned": true,
+      "production_access": false,
+      "daily_profile_used": false,
+      "actual_rust_cli": true,
+      "actual_frontend": true,
+      "api_mocked": false
+    }
+  },
+  "activation": {
+    "pc": {
+      "scope": "pc",
+      "frontend": "/nix/store/say2gp32g1yyw40x29094i68lz8h6l9r-dufs-plus-nix121-pc-frontend",
+      "backend": "/nix/store/x8b6fvr3mgrblflfawd7x6gnz9vs94bz-tag-all-workspace-native-0.1.0",
+      "actual_process_and_frontend_verified": true,
+      "all_assets_verified": 774,
+      "authentication_probes_passed": true,
+      "served_index_verified": true,
+      "backup_integrity_and_sha_verified": true,
+      "database_inode_preserved": true,
+      "upholds_restored": true,
+      "rollback_inputs_valid_after_activation": true,
+      "database_restored": false,
+      "elapsed_seconds": 4.898
+    },
+    "nuc": {
+      "scope": "nuc",
+      "frontend": "/nix/store/b8s61krib57dz0bgvd127p9amn4bbvys-dufs-plus-nix121-nuc-frontend",
+      "backend": "/nix/store/x8b6fvr3mgrblflfawd7x6gnz9vs94bz-tag-all-workspace-native-0.1.0",
+      "actual_process_and_frontend_verified": true,
+      "all_assets_verified": 792,
+      "authentication_probes_passed": true,
+      "served_index_verified": false,
+      "backup_integrity_and_sha_verified": true,
+      "database_inode_preserved": true,
+      "upholds_restored": true,
+      "rollback_inputs_valid_after_activation": true,
+      "database_restored": false,
+      "elapsed_seconds": 12.522
+    }
+  },
+  "public_auth_probes": [
+    {
+      "entry": "https://nas.wttliou.top/",
+      "status": 302
+    },
+    {
+      "entry": "https://workcdn.wttliou.top/",
+      "status": 401
+    }
+  ],
+  "system_consumer": {
+    "only_lock_node_changed": [
+      "tag-browser-src"
+    ],
+    "before_browser": [
+      "/nix/store/sfkz8vck94yvwfncxlbxnb8yifr0l1aq-tag-browser-0.1.0-nix.120"
+    ],
+    "after_browser": [
+      "/nix/store/dpvac38v8kmq3qaaylxyv0izl9m53hhd-tag-browser-0.1.0-nix.121"
+    ],
+    "home_derivation": "/nix/store/x3948g97cxxnfbxh8flsldchsxgm44c9-home-manager-generation.drv",
+    "same_worktree_home_derivation_unchanged": true,
+    "full_system_or_home_build_run": false,
+    "system_switch_executed": false,
+    "evaluation_only": true
+  },
+  "user_retest_confirmed": false,
+  "remaining_this_release": 0,
+  "preserved_validation_failures": [
+    "Release archive staging initially refused a mutable dist path; retried with the exact immutable UI referenced by the tested package. No activation or guard was bypassed."
+  ]
+}

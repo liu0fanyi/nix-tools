@@ -627,3 +627,7 @@ PC沙盒/proc误判沿原样宿主检查解决。NUC现有LAN配对Caddy修改�
 用户已授权。固定浏览器ikm8正式缓存与本机候选一致；完整PC消费者构建通过，只有tag-browser-src锁节点和13项轻量派生物变化，同一Home Manager代及五项原生模板保持。后端登记的三组合检查已通过，当前程序/包装/双栈及两端组合、回退和原管理器激活仍待完成；保护现有外部AGENTS/Helix改动，不代用户switch。
 
 nix.120发行交付完成，剩余0项：[实际安装激活回执](tag-browser-nix120-install-results.json)。当前x8后端与两端独立前端已由原管理器备份激活，程序/全资产/认证/备份SHA及数据库inode通过，未恢复数据；同版浏览器签名缓存和完整PC消费者通过。仅更新浏览器锁节点，HM代及五项原生模板保持。未system switch、未更新手机，外部AGENTS/Helix暂存改动保持。前置失败夹具未计成功，宿主原样断言及两端真实组合/回退通过。
+
+## Tag Browser nix.121 前端与资源包发行（2026-11-16）
+
+[交付回执](tag-browser-nix121-install-results.json)：固定引擎4vad正式包与缓存一致，PC/NUC前端已经原管理器备份激活；现用x8后端、认证、配对、数据库保持。两端组合各12项、7项实际更新回退及正式Firefox原正文通过。仅tag-browser-src锁节点更新到9f68b8f，同一工作树Home Manager派生物求值不变；未构建整套系统/HM、未system switch或操作手机，外部AGENTS/Helix改动保留。用户手动rerun、完整重开和工作区刷新后做真实体验验收。
