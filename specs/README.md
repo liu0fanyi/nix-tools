@@ -1,7 +1,7 @@
 # Nix 配置与发布工具
 
 ## 当前情况
-- [手机出站配对与签名文件请求的原生网关白名单已准备并通过 Edge/Caddy专项；未发布，须与具强制Peer签名的新后端按序激活，不能单独扩大公网路由。](014-application-entry-boundary/tasks.md)
+- [Android局域网配对已补齐NUC现用网关两条固定POST路径并reload，真实申请/审批成功；公网移动白名单仍未部署，不扩大外网路由。](014-application-entry-boundary/tasks.md)
 - [学习地图独立登记已按037增量候选启用；配置与启动保护摘要同事务切换，后续14文件静态发布不重启，用户学习资料保持。](017-independent-learning-map/tasks.md)
 - [定制Trime已由独立产品正式签名发行3.3.14，输入/更新按钮通过；旧原版与知识卡QA已按用户明确授权双份备份后退役，当前默认定制输入法保留。](010-host-configuration/tasks.md#trime正式发行与旧手机包退役2026-11-13状态)
 - [知识卡0.1.6预览/公式及PC数学/识图入口已发布可信缓存与Android双渠道，完整PC/HM候选通过；未安装手机或switch，网页事务待本次保存确认，后端及Helix外部改动保持。](014-application-entry-boundary/tasks.md)
@@ -26,12 +26,12 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-15 · Add bounded LAN pairing routes to installed NUC ingress · `e6abbdf`
+- 2026-11-14 · Align deployment overview with verified deletion backend · `582ed56`
 - 2026-11-14 · Update verified nix117 consumer overview · `697973f`
 - 2026-11-14 · Update Tag Browser consumer to verified nix.117 follow-up release · `a6d6da0`
 - 2026-11-14 · Refresh Knowledge Cards 0.1.6 consumer overview · `72e428e`
 - 2026-11-14 · Update Knowledge Cards to verified 0.1.6 workbench release · `fdcf3f3`
 - 2026-11-14 · Refresh verified nix.116 consumer overview · `e09214d`
 - 2026-11-14 · Update Tag Browser to verified nix.116 shared frontend release · `d5db5fa`
-- 2026-11-14 · release: consume verified Knowledge Cards 0.1.5 font controls · `501c1e4`
-- 2026-11-14 · Refresh nix.115 installation overview · `96980ef`
 <!-- recent-commits:end -->
