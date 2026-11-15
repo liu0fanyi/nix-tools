@@ -186,6 +186,8 @@ in
       duf
       # 图形化磁盘占用矩形图（tobi/disktree 官方发行包）。
       (callPackage ./packages/disktree-bin.nix { })
+      # Z-Library 命令行客户端；与压缩库 pkgs.zlib 区分。
+      (callPackage ./packages/zlib-cli.nix { })
       ripgrep
       fd
       jq

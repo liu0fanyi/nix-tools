@@ -1158,3 +1158,17 @@ KX3评估与实现交接：真实隔离Rime11项验证通过，64可锁定NI/MI�
 ## Trime正式发行与旧手机包退役（2026-11-13状态）
 
 trime-mobile已完成永久签名3.3.14发行及原QA数据迁移，当前默认仍是com.osfans.trime.qa。用户后续明确要求备份后移除旧原版：其外部目录全部439文件独立双份归档、源清单核验后卸载，源端无userdb，私有偏好不可导出已由用户明确接受。旧知识卡QA的50个私有数据文件也双份核验后归档并卸载。手机只保留正式知识卡0.1.1与定制同文3.3.14；历史TR/KX/QA10记录不改写，当前事实以知识卡013和trime-mobile002为准，不新增本仓执行计数。
+
+## Z-Library 终端客户端 Nix 接入（阶段 ZL，2026-11-15）
+
+- [x] ZL1 固定 heartleo/zlib 发行版与官方摘要，接入 Nix 包及 Home Manager。
+- [x] ZL2 验证 CLI、完整 PC toplevel 和 Home Manager generation，提交并同步摘要。
+- [ ] ZL3 用户手动应用系统配置并交互登录，验证实际搜索和下载。
+
+固定官方 v0.0.14 Linux x86_64 静态发行包，下载 SHA256 与 GitHub release asset.digest 一致。
+Nix 属性名为 zlib-cli，运行命令为 zlib；不替换压缩库 pkgs.zlib。
+独立软件包构建及 version/search/download 帮助检查通过，doctor 检查的9个内置域名均返回 HTTP 200。
+尚未登录账号，未验证真实搜索和下载；未执行系统 switch。
+配置求值确认客户端已进入 home.packages；HM备份扩展为hm-backup，数位笔系统服务、input/uinput组、uinput模块及HTTP/HTTPS/磁力/Codex协议基线正确。本次无新增服务或设备规则。
+完整系统与HM generation构建通过：`/nix/store/ad92k4qjvsxd3khj33b14nf7yxrzfy96-nixos-system-liu-bigpc-26.11.20260922.b6c98e9`、`/nix/store/plzbfq2qpff84qr0mp4imsg6qcyyqfzp-home-manager-generation`。`nix run .#zlib-cli -- version`通过；HM安装路径解析到固定客户端。构建日志及求值/连通性证据位于`/tmp/zlib-cli-*`。
+阶段ZL剩余1项ZL3：用户普通终端运行`nu rerun.nu liou --host liu-bigpc`后交互登录并验收实际搜索下载。也可先`nix run .#zlib-cli -- tui`试用。未代为switch；原有Helix、AGENTS及其他资料改动不纳入本次提交。
