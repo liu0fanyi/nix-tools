@@ -1,0 +1,13 @@
+{
+  "frontend": "/nix/store/hx80qmirk31fhbnxyb3523729mh9x75d-dufs-plus-nix119-nuc-frontend",
+  "closure": {
+    "/nix/store/hx80qmirk31fhbnxyb3523729mh9x75d-dufs-plus-nix119-nuc-frontend": {
+      "narHash": "sha256-xaF2rXZVDH2zPFslAic3HxWOL0eRoV84unKkk1uzu00=",
+      "narSize": 268156240
+    }
+  },
+  "existing_trusted_user_verified": true,
+  "remote_nar_hashes_verified": true,
+  "system_trust_unchanged": true,
+  "own_artifact_only": true
+}

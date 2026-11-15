@@ -617,3 +617,7 @@ nix.116正式包与可信缓存发布通过，固定Firefox引擎，CI与本地�
 正式签名缓存与本机包一致；当前工作树新旧PC/HM候选对比通过，仅tag-browser锁节点变化，外部AGENTS/Helix改动保持，未system switch。PC/NUC仅前端激活已核验，后端保持fmg且DB inode/备份不变。见[tag-browser-nix118-install-results.json](tag-browser-nix118-install-results.json)。
 
 PC沙盒/proc误判沿原样宿主检查解决。NUC现有LAN配对Caddy修改漏更新启动清单，按此前精确原/新SHA证明修复唯一绑定，保留Caddy正文和其余启动输入保护；两区已恢复并上线，失败事务保留。[恢复证据](tag-browser-nix118-startup-recovery.json)。后续网关事务须绑定启动清单，停服前先运行完整已安装启动守卫；不可因HTTP当前正常跳过。用户手动rerun及完整重开仍待执行，未读取/修改日常profile。
+
+## Tag Browser nix.119前后端交付
+
+发行阶段完成，剩余0项：[安装及实际激活回执](tag-browser-nix119-install-results.json)。浏览器签名缓存与本机h1包一致，PC完整系统仅13项轻量派生物、五项原生模板和同一HM代保持；只更新浏览器锁节点，外部AGENTS/Helix及其他资料未动，未system switch。原管理器将PC/NUC前端及q6后端同交易切换，两端实际程序/资产/认证/备份和DB inode通过；原启动守卫发布前通过，无需再次改控制绑定。前端组合各12项、7项真实更新回退及包装双栈通过；未改外网路由或手机。桌面仍由用户手动rerun并完整退出重开。

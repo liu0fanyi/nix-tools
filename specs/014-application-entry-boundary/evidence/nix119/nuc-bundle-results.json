@@ -1,0 +1,61 @@
+{
+  "kind": "native-bundle-check-v1",
+  "bundle_id": "a36e723362ec0b2f88137ec3b85ac59cac20baed7fa7c588beafd6ac5ddbf0a6",
+  "controls": [
+    {
+      "path": "/home/liou/nix-tools/scripts/application_release_bundle.py",
+      "sha256": "6378c31d562e8bab07ea0d4bbb30b4539a3f657be6c1139452174a3ced64ae14"
+    },
+    {
+      "path": "/home/liou/nix-tools/scripts/check_application_bundle.py",
+      "sha256": "f47437de1f458e9a6011b50fc6000eca01d246e20f584be07ce81fe6e1d6ea71"
+    },
+    {
+      "path": "/home/liou/nix-tools/scripts/application-bundle.browser.cjs",
+      "sha256": "480df39e8fbd8787f3f034108707b9d264c67632db17ded57efa4fa002776b7b"
+    },
+    {
+      "path": "/home/liou/nix-tools/justfile",
+      "sha256": "e0081198de8f543d4892a122aec35b509728d9b31a3a3b2e0cffe9141da0e45d"
+    }
+  ],
+  "cases": [
+    "basic_manifest",
+    "basic_locations",
+    "unsigned_sync_rejected",
+    "anonymous_rejected",
+    "foreign_origin_rejected",
+    "served_assets",
+    "fresh",
+    "aliases_content_reload",
+    "progress_conflict",
+    "unknown_operation",
+    "shared_wasm",
+    "cleaned"
+  ],
+  "logs": [
+    {
+      "path": "/tmp/nix119-release/nuc-bundle-results-files.log",
+      "sha256": "3678f7584c886e7393926e939e4ea21deb65e7798a155d53b74f6a3934663b90"
+    },
+    {
+      "path": "/tmp/nix119-release/nuc-bundle-results-initial.log",
+      "sha256": "78dc154b3407b466f99dcf57a855bcf46869730dcf417f17bb19f8897376d48b"
+    },
+    {
+      "path": "/tmp/nix119-release/nuc-bundle-results-canonical.log",
+      "sha256": "795a0996f0c188faffb99d2a992d8b08fc5267a30cc3d1ebc63664a80337c6c1"
+    },
+    {
+      "path": "/tmp/nix119-release/nuc-bundle-results-browser.log",
+      "sha256": "864218caba6f70028de97a857af7c743eee5045768db5fd2b45aa34d74988596"
+    }
+  ],
+  "passed": true,
+  "cleaned": true,
+  "production_access": false,
+  "daily_profile_used": false,
+  "actual_rust_cli": true,
+  "actual_frontend": true,
+  "api_mocked": false
+}

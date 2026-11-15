@@ -1,0 +1,10 @@
+[2m2026-11-15T12:25:13.682715Z[0m [32m INFO[0m [2mtag_server::sync[0m[2m:[0m Sync broadcaster and periodic polling disabled
+[2m2026-11-15T12:25:13.718620Z[0m [32m INFO[0m [2mtag_server[0m[2m:[0m **********************************************************
+[2m2026-11-15T12:25:13.718635Z[0m [32m INFO[0m [2mtag_server[0m[2m:[0m * Tag-Server Started Successfully!                       *
+[2m2026-11-15T12:25:13.718638Z[0m [32m INFO[0m [2mtag_server[0m[2m:[0m * Model:   Sparse Database (Auto-Pruning items)          *
+[2m2026-11-15T12:25:13.718641Z[0m [32m INFO[0m [2mtag_server[0m[2m:[0m * Listing: Hybrid Real-time merging (FS + DB)            *
+[2m2026-11-15T12:25:13.718643Z[0m [32m INFO[0m [2mtag_server[0m[2m:[0m * Ident:   Relative Path-based (Global Identifiers)      *
+[2m2026-11-15T12:25:13.718645Z[0m [32m INFO[0m [2mtag_server[0m[2m:[0m * Status:  Ready for TUI connection on 127.0.0.1:58607          *
+[2m2026-11-15T12:25:13.718648Z[0m [32m INFO[0m [2mtag_server[0m[2m:[0m **********************************************************
+[2m2026-11-15T12:25:13.718674Z[0m [32m INFO[0m [2mtag_server[0m[2m:[0m Listening on 127.0.0.1:58607
+[2m2026-11-15T12:25:14.598910Z[0m [32m INFO[0m [2mtag_server[0m[2m:[0m Shutdown signal received, exiting...

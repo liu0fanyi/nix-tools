@@ -1,0 +1,74 @@
+{
+  "system_candidate": "/nix/store/6sks5npa9nplixwznxwhvd3x8g9zjl3l-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "same_worktree_baseline": "/nix/store/jarlx9abjflr3lh21affrw8hjvvp3gz2-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "home_candidate": "/nix/store/plzbfq2qpff84qr0mp4imsg6qcyyqfzp-home-manager-generation",
+  "only_lock_node_changed": [
+    "tag-browser-src"
+  ],
+  "unchanged_home_manager_generation": true,
+  "native_templates_equal": {
+    "tag-native-workspace.service": "fc46ddf3a8f1e856810a4fa9aba5c54519d670a48f33919081e265958118c63a",
+    "tag-all-core.service": "c185a69d7ae258b8369e8bd67bb46a4d6044af8452dfdc9cd8fdb7c4f89c17a9",
+    "tag-all-tools.service": "4a80667a62f4550fb729c76a8f33a18e60878b2dbbcf8357be1d6b3536883ded",
+    "tag-native-files.service": "9253be407af0b894c818bbdd24e499cd142f22b82fec455b66b9598233a891f8",
+    "tag-native-stack.target": "7942389d5c5bb00d5a12bf82342d4484879d65c656e12eff547d634f226e037b"
+  },
+  "browser": "/nix/store/h1kjd1vq229pksllx3jn6219z3l7bvx4-tag-browser-0.1.0",
+  "system_switch_executed": false,
+  "activation_executed": false,
+  "release_tag": "v0.1.0-nix.119",
+  "release_url": "https://github.com/liu0fanyi/tag-browser/releases/tag/v0.1.0-nix.119",
+  "ci_run": "https://github.com/liu0fanyi/tag-browser/actions/runs/43711153240",
+  "ci_conclusion": "success",
+  "cache_package_matches_local": true,
+  "shared_ui_sha256": "edf93266bd88e17ae2a7bba693073844bc715f7b992ff3110f38e187fa2f2287",
+  "activation": {
+    "pc": {
+      "scope": "pc",
+      "frontend": "/nix/store/60mgqipwfk2phv1v3bq0wp2wld72qxd9-dufs-plus-nix119-pc-frontend",
+      "backend": "/nix/store/q6hwg8nipww5zcg4zhslrvz29zn89y8c-tag-all-workspace-native-0.1.0",
+      "actual_process_and_frontend_verified": true,
+      "all_assets_verified": 767,
+      "authentication_probes_passed": true,
+      "served_index_verified": true,
+      "backup_integrity_and_sha_verified": true,
+      "database_inode_preserved": true,
+      "upholds_restored": true,
+      "rollback_inputs_valid_after_activation": true,
+      "database_restored": false
+    },
+    "nuc": {
+      "scope": "nuc",
+      "frontend": "/nix/store/hx80qmirk31fhbnxyb3523729mh9x75d-dufs-plus-nix119-nuc-frontend",
+      "backend": "/nix/store/q6hwg8nipww5zcg4zhslrvz29zn89y8c-tag-all-workspace-native-0.1.0",
+      "actual_process_and_frontend_verified": true,
+      "all_assets_verified": 785,
+      "authentication_probes_passed": true,
+      "served_index_verified": false,
+      "backup_integrity_and_sha_verified": true,
+      "database_inode_preserved": true,
+      "upholds_restored": true,
+      "rollback_inputs_valid_after_activation": true,
+      "database_restored": false
+    }
+  },
+  "firefox_rebuilt": false,
+  "backend_package": "/nix/store/q6hwg8nipww5zcg4zhslrvz29zn89y8c-tag-all-workspace-native-0.1.0",
+  "public_auth_probes": {
+    "nas.wttliou.top": 302,
+    "workcdn.wttliou.top": 401
+  },
+  "external_change_paths_untouched": [
+    "AGENTS.md",
+    "home-manager/nix_modules/helix.nix",
+    "home-manager/patches/helix-softwrap-double-width.patch",
+    "girl.md",
+    "ref/colorchecker24/"
+  ],
+  "daily_profile_accessed": false,
+  "desktop_ui_override": {
+    "schema": 1,
+    "current": null,
+    "previous": null
+  }
+}

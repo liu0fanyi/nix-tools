@@ -1,0 +1,4 @@
+Listening on /tmp/native-bundle-4sca_b8z/runtime/files.sock
+2026-11-15T20:24:02+08:00 INFO - - "GET /library/book.md" 200
+2026-11-15T20:24:06+08:00 INFO - - "GET /library/book.md?v=0&" 200
+2026-11-15T20:24:06+08:00 INFO - - "GET /library/book.md?v=0&" 200

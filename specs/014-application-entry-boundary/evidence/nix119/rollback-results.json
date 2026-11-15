@@ -1,0 +1,22 @@
+{
+  "cases": [
+    "fresh_editor_confirmation_required_before_mutation",
+    "actual_new_cli_deletes_owned_file_and_metadata_without_post_delete_path_error",
+    "real_update_and_explicit_rollback_keep_new_database_writes_and_inode",
+    "post_start_failure_restores_old_program_and_keeps_current_data",
+    "controller_sigkill_after_install_recovers_old_program_without_state_restore",
+    "unrelated_unit_drift_refused_before_stop",
+    "active_queue_refused_without_stopping_current_service"
+  ],
+  "actual_old_and_new_packaged_programs": true,
+  "actual_owned_user_unit": true,
+  "actual_upholds_target_and_interrupted_recovery": true,
+  "latest_writes_retained_on_rollback": true,
+  "database_inode_preserved": true,
+  "owned_units_and_files_cleaned": true,
+  "production_access": false,
+  "production_activated": false,
+  "manager_package": "/nix/store/ff1hjnr0ja6g6fx3nkdh8mjz9ggzr8fp-tag-native-release-manager",
+  "old_package": "/nix/store/fmg54mslz4f4ql0q8rwwav6l9xb3bvg4-tag-all-workspace-native-0.1.0",
+  "new_package": "/nix/store/q6hwg8nipww5zcg4zhslrvz29zn89y8c-tag-all-workspace-native-0.1.0"
+}

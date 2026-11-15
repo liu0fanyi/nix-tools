@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "package": "/nix/store/q6hwg8nipww5zcg4zhslrvz29zn89y8c-tag-all-workspace-native-0.1.0",
+  "frontend": "/nix/store/60mgqipwfk2phv1v3bq0wp2wld72qxd9-dufs-plus-nix119-pc-frontend",
+  "manager": "/nix/store/ff1hjnr0ja6g6fx3nkdh8mjz9ggzr8fp-tag-native-release-manager",
+  "file_server_package": "/nix/store/ph17xq80q9by2vmivfvm97a1729q4cgl-dufs-0.46.0",
+  "backend_proof": "/data/project/tag-all/specs/039-demand-search/nix119-package-results.json",
+  "frontend_proof": "/data/project/dufs-plus/specs/045-shared-workspace-ui/nix119-pc-frontend-proof.json",
+  "tag_source": "/data/project/tag-all",
+  "dufs_source": "/data/project/dufs-plus",
+  "browser_source": "/data/project/tag-browser"
+}

@@ -1,0 +1,137 @@
+{
+  "kind": "historical-acceptance-archive",
+  "records_unmodified": true,
+  "fresh_release_requires_current_revalidation": true,
+  "items": [
+    {
+      "original_path": "/tmp/nix119-release/pc-bundle-config.json",
+      "archived_path": "evidence/nix119/pc-bundle-config.json",
+      "sha256": "76071309e192feac3baf4061568be72ef99207e181cc9665b99e4213834ccfc4"
+    },
+    {
+      "original_path": "/tmp/nix119-release/pc-bundle.json",
+      "archived_path": "evidence/nix119/pc-bundle.json",
+      "sha256": "da7dda19930961bc5974da701c74a20fff278556b0d87b60f6f05ad9cbc4b9c7"
+    },
+    {
+      "original_path": "/tmp/nix119-release/pc-bundle-results.json",
+      "archived_path": "evidence/nix119/pc-bundle-results.json",
+      "sha256": "bf13d461348efeffdb99795d66d6180b53bd2ffce35449b029aa26c3f563d2da"
+    },
+    {
+      "original_path": "/tmp/nix119-release/nuc-bundle-config.json",
+      "archived_path": "evidence/nix119/nuc-bundle-config.json",
+      "sha256": "18aadd1a7c8e3c5a2b4e61c73d2b684c119a5bec33981e00226b7a524684f091"
+    },
+    {
+      "original_path": "/tmp/nix119-release/nuc-bundle.json",
+      "archived_path": "evidence/nix119/nuc-bundle.json",
+      "sha256": "b2f1728e308d0e9ca2c82452b8e6b980ed0cb753e967d5f4f1abdf2ddd10a402"
+    },
+    {
+      "original_path": "/tmp/nix119-release/nuc-bundle-results.json",
+      "archived_path": "evidence/nix119/nuc-bundle-results.json",
+      "sha256": "099b2e4106dd58be38062a5bba2ff78b7e1534f14a47214a4f0ceab5b424262c"
+    },
+    {
+      "original_path": "/tmp/nix119-release/pc-prepare.json",
+      "archived_path": "evidence/nix119/pc-prepare.json",
+      "sha256": "f0617ed65b59e47bdb082a66800beac4dd74b251a66cb0548d69806b792749d6"
+    },
+    {
+      "original_path": "/tmp/nix119-release/nuc-prepare.json",
+      "archived_path": "evidence/nix119/nuc-prepare.json",
+      "sha256": "481a4504ca6df3ae9877c9a0e7e443e816bf6e0db147dc8e96331c9b0abf7aa6"
+    },
+    {
+      "original_path": "/tmp/nix119-release/nuc-apply.json",
+      "archived_path": "evidence/nix119/nuc-apply.json",
+      "sha256": "d700528d36aae6d89e2df80ed059d5b814587e4aa3e3e14a619366f27b46e9c9"
+    },
+    {
+      "original_path": "/tmp/nix119-release/pc-live.log",
+      "archived_path": "evidence/nix119/pc-live.log",
+      "sha256": "8cc7f0589be5ff1a3509f6124e819afc86997cc920402f6ed475829807b3c99e"
+    },
+    {
+      "original_path": "/tmp/nix119-release/nuc-live.json",
+      "archived_path": "evidence/nix119/nuc-live.json",
+      "sha256": "30e4a4035ee390177adb3ac54a3d2c28fe09512239fd74c1f59b0e52e6a44508"
+    },
+    {
+      "original_path": "/tmp/nix119-release/public-auth-probes.json",
+      "archived_path": "evidence/nix119/public-auth-probes.json",
+      "sha256": "77e6d0369fa800b838adadcc05df5d162553f93707aeedcf523a41d5f40fb600"
+    },
+    {
+      "original_path": "/tmp/nix119-release/live-search-capabilities.json",
+      "archived_path": "evidence/nix119/live-search-capabilities.json",
+      "sha256": "6ae4d40e75edbea857e0827eae275f22a66798a8daf5307d666a8ca7182d8414"
+    },
+    {
+      "original_path": "/tmp/nix119-release/rollback-results.json",
+      "archived_path": "evidence/nix119/rollback-results.json",
+      "sha256": "018ec3964b9f59f45dfbbdb771e6b8149fcf92906421372da3e77d86a15aff8f"
+    },
+    {
+      "original_path": "/tmp/nix119-release/check-rollback.py",
+      "archived_path": "evidence/nix119/check-rollback.py",
+      "sha256": "0e2a3e82ab43b02399402f73688cb6b0655eef54228e10371b413286a570ce0a"
+    },
+    {
+      "original_path": "/tmp/nix119-release/transfer-results.json",
+      "archived_path": "evidence/nix119/transfer-results.json",
+      "sha256": "f2bdf38db6eef41e0922863b75174a388a5f0b95d7a0d34d1e2369ce9210a463"
+    },
+    {
+      "original_path": "/tmp/nix119-release/backend-transfer-results.json",
+      "archived_path": "evidence/nix119/backend-transfer-results.json",
+      "sha256": "429e0d478f93cdeb6498628fe69bba7c6bbd39a1bed5f45146426816ca62cdc0"
+    },
+    {
+      "original_path": "/tmp/nix119-release/desktop-ui-selection.json",
+      "archived_path": "evidence/nix119/desktop-ui-selection.json",
+      "sha256": "a65f004273de40a64884e73b43f937f47c5779f8f815ced8c3e9b5425c95e727"
+    },
+    {
+      "original_path": "/tmp/nix119-release/pc-bundle-results-files.log",
+      "archived_path": "evidence/nix119/pc-bundle-results-files.log",
+      "sha256": "0a459ea2b52c12d9ea1782560b3844d40d0fe5e7feb7a3d02e6af00b8ab63d3e"
+    },
+    {
+      "original_path": "/tmp/nix119-release/pc-bundle-results-initial.log",
+      "archived_path": "evidence/nix119/pc-bundle-results-initial.log",
+      "sha256": "6b3b349355da0bba1eba2894622b0d2533e9752be3fc54527cbbef012aae1438"
+    },
+    {
+      "original_path": "/tmp/nix119-release/pc-bundle-results-canonical.log",
+      "archived_path": "evidence/nix119/pc-bundle-results-canonical.log",
+      "sha256": "33a32b4f91f7963f5a31f7a72373f84f8c5418fa459d76f5c7ab4b2d13ea7516"
+    },
+    {
+      "original_path": "/tmp/nix119-release/pc-bundle-results-browser.log",
+      "archived_path": "evidence/nix119/pc-bundle-results-browser.log",
+      "sha256": "864218caba6f70028de97a857af7c743eee5045768db5fd2b45aa34d74988596"
+    },
+    {
+      "original_path": "/tmp/nix119-release/nuc-bundle-results-files.log",
+      "archived_path": "evidence/nix119/nuc-bundle-results-files.log",
+      "sha256": "3678f7584c886e7393926e939e4ea21deb65e7798a155d53b74f6a3934663b90"
+    },
+    {
+      "original_path": "/tmp/nix119-release/nuc-bundle-results-initial.log",
+      "archived_path": "evidence/nix119/nuc-bundle-results-initial.log",
+      "sha256": "78dc154b3407b466f99dcf57a855bcf46869730dcf417f17bb19f8897376d48b"
+    },
+    {
+      "original_path": "/tmp/nix119-release/nuc-bundle-results-canonical.log",
+      "archived_path": "evidence/nix119/nuc-bundle-results-canonical.log",
+      "sha256": "795a0996f0c188faffb99d2a992d8b08fc5267a30cc3d1ebc63664a80337c6c1"
+    },
+    {
+      "original_path": "/tmp/nix119-release/nuc-bundle-results-browser.log",
+      "archived_path": "evidence/nix119/nuc-bundle-results-browser.log",
+      "sha256": "864218caba6f70028de97a857af7c743eee5045768db5fd2b45aa34d74988596"
+    }
+  ]
+}
