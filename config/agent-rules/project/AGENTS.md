@@ -277,3 +277,7 @@ just deploy
 否则会重新引入该应用要消除的启动等待。
 
 三个旧独立工程 esp32-recorder-bean、esp32-multi-timer、esp32-mp3-player 已按用户授权退役；本地与同名 GitHub 仓库删除以 esp32-device-bean/specs/003-retire-standalone 为准，恢复入口为该仓 docs/LEGACY_ARCHIVE.md。不要重新创建旧活动计划，公共 SDK 与已发布制品不随源码仓退役删除。
+
+## 统一硬件资料入口
+
+自制硬件设计、嘉立创工程、物料、装配说明及其生成脚本已统一到独立私有仓库 `/data/project/hardware`，当前EDA工程在其 `eda/`，各设备说明和导出按 `device-bean/`、`writer/`、`camera/`、`hifi/`、`observation-terminal/` 分组，统一采购源为 `docs/parts/`。旧 `esp32-focus-writer-midi` 是写作机软件仓的worktree，不再作为跨设备硬件权威源，也不得在旧路径重新生成指南或物料副本。软件通过各仓 `HARDWARE.md` 相对链接关联，功能/驱动/板级适配仍归软件仓；硬件不是固件构建依赖。公共SDK和已有厂商参考仍沿用原权威位置，不因硬件迁移复制。学习地图只链接Tag Browser PC节点的对应硬件目录，不另发布装配页静态副本。

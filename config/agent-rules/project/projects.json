@@ -232,6 +232,12 @@
       "root": "/data/project/trime-mobile",
       "aliases": [],
       "category": "应用与工具"
+    },
+    {
+      "name": "hardware",
+      "root": "/data/project/hardware",
+      "aliases": [],
+      "category": "硬件"
     }
   ]
 }
