@@ -603,3 +603,11 @@ nix.116正式包与可信缓存发布通过，固定Firefox引擎，CI与本地�
 ## Tag All 删除后清理修复交付
 
 038新完整基线及当前程序通过矩阵/源码/宿主隔离、包装6组/双栈7组、7组实际更新回退和嵌套文件/sidecar/临时DB清理验证。014原管理器已准备、预演并激活PC及NUC两区b012包，117前端与处理归档保持；实际进程、认证、备份完整性、DB inode及回退输入核验通过，NAS匿名HEAD仍302到Authelia/private no-store。未重删用户文件、恢复数据库、system switch或改变宿主配置，外部Helix两文件保持。证据[tag-all-deletion-backend-results.json](tag-all-deletion-backend-results.json)及产品038权威回执；前文117交付时后端尚旧的历史记录保留。
+
+
+## Android 051 局域网配对现网补齐
+
+- [x] 定位：已安装 NUC Caddy 保留旧 peer 白名单，缺少 outbound incoming/poll；手机已通过挑战并保留待核对申请，不能直接重试。
+- [x] 增加现用原生配置的精确补丁：只插入 nuc.local、LAN 来源、POST 的两个路径；保留全部原配置与认证，不部署 EdgeOne，不修改公网入口。
+- [x] 8项合成配置边界测试、实际 Caddy 校验及空载荷422拒绝；原配置私有备份后受控reload，inode/600/属主保持；公网Host、错误方法和网页管理拒绝与之前相同。见[现网回执](android-lan-pairing-ingress-results.json)。
+- [x] 核对并取消过期旧申请，新邀请经正常登录NUC页面核对完整手机指纹后批准，手机签名确认后列出PC及NUC；真实同步/目录验收由产品051/S2b继续持有，不另计步。

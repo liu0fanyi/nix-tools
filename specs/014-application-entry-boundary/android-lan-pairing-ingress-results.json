@@ -1,0 +1,41 @@
+{
+  "scope": "Tag Browser051 S2b LAN only",
+  "tests_passed": 8,
+  "actual_caddy_candidate_validated": true,
+  "actual_caddy_reload_succeeded": true,
+  "config_inode_mode_uid_gid_preserved": true,
+  "original_sha256": "5b1085b8c24e80414ea479a82c870ec4bf4ab20856fec957bfe893529ce44d66",
+  "installed_sha256": "313320bbf8b18e97634196b06410043710873008e5f7ad682a8af6e04934524e",
+  "allowed_host": "nuc.local",
+  "allowed_method": "POST",
+  "allowed_source": "existing LAN CIDRs",
+  "added_paths": [
+    "/tag-api/v1/peers/outbound/incoming",
+    "/tag-api/v1/peers/outbound/poll"
+  ],
+  "post_invalid_body_status": 422,
+  "wrong_method_status_before_after": [
+    400,
+    400
+  ],
+  "public_host_incoming_status_before_after": [
+    401,
+    401
+  ],
+  "browser_admin_status_before_after": [
+    400,
+    400
+  ],
+  "browser_root_status_before_after": [
+    400,
+    400
+  ],
+  "all_existing_configuration_bytes_preserved": true,
+  "edgeone_changed": false,
+  "backend_or_browser_rebuilt": false,
+  "private_backup": "/home/liou/.local/share/dufs-plus/runtime/home/.lan-pairing-20261115",
+  "actual_phone_proposal_delivered": true,
+  "nuc_approved_exact_authorized_phone_fingerprint": true,
+  "phone_confirmed_nuc_in_paired_list": true,
+  "direct_sync_and_file_read": "pending product acceptance"
+}

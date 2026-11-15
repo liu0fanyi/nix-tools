@@ -162,3 +162,39 @@ def candidate_readonly_transport(original):
     if original.count(target) != 1 or 'server caddy_https caddy:5443 check' not in original:
         raise ValueError('Unknown readonly dual-protocol transport')
     return original.replace(target, 'server native_http host.containers.internal:18182 check')
+
+
+def lan_pairing_ingress(original):
+    """Add only outbound enrollment delivery/poll to an installed native LAN site.
+
+    Preserve every existing byte and authentication rule. This is deliberately
+    separate from the initial whole-site migration and from public mobile access.
+    """
+    marker = '@node_peer path ' + PEER_PATHS + '\n'
+    source = '@node_source remote_ip 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8 127.0.0.0/8 ::1/128'
+    addition = ("# LAN-only outbound pairing; native backend verifies proof and approval.\n"
+        "@lan_outbound_pairing {\n"
+        "host nuc.local\nmethod POST\n"
+        "remote_ip 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8 127.0.0.0/8 ::1/128\n"
+        "path /tag-api/v1/peers/outbound/incoming /tag-api/v1/peers/outbound/poll\n}\n"
+        "handle @lan_outbound_pairing {\n" + proxy('unix//run/tag-native/private-peer.sock') + "\n}\n")
+    candidates=[]
+    for block in blocks(original):
+        header=block.split('{',1)[0].strip()
+        if header.startswith('https://nuc.local:5009,'):
+            candidates.append(block)
+    if len(candidates) != 1:
+        raise ValueError('Exactly one installed native NUC private site required')
+    block=candidates[0]
+    if (block.count(marker) != 1 or block.count(source) != 1 or
+            'forward_auth @browser_auth' not in block or
+            'unix//run/tag-native/private-web.sock' not in block or
+            '@lan_outbound_pairing' in original or
+            '/tag-api/v1/peers/outbound/incoming' in block or
+            '/tag-api/v1/peers/outbound/poll' in block):
+        raise ValueError('Unexpected installed native NUC pairing boundary')
+    changed=block.replace(marker, addition+marker, 1)
+    result=original.replace(block, changed, 1)
+    if result.replace(addition, '', 1) != original:
+        raise ValueError('Unowned ingress bytes changed')
+    return result

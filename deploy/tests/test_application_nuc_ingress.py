@@ -39,6 +39,29 @@ class EntryTests(unittest.TestCase):
         self.assertIn('header_up -X-Tag-Admin-Token',candidate)
         self.assertIn('header_up -Remote-User',candidate)
 
+    def test_lan_pairing_patch_preserves_installed_auth_and_other_sites(self):
+        # Recreate the installed pre-mobile native candidate, without credentials.
+        native,_=entry.candidate_ingress(self.original,self.config)
+        begin=native.index('# These fixed mobile operations')
+        end=native.index('@node_peer path',begin)
+        installed=native[:begin]+native[end:]
+        changed=entry.lan_pairing_ingress(installed)
+        begin=changed.index('# LAN-only outbound pairing;')
+        end=changed.index('@node_peer path',begin)
+        self.assertEqual(changed[:begin]+changed[end:],installed)
+        route=changed[begin:end]
+        for required in ('host nuc.local','method POST','remote_ip 192.168.',
+                         '/tag-api/v1/peers/outbound/incoming /tag-api/v1/peers/outbound/poll',
+                         'header_up -Remote-User','header_up -X-Tag-Admin-Token',
+                         'unix//run/tag-native/private-peer.sock'):
+            self.assertIn(required,route)
+        self.assertNotIn('nas.wttliou.top',route)
+        self.assertNotIn('private-web.sock',route)
+        for invalid in (changed,native,installed.replace('forward_auth @browser_auth','forward_auth @unknown'),
+                        installed.replace('@node_source remote_ip','@unknown_source remote_ip'),
+                        installed+installed,installed.replace('https://nuc.local:5009,','https://wrong.local:5009,')):
+            with self.assertRaises(ValueError):entry.lan_pairing_ingress(invalid)
+
     def test_missing_duplicate_and_already_converted_fail_closed(self):
         candidate, _ = entry.candidate_ingress(self.original, self.config)
         for text in (candidate, self.original.replace('http://:5006','http://:5106'), self.original + '\nhttp://:5006 { respond 200 }'):
