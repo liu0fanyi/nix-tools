@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "status": "activated_pc_and_nuc",
+  "backend": "/nix/store/46n8qxrx6k1xzsi34lydiyk92pivfn0q-tag-all-workspace-native-0.1.0",
+  "frontend": {
+    "pc": {
+      "frontend": "/nix/store/p2b7nx6dfzl0xwymf1zx24gaqjfhbkp4-dufs-plus-pdf-cache-pc-frontend",
+      "previous": "/nix/store/0ba3fadmpzhi7lk46y483xqs0pq8k0kj-dufs-plus-nix130-pc-frontend",
+      "index_sha256": "429b4b6a0cd5d357c69af5abfee51391545037da1e3924364d070a1faffcecbd",
+      "file_count": 782,
+      "protected_unchanged": true,
+      "proof": "/data/project/dufs-plus/specs/002-reading-and-media/pdf-cache-pc-frontend-proof.json"
+    },
+    "nuc": {
+      "frontend": "/nix/store/axcr92jn94n1m4b4kz6sn4qj7h4ivf96-dufs-plus-pdf-cache-nuc-frontend",
+      "previous": "/nix/store/pk9gfm2p08jrk4bk0g46aawyiri75pms-dufs-plus-nix130-nuc-frontend",
+      "index_sha256": "429b4b6a0cd5d357c69af5abfee51391545037da1e3924364d070a1faffcecbd",
+      "file_count": 800,
+      "protected_unchanged": true,
+      "proof": "/data/project/dufs-plus/specs/002-reading-and-media/pdf-cache-nuc-frontend-proof.json"
+    }
+  },
+  "live": {
+    "pc": {
+      "scope": "pc",
+      "frontend": "/nix/store/p2b7nx6dfzl0xwymf1zx24gaqjfhbkp4-dufs-plus-pdf-cache-pc-frontend",
+      "backend": "/nix/store/46n8qxrx6k1xzsi34lydiyk92pivfn0q-tag-all-workspace-native-0.1.0",
+      "actual_process_and_frontend_verified": true,
+      "all_assets_verified": 782,
+      "authentication_probes_passed": true,
+      "served_index_verified": true,
+      "backup_integrity_and_sha_verified": true,
+      "database_inode_preserved": true,
+      "upholds_restored": true,
+      "rollback_inputs_valid_after_activation": true,
+      "database_restored": false
+    },
+    "nuc": {
+      "scope": "nuc",
+      "frontend": "/nix/store/axcr92jn94n1m4b4kz6sn4qj7h4ivf96-dufs-plus-pdf-cache-nuc-frontend",
+      "backend": "/nix/store/46n8qxrx6k1xzsi34lydiyk92pivfn0q-tag-all-workspace-native-0.1.0",
+      "actual_process_and_frontend_verified": true,
+      "all_assets_verified": 800,
+      "authentication_probes_passed": true,
+      "served_index_verified": false,
+      "backup_integrity_and_sha_verified": true,
+      "database_inode_preserved": true,
+      "upholds_restored": true,
+      "rollback_inputs_valid_after_activation": true,
+      "database_restored": false
+    }
+  },
+  "activation_seconds": {
+    "pc": 3.484,
+    "nuc": 18.348
+  },
+  "full_matrix_steps": 39,
+  "combination_cases_per_scope": 12,
+  "rollback_cases": 7,
+  "public_authentication": {
+    "nuc_lan": {
+      "status": 401,
+      "basic_challenge": true,
+      "redirect_to_authelia": false,
+      "cache_control": null
+    },
+    "nuc_readonly": {
+      "status": 401,
+      "basic_challenge": true,
+      "redirect_to_authelia": false,
+      "cache_control": null
+    },
+    "nas": {
+      "status": 302,
+      "basic_challenge": false,
+      "redirect_to_authelia": true,
+      "cache_control": "private, no-store"
+    },
+    "workcdn": {
+      "status": 401,
+      "basic_challenge": true,
+      "redirect_to_authelia": false,
+      "cache_control": null
+    }
+  },
+  "product_authority": "/data/project/tag-all/specs/024-native-core-release/pdf-cache-release-results.json",
+  "system_switched": false,
+  "browser_input_changed": false,
+  "firefox_recompiled": false,
+  "android_updated": false,
+  "external_helix_and_agent_changes_excluded": true
+}

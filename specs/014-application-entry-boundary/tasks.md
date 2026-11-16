@@ -661,3 +661,7 @@ nix.126已发行并更新消费者：[当前安装与实际交互证明](tag-bro
 [消费者回执](tag-browser-nix130-install-results.json)：仅更新tag-browser-src到6aed302，CI包与本机路径一致且远端可信签名通过，实际Firefox所有者HTTP/根恢复及完整liu-bigpc系统构建成功，未system switch。PC/NUC按原组合发布器各12项检查、新prepare与实际备份激活完成；277输入完整矩阵复用，源码/用户资料/六类独立应用保护保持。唯一交付任务及正常账号PDF复测归Tag Browser049，配套事实归DUFS002/tag-all024；不补勾旧手机/内核暂缓项。既有Helix、AGENTS、girl.md和参考目录的外部改动未纳入本提交。
 
 [nix.131最终资源回执](tag-browser-nix131-install-results.json)：补齐同窗NUC/NAS认证互不覆盖；旧130合成受保护请求401、新正式包200，CI/签名/完整PC系统候选通过，仅更新同一浏览器输入。两端服务仍沿上述130激活事实，没有再次重启或重编后端；用户最后手动rerun并完整退出重开。
+
+### PDF页数缓存及服务器首屏配套交付
+
+[实际回执](pdf-cache-release-results.json)：沿Tag All024/PFR唯一计数，当前39步完整矩阵/正式包双栈、原管理器7项回退与两端各12项组合通过后，原管理器已备份激活PC/NUC；程序/782及800资源、认证边界、备份SHA和DB inode/回退输入核验通过。Tag Browser输入与Firefox不变，Android不更新，无system switch、无数据库恢复、独立应用不变；既有Helix/AGENTS/girl.md/参考资料改动未纳入。已打开PDF刷新即可加载新资源，正常账号实际阅读体验仍待用户复测。
