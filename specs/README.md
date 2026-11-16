@@ -28,12 +28,12 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-16 · Use verified nix.127 browser recovery release · `8ca241a`
+- 2026-11-16 · Use verified nix.126 interactive local browsing sidebar · `50253c0`
 - 2026-11-16 · Install verified nix.125 shared startup fix without changing the browser engine · `58e798a`
 - 2026-11-16 · 清空回收站并回收旧验收渲染产物 · `b8319ea`
 - 2026-11-16 · 回收闲置构建缓存并核对镜像与系统回滚保留 · `8f4fb74`
 - 2026-11-16 · Update browser startup release overview · `68ca8ce`
 - 2026-11-16 · Use local-first nix.124 browser and validate full-matrix bundle evidence · `bc6e3ee`
 - 2026-11-16 · Update nix.121 delivery overview · `59a8859`
-- 2026-11-16 · Use verified nix.121 browser and preserve paired workspace backend · `13ccd70`
-- 2026-11-15 · Update verified nix.120 consumer and activation overview · `d660ca8`
 <!-- recent-commits:end -->
