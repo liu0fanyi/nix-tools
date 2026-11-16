@@ -15,3 +15,7 @@ check先重新核对所有绑定，真实运行后写result；只有全部必需
 ## 可选独立学习地图登记
 
 组合配置可显式提供bool `register_learning_map`，省略或false保持旧行为。true仅允许NUC：组合夹具在选定不可变前端的learning-map目录存在时配置同名应用，prepare向已选管理器传递`--register-learning-map`；生产根仍由017管理器固定为private/apps/learning-map，不从该字段接受路径或任意应用名。标志和控制代码均参与组合身份，改变后必须重新创建与验证，不复用旧组合报告。
+
+## 已完整验证的后端候选
+
+本轮允许显式full-matrix包装证明；必须绑定同一完整tester ID/实际CLI SHA、39步完整矩阵、隔离运行与源码核验完成，且包装/完整证明的全部编译输入均等于当前release_policy inventory。不把full伪装为增量，不接受缺门槛、未知kind或源码漂移；原增量验证保持。两种后端均继续完整实际组合和原更新回退门槛。

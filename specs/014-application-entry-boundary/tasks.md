@@ -631,3 +631,7 @@ nix.120发行交付完成，剩余0项：[实际安装激活回执](tag-browser-
 ## Tag Browser nix.121 前端与资源包发行（2026-11-16）
 
 [交付回执](tag-browser-nix121-install-results.json)：固定引擎4vad正式包与缓存一致，PC/NUC前端已经原管理器备份激活；现用x8后端、认证、配对、数据库保持。两端组合各12项、7项实际更新回退及正式Firefox原正文通过。仅tag-browser-src锁节点更新到9f68b8f，同一工作树Home Manager派生物求值不变；未构建整套系统/HM、未system switch或操作手机，外部AGENTS/Helix改动保留。用户手动rerun、完整重开和工作区刷新后做真实体验验收。
+
+## nix.124 启动修正及配套发行
+
+[正式浏览器/消费者回执](tag-browser-nix124-install-results.json)：本机资料来源与超时恢复修正已通过实际隔离Firefox，正式缓存与本机pfnk包摘要/签名一致；只更新tag-browser-src到ba1badb，实际PC toplevel构建完成，同一工作树HM派生物不变。未system switch或关闭日常浏览器。原本中间nix122/123均未激活。后端完整矩阵和双端前端/后端组合激活尚在进行，不把浏览器发行等同服务已切换；保护AGENTS/Helix暂存修改。

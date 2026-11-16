@@ -72,6 +72,47 @@ class BundleTests(unittest.TestCase):
         proof=specs/'proof.json';proof.write_text(__import__('json').dumps({'frontend':'/fixed','source_sha256':{'source.rs':'old'},'built_artifacts_sha256':{'index.html':'old'}}))
         with self.assertRaisesRegex(ValueError,'source drift'):b.frontend({'dufs_source':str(self.root),'frontend_proof':str(proof),'frontend':'/fixed'})
 
+class BackendEvidenceTests(unittest.TestCase):
+    def test_full_and_incremental_bind_exact_source_and_packaged_cli(self):
+        import json, sys, types
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary);specs=root/'specs';specs.mkdir()
+            package=root/'package';(package/'libexec').mkdir(parents=True)
+            (package/'libexec/tag-server-workspace').write_text('actual binary')
+            sha=b.digest(package/'libexec/tag-server-workspace');source={'src/main.rs':'a'*64}
+            current={'full_tester_verified':True,'isolated_runtime_verified':True,
+                     'sources_verified_in_tester':True,'full_tester_steps':39,
+                     'source_manifest':source,'tester_image_id':'b'*64,'binary_sha256':sha}
+            full=specs/'full.json';proof=specs/'package.json'
+            packed={'verification_kind':'full-matrix','package':str(package),'application_entry':True,
+                    'full_tester_reused_from':'specs/full.json','source_manifest':source,
+                    'tester_image_id':'b'*64,'artifact_image_id':'b'*64,'binary_sha256':sha}
+            config={'tag_source':str(root),'backend_proof':str(proof),'package':str(package)}
+            policy=types.ModuleType('release_policy');policy.inventory=Mock(return_value=source)
+            policy.verify_incremental=Mock(return_value={'binary_sha256':sha})
+            def write(c=current,p=packed):
+                full.write_text(json.dumps(c));proof.write_text(json.dumps(p))
+            with patch.dict(sys.modules,{'release_policy':policy}):
+                write();self.assertEqual(b.backend(config)['binary_sha256'],sha)
+                policy.verify_incremental.assert_not_called()
+                for key,value in [('full_tester_verified',False),('isolated_runtime_verified',False),
+                                  ('sources_verified_in_tester',False),('full_tester_steps',38),
+                                  ('source_manifest',{}),('tester_image_id','c'*64),('binary_sha256','d'*64)]:
+                    with self.subTest(evidence=key):
+                        write({**current,key:value})
+                        with self.assertRaises(ValueError):b.backend(config)
+                for key,value in [('verification_kind','unknown'),('package','/other'),('application_entry',False),
+                                  ('source_manifest',{}),('artifact_image_id','c'*64),('binary_sha256','d'*64)]:
+                    with self.subTest(package=key):
+                        write(current,{**packed,key:value})
+                        with self.assertRaises(ValueError):b.backend(config)
+                write();policy.inventory.return_value={'new.rs':'f'*64}
+                with self.assertRaisesRegex(ValueError,'inputs drifted'):b.backend(config)
+                write(current,{**packed,'verification_kind':'native-incremental-v1',
+                               'incremental_verification_from':'specs/full.json'})
+                self.assertEqual(b.backend(config)['binary_sha256'],sha)
+                policy.verify_incremental.assert_called_once_with(root,current)
+
 class FixtureApplicationTests(unittest.TestCase):
     def test_reserved_assets_have_fixed_separate_roots(self):
         import sys, tomllib

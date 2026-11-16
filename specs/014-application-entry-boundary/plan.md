@@ -396,3 +396,5 @@ Constitution Check：已核对工作区、本仓与产品AGENTS／宪法；本�
 ## Tag Browser051配套范围
 
 仅修改application_nuc_ingress及既有Edge函数的精确传输匹配；原渲染器的LAN限制保留。生成源站候选、保留未拥有站点及清除身份头，沿原发布事务预演，不系统switch。先验证tag-all原生peer入口强制签名及重放，再允许组合发布；Edge控制台无自动部署能力时交付具体可审查文件，不要求用户重新授权已确认范围。Constitution Check：PC唯一源码、认证分层、无私有数据上传／Bevy覆盖，现有Helix改动不纳入提交或候选。
+
+nix.124消费者宪法核对：修复桌面个人provider沿旧NUC设置导致共享浏览拒绝启动，既有远端凭据/偏好不复制或迁移；本机资料源与远端内容分离。正式包/签名缓存/完整PC构建核对；仅浏览器锁与本轮证明提交，不system switch，不关闭用户窗口/读取日常profile。配套后端full包装须先完成矩阵、组合与回退门槛，不能因启动错误提前降门槛。

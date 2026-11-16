@@ -66,14 +66,28 @@ def module(name,path):
 
 def backend(config):
     root=Path(config['tag_source']); proof=inside(config['backend_proof'],root/'specs');p=read(proof)
-    if p.get('verification_kind')!='native-incremental-v1':
-        raise ValueError('This initial lane requires the explicit 037 incremental package proof')
     if p['package']!=config['package'] or p.get('application_entry') is not True:
         raise ValueError('Backend package proof mismatch')
-    evidence=inside(root/p['incremental_verification_from'],root/'specs')
     sys.path.insert(0,str(root/'scripts'))
-    from release_policy import verify_incremental
-    current=verify_incremental(root,read(evidence))
+    from release_policy import verify_incremental, inventory
+    kind=p.get('verification_kind')
+    if kind=='native-incremental-v1':
+        evidence=inside(root/p['incremental_verification_from'],root/'specs')
+        current=verify_incremental(root,read(evidence))
+    elif kind=='full-matrix':
+        evidence=inside(root/p['full_tester_reused_from'],root/'specs')
+        current=read(evidence)
+        if not all(current.get(k) is True for k in
+                   ('full_tester_verified','isolated_runtime_verified','sources_verified_in_tester')):
+            raise ValueError('Completed full tester, runtime and source gates required')
+        if current.get('full_tester_steps')!=39:
+            raise ValueError('Current full tester matrix required')
+        if current.get('source_manifest')!=inventory(root) or p.get('source_manifest')!=current['source_manifest']:
+            raise ValueError('Full tester compilation inputs drifted')
+        if not re.fullmatch('[0-9a-f]{64}',str(current.get('tester_image_id',''))) or p.get('tester_image_id')!=current['tester_image_id'] or p.get('artifact_image_id')!=current['tester_image_id']:
+            raise ValueError('Full tester immutable artifact mismatch')
+    else:
+        raise ValueError('Explicit incremental or completed full-matrix package proof required')
     sha=digest(Path(config['package'])/'libexec/tag-server-workspace')
     if sha!=p['binary_sha256'] or sha!=current['binary_sha256']:
         raise ValueError('Packaged backend differs from verified CLI')
