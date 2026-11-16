@@ -493,6 +493,27 @@ podman image prune -f          # 仅删 <none> 悬空镜像，不动有 tag 的
      `/tmp/cmt-build-clean-report-20261104.json`；详细本机审计不上传服务器。
 
 
+- 2026-11-16（用户授权安全清理）：系统盘 `/dev/sdc4` 由99%降至89%，
+  已用约393.2GiB→355.6GiB，可用约45.1GiB；本轮期间
+  占用净下降约37.6GiB，包含同期活动，不将净变化全部归因于删除。
+  1. 确认无活跃构建及相关打开文件后，经现有宿主Podman socket删除51个
+     Storage/PID0的working-container，再仅执行image prune -f；镜像42.79GB→
+     33.98GB，164组原有镜像标签及ID、5个服务容器ID/名称/状态/镜像ID/退出码
+     均核对不变；保留交叉编译与生产镜像、卷，未重启容器或应用。
+  2. 无占用检查通过后，清理Codex可重下载运行时缓存及npm下载缓存（约2GiB），
+     两处带Cargo CACHEDIR.TAG的临时编译缓存（约2GiB）：
+     `/tmp/knowledge-cards-M-web-target`、`/tmp/batch122-reactive-upstream-target`；
+     保留缓存根目录和标记，不删除源码、工程或审计产物。
+  3. 普通`nix-store --gc`删除367条无引用路径，报告回收7.3GiB；本次设置15GiB
+     回收上限，未删除任何历史generation，核对19个系统/用户profile链接不变。
+     盘点362个已登记无引用路径NAR合计7.37GiB，另5条未登记路径/锁，不手工删store。
+  4. Gradle缓存检测到打开文件，保留；回收站约29GiB、Documents约36GiB及
+     浏览器/uv缓存、聊天记录、日志/崩溃证据、个人资料与数据盘均未清理。
+     插件staging总量仅28MiB，本次未删除。/data为88%，仍有约53GiB可用。
+     审计和前后快照仅留本机`/tmp/disk-clean-*-20261116*`，汇总为
+     `/tmp/disk-clean-report-20261116.json`；只发布项目总纲摘要。
+
+
 ## Clip 规格归属
 
 按用户绑定维护决定，clipboard-sync 子模块的功能规格统一位于本仓库 specs/005-clipboard-core、006-clipboard-reliability、007-clipboard-release。子模块只留手册与指向本仓库的入口，代码/Git/构建保持独立。其他产品仍在各自仓库管理规格。本规则明确恢复既有父仓库规格归属，不恢复已经取消的 dsh Web 或 Clip 2 分钟过期需求。

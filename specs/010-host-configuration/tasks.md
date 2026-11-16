@@ -1172,3 +1172,12 @@ Nix 属性名为 zlib-cli，运行命令为 zlib；不替换压缩库 pkgs.zlib�
 配置求值确认客户端已进入 home.packages；HM备份扩展为hm-backup，数位笔系统服务、input/uinput组、uinput模块及HTTP/HTTPS/磁力/Codex协议基线正确。本次无新增服务或设备规则。
 完整系统与HM generation构建通过：`/nix/store/ad92k4qjvsxd3khj33b14nf7yxrzfy96-nixos-system-liu-bigpc-26.11.20260922.b6c98e9`、`/nix/store/plzbfq2qpff84qr0mp4imsg6qcyyqfzp-home-manager-generation`。`nix run .#zlib-cli -- version`通过；HM安装路径解析到固定客户端。构建日志及求值/连通性证据位于`/tmp/zlib-cli-*`。
 阶段ZL剩余1项ZL3：用户普通终端运行`nu rerun.nu liou --host liu-bigpc`后交互登录并验收实际搜索下载。也可先`nix run .#zlib-cli -- tui`试用。未代为switch；原有Helix、AGENTS及其他资料改动不纳入本次提交。
+
+
+## 系统盘安全清理（2026-11-16）
+
+- [x] 定位系统盘与数据盘占用，核对活跃构建和可重建缓存边界。
+- [x] 清理已确认闲置的容器/缓存和 Nix 无引用产物，保留服务、镜像标签与历史代。
+- [x] 核对前后磁盘、容器和 profile 状态；详细操作记录统一追加到仓库 AGENTS.md 第七节，总纲只保留摘要。
+
+本次清理阶段剩余0项。已完成授权范围；有占用的Gradle缓存、回收站与文档产物保留，不据目录名删除个人成果。
