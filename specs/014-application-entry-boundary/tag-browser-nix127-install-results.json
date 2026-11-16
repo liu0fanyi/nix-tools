@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "release": "v0.1.0-nix.127",
+  "status": "published_pending_user_daily_retest",
+  "source_commit": "bdd386a229bb32257b78aaedfcb3b28f2f4b41be",
+  "consumer_source_commit": "7a9fe3065a196a2f8c3fe043d7cd46b9366a9c6d",
+  "browser_package": "/nix/store/fzlsvkib9pgdmp22js7bj8fzrsirq8xp-tag-browser-0.1.0",
+  "consumer_wrapper": "/nix/store/mysrl2204lhhr3kyf473ma5plw8m4zy1-tag-browser-0.1.0-nix.127",
+  "system_candidate": "/nix/store/k97mzrfp14cxprlv52b274q7p7hwvwj1-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "shared_ui_sha256": "94a48de9df8084ada18e902b7172c97ca839c3df0a7ccd5cacb8c2ca0b059340",
+  "engine_sha256": "d3bc1a8d17f41d4f042585c564a52015f1651a7a723b79cd6d5767ed5be41533",
+  "firefox_rebuilt": false,
+  "shared_wasm_rebuilt": true,
+  "ci_run": 43813359977,
+  "ci_conclusion": "success",
+  "cache_signature_verified": true,
+  "ci_store_path_matches_local": true,
+  "actual_formal_firefox": {
+    "actualPackagedFirefox": true,
+    "syntheticReadOnlyTabFault": true,
+    "failedReadUnlocksRefresh": true,
+    "failedReadAllowsRootFold": true,
+    "failedReadAllowsSettingsOpenAndClose": true,
+    "subsequentValidReadRecovers": true,
+    "dailyProfileOpened": false,
+    "productionDataMutated": false
+  },
+  "flake_lock_changed_nodes": [
+    "tag-browser-src"
+  ],
+  "system_switched": false,
+  "daily_profile_opened": false,
+  "production_backend_or_frontend_activated": false,
+  "scope": "PC shared sidebar read/projection recovery; prior paired backend/frontend rollout remains prepared, not activated",
+  "known_boundary": "Synthetic workspace-page invalid raw tags reproduce same disabled/loading signature; exact daily user trigger record is not identified."
+}

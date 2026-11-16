@@ -641,3 +641,7 @@ nix.125启动修正已通过签名缓存/CI与消费者包装构建，锁文件�
 
 
 nix.126已发行并更新消费者：[当前安装与实际交互证明](tag-browser-nix126-install-results.json)。修正本机浏览GET403、能力握手顺序和浏览观察阻塞物理列表；严格缓存启用/合成提交失败后，折叠、刷新、设置开关均通过。原完整npm与共享IO回归、签名缓存、消费者和PC系统候选构建通过；用户手动rerun，不代switch。配套后端仍在原完整矩阵，本次JS修正未触发重编后端。
+
+## Tag Browser nix.127共享列表异常恢复消费者（2026-11-16）
+
+按用户上线口令，仅固定tag-browser-src到7a9fe3065a196a2f8c3fe043d7cd46b9366a9c6d；CI签名缓存、正式Firefox故障恢复及完整liu-bigpc/HM构建通过，引擎不变。未system switch，不包含当前Helix/AGENTS外部改动，不激活已准备的PC/NUC后端/主Web。见[安装回执](tag-browser-nix127-install-results.json)。本轮发行完成，剩1项：用户普通终端执行 `nu rerun.nu liou --host liu-bigpc` 并完全重开后复测。
