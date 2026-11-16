@@ -9,7 +9,7 @@
 - [Codex桌面26.1103.31037修复已实机生效：不可达主机停止自动重连，NUC保持开启；6个内置插件成功物化并复用，无新增权限错误，聊天记录未动。](010-host-configuration/tasks.md#codex-桌面卡顿排查与升级阶段-cx2026-11-06)
 - [Tag Browser nix.124启动修正正式缓存及完整PC消费者构建通过，已固定本机资料来源并保留超时恢复；配套后端/前端服务切换等待完整门槛。未system switch。](014-application-entry-boundary/tag-browser-nix124-install-results.json)
 - [aMule实机High ID与Kad OK验收通过，公网TCP4662可达；清理41条微信映射，其他23条保留，路由表64→26，本轮无需再次rerun。](010-host-configuration/tasks.md#amule-安装与网络引导阶段-am2026-11-04) [DiskTree图形版构建通过，待手动应用试用。](010-host-configuration/tasks.md#disktree-图形版安装阶段-dt2026-11-01)
-- [系统盘安全清理后89%、可用约45.1GiB，本轮占用净下降约37.6GiB；/data为88%且未清理。原镜像标签、服务容器、历史系统代与个人资料保留，详细记录统一见AGENTS第七节。](010-host-configuration/tasks.md#系统盘安全清理2026-11-16)
+- [第二轮清理后系统盘74%、可用约106.8GiB，再释放约61.7GiB；已清回收站、旧验收图片和闲置测试目录。源码、聊天记录、发布回滚产物、历史系统代与数据盘保留，详细记录见AGENTS第七节。](010-host-configuration/tasks.md#第二轮大项清理2026-11-16)
 
 ## 后续计划
 - [输入法实现与正式发行交付已转trime-mobile；旧包退役和当前状态见对应产品，历史QA试用不再作为当前安装状态。](010-host-configuration/tasks.md#trime正式发行与旧手机包退役2026-11-13状态)
@@ -27,6 +27,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-16 · 清空回收站并回收旧验收渲染产物 · `b8319ea`
 - 2026-11-16 · 回收闲置构建缓存并核对镜像与系统回滚保留 · `8f4fb74`
 - 2026-11-16 · Update browser startup release overview · `68ca8ce`
 - 2026-11-16 · Use local-first nix.124 browser and validate full-matrix bundle evidence · `bc6e3ee`
@@ -34,5 +35,4 @@
 - 2026-11-16 · Use verified nix.121 browser and preserve paired workspace backend · `13ccd70`
 - 2026-11-15 · Update verified nix.120 consumer and activation overview · `d660ca8`
 - 2026-11-15 · Verify nix.120 frontend and backend activation with preserved data · `9622c50`
-- 2026-11-15 · Use verified Tag Browser nix.120 shared UI release · `780c99a`
 <!-- recent-commits:end -->
