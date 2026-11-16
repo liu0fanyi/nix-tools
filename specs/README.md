@@ -28,12 +28,12 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-16 · Pin verified nix.130 browser and record paired PDF activation · `930defa`
+- 2026-11-16 · Refresh verified nix.129 release overview · `73b6b6b`
 - 2026-11-16 · Install signed Tag Browser nix.129 and activate paired frontend fixes · `d1fc713`
 - 2026-11-16 · Refresh nix.128 consumer overview · `bffa3d7`
 - 2026-11-16 · Use verified nix.128 workspace root fix · `7fdd030`
 - 2026-11-16 · Refresh nix.127 browser consumer overview · `9f5775e`
 - 2026-11-16 · Use verified nix.127 browser recovery release · `8ca241a`
 - 2026-11-16 · Use verified nix.126 interactive local browsing sidebar · `50253c0`
-- 2026-11-16 · Install verified nix.125 shared startup fix without changing the browser engine · `58e798a`
-- 2026-11-16 · 清空回收站并回收旧验收渲染产物 · `b8319ea`
 <!-- recent-commits:end -->
