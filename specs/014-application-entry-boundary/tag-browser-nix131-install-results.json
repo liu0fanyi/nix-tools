@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "release": "nix.131",
+  "source_pin": "39b3ef9d1000a151486045353b4ed7bda619fdfb",
+  "package": "/nix/store/x9k51gk6fdj39bssmyi50yr7yc1q2h2h-tag-browser-0.1.0",
+  "wrapper": "/nix/store/hicar5gn7arrl5l7b6dl54qadg1dvk6j-tag-browser-0.1.0-nix.131",
+  "system_candidate": "/nix/store/v9hmw4qpl5ywn22x8g08s4s2xksvklrh-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "only_lock_node_changed": "tag-browser-src",
+  "ci": 43855258774,
+  "signature_verified": true,
+  "formal_firefox_multi_origin_read_status": 200,
+  "engine_recompiled": false,
+  "native_services_reactivated": false,
+  "service_activation_reference": "tag-browser-nix130-install-results.json",
+  "system_switched": false,
+  "unrelated_external_changes_preserved": true
+}

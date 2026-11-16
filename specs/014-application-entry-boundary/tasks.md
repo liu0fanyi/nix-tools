@@ -659,3 +659,5 @@ nix.126已发行并更新消费者：[当前安装与实际交互证明](tag-bro
 ### Tag Browser nix.130正文节点与PDF交付（2026-11-16）
 
 [消费者回执](tag-browser-nix130-install-results.json)：仅更新tag-browser-src到6aed302，CI包与本机路径一致且远端可信签名通过，实际Firefox所有者HTTP/根恢复及完整liu-bigpc系统构建成功，未system switch。PC/NUC按原组合发布器各12项检查、新prepare与实际备份激活完成；277输入完整矩阵复用，源码/用户资料/六类独立应用保护保持。唯一交付任务及正常账号PDF复测归Tag Browser049，配套事实归DUFS002/tag-all024；不补勾旧手机/内核暂缓项。既有Helix、AGENTS、girl.md和参考目录的外部改动未纳入本提交。
+
+[nix.131最终资源回执](tag-browser-nix131-install-results.json)：补齐同窗NUC/NAS认证互不覆盖；旧130合成受保护请求401、新正式包200，CI/签名/完整PC系统候选通过，仅更新同一浏览器输入。两端服务仍沿上述130激活事实，没有再次重启或重编后端；用户最后手动rerun并完整退出重开。
