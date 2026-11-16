@@ -20,6 +20,7 @@
 - [手动应用 dsh 运行时修复并确认实际界面使用（DS3）。](010-host-configuration/tasks.md#dsh-更新与-nix-node-兼容修复阶段-ds2026-10-30)
 
 ## 待处理问题
+- [Tag Browser nix.125启动修正已更新消费者，仅浏览器已发行；配套后端仍在原完整矩阵，用户日常启动待手动重开核对。](014-application-entry-boundary/tag-browser-nix125-install-results.json)
 - [Codex连接与插件权限修复已验收；此前历史会话维护的高I/O不等同本轮两项问题。](010-host-configuration/tasks.md#codex-桌面卡顿排查与升级阶段-cx2026-11-06)
 - [用户系统安装与真实窗口验收仍与制品发行分开记录。](014-application-entry-boundary/tasks.md)
 

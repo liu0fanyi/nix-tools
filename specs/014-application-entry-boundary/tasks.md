@@ -635,3 +635,6 @@ nix.120发行交付完成，剩余0项：[实际安装激活回执](tag-browser-
 ## nix.124 启动修正及配套发行
 
 [正式浏览器/消费者回执](tag-browser-nix124-install-results.json)：本机资料来源与超时恢复修正已通过实际隔离Firefox，正式缓存与本机pfnk包摘要/签名一致；只更新tag-browser-src到ba1badb，实际PC toplevel构建完成，同一工作树HM派生物不变。未system switch或关闭日常浏览器。原本中间nix122/123均未激活。后端完整矩阵和双端前端/后端组合激活尚在进行，不把浏览器发行等同服务已切换；保护AGENTS/Helix暂存修改。
+
+
+nix.125启动修正已通过签名缓存/CI与消费者包装构建，锁文件只更新tag-browser-src；已有Helix改动保持。新版本将首次根读取与缓存后浏览同步移出全局启动等待，显示具体初始化阶段；真实用户启动仍待手动rerun及完整重开后核对，不代执行switch。[当前安装证明](tag-browser-nix125-install-results.json)。原配套后端矩阵继续运行，未激活。
