@@ -649,3 +649,9 @@ nix.126已发行并更新消费者：[当前安装与实际交互证明](tag-bro
 ## Tag Browser nix.128根目录与侧栏恢复消费者（2026-11-16）
 
 仅将tag-browser-src固定到c526badafd3572762cf63f4e04b18bf1ee0873c5；根目录空路径误判及最终面板校验修复已正式发行。签名缓存、实际Firefox根目录／恢复保护、251项共享Rust及完整liu-bigpc构建通过，引擎未重编。见[安装回执](tag-browser-nix128-install-results.json)。发行阶段完成（剩0）；用户日常验收剩1项：普通终端rerun后彻底退出重开复测。不执行系统switch，不提交外部Helix改动，不切换原配套服务。
+
+## Tag Browser nix.129与配套前端（2026-11-16）
+
+本轮用户“上线”授权已完成：nix.129签名缓存路径与正式本地包一致，仅tag-browser-src锁更新到af7e4a1；完整liu-bigpc系统候选构建通过，未执行switch。PC/NUC网页只替换固定前端，保持现用x8后端、配对、独立应用和原DB；实际程序/777及795份资产、认证、备份inode及回退输入验证通过。[回执](tag-browser-nix129-install-results.json)。
+
+首次直接在调用会话执行PC管理器因/proc可见性误判已按原流程自动回退；沿既有systemd用户发布环境执行同一检查通过，另开固定事务完成。没有跳过检查或自动恢复数据库。此前完整后端候选仍未激活。本轮不包含手机安装或外网路由修改。用户需在普通终端rerun并完整退出重开浏览器。

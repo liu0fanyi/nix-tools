@@ -1,0 +1,78 @@
+{
+  "release": "v0.1.0-nix.129",
+  "source_commit": "a3e06642cc2f409fc7c8890829db2f4cefe0b701",
+  "consumer_source_commit": "af7e4a19f1fd4ab7d2c2e99197572f4a2fe889c2",
+  "browser_package": "/nix/store/0541yzrhp416h39azmaha7b5j97j8scr-tag-browser-0.1.0",
+  "wrapper": "/nix/store/m76m3kad7r6vakrd0002jrl3rx3y050c-tag-browser-0.1.0-nix.129",
+  "system_candidate": "/nix/store/f7d0b4mqmy213aa8iqjm378pkawp1sid-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "changed_lock_nodes": [
+    "tag-browser-src"
+  ],
+  "cache_signature_verified": true,
+  "ci_run": 43828402913,
+  "paired_web": {
+    "pc": {
+      "activation": {
+        "phase": "activated",
+        "manifest": "698340200012ad6bc8660477092ac27fa86e7aaab421708bd7f0d7261b05ffe7",
+        "backup": "/home/liou/.local/share/tag-all/native-version-releases/698340200012ad6bc8660477092ac27fa86e7aaab421708bd7f0d7261b05ffe7/backup",
+        "database_restored": false
+      },
+      "live": {
+        "scope": "pc",
+        "frontend": "/nix/store/ms5w3nn05v09qjwmqjbfqs3lwm5wiz6j-dufs-plus-nix129-pc-frontend",
+        "backend": "/nix/store/x8b6fvr3mgrblflfawd7x6gnz9vs94bz-tag-all-workspace-native-0.1.0",
+        "actual_process_and_frontend_verified": true,
+        "all_assets_verified": 777,
+        "authentication_probes_passed": true,
+        "served_index_verified": true,
+        "backup_integrity_and_sha_verified": true,
+        "database_inode_preserved": true,
+        "upholds_restored": true,
+        "rollback_inputs_valid_after_activation": true,
+        "database_restored": false
+      },
+      "protected_apps_preserved": [
+        "knowledge-cards"
+      ]
+    },
+    "nuc": {
+      "activation": {
+        "phase": "activated",
+        "manifest": "0916779da13af9cfbd6e83960b51ade36a593e4a404111cc4bd046eec1a575b2",
+        "backup": "/home/liou/.local/share/tag-all/native-version-releases/0916779da13af9cfbd6e83960b51ade36a593e4a404111cc4bd046eec1a575b2/backup",
+        "database_restored": false
+      },
+      "live": {
+        "scope": "nuc",
+        "frontend": "/nix/store/829ny6xi3cn6l3qin3cxb92k5b8zwfqk-dufs-plus-nix129-nuc-frontend",
+        "backend": "/nix/store/x8b6fvr3mgrblflfawd7x6gnz9vs94bz-tag-all-workspace-native-0.1.0",
+        "actual_process_and_frontend_verified": true,
+        "all_assets_verified": 795,
+        "authentication_probes_passed": true,
+        "served_index_verified": false,
+        "backup_integrity_and_sha_verified": true,
+        "database_inode_preserved": true,
+        "upholds_restored": true,
+        "rollback_inputs_valid_after_activation": true,
+        "database_restored": false
+      },
+      "protected_apps_preserved": [
+        "knowledge-cards",
+        "learning-map"
+      ]
+    }
+  },
+  "backend_package_unchanged": true,
+  "database_restored": false,
+  "system_switched": false,
+  "unrelated_worktree_changes_preserved": [
+    "AGENTS.md",
+    "home-manager/nix_modules/helix.nix",
+    "home-manager/patches/helix-softwrap-double-width.patch",
+    "girl.md",
+    "ref/colorchecker24/"
+  ],
+  "first_pc_apply_rolled_back_due_calling_session_proc_visibility": true,
+  "same_readiness_checks_passed_under_systemd_user_execution": true
+}
