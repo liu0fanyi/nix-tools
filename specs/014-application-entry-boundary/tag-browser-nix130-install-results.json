@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "release": "nix.130",
+  "tag_browser_source_pin": "6aed3028354217e129a5366c2939228446b42886",
+  "application_package": "/nix/store/ylb59wia2x4fhnwr9kg5fjswbmy4rk7w-tag-browser-0.1.0",
+  "wrapper": "/nix/store/78rmf1yiv43q810l6h2a3dkm146dx8d0-tag-browser-0.1.0-nix.130",
+  "system_candidate": "/nix/store/8608dmp2ibilrapcf50hy6db1a0km0jw-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "only_lock_node_changed": "tag-browser-src",
+  "ci_run": 43849275624,
+  "signature_verified": true,
+  "engine_recompiled": false,
+  "pc_nuc_native_bundle_checks": {
+    "pc": "e5909d40e1eb638f45a61b7d363d487a494bef77e11c8a80d9f0cc92d18d436e",
+    "nuc": "5b8bba7a726b64f533b9a5070cbd73dbcd45011fc78718f61b7795accb8b175e"
+  },
+  "pc_nuc_actual_activation_verified": true,
+  "backend_full_matrix_reused_with_277_unchanged_inputs": true,
+  "product_authorities": [
+    "Tag Browser049/pc-nix130-release-results.json",
+    "DUFS002/nix130-pdf-release-results.json",
+    "tag-all024/nix130-large-pdf-release-results.json"
+  ],
+  "system_switched": false,
+  "unrelated_helix_agent_and_reference_changes_preserved": true,
+  "user_action": "Run nu rerun.nu liou --host liu-bigpc in an ordinary terminal, then quit all Tag Browser windows and reopen."
+}
