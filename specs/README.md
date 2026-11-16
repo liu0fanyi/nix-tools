@@ -28,6 +28,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-16 · Refresh final nix.131 consumer delivery overview · `1094c5e`
 - 2026-11-16 · Pin verified final nix.131 browser authentication resources · `b75bb32`
 - 2026-11-16 · Refresh verified nix.130 consumer overview · `db3441e`
 - 2026-11-16 · Pin verified nix.130 browser and record paired PDF activation · `930defa`
@@ -35,5 +36,4 @@
 - 2026-11-16 · Install signed Tag Browser nix.129 and activate paired frontend fixes · `d1fc713`
 - 2026-11-16 · Refresh nix.128 consumer overview · `bffa3d7`
 - 2026-11-16 · Use verified nix.128 workspace root fix · `7fdd030`
-- 2026-11-16 · Refresh nix.127 browser consumer overview · `9f5775e`
 <!-- recent-commits:end -->
