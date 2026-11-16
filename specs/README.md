@@ -20,7 +20,7 @@
 - [手动应用 dsh 运行时修复并确认实际界面使用（DS3）。](010-host-configuration/tasks.md#dsh-更新与-nix-node-兼容修复阶段-ds2026-10-30)
 
 ## 待处理问题
-- [Tag Browser nix.125启动修正已更新消费者，仅浏览器已发行；配套后端仍在原完整矩阵，用户日常启动待手动重开核对。](014-application-entry-boundary/tag-browser-nix125-install-results.json)
+- [Tag Browser nix.126读取/交互修正已发行并更新消费者，实际启用浏览同步后的折叠、刷新和设置开关通过；用户日常窗口待手动重开复测，配套后端仍在原完整矩阵。](014-application-entry-boundary/tag-browser-nix126-install-results.json)
 - [Codex连接与插件权限修复已验收；此前历史会话维护的高I/O不等同本轮两项问题。](010-host-configuration/tasks.md#codex-桌面卡顿排查与升级阶段-cx2026-11-06)
 - [用户系统安装与真实窗口验收仍与制品发行分开记录。](014-application-entry-boundary/tasks.md)
 
@@ -28,6 +28,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-16 · Install verified nix.125 shared startup fix without changing the browser engine · `58e798a`
 - 2026-11-16 · 清空回收站并回收旧验收渲染产物 · `b8319ea`
 - 2026-11-16 · 回收闲置构建缓存并核对镜像与系统回滚保留 · `8f4fb74`
 - 2026-11-16 · Update browser startup release overview · `68ca8ce`
@@ -35,5 +36,4 @@
 - 2026-11-16 · Update nix.121 delivery overview · `59a8859`
 - 2026-11-16 · Use verified nix.121 browser and preserve paired workspace backend · `13ccd70`
 - 2026-11-15 · Update verified nix.120 consumer and activation overview · `d660ca8`
-- 2026-11-15 · Verify nix.120 frontend and backend activation with preserved data · `9622c50`
 <!-- recent-commits:end -->

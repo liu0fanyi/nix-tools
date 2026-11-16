@@ -1,0 +1,173 @@
+{
+  "schema": 1,
+  "release_tag": "v0.1.0-nix.126",
+  "release_url": "https://github.com/liu0fanyi/tag-browser/releases/tag/v0.1.0-nix.126",
+  "ci_run": "https://github.com/liu0fanyi/tag-browser/actions/runs/43803117130",
+  "ci_attempt": 2,
+  "ci_conclusion": "success",
+  "browser_source": "666e3594028770ea6e878fe8bddf6979c8c266e8",
+  "browser_package": "/nix/store/fci1mya54l36iywrbp4zn77n5j64aif6-tag-browser-0.1.0",
+  "cache_nar_hash": "sha256-hG9wKc1ORI3EFPnVL4bIXpdCXNei9drmzCldae1EBlw=",
+  "cache_signature_verified": true,
+  "cache_package_matches_local": true,
+  "shared_ui_sha256": "786de38a2e07df3a05cf8c9b4624083a3c033a574fd736d3cc7824fd07e3f981",
+  "firefox_rebuilt": false,
+  "wasm_rebuilt": false,
+  "local_personal_startup": {
+    "schema": 1,
+    "release": "nix.126",
+    "status": "published_pending_user_daily_retest",
+    "browser_package": "/nix/store/fci1mya54l36iywrbp4zn77n5j64aif6-tag-browser-0.1.0",
+    "shared_ui_sha256": "786de38a2e07df3a05cf8c9b4624083a3c033a574fd736d3cc7824fd07e3f981",
+    "engine_sha256": "d3bc1a8d17f41d4f042585c564a52015f1651a7a723b79cd6d5767ed5be41533",
+    "firefox_rebuilt": false,
+    "wasm_rebuilt": false,
+    "native_browsing_get_before": "HTTP 403 without Origin in actual isolated nix.125 Firefox",
+    "native_browsing_get_after": "Actual native request completed through system XHR with endpoint-derived Origin; strict synthetic cache initialization succeeded",
+    "handshake": "No ready before trusted Init; complete browsing capability booleans preserved",
+    "physical_projection": "Does not await optional browsing-observation IO; lifetime and stale-source guards retained",
+    "actual_firefox_interactions": {
+      "roots": [
+        {
+          "id": "tabs",
+          "disabled": 0,
+          "enabled": 7,
+          "reading": false
+        },
+        {
+          "id": "web",
+          "disabled": 0,
+          "enabled": 100,
+          "reading": false
+        },
+        {
+          "id": "file:default",
+          "disabled": 0,
+          "enabled": 15,
+          "reading": false
+        },
+        {
+          "id": "file:loc_pc",
+          "disabled": 0,
+          "enabled": 15,
+          "reading": false
+        },
+        {
+          "id": "file:saf-4748b90d09714fd89a22b7a4043992ce",
+          "disabled": 0,
+          "enabled": 15,
+          "reading": false
+        }
+      ],
+      "noticeHidden": true,
+      "reads": 4,
+      "writes": 1,
+      "cache": {
+        "enabled": true,
+        "pending": 1
+      },
+      "handshake": {
+        "browsing": true,
+        "bindings": true
+      },
+      "actualRootToggleChanged": true,
+      "refreshCompleted": true,
+      "settingsOpenedAndClosed": true,
+      "productionBrowsingWritesSent": false,
+      "dailyProfileOpened": false
+    },
+    "unit_tests": {
+      "native_npm_complete": true,
+      "shared_host_and_browsing": true,
+      "pending_observation_old_failed_new_passed": true,
+      "frame_ordering": true,
+      "origin_override_rejected": true
+    },
+    "daily_profile_opened": false,
+    "production_writes_sent": false,
+    "user_daily_retest_confirmed": false,
+    "preserved_failed_attempts": [
+      "nix125 actual native browsing GET: HTTP 403",
+      "Early interaction fixture selector quoting error, corrected",
+      "Fixture referenced implicit Marionette globals and recorded a different counter; changed to explicit window-owned globals. Intermediate no-POST runs were failures, never accepted.",
+      "GitHub release initially rejected short target commit; corrected to full commit. First CI missing-input failure retained; second attempt succeeded."
+    ],
+    "backend_release": "Original full matrix still running; production unchanged; no backend rebuild triggered by this JS fix",
+    "publication": {
+      "release": "v0.1.0-nix.126",
+      "ci_run": 43803117130,
+      "attempt": 2,
+      "conclusion": "success",
+      "cache_package_matches_tested_package": true,
+      "system_switch_executed": false
+    }
+  },
+  "system_consumer": {
+    "only_lock_node_changed": [
+      "tag-browser-src"
+    ],
+    "package": "/nix/store/f571ap37sz2lzqx5cwbaiyv2429r4h0j-tag-browser-0.1.0-nix.126",
+    "system_build": "/nix/store/9778hp2g49y08qylx2dwc4260p5ac6fi-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+    "existing_helix_worktree_edits_preserved": true,
+    "system_switch_executed": false
+  },
+  "formal_content": {
+    "nix126_loaded_sidebar_actual_operations": {
+      "roots": [
+        {
+          "id": "tabs",
+          "disabled": 0,
+          "enabled": 7,
+          "reading": false
+        },
+        {
+          "id": "web",
+          "disabled": 0,
+          "enabled": 100,
+          "reading": false
+        },
+        {
+          "id": "file:default",
+          "disabled": 0,
+          "enabled": 15,
+          "reading": false
+        },
+        {
+          "id": "file:loc_pc",
+          "disabled": 0,
+          "enabled": 15,
+          "reading": false
+        },
+        {
+          "id": "file:saf-4748b90d09714fd89a22b7a4043992ce",
+          "disabled": 0,
+          "enabled": 15,
+          "reading": false
+        }
+      ],
+      "noticeHidden": true,
+      "reads": 4,
+      "writes": 1,
+      "cache": {
+        "enabled": true,
+        "pending": 1
+      },
+      "handshake": {
+        "browsing": true,
+        "bindings": true
+      },
+      "actualRootToggleChanged": true,
+      "refreshCompleted": true,
+      "settingsOpenedAndClosed": true,
+      "productionBrowsingWritesSent": false,
+      "dailyProfileOpened": false
+    },
+    "prior_nix124_original_reader_editor_receipt": "/tmp/nix124-formal-content/results.json",
+    "original_readers_unchanged": true,
+    "original_reader_rerun_this_fix": false
+  },
+  "paired_backend_frontend_activation": "pending original complete matrix",
+  "production_services_changed": false,
+  "user_retest_confirmed": false,
+  "system_switch_executed": false
+}
