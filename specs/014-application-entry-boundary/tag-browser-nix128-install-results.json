@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "release": "v0.1.0-nix.128",
+  "status": "published_pending_user_daily_retest",
+  "source_commit": "d056f541a7f2e6016325ff950975269032feb2f5",
+  "consumer_source_commit": "c526badafd3572762cf63f4e04b18bf1ee0873c5",
+  "browser_package": "/nix/store/8mglncxvjmpbby472j9qyni0b0p71vqy-tag-browser-0.1.0",
+  "ui_manifest_sha256": "72a9dc708b3424935122183cf76d1e89917579e0c55a3fd653582607f602418a",
+  "engine_sha256": "d3bc1a8d17f41d4f042585c564a52015f1651a7a723b79cd6d5767ed5be41533",
+  "firefox_rebuilt": false,
+  "ci_run": 43821048463,
+  "ci_conclusion": "success",
+  "remote_cache_signature_verified": true,
+  "remote_store_path_matches_formal_local_package": true,
+  "wrapper": "/nix/store/m1ssfnrd17yvdb08bb83657dcf95w9pa-tag-browser-0.1.0-nix.128",
+  "system_candidate": "/nix/store/xi6wzijmn098sjd0kz0h9x82przi9skl-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "changed_lock_nodes": [
+    "tag-browser-src"
+  ],
+  "formal_root_and_recovery": {
+    "actualPackagedFirefox": true,
+    "canonicalEmptyWorkspaceRootAccepted": true,
+    "foldedMenuPresentWithoutFreeze": true,
+    "dailyProfileOpened": false,
+    "realDataWritten": false,
+    "recoveryGuards": {
+      "recovered": true,
+      "buttonEnabled": true,
+      "versionAligned": true,
+      "foreignRejected": true,
+      "writeLockPreserved": true,
+      "revokedRejected": true,
+      "disposedRejected": true
+    }
+  },
+  "formal_previous_incident": {
+    "actualPackagedFirefox": true,
+    "syntheticReadOnlyTabFault": true,
+    "failedReadUnlocksRefresh": true,
+    "failedReadAllowsRootFold": true,
+    "failedReadAllowsSettingsOpenAndClose": true,
+    "subsequentValidReadRecovers": true,
+    "dailyProfileOpened": false,
+    "productionDataMutated": false
+  },
+  "shared_rust_tests": 251,
+  "main_web_compile_check": true,
+  "native_npm_tests": true,
+  "source_data_changed": false,
+  "daily_profile_opened": false,
+  "system_switched": false,
+  "server_backend_or_main_web_activated": false,
+  "remaining": "User updates in ordinary terminal, quits all existing app windows, reopens and tests daily root/header/refresh/settings."
+}
