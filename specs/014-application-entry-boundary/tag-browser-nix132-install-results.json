@@ -1,0 +1,72 @@
+{
+  "schema": 1,
+  "release": "nix.132",
+  "consumer_pin": "49a7bbd180408299e54e0321a816ee69b6a01006",
+  "workflow": 44022879838,
+  "package": "/nix/store/8i78zgngba2ri5pdvx6q7jpv0mpspbh5-tag-browser-0.1.0",
+  "signed_remote_cache_verified": true,
+  "ci_package_matches_local": true,
+  "system": {
+    "system_candidate": "/nix/store/yw8a2lp1lh20pzh3m0h5skwrdwva3nml-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+    "home_candidate": "/nix/store/plzbfq2qpff84qr0mp4imsg6qcyyqfzp-home-manager-generation",
+    "baseline_system_same_worktree": "/nix/store/v9hmw4qpl5ywn22x8g08s4s2xksvklrh-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+    "temporary_browser_input_only": false,
+    "browser_source_revision": "49a7bbd180408299e54e0321a816ee69b6a01006",
+    "browser_binary": "/nix/store/8i78zgngba2ri5pdvx6q7jpv0mpspbh5-tag-browser-0.1.0",
+    "five_native_templates_equal_to_baseline": true,
+    "default_target_link_unchanged": true,
+    "restore_after_reload_verified": true,
+    "system_browser_verified_home_has_no_competing_install": true,
+    "visible_release_and_menu_verified": true,
+    "four_mime_defaults_and_desktop_declarations_verified": true,
+    "external_source_changes_preserved": {
+      "head": "bd80837a48bec582f0f42539b2e5d1e8ccdada98",
+      "tracked_external_changes": {
+        "AGENTS.md": "2062819832d30a6423ab63a31b4a913a17fb8572faef4d0a8b3308188f7ec822",
+        "home-manager/nix_modules/helix.nix": "3a29c3e34b20b0ce88d0d5f3462defd340e286ff21fe87bd5063d6db7139c343",
+        "home-manager/patches/helix-softwrap-double-width.patch": "e8b257b1a1d432ce94674e4368dac616d0c868bba8ef77c0117013c4c0208e04"
+      },
+      "head_at_check": "bd80837a48bec582f0f42539b2e5d1e8ccdada98",
+      "concurrent_commit_files": []
+    },
+    "real_lock_changed": true,
+    "system_switch_executed": false,
+    "activation_executed": false,
+    "signed_cache_pending_approval": false
+  },
+  "web_activated": {
+    "pc": {
+      "scope": "pc",
+      "frontend": "/nix/store/wm5blfajlqxqvpz5xl48k44ylyf36g71-dufs-plus-unified-filters-pc-frontend",
+      "backend": "/nix/store/46n8qxrx6k1xzsi34lydiyk92pivfn0q-tag-all-workspace-native-0.1.0",
+      "actual_process_and_frontend_verified": true,
+      "all_assets_verified": 816,
+      "authentication_probes_passed": true,
+      "served_index_verified": true,
+      "backup_integrity_and_sha_verified": true,
+      "database_inode_preserved": true,
+      "upholds_restored": true,
+      "rollback_inputs_valid_after_activation": true,
+      "database_restored": false
+    },
+    "nuc": {
+      "scope": "nuc",
+      "frontend": "/nix/store/7634fd4d9q4rs1bw4nmasqbvwn59dszb-dufs-plus-unified-filters-nuc-frontend",
+      "backend": "/nix/store/46n8qxrx6k1xzsi34lydiyk92pivfn0q-tag-all-workspace-native-0.1.0",
+      "actual_process_and_frontend_verified": true,
+      "all_assets_verified": 834,
+      "authentication_probes_passed": true,
+      "served_index_verified": false,
+      "backup_integrity_and_sha_verified": true,
+      "database_inode_preserved": true,
+      "upholds_restored": true,
+      "rollback_inputs_valid_after_activation": true,
+      "database_restored": false
+    }
+  },
+  "backend_unchanged": true,
+  "android_untouched": true,
+  "no_system_switch": true,
+  "user_command": "nu rerun.nu liou --host liu-bigpc",
+  "product_receipt": "/data/project/tag-browser/specs/049-shared-leptos-ui/pc-nix132-release-results.json"
+}

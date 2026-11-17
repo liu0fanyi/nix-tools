@@ -665,3 +665,7 @@ nix.126已发行并更新消费者：[当前安装与实际交互证明](tag-bro
 ### PDF页数缓存及服务器首屏配套交付
 
 [实际回执](pdf-cache-release-results.json)：沿Tag All024/PFR唯一计数，当前39步完整矩阵/正式包双栈、原管理器7项回退与两端各12项组合通过后，原管理器已备份激活PC/NUC；程序/782及800资源、认证边界、备份SHA和DB inode/回退输入核验通过。Tag Browser输入与Firefox不变，Android不更新，无system switch、无数据库恢复、独立应用不变；既有Helix/AGENTS/girl.md/参考资料改动未纳入。已打开PDF刷新即可加载新资源，正常账号实际阅读体验仍待用户复测。
+
+## Tag Browser nix.132 与统一过滤器前端配套发行（2026-11-17）
+
+[安装候选及配套激活回执](tag-browser-nix132-install-results.json)：仅tag-browser-src锁定49a7bbd，实际liu-bigpc完整系统/HM及五模板、MIME、默认target/恢复顺序核对通过；原Helix/AGENTS等外部改动保持。PC/NUC新前端各12项真实隔离组合通过并按用户“上线”授权使用既有事务激活，816/834资产、认证、备份/inode、回退均核对，现用后端保持。用户仍需手动rerun及完整重开；无system switch、无Android操作。唯一执行计数为Tag Browser049/F5。
