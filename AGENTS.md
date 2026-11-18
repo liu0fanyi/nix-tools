@@ -566,6 +566,13 @@ podman image prune -f          # 仅删 <none> 悬空镜像，不动有 tag 的
   4. 审计仅留本机 `/tmp/disk-priority-summary-20261118.json`，总纲同步摘要。
 
 
+- 2026-11-18（用户明确授权清理 60 份 Tag Browser 旧验收档案）：复查目录与所有
+  内容超过48小时，且无活跃进程、打开文件、嵌套Git、挂载和Nix GC根。仅删除 `/tmp`
+  中这60个 `tag-browser-test-validation-*`，释放约3.45GiB，系统盘可用约119.9GiB。
+  保留日常浏览档案、验收报告和其他临时目录。本机审计为
+  `/tmp/disk-tag-browser-old-profiles-report-20261118.json`。
+
+
 ## Clip 规格归属
 
 按用户绑定维护决定，clipboard-sync 子模块的功能规格统一位于本仓库 specs/005-clipboard-core、006-clipboard-reliability、007-clipboard-release。子模块只留手册与指向本仓库的入口，代码/Git/构建保持独立。其他产品仍在各自仓库管理规格。本规则明确恢复既有父仓库规格归属，不恢复已经取消的 dsh Web 或 Clip 2 分钟过期需求。
