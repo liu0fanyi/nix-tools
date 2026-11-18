@@ -169,6 +169,12 @@
       "category": "应用与工具"
     },
     {
+      "name": "workspace-ai",
+      "root": "/data/project/workspace-ai",
+      "aliases": [],
+      "category": "服务端"
+    },
+    {
       "name": "nix-tools",
       "root": "/home/liou/nix-tools",
       "aliases": [

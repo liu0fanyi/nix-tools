@@ -1,5 +1,5 @@
 { infrastructure ? /home/liou/nix-tools, tagAll ? /data/project/tag-all, whisperPackage, applicationEntry ? false, dufsPlus ? /data/project/dufs-plus,
-  stateRoot ? "/home/liou/.local/share/tag-all/nuc-native" }:
+  stateRoot ? "/home/liou/.local/share/tag-all/nuc-native", workspaceAiSource ? null }:
 let
   product = builtins.fromJSON (builtins.readFile (tagAll + "/devenv.lock"));
   pkgs = import (builtins.fetchTree product.nodes.nixpkgs.locked).outPath { system = "x86_64-linux"; };
@@ -9,6 +9,11 @@ let
 in import (infrastructure + "/packages/native-nuc-candidate.nix") {
   inherit pkgs stateRoot applicationEntry;
   frontendRoot = if applicationEntry then builtins.path { path = dufsPlus + "/dist"; name = "dufs-plus-nuc-frontend"; } else null;
+  workspaceAi = if workspaceAiSource == null then null else {
+    package = import (workspaceAiSource + "/default.nix") { inherit pkgs; };
+    gatewayTokenFile = "${stateRoot}/private/config/workspace-ai-gateway-token";
+    deepseekKeyFile = "${stateRoot}/private/config/workspace-ai-deepseek-key";
+  };
   tagAllSource = tagAll;
   homeManagerSource = hm.outPath;
   package = builtins.storePath report.package;

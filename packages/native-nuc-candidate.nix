@@ -6,6 +6,7 @@
   media ? "/media/liou", models ? "/home/liou/.local/share/whisper.cpp/models",
   writingSsh ? "/home/liou/.config/dufs-plus/secrets/writing-git",
   applicationEntry ? false, canonicalNamespace ? applicationEntry, frontendRoot ? null,
+  workspaceAi ? null,
   applicationNames ? [ "devices" "transcriptions" "recorder-bean" "bevy-game" "bevy-sketch" "project-planner" "quick-note" ] }:
 let
   lib = pkgs.lib;
@@ -28,6 +29,8 @@ let
     peer_write_delegation = true;
     terminal_socket = "/run/user/1000/ttyd/ttyd.sock";
     inherit applications;
+  } // lib.optionalAttrs (private && workspaceAi != null) {
+    ai_gateway_token_file = workspaceAi.gatewayTokenFile;
   };
   privateMounts = if canonicalNamespace then { dufs = privateDataRoot; art = "${media}/Art"; project = "${media}/project"; } else { inherit media; };
   templates = pkgs.formats.toml {};
@@ -131,8 +134,29 @@ let
     NoNewPrivileges=yes
     Restart=on-failure
   '';
-  names = lib.concatMap (role: map (kind: "tag-nuc-${role}-${kind}.service") [ "core" "tools" "files" ]) [ "private" "readonly" ] ++ lib.optional (!applicationEntry) "tag-nuc-bridge.service";
+  aiUnit = if workspaceAi == null then null else pkgs.writeText "workspace-ai.service" ''
+    [Unit]
+    Description=Workspace AI private inference
+    PartOf=tag-native-nuc.target
+    [Service]
+    LoadCredential=gateway-token:${workspaceAi.gatewayTokenFile}
+    LoadCredential=deepseek-key:${workspaceAi.deepseekKeyFile}
+    ExecStart=${command [ "${workspaceAi.package}/bin/workspace-ai" ]}
+    UMask=0077
+    NoNewPrivileges=yes
+    Restart=on-failure
+  '';
+  names = lib.concatMap (role: map (kind: "tag-nuc-${role}-${kind}.service") [ "core" "tools" "files" ]) [ "private" "readonly" ] ++ lib.optional (!applicationEntry) "tag-nuc-bridge.service"
+    ++ lib.optional (workspaceAi != null) "workspace-ai.service";
 in assert !applicationEntry || frontendRoot != null;
+assert workspaceAi == null || (applicationEntry
+  && builtins.isString workspaceAi.gatewayTokenFile && builtins.isString workspaceAi.deepseekKeyFile
+  && lib.hasPrefix "${stateRoot}/private/config/" workspaceAi.gatewayTokenFile
+  && lib.hasPrefix "${stateRoot}/private/config/" workspaceAi.deepseekKeyFile
+  && workspaceAi.gatewayTokenFile != workspaceAi.deepseekKeyFile
+  && lib.all (path: builtins.match "[A-Za-z0-9_./-]+" path != null
+      && !(lib.elem ".." (lib.splitString "/" path)))
+    [ workspaceAi.gatewayTokenFile workspaceAi.deepseekKeyFile ]);
 assert lib.length applicationNames == lib.length (lib.unique applicationNames);
 assert lib.all (name: builtins.elem name [ "devices" "transcriptions" "recorder-bean" "bevy-game" "bevy-sketch" "project-planner" "quick-note" ]) applicationNames;
 pkgs.runCommand "tag-all-native-nuc-candidate" { inherit bridgeConfig; } ''
@@ -149,6 +173,7 @@ pkgs.runCommand "tag-all-native-nuc-candidate" { inherit bridgeConfig; } ''
     printf '\n[Unit]\nPartOf=tag-native-nuc.target\n' >> $out/lib/systemd/user/tag-nuc-${role}-tools.service
   '') [ "private" "readonly" ]}
   ${lib.optionalString (!applicationEntry) "cp ${bridge} $out/lib/systemd/user/tag-nuc-bridge.service"}
+  ${lib.optionalString (workspaceAi != null) "cp ${aiUnit} $out/lib/systemd/user/workspace-ai.service"}
   cat > $out/lib/systemd/user/tag-native-nuc.target <<TARGET
 [Unit]
 Description=NUC native application stack
