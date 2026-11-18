@@ -555,6 +555,17 @@ podman image prune -f          # 仅删 <none> 悬空镜像，不动有 tag 的
      与个人资料保留。uv 有文件占用，保留。详细本机报告为 `/tmp/disk-precise-report-second-20261118.json`。
 
 
+- 2026-11-18（深度盘点后按用户授权清理优先项）：系统盘79%→71%，可用约116.5GiB，
+  占用净下降28.8GiB；`/data` 70%→67%，可用约145.4GiB，净下降12.8GiB。
+  1. 只清 `/var/tmp` 中两个 Buildah `sha256:` 层归档及 `buildah-cache-1000`，
+     共约21.6GiB。复核无进程、挂载、打开文件及GC根。Podman全部镜像和服务容器清单不变。
+  2. 核对 atop 日志服务未运行、旧日志无打开文件，只清10-18至10-26的9份，约7.2GiB。
+  3. 清理 signature-server 与 sip_old 的5个 Cargo target，并清理 p4-license-tool 中
+     15个可重建子缓存，完整保留其中发布类产物。复查 Cargo 标记、Git 忽略、
+     路径身份和宿主占用；固件、源码、SDK、Docker存储和其他历史资料保留。
+  4. 审计仅留本机 `/tmp/disk-priority-summary-20261118.json`，总纲同步摘要。
+
+
 ## Clip 规格归属
 
 按用户绑定维护决定，clipboard-sync 子模块的功能规格统一位于本仓库 specs/005-clipboard-core、006-clipboard-reliability、007-clipboard-release。子模块只留手册与指向本仓库的入口，代码/Git/构建保持独立。其他产品仍在各自仓库管理规格。本规则明确恢复既有父仓库规格归属，不恢复已经取消的 dsh Web 或 Clip 2 分钟过期需求。
