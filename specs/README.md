@@ -10,7 +10,7 @@
 - [Codex桌面26.1103.31037修复已实机生效：不可达主机停止自动重连，NUC保持开启；6个内置插件成功物化并复用，无新增权限错误，聊天记录未动。](010-host-configuration/tasks.md#codex-桌面卡顿排查与升级阶段-cx2026-11-06)
 - [Tag Browser nix.132已发行并构建完整系统候选；统一过滤器Web已激活PC/NUC，实际资产/组合/认证/回退通过，现用后端保持，无system switch。](014-application-entry-boundary/tag-browser-nix132-install-results.json)
 - [aMule实机High ID与Kad OK验收通过，公网TCP4662可达；清理41条微信映射，其他23条保留，路由表64→26，本轮无需再次rerun。](010-host-configuration/tasks.md#amule-安装与网络引导阶段-am2026-11-04) [DiskTree图形版构建通过，待手动应用试用。](010-host-configuration/tasks.md#disktree-图形版安装阶段-dt2026-11-01)
-- [深度盘点后的优先清理完成，系统盘71%、可用116.5GiB，/data为67%、可用145.4GiB。镜像、源码和发布产物保留。](010-host-configuration/tasks.md#深度盘点后优先项清理2026-11-18)
+- [已清理60份旧 Tag Browser 验收档案，系统盘可用约119.9GiB，/data上一轮清理后可用约145.4GiB。](010-host-configuration/tasks.md#tag-browser-旧验收档案清理2026-11-18)
 
 ## 后续计划
 - [输入法实现与正式发行交付已转trime-mobile；旧包退役和当前状态见对应产品，历史QA试用不再作为当前安装状态。](010-host-configuration/tasks.md#trime正式发行与旧手机包退役2026-11-13状态)
@@ -29,6 +29,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-18 · 清理 60 份闲置 Tag Browser 测试档案 · `1b34bec`
 - 2026-11-18 · 清理旧构建层、日志和 Cargo 缓存 · `4251f6e`
 - 2026-11-18 · 回收旧编译对象和工具下载缓存 · `7b33e98`
 - 2026-11-18 · 回收工作站和数据盘的闲置构建缓存 · `98b322a`
@@ -36,5 +37,4 @@
 - 2026-11-18 · 更新工作站浏览器、开发工具和同步客户端 · `2642f91`
 - 2026-11-17 · Refresh nix.132 consumer delivery overview · `93285cb`
 - 2026-11-17 · Pin signed nix.132 browser and record unified filter frontend activation · `34b03f9`
-- 2026-11-17 · Refresh verified PDF cache delivery overview · `bd80837`
 <!-- recent-commits:end -->
