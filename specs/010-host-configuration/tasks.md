@@ -1189,3 +1189,11 @@ Nix 属性名为 zlib-cli，运行命令为 zlib；不替换压缩库 pkgs.zlib�
 - [x] 核对系统盘降至74%、可用106.8GiB；详细记录统一见AGENTS第七节。
 
 本阶段剩余0项；系统历史代、源码、聊天记录、发布回滚产物与数据盘保留。
+
+## 工作站工具更新与移除 Cursor（2026-11-18）
+
+- [x] 固定 Zen 1.24.2b、Codex CLI 0.169.1、uv 0.13.9、pnpm 12.21.0、gh 2.105.0、Antigravity 2.32.2／agy 1.5.10、KiCad 10.0.8、Syncthing 2.1.7 和 KeePassXC 2.8.0。按用户后续指示从 Home Manager 移除 Cursor。
+- [x] dsh 正式 Web profile 更新侧栏 0.32.0、上下文 0.85.1、SSH 2.4.48、记忆 0.5.38，并将两个 hook 包对齐 dsh 0.2.2-rc.1。侧栏 0.32.1 要求更新的 dsh。侧栏先于 SSH 补丁加载，正式 profile 回环地址已验证认证后 HTTP 200，旧依赖保留在用户 dsh 备份目录。
+- [x] 完整 PC 系统和 Home Manager 构建通过。候选无 Cursor 命令及桌面入口。核对 10 项工具版本、pnpm 离线安装、uv 离线锁定及 Syncthing 新服务路径，现有 HM 备份变量与数位笔服务和设备组检查通过。
+- [ ] 用户手动应用并检查常用桌面工具与同步状态。
+- [ ] Podman 6.2.0：当前 Nixpkgs 可取 6.1.4，独立 VFS 存储镜像构建、导出与导入已通过。现用 5.8.7 为 SQLite，五个容器使用 bridge 或 host。等目标版本及容器配置与网络的完整迁移验收后再纳入工作站配置。

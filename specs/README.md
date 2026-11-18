@@ -1,6 +1,7 @@
 # Nix 配置与发布工具
 
 ## 当前情况
+- [工作站工具升级及移除 Cursor 的完整系统和 Home Manager 候选构建通过，待手动应用。dsh 插件已实机更新。Podman 6 待迁移验证。](010-host-configuration/tasks.md#工作站工具更新与移除-cursor2026-11-18)
 - [Z-Library CLI v0.0.14已接入Nix，独立包、完整PC/HM及网络检查通过；待用户手动应用和登录验收。](010-host-configuration/tasks.md#z-library-终端客户端-nix-接入阶段-zl2026-11-15)
 - [Android局域网配对已补齐NUC现用网关两条固定POST路径并reload，真实申请/审批成功；公网移动白名单仍未部署，不扩大外网路由。](014-application-entry-boundary/tasks.md)
 - [学习地图独立登记已按037增量候选启用；配置与启动保护摘要同事务切换，后续14文件静态发布不重启，用户学习资料保持。](017-independent-learning-map/tasks.md)
@@ -28,12 +29,12 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-18 · 从工作站配置移除 Cursor · `32bd407`
+- 2026-11-18 · 更新工作站浏览器、开发工具和同步客户端 · `2642f91`
+- 2026-11-17 · Refresh nix.132 consumer delivery overview · `93285cb`
 - 2026-11-17 · Pin signed nix.132 browser and record unified filter frontend activation · `34b03f9`
 - 2026-11-17 · Refresh verified PDF cache delivery overview · `bd80837`
 - 2026-11-16 · Refresh final nix.131 consumer delivery overview · `1094c5e`
 - 2026-11-16 · Pin verified final nix.131 browser authentication resources · `b75bb32`
 - 2026-11-16 · Refresh verified nix.130 consumer overview · `db3441e`
-- 2026-11-16 · Pin verified nix.130 browser and record paired PDF activation · `930defa`
-- 2026-11-16 · Refresh verified nix.129 release overview · `73b6b6b`
-- 2026-11-16 · Install signed Tag Browser nix.129 and activate paired frontend fixes · `d1fc713`
 <!-- recent-commits:end -->
