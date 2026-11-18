@@ -1,6 +1,7 @@
 # Nix 配置与发布工具
 
 ## 当前情况
+- [ClashTUI已固定含订阅节点测速修复的0.3.2开发版；355项测试、真实节点延迟显示及完整PC/HM构建通过，待用户手动应用。](010-host-configuration/tasks.md#clashtui-订阅节点延迟显示更新ct2026-11-18)
 - [工作站工具升级及移除 Cursor 的完整系统和 Home Manager 候选构建通过，PC 已运行对应系统，待日常桌面验收。dsh 插件已实机更新。Podman 6 按用户指示暂缓。](010-host-configuration/tasks.md#工作站工具更新与移除-cursor2026-11-18)
 - [Z-Library CLI v0.0.14已接入Nix，独立包、完整PC/HM及网络检查通过；待用户手动应用和登录验收。](010-host-configuration/tasks.md#z-library-终端客户端-nix-接入阶段-zl2026-11-15)
 - [Android局域网配对已补齐NUC现用网关两条固定POST路径并reload，真实申请/审批成功；公网移动白名单仍未部署，不扩大外网路由。](014-application-entry-boundary/tasks.md)
@@ -29,6 +30,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-18 · 更新 ClashTUI 以显示订阅节点延迟 · `ae1e1fa`
 - 2026-11-18 · 清理 60 份闲置 Tag Browser 测试档案 · `1b34bec`
 - 2026-11-18 · 清理旧构建层、日志和 Cargo 缓存 · `4251f6e`
 - 2026-11-18 · 回收旧编译对象和工具下载缓存 · `7b33e98`
@@ -36,5 +38,4 @@
 - 2026-11-18 · 从工作站配置移除 Cursor · `32bd407`
 - 2026-11-18 · 更新工作站浏览器、开发工具和同步客户端 · `2642f91`
 - 2026-11-17 · Refresh nix.132 consumer delivery overview · `93285cb`
-- 2026-11-17 · Pin signed nix.132 browser and record unified filter frontend activation · `34b03f9`
 <!-- recent-commits:end -->
