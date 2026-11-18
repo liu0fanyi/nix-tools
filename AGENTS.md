@@ -542,6 +542,19 @@ podman image prune -f          # 仅删 <none> 悬空镜像，不动有 tag 的
      `/tmp/disk-report-20261118.json`；总纲只同步摘要。
 
 
+- 2026-11-18（第二轮，用户授权继续清理）：系统盘79%→78%、可用89.3GiB，
+  本轮窗口净释放4.9GiB；`/data` 78%→70%、可用132.6GiB，净释放34.9GiB。
+  1. 清理无打开文件的 Gradle 四个版本/依赖缓存及 Nix tarball/eval 缓存，合计约5GiB。
+     同期外部 Nix optimise 已于本轮删除窗口前结束，未将此前空间变化计入本轮净释放。
+  2. 清理 ESP 公共 ccache 16个分片约0.6GiB，保留 SDK、工具链和缓存控制文件。
+  3. 仅逐文件删除 Git 未跟踪且忽略的编译中间文件：esp32-p4-sip 128,954个（17.1GiB）、sip-rk3506 22,552个（16.4GiB）、esp32-p4-sanotts 4,782个（0.8GiB）。
+     CMake 限带缓存及构建脚本标记的 esp-idf/CMakeFiles 对象和静态库；Rust 限带 Cargo
+     缓存标记和 fingerprint 的 deps/增量中间文件，保留最近48小时文件。
+     核对无活跃构建、打开文件及候选与挂载/Nix根无交集，逐文件复核身份后删除。
+  4. 固件、发布包、配置、日志、源码、SDK、已登记的生成结果、历史系统代、Podman
+     与个人资料保留。uv 有文件占用，保留。详细本机报告为 `/tmp/disk-precise-report-second-20261118.json`。
+
+
 ## Clip 规格归属
 
 按用户绑定维护决定，clipboard-sync 子模块的功能规格统一位于本仓库 specs/005-clipboard-core、006-clipboard-reliability、007-clipboard-release。子模块只留手册与指向本仓库的入口，代码/Git/构建保持独立。其他产品仍在各自仓库管理规格。本规则明确恢复既有父仓库规格归属，不恢复已经取消的 dsh Web 或 Clip 2 分钟过期需求。
