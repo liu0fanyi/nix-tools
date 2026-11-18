@@ -5,24 +5,28 @@
   username,
   inputs,
   isNixOS ? false,
+  osConfig ? null,
   ...
 }:
 let
   scaling = config.features.desktopScaling;
   toolPkgs = inputs.tool-updates.legacyPackages.${pkgs.stdenv.hostPlatform.system};
+  isLiuBigpc = isNixOS && osConfig != null && osConfig.networking.hostName == "liu-bigpc";
+  syncPackage = if isLiuBigpc then toolPkgs.syncthing else pkgs.syncthing;
+  vaultPackage = if isLiuBigpc then toolPkgs.keepassxc else pkgs.keepassxc;
   dshNode = pkgs.callPackage ./packages/dsh-node.nix { };
   qtX11Flags = lib.optionalString scaling.enable ''
     --set QT_AUTO_SCREEN_SCALE_FACTOR 1 \
     --set QT_SCALE_FACTOR_ROUNDING_POLICY PassThrough
   '';
   # pnpm 官方 npm 平台包；SHA512 对应 registry.npmjs.org 的 dist.integrity。
-  # 固定原生 12.14.0，避免独立 nixpkgs 渠道较旧的 12.9.0 漏掉所需修复。
+  # 固定原生 12.21.0，避免独立 nixpkgs 渠道较旧的 12.9.0 漏掉所需修复。
   pnpmPackage = pkgs.stdenvNoCC.mkDerivation {
     pname = "pnpm";
-    version = "12.14.0";
+    version = "12.21.0";
     src = pkgs.fetchurl {
-      url = "https://registry.npmjs.org/@pnpm/exe.linux-x64-musl/-/exe.linux-x64-musl-12.14.0.tgz";
-      hash = "sha512-btZiZ2Ot0llKK1ndSfA5i3IRX7/S0VrmzseNH/BJ4c+Cady+S81H6vvU1zByggHMyqQhC8OgxO5PiIY7D9bH0Q==";
+      url = "https://registry.npmjs.org/@pnpm/exe.linux-x64-musl/-/exe.linux-x64-musl-12.21.0.tgz";
+      hash = "sha512-MnC5vpIXYubhDZCgCwlfJMg7Cg6HupN2IuouT9gD/tUmOfVdQYqeyYccWbthyo/Jeto8de1oQlxeRN1+1Hl2DQ==";
     };
     nativeBuildInputs = [ pkgs.installShellFiles pkgs.makeWrapper ];
     dontConfigure = true;
@@ -46,17 +50,42 @@ let
     meta = pkgs.pnpm.meta // {
       platforms = [ "x86_64-linux" ];
       sourceProvenance = [ lib.sourceTypes.binaryNativeCode ];
-      changelog = "https://github.com/pnpm/pnpm/releases/tag/v12.14.0";
+      changelog = "https://github.com/pnpm/pnpm/releases/tag/v12.21.0";
+    };
+  };
+  # 官方二进制比 tool-updates 中的 gh 更新，保留 man 页和 shell 补全。
+  ghPackage = pkgs.stdenvNoCC.mkDerivation {
+    pname = "gh";
+    version = "2.105.0";
+    src = pkgs.fetchurl {
+      url = "https://github.com/cli/cli/releases/download/v2.105.0/gh_2.105.0_linux_amd64.tar.gz";
+      hash = "sha256-eeerXbc4xId3tpbjdPi0KPBkfev7Qk9E0vQmNwQH/i8=";
+    };
+    nativeBuildInputs = [ pkgs.installShellFiles ];
+    dontBuild = true;
+    installPhase = ''
+      runHook preInstall
+      install -Dm755 bin/gh "$out/bin/gh"
+      installManPage share/man/man1/*.1
+      installShellCompletion --cmd gh \
+        --bash <(bin/gh completion -s bash) \
+        --fish <(bin/gh completion -s fish) \
+        --zsh <(bin/gh completion -s zsh)
+      runHook postInstall
+    '';
+    meta = toolPkgs.gh.meta // {
+      platforms = [ "x86_64-linux" ];
+      sourceProvenance = [ lib.sourceTypes.binaryNativeCode ];
     };
   };
   # 单独更新 uv 官方静态发行包，避免刷新系统 nixpkgs 或本机编译 Rust。
   # 固定版本及下载哈希；programs.uv 仍管理现有工具与 Python 配置。
   uvPackage = pkgs.stdenvNoCC.mkDerivation {
     pname = "uv";
-    version = "0.13.1";
+    version = "0.13.9";
     src = pkgs.fetchurl {
-      url = "https://github.com/astral-sh/uv/releases/download/0.13.1/uv-x86_64-unknown-linux-musl.tar.gz";
-      hash = "sha256-bIYECo8EWrmtyePsTNr6A/0A6amI7SvyiXHH/C0N69A=";
+      url = "https://github.com/astral-sh/uv/releases/download/0.13.9/uv-x86_64-unknown-linux-musl.tar.gz";
+      hash = "sha256-WMz18XkrilqI0BvJEOoTGos9tKMZoXrV+tdeCEWj4nE=";
     };
     nativeBuildInputs = [ pkgs.installShellFiles ];
     dontConfigure = true;
@@ -74,24 +103,24 @@ let
     meta = pkgs.uv.meta // {
       platforms = [ "x86_64-linux" ];
       sourceProvenance = [ lib.sourceTypes.binaryNativeCode ];
-      changelog = "https://github.com/astral-sh/uv/releases/tag/0.13.1";
+      changelog = "https://github.com/astral-sh/uv/releases/tag/0.13.9";
     };
   };
-  # Zen 上游 1.23.3b 的 flake 下载哈希错误；本次下载的摘要已与官方
+  # Zen 发行包摘要与官方
   # GitHub Release asset.digest 核对。固定官方摘要，不跳过 Nix 校验。
   zenUnwrapped = inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.zen-browser-unwrapped.overrideAttrs (old: {
     src = pkgs.fetchurl {
       url = "https://github.com/zen-browser/desktop/releases/download/${old.version}/zen.linux-x86_64.tar.xz";
-      hash = "sha256-uyBF0+IWVNQP6EElAJLurf0sH8gx7vtQkiJ3PIvcoUk=";
+      hash = "sha256-vPfkMWDs/l8plT7SqYTnqAKKWPLsDjEU02u5BNX1zoA=";
     };
   });
   # Zen 的上游包装未启用 FFmpeg，且会用 Zen 自身版本选择解码库。
-  # 本次核心为 Gecko 158；显式提供核心版本和 withFFmpeg，选择 ffmpeg_9。
+  # 本次核心为 Gecko 160；显式提供核心版本和 withFFmpeg，选择 ffmpeg_9。
   zenBrowser = pkgs.wrapFirefox (
     zenUnwrapped
     // {
       withFFmpeg = true;
-      version = "158.0";
+      version = "160.0";
     }
   ) {
     pname = "zen-browser";
@@ -277,7 +306,7 @@ in
         '';
       })
       # GitHub CLI（创建/推送仓库、管理 issues 等）
-      toolPkgs.gh
+      (if isLiuBigpc then ghPackage else toolPkgs.gh)
       ## 解压工具（zip/7z/rar 等通用格式；tar/gzip/xz 系统已有）
       unzip
       zip
@@ -290,8 +319,8 @@ in
       # 见 ensureDshLatest 下方注释）。由 Nix 固定官方平台包，不与 npm -g 重复安装。
       pnpmPackage
       # Cross-device encrypted credential vault and its sync daemon.
-      keepassxc
-      syncthing
+      vaultPackage
+      syncPackage
       # yazi
       bottom
     ])
@@ -874,7 +903,7 @@ in
       Wants = [ "network-online.target" ];
     };
     Service = {
-      ExecStart = "${pkgs.syncthing}/bin/syncthing serve --no-browser --no-restart --log-format-timestamp=\"\"";
+      ExecStart = "${syncPackage}/bin/syncthing serve --no-browser --no-restart --log-format-timestamp=\"\"";
       UMask = "0077";
       # The vault is shared only with explicitly paired trusted peers.  Other
       # LAN devices can still be paired later; public discovery, relays and
@@ -884,7 +913,7 @@ in
       ExecStartPost = "${pkgs.writeShellScript "syncthing-lan-settings" ''
         set -eu
         attempts=0
-        while ! ${pkgs.syncthing}/bin/syncthing cli config options natenabled set false >/dev/null 2>&1; do
+        while ! ${syncPackage}/bin/syncthing cli config options natenabled set false >/dev/null 2>&1; do
           attempts=$((attempts + 1))
           if [ "$attempts" -ge 30 ]; then
             echo "Syncthing API did not become ready for LAN-only settings." >&2
@@ -892,9 +921,9 @@ in
           fi
           ${pkgs.coreutils}/bin/sleep 1
         done
-        ${pkgs.syncthing}/bin/syncthing cli config options global-ann-enabled set false
-        ${pkgs.syncthing}/bin/syncthing cli config options relays-enabled set false
-        ${pkgs.syncthing}/bin/syncthing cli config options local-ann-enabled set true
+        ${syncPackage}/bin/syncthing cli config options global-ann-enabled set false
+        ${syncPackage}/bin/syncthing cli config options relays-enabled set false
+        ${syncPackage}/bin/syncthing cli config options local-ann-enabled set true
       ''}";
       Restart = "on-failure";
       RestartSec = 5;
