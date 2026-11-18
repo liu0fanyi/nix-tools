@@ -27,7 +27,5 @@
     ./mpv.nix
     # wayland need newer linux try later
     # ./rustdesk.nix
-    # Cursor AI 代码编辑器（官方 Electron/VSCode AppImage 二进制与 Wayland/fcitx5 支持）
-    ./cursor.nix
   ];
 }
