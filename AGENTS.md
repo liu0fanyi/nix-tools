@@ -529,6 +529,19 @@ podman image prune -f          # 仅删 <none> 悬空镜像，不动有 tag 的
      `/tmp/disk-clean-second-*-20261116*`，汇总`/tmp/disk-clean-second-report-20261116.json`。
 
 
+- 2026-11-18（用户授权清理系统盘和 `/data`）：系统盘85%→81%，可用约77.4GiB，
+  占用净下降约16.6GiB；数据盘92%→78%，可用约97.7GiB，占用净下降约61.4GiB。
+  1. 确认宿主无活跃构建后执行普通 Nix GC，回收目标上限20GiB。Nix报告
+     `5336 store paths deleted, 12.1 GiB freed`。逐项对比当前系统与系统/用户profile链接，历史代保留。
+  2. 清理无打开文件的 Codex 运行时缓存约1.7GiB，保留缓存根目录和聊天资料。
+  3. `/data` 清理10个带 Cargo 缓存标记、Git忽略且未跟踪的 `target`，主要来自
+     DUFS Plus、知识卡和 Tag All。逐项复核无近期写入、安装包、签名、打开文件、挂载或Nix GC根。
+     保留 Bevy、xiaoqiang、源码、个人资料、固件/签名发布目录及审计产物；相关缓存可重建。
+  4. Podman 保持5.8.7，无悬空镜像和残留构建容器，未进行清理或迁移。
+     239条镜像标签/ID记录、5个服务容器状态逐项核对不变。本机报告为
+     `/tmp/disk-report-20261118.json`；总纲只同步摘要。
+
+
 ## Clip 规格归属
 
 按用户绑定维护决定，clipboard-sync 子模块的功能规格统一位于本仓库 specs/005-clipboard-core、006-clipboard-reliability、007-clipboard-release。子模块只留手册与指向本仓库的入口，代码/Git/构建保持独立。其他产品仍在各自仓库管理规格。本规则明确恢复既有父仓库规格归属，不恢复已经取消的 dsh Web 或 Clip 2 分钟过期需求。
