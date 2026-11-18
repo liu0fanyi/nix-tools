@@ -1211,6 +1211,16 @@ Nix 属性名为 zlib-cli，运行命令为 zlib；不替换压缩库 pkgs.zlib�
 
 - [x] 清理确认闲置的 Buildah 临时层及缓存、9份旧 atop 日志和6个工程的 Cargo 缓存，核对容量和镜像状态；详细记录见 AGENTS.md 第七节。
 
+## ClashTUI 订阅节点延迟显示更新（CT，2026-11-18）
+
+- [x] CT1：确认 0.3.1 未读取提供方节点详情；固定上游 `8eb76a1253161434ae8d5c0ad68821cb84a7cd12`（0.3.2 开发版），接入系统包与独立 `.#clashtui` 构建入口。
+- [x] CT2：构建客户端并验证提供方相关回归测试、完整 liu-bigpc 系统与 Home Manager generation，以及已有服务与权限选项。
+- [ ] CT3：用户普通终端手动应用系统，重新打开 clashtui，确认各订阅节点显示延迟或 FAIL，并验收 `at` 批量测速。
+
+更新仅涉及客户端；mihomo、订阅与当前代理选择保持原样。Holytech 的线路连接异常独立于显示问题，不作为客户端阶段完成条件。
+
+验证：上游测试355通过、0失败、1忽略；版本检查为0.3.2。临时配置连接现用mihomo的真实TUI已显示`Holy-JP-A [Vless] FAIL`、`Holy-JP-CF-A [Vmess] 3024ms`等节点明细，未切换节点；临时进程已退出。客户端产物`/nix/store/5lzc6vxf75qjlnn7sc26nrdh79rc4r77-clashtui-0.3.2`；完整系统`/nix/store/bnmrpvg1x83yd3az730dj97av81nasgh-nixos-system-liu-bigpc-26.11.20260922.b6c98e9`；HM generation`/nix/store/7crxf77vci4ff1jnksc14gpn26h0z92m-home-manager-generation`。系统候选中的clashtui指向新包，HM备份变量、数位笔ExecStart与input/uinput组、uinput模块及udev选项均已检查。日志与界面捕获位于`/tmp/clashtui-*20261118*`。CT剩余1项CT3，用户运行`nu rerun.nu liou --host liu-bigpc`后重开客户端验收；未代为switch。
+
 ## Tag Browser 旧验收档案清理（2026-11-18）
 
 - [x] 复核并清理60份闲置超过48小时的隔离测试档案，详情见 AGENTS.md 第七节。

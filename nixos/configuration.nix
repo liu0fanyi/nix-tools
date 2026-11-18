@@ -458,7 +458,7 @@ in
     # WiFi 选择器（Mod+N，fuzzel 界面；nmtui/nmcli 亦可直接使用）
     networkmanager_dmenu
     # 代理的 TUI 管理工具。
-    clashtui
+    (import ../packages/clashtui.nix { inherit pkgs; })
     # clashtui 配置和 root systemd 服务均使用此系统级 mihomo 路径。
     mihomo
     # mihomo auto-route 需要 nft 命令（fwmark 打标 + DNS 劫持）

@@ -147,6 +147,7 @@
       # Expose the Home Manager CLI from the same locked input as the modules.
       # `nix run .#home-manager` therefore cannot drift to a registry nixpkgs.
       packages.${system} = {
+        clashtui = import ./packages/clashtui.nix { inherit pkgs; };
         home-manager = home-manager.packages.${system}.home-manager;
         zlib-cli = pkgs.callPackage ./home-manager/packages/zlib-cli.nix { };
         clipboard-sync = clipboardSyncPackage;
