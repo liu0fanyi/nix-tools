@@ -2,7 +2,7 @@
 
 ## 当前情况
 - [Screen Mark 0.2.0 已签名发行，完整 PC/HM 构建通过，待用户应用桌面更新。](010-host-configuration/tasks.md#screen-mark-020-发行)
-- [知识卡 0.1.16 已发行，截图结果在一个框内校对，PC 安装候选已验证。](014-application-entry-boundary/tasks.md#知识卡-0115)
+- [知识卡 0.1.16 带 Helix 诊断及截图漏转自动重试，PC 安装候选已验证。](014-application-entry-boundary/tasks.md#知识卡-0116)
 - [Tag Browser nix.137 已签名发行，待本机更新重开。](014-application-entry-boundary/tag-browser-nix137-install-results.json)
 - [共享 Helix 已上线 PC/NUC 前端，知识卡 0.1.10 固定到 PC 安装配置，完整系统候选已验证。](014-application-entry-boundary/tasks.md#共享-helix-正式发布2026-11-19)
 - [NUC 私有 Workspace AI 已上线，知识卡 0.1.9 和 Tag Browser nix.133 的 PC 安装配置与完整候选通过验收。](014-application-entry-boundary/tasks.md#nuc-workspace-ai-与桌面应用发行2026-11-19)
