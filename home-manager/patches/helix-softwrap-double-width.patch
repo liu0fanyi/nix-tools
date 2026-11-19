@@ -1,0 +1,47 @@
+Fix Helix soft-wrap dropping double-width graphemes at the right edge.
+
+Upstream: https://github.com/helix-editor/helix/issues/6585
+A double-width grapheme (e.g. the CJK punctuation "，" or "。") that starts
+in the last text column is never drawn: TextRenderer::column_in_bounds
+requires `col + width <= viewport_width`, but DocumentFormatter only wraps
+once the *start* column reaches the viewport width, so the grapheme is laid
+out one column too far right and silently disappears. With an odd text width
+or mixed-width text this happens often, which is why it shows up after
+increasing the font size in the terminal.
+
+Fix: wrap before the grapheme when `col + grapheme width` would exceed the
+viewport. For a word that is already longer than `max_wrap` the buffered
+text is left on the current line and the line break happens on the next
+call, matching the existing long-word path; wrapping the whole buffer would
+move the finished line down and still clip the grapheme.
+Based on https://github.com/helix-editor/helix/pull/15712 (open).
+
+--- a/helix-core/src/doc_formatter.rs
++++ b/helix-core/src/doc_formatter.rs
+@@ -395,7 +395,25 @@
+                     word_width = self.wrap_word();
+                     col = self.visual_pos.col + word_width;
+                 }
+-                Ordering::Less => (),
++                Ordering::Less => {
++                    // A double-width grapheme that starts in the last column would
++                    // be skipped by the renderer (column_in_bounds requires
++                    // col + width <= viewport_width), hiding e.g. CJK punctuation
++                    // at the right edge. Wrap before that can happen.
++                    let viewport_width = self.text_fmt.viewport_width as usize;
++                    if self
++                        .peek_grapheme(col, char_pos)
++                        .is_some_and(|grapheme| col + grapheme.width() > viewport_width)
++                    {
++                        if word_width > self.text_fmt.max_wrap as usize {
++                            // Long word: fill the current line and break here.
++                            // Wrapping the whole buffer would move the finished
++                            // line down and still clip the last grapheme.
++                            return;
++                        }
++                        word_width = self.wrap_word();
++                    }
++                }
+             }
+ 
+             let Some(grapheme) = self.next_grapheme(col, char_pos) else {

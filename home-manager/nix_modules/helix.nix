@@ -1,6 +1,14 @@
 { config, lib, pkgs, theme, ... }:
 let
   imeEnabled = config.features.fcitx5.enable;
+  # Helix 的软换行在行尾会丢掉双宽字符：双宽标点（，。等）若正好落在
+  # 最后一列，渲染器会因 col + width > viewport 而整字不画，表现为
+  # “放大字号后最右边的标点看不见”。用补丁修掉，原因见补丁头部注释与
+  # upstream issue #6585。
+  helixUnwrapped = pkgs.helix-unwrapped.overrideAttrs (old: {
+    patches = (old.patches or [ ]) ++ [ ../patches/helix-softwrap-double-width.patch ];
+  });
+  helixPackage = pkgs.helix.override { "helix-unwrapped" = helixUnwrapped; };
   # Keep Rime's selected engine/schema intact: only deactivate the framework.
   ime = pkgs.writeShellScript "helix-ime" ''
     [ -n "''${HELIX_IME_DIR:-}" ] || exit 0
@@ -34,7 +42,7 @@ let
   launcher = pkgs.writeShellScript "hx-ime" ''
     # CLI queries and pipelines must not change the desktop input method.
     if [ ! -t 0 ] || [ ! -t 1 ]; then
-      exec ${pkgs.helix}/bin/hx "$@"
+      exec ${helixPackage}/bin/hx "$@"
     fi
     export HELIX_IME_DIR
     HELIX_IME_DIR=$(${pkgs.coreutils}/bin/mktemp -d "''${XDG_RUNTIME_DIR:-''${TMPDIR:-/tmp}}/helix-ime.XXXXXXXX")
@@ -44,16 +52,16 @@ let
     }
     trap cleanup EXIT
     ${ime} normal
-    ${pkgs.helix}/bin/hx "$@"
+    ${helixPackage}/bin/hx "$@"
   '';
   imePackage = pkgs.symlinkJoin {
     name = "helix-fcitx5";
-    paths = [ pkgs.helix ];
+    paths = [ helixPackage ];
     postBuild = ''
       rm "$out/bin/hx"
       ln -s ${launcher} "$out/bin/hx"
     '';
-    meta = pkgs.helix.meta;
+    meta = helixPackage.meta;
   };
   restoreIme = ":sh ${ime} insert";
   saveIme = ":sh ${ime} normal";
@@ -68,7 +76,7 @@ let
 in {
   programs.helix = {
     enable = true;
-    package = lib.mkIf imeEnabled imePackage;
+    package = if imeEnabled then imePackage else helixPackage;
     settings = {
       theme = "gruvbox_dark_hard";
       editor = {
