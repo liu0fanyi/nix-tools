@@ -717,3 +717,7 @@ PC 单框校对版已通过签名缓存、完整系统和 Home Manager 候选以
 ## 知识卡 0.1.16
 
 PC 正式签名包包含 Helix 输入与渲染滚动诊断及截图漏转自动重试。Cachix latest、完整系统和 Home Manager 构建已核对，菜单和 Ctrl+Alt+K 指向 0.1.16。用户自行 rerun。
+
+### Tag Browser nix.138
+
+固定签名包并更新 PC 配置的 `tag-browser-src`，完整 `liu-bigpc` 配置构建通过。跨节点目录移动配套服务已在 PC／NUC 激活。由用户按日常流程更新系统并重开浏览器。[发行回执](../../../tag-browser/specs/049-shared-leptos-ui/pc-nix138-release-results.json)
