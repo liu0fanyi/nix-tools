@@ -685,3 +685,7 @@ PC 与 NUC 的 DUFS 已激活共享 Helix，旧静态资源和现用后端继续
 ## Tag Browser nix.135
 
 新签名包和仅更新浏览器依赖锁后的 PC 系统候选均已验收。工作区服务模板和 MIME 关联通过对照，用户执行系统更新与浏览器完整重开。[消费者回执](tag-browser-nix135-install-results.json)
+
+## Tag Browser nix.136
+
+- [x] 锁定签名正式包，验证 PC 系统候选和原生入口。侧栏单排筛选和读取时布局稳定已在实际 Firefox 验证。系统待本机更新并重开应用。[验收回执](tag-browser-nix136-install-results.json)
