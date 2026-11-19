@@ -689,3 +689,7 @@ PC 与 NUC 的 DUFS 已激活共享 Helix，旧静态资源和现用后端继续
 ## Tag Browser nix.136
 
 - [x] 锁定签名正式包，验证 PC 系统候选和原生入口。侧栏单排筛选和读取时布局稳定已在实际 Firefox 验证。系统待本机更新并重开应用。[验收回执](tag-browser-nix136-install-results.json)
+
+## 知识卡 0.1.11
+
+PC 已固定 Cachix 签名包。完整系统和 Home Manager 候选通过，应用菜单和 Ctrl+Alt+K 指向新版。用户运行 rerun 后激活。
