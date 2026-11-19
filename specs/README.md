@@ -1,6 +1,7 @@
 # Nix 配置与发布工具
 
 ## 当前情况
+- [共享 Helix 已上线 PC/NUC 前端，知识卡 0.1.10 固定到 PC 安装配置，完整系统候选已验证。](014-application-entry-boundary/tasks.md#共享-helix-正式发布2026-11-19)
 - [NUC 私有 Workspace AI 已上线，知识卡 0.1.9 和 Tag Browser nix.133 的 PC 安装配置与完整候选通过验收。](014-application-entry-boundary/tasks.md#nuc-workspace-ai-与桌面应用发行2026-11-19)
 - [Helix软换行双宽字符补丁的完整PC/HM构建通过；Agent入口已移除历史流水并精简为操作规则，构建指南改为导航。](010-host-configuration/tasks.md#helix-补丁与-agent-入口精简hp2026-11-19)
 - [Holytech已改用完整原始订阅格式并热重载，自动更新保留REALITY公钥；正式台湾A/B测速371/467ms，当前仍选择DMIT。](010-host-configuration/tasks.md#holytech-订阅-reality-参数恢复hu2026-11-19)
@@ -33,6 +34,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-19 · Pin the verified Workspace AI desktop clients · `b2d42ef`
 - 2026-11-19 · 登记 Helix 补丁与 Agent 入口精简状态 · `15888b2`
 - 2026-11-19 · 精简 Agent 操作入口并移除历史清理流水 · `30ce1d1`
 - 2026-11-19 · 修复 Helix 软换行时右侧双宽字符丢失 · `564c4e9`
@@ -40,5 +42,4 @@
 - 2026-11-19 · 修复 Holytech 订阅遗漏 REALITY 参数 · `b040426`
 - 2026-11-19 · Register the private Workspace AI route in the existing release transaction · `d66a177`
 - 2026-11-19 · Package an optional private Workspace AI service for NUC · `d52073b`
-- 2026-11-18 · Update Knowledge Cards desktop package to 0.1.8 · `ac0f6a8`
 <!-- recent-commits:end -->

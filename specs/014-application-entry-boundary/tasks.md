@@ -673,3 +673,7 @@ nix.126已发行并更新消费者：[当前安装与实际交互证明](tag-bro
 ### NUC Workspace AI 与桌面应用发行（2026-11-19）
 
 NUC 已激活独立 Workspace AI 服务与私有工作区网关，真实公式识别和标签建议均通过，沿用现有 DUFS 前端。PC 固定知识卡 0.1.9 与 Tag Browser nix.133，两者签名缓存、完整系统和 Home Manager 构建通过，验证菜单及知识卡快捷键。待用户手动运行 rerun。Android 知识卡正式渠道已发布，待用户安装。
+
+### 共享 Helix 正式发布（2026-11-19）
+
+PC 与 NUC 的 DUFS 已激活共享 Helix，旧静态资源和现用后端继续服务。知识卡 0.1.10 已发布并固定 PC 包，完整系统与 Home Manager 候选通过，菜单与 Ctrl+Alt+K 指向新版。由用户自行运行 rerun。Android 正式渠道已发布。
