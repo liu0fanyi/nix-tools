@@ -27,7 +27,7 @@ Shift统一表示带编辑；录屏两种组合都能停止正在录制的视频
 5. Ctrl+S另存到 `~/Pictures/Screenshots/Edited-*.png`，拒绝覆盖已有文件。
    Ctrl+Q或关窗退出；未保存修改需Enter确认放弃或Esc取消。临时原图退出后清理。
 
-Cmd+D菜单搜索Screen Mark，Ctrl+O打开PNG，Ctrl+V导入剪贴板PNG；工具栏可见，不用寻找隐藏橡皮。
+Cmd+D 菜单搜索 Screen Mark。Ctrl+O 打开 PNG 或 JPEG，Ctrl+V 导入剪贴板 PNG。按 G 手动调色，悬停滑块滚动微调。
 工具仅按需启动，连续触发不会打开多个选区/编辑器。产品规格在
 `/data/project/screen-mark/specs/001-screenshot-editor/`；默认打开合成测试图，实际截图由快捷键传入。
 

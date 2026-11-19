@@ -403,6 +403,13 @@ HM 3kzmsikh4r3xzqq9kmy3gc2mhnylma0x构建通过，home-path命令及desktop Exec
 产品功能权威规格在/data/project/screen-mark/specs/，本仓仅管理安装与接线。当前发行pin以packages/screen-mark.nix为准；共享库17测试、本产品9测试/Clippy和正式GUI/tablet-v2回归通过，运行闭包由官方Nix缓存与应用Cachix提供且签名可信。
 当前手感已由用户确认；专项检查不因总体反馈自动勾选。Agent不执行switch，保留既有AGENTS、flake.lock、home.nix改动。
 
+## Screen Mark 0.2.0 发行
+
+- [x] 固定 Cachix 签名包 `/nix/store/x75860n5c35i8r9rxc2bwqsrc858yrr2-screen-mark-0.2.0`，核对 rerun 的缓存求值、查找和预取。
+- [x] 构建完整系统 `/nix/store/fqqdbqy6h1r85zb7jkmwinpalhd8lmsn-nixos-system-liu-bigpc-26.11.20260922.b6c98e9` 与 Home Manager `/nix/store/0k9a2xhnmafa5gwn38cjfsn0iq46zz2g-home-manager-generation`。两份产物的菜单、PNG/JPEG 类型和截图编辑包装器均指向 0.2.0。
+
+用户应用系统配置后，重新打开 Screen Mark 即可使用 JPEG、滚轮调色、高光与阴影和分色。产品验收见 Screen Mark 001。
+
 ## Tag Browser nix.30 安装输入
 
 - [x] 固定 product stable 74c8d27676bc39fcbfd94844b77c3c3eb32e00b9；本机、Release、Cachix 输出 /nix/store/bnx9dp6xpf6y0iakx3mgx9ai5cy6cvzv-tag-browser-0.1.0 一致，缓存受信任签名通过。71 项 Node 和 783 项 Firefox 检查通过，多窗口标签刷新、重复名称反馈已发行；dufs-plus 列表定位修复独立部署 NUC。

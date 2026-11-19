@@ -142,6 +142,8 @@ Constitution Check：独立产品规格、PC构建、无外部参考，缓存只
 ### Screen Mark共享核心发行
 Screen Mark的源码Nix输入锁定canvas-kit e5237aa70e628f585418cca19b4e91196880f0a9，系统仅fetchClosure读取成品bundle j1cvwiafizx98f8qzwj2n6szalsqldm8（core 0i6739bmprmv7hbnqhsfnq4830xsnrfy）。不把源码依赖加入宿主flake、不上传共享仓源码，原截屏/录屏入口不改；核对运行闭包签名、rerun独立预检和完整host/HM构建，不执行switch。
 
+0.2.0 调色发行沿用固定运行闭包和原桌面入口。先核对签名及 Pin，然后以隔离配置构建完整系统和 Home Manager，核对菜单 MIME 及截图编辑脚本解析到同一发行。
+
 ## YouTube 视频下载方案
 
 在 `home-manager/home.nix` 的 `home.packages` 添加 `pkgs.yt-dlp`。锁定 nixpkgs 包默认已启用 FFmpeg 与 JavaScript 支持，包含 Deno 和 yt-dlp-ejs，无需额外安装运行时或自写包装器。保留原有 FFmpeg。
