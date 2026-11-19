@@ -1,6 +1,7 @@
 # Nix 配置与发布工具
 
 ## 当前情况
+- [Helix软换行双宽字符补丁的完整PC/HM构建通过；Agent入口已移除历史流水并精简为操作规则，构建指南改为导航。](010-host-configuration/tasks.md#helix-补丁与-agent-入口精简hp2026-11-19)
 - [Holytech已改用完整原始订阅格式并热重载，自动更新保留REALITY公钥；正式台湾A/B测速371/467ms，当前仍选择DMIT。](010-host-configuration/tasks.md#holytech-订阅-reality-参数恢复hu2026-11-19)
 - [ClashTUI已固定含订阅节点测速修复的0.3.2开发版；355项测试、真实节点延迟显示及完整PC/HM构建通过，待用户手动应用。](010-host-configuration/tasks.md#clashtui-订阅节点延迟显示更新ct2026-11-18)
 - [工作站工具升级及移除 Cursor 的完整系统和 Home Manager 候选构建通过，PC 已运行对应系统，待日常桌面验收。dsh 插件已实机更新。Podman 6 按用户指示暂缓。](010-host-configuration/tasks.md#工作站工具更新与移除-cursor2026-11-18)
@@ -31,12 +32,12 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-19 · 精简 Agent 操作入口并移除历史清理流水 · `30ce1d1`
+- 2026-11-19 · 修复 Helix 软换行时右侧双宽字符丢失 · `564c4e9`
+- 2026-11-19 · 登记 Holytech 订阅恢复验收结果 · `f54634b`
 - 2026-11-19 · 修复 Holytech 订阅遗漏 REALITY 参数 · `b040426`
 - 2026-11-19 · Register the private Workspace AI route in the existing release transaction · `d66a177`
 - 2026-11-19 · Package an optional private Workspace AI service for NUC · `d52073b`
 - 2026-11-18 · Update Knowledge Cards desktop package to 0.1.8 · `ac0f6a8`
 - 2026-11-18 · Update Knowledge Cards desktop package to 0.1.7 · `51eeb04`
-- 2026-11-18 · 登记 ClashTUI 更新构建与待验收状态 · `78be95f`
-- 2026-11-18 · 更新 ClashTUI 以显示订阅节点延迟 · `ae1e1fa`
-- 2026-11-18 · 清理 60 份闲置 Tag Browser 测试档案 · `1b34bec`
 <!-- recent-commits:end -->
