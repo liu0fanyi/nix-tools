@@ -669,3 +669,7 @@ nix.126已发行并更新消费者：[当前安装与实际交互证明](tag-bro
 ## Tag Browser nix.132 与统一过滤器前端配套发行（2026-11-17）
 
 [安装候选及配套激活回执](tag-browser-nix132-install-results.json)：仅tag-browser-src锁定49a7bbd，实际liu-bigpc完整系统/HM及五模板、MIME、默认target/恢复顺序核对通过；原Helix/AGENTS等外部改动保持。PC/NUC新前端各12项真实隔离组合通过并按用户“上线”授权使用既有事务激活，816/834资产、认证、备份/inode、回退均核对，现用后端保持。用户仍需手动rerun及完整重开；无system switch、无Android操作。唯一执行计数为Tag Browser049/F5。
+
+### NUC Workspace AI 与桌面应用发行（2026-11-19）
+
+NUC 已激活独立 Workspace AI 服务与私有工作区网关，真实公式识别和标签建议均通过，沿用现有 DUFS 前端。PC 固定知识卡 0.1.9 与 Tag Browser nix.133，两者签名缓存、完整系统和 Home Manager 构建通过，验证菜单及知识卡快捷键。待用户手动运行 rerun。Android 知识卡正式渠道已发布，待用户安装。
