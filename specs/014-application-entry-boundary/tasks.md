@@ -693,3 +693,7 @@ PC 与 NUC 的 DUFS 已激活共享 Helix，旧静态资源和现用后端继续
 ## 知识卡 0.1.11
 
 PC 已固定 Cachix 签名包。完整系统和 Home Manager 候选通过，应用菜单和 Ctrl+Alt+K 指向新版。用户运行 rerun 后激活。
+
+## Tag Browser nix.137
+
+- [x] 锁定签名包并验证 PC 系统候选。修复切页跟随、顶栏徽标和侧栏范围提示。日常系统由用户更新后重开应用。[验收回执](tag-browser-nix137-install-results.json)
