@@ -1229,6 +1229,13 @@ Nix 属性名为 zlib-cli，运行命令为 zlib；不替换压缩库 pkgs.zlib�
 
 阶段HU剩余0项。完整12节点隔离测试9个至少成功一次，香港B/美国B/韩国SK两次超时，部分线路不稳定独立于订阅恢复；未自动选择Holytech节点。备份、配置校验和正式验收在`/tmp/holytech-apply-_3pc1vl3/`，完整隔离结果在`/tmp/holytech-full-vless-f700f4bx/results.json`。凭据只保留运行目录和git-crypt保护的`secrets/mihomo-config.yaml`，不写总纲。
 
+## Helix 补丁与 Agent 入口精简（HP，2026-11-19）
+
+- [x] HP1：核对并归档原有Helix双宽字符软换行补丁及Nix接入。完整liu-bigpc系统和Home Manager generation构建通过，产物hx版本25.07.1；本轮未重新进行中文标点边界的交互验收，也未执行switch。
+- [x] HP2：按用户要求将AGENTS从636行精简至71行，移除清理流水、历史故障复盘与重复说明；保留环境、部署、switch验证、SSH、安全及清理保护边界。build-agent-guide改为导航，文档相对链接检查通过，不另建清理流水文档。
+
+阶段HP变更核验剩余0项。完整系统`/nix/store/nknzkljf7zbp8fqp3c3in3ygskjivlb2-nixos-system-liu-bigpc-26.11.20260922.b6c98e9`，HM`/nix/store/ssmn13yvf7zf6v8sbkrszbbs0701k7lv-home-manager-generation`；构建与选项证据在`/tmp/helix-publish-*20261119*`。提交范围仅为Helix两文件、两份入口文档及本次进度记录；girl.md与ref/colorchecker24保持原样。用户后续需要应用系统时仍由普通终端手动rerun。
+
 ## Tag Browser 旧验收档案清理（2026-11-18）
 
 - [x] 复核并清理60份闲置超过48小时的隔离测试档案，详情见 AGENTS.md 第七节。

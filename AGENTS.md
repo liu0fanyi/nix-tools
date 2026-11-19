@@ -1,605 +1,71 @@
-# nix-tools 构建发布与 Agent 协作入口
+# nix-tools Agent 操作入口
 
-本文档是 Agent 在本仓库中的主要操作手册（Runbook）。核心架构约束与安全红线以 `.specify/memory/constitution.md`（项目宪法）为准。
+核心架构和安全边界以 [.specify/memory/constitution.md](.specify/memory/constitution.md) 为准。本文件只保留执行规则，不追加清理过程、历史操作记录或故障复盘。
 
----
+## 环境与职责
 
-## 一、环境角色与状态镜像协议
+- **PC**：`liu-bigpc`，仓库 `/home/liou/nix-tools`，产品源码默认在 `/data/project/dufs-plus`、`/data/project/tag-all`。代码编译、镜像构建和 Spec 设计只在 PC 执行。
+- **NUC**：`liou@nuc.local`，私有运行与存储环境；接收 PC 构建产物，不编译源码，不擅自执行 NixOS switch。
+- **Aliyun**：`root@47.93.153.102`，公网匿名只读环境；仅接收公开镜像，禁止传输私密数据、密钥和 Whisper 模型。
 
-1. **三端环境与角色定义**：
-   - **PC（本地开发工作站）**：当前 Agent 会话所在宿主环境（主机名 `liu-bigpc`）。控制仓库为 `/home/liou/nix-tools`，各产品源码位于 `/data/project/`（如 `dufs-plus`、`tag-all`）。拥有完备的 Nix、devenv、Rust、Node 与本地 Podman 工具链。**所有代码编译、镜像构建与 Spec 规格设计必须且只能在 PC 执行**。
-   - **NUC（家庭私有服务器）**：主机名 `nuc`（`liou@nuc.local`）。目标运行环境，仅通过 SSH 接收 PC 打包好的 Podman 镜像与静态 dist，作为服务运行与数据存储载体，绝不在此编译源码。
-   - **Aliyun（公网只读服务器）**：`root@47.93.153.102`。公网匿名只读运行环境，仅通过 SSH 接收 PC 打包好的 Docker 镜像，绝不在此编译源码，绝不存放私密数据。
+## 常用入口
 
-2. **权威源与状态镜像协议**：
-   - PC `/home/liou/nix-tools` 是代码与 Spec 规格的**唯一权威源**。
-   - **进度总纲**：代码或任务状态变化后，按共享 work-progress 技能维护本地 specs/README.md，再执行 `just sync-todos` 发布登记总纲和共享索引；不上传整套 specs/docs 或规则文件。
-   - 彻底废除旧的 SSH 读写 `a-next.md` 安排计划的方式，不另建脱离仓库的平行计划。
-
----
-
-## 二、常用命令与预演规则
-
-以下命令在 `/home/liou/nix-tools` 执行；已进入 devenv shell 时可省略前缀。
+在仓库根执行，进入 devenv 后可省略 `devenv shell --`：
 
 ```bash
-devenv shell -- just test                            # 本地单元与回归测试
-devenv shell -- just sync-todos                      # 按 work-progress 发布总纲（先 --dry-run）
-devenv shell -- just deploy nuc infra                # 部署 NUC 基础设施（Caddy/DUFS/Authelia等）
-devenv shell -- just deploy nuc frontend             # 部署前端
-devenv shell -- just deploy nuc tag-server           # 部署后端镜像
-devenv shell -- just deploy nuc all                  # 全量部署
-devenv shell -- just deploy aliyun all               # 阿里云全量部署
-devenv shell -- just -- deploy nuc all --dry-run     # 部署全流程预演（不真实切换）
-devenv shell -- just manage <操作>                   # NUC 运维管理入口
+devenv shell -- just test
+devenv shell -- just sync-todos --dry-run
+devenv shell -- just sync-todos
+devenv shell -- just -- deploy nuc all --dry-run
+devenv shell -- just deploy nuc all
+devenv shell -- just deploy aliyun all
+devenv shell -- just manage <操作>
 ```
 
-- **目标与组件**：目标 `nuc/aliyun` 必须明确；组件可用 `infra/frontend/tag-server/all/runtime-images`，省略组件时默认为 `infra`。`infra` 是基础设施发布，原 `config` 发布组件不再接受。
-- **管理器与预演**：管理器内部 `manage config` 是渲染配置，含义不同；NUC 运维入口为 `just manage <操作>`。全流程预演使用 `just -- deploy ... --dry-run`；`just --dry-run` 仅展开 recipe。
-
-### 本机宿主配置 switch（`rerun.nu`）不得由 Agent 直接执行
-
-`rerun.nu` 切换的是**用户当前正在使用的工作站系统**，属于用户本人的环境操作。**Agent 只说明改动并提醒用户在普通终端手动运行，不得代为执行。**
-
-- Agent 的正确行为：说明改了什么、给出用户要在普通终端执行的命令（`nu rerun.nu liou --host <当前主机名>`），然后停止，等用户反馈结果。
-- 需要验证配置是否正确时，Agent 用只读求值/构建核对产物（`nix eval`、`nix build --no-link`、`nix eval .#nixosConfigurations.<host>.config...`），不触发 switch。
-- 仅当用户明确要求并由 Agent 执行时，必须显式传 `--host <当前主机名>`，不得依赖默认值。
-
-理由与教训：`rerun.nu` 的 `--host` 曾固定默认为 `homebox`，在 `liu-bigpc` 上漏传即会构建并安装**另一台主机**的系统，把 `/nix/var/nix/profiles/system` 切到错误代，并尝试在 `/dev/sda` 安装 bootloader（2026-09-16 实际发生，需手工恢复 profile）。该默认值现已改为取当前主机名，并对未知主机名报错；即便如此，Agent 仍不承担用户的系统切换与回滚，执行权保留给用户。
-
-### DSH 沙箱下 `ssh`/`rsync` 失败与绕过（`ssh_config.d` 属主）
-
-**症状**：Agent 会话内执行任何 `ssh` 或 `rsync`（含 `just sync-todos`、部署）立即失败：
-
-```
-Bad owner or permissions on /nix/store/<hash>-systemd-<ver>/lib/systemd/ssh_config.d/20-systemd-ssh-proxy.conf
-```
-
-退出码 255，`mkdir`、`rsync` 全部报 `change_dir ... failed: No such file or directory` 或
-`errors selecting input/output files, dirs (code 3)`。
-
-**原因**：DSH 文件沙箱把 **workspace 之外**的文件属主统一伪装成 `nobody:nogroup`
-（`/etc/shadow`、`/nix/store/*` 均如此），且会话为 `no_new_privs`、无 sudo。
-`/etc/ssh/ssh_config` 通过 `Include` 加载该 store 文件，OpenSSH 10.5 校验属主后拒绝加载，
-于是配置解析整体失败。**这是会话沙箱的表象，不是主机真实故障，也不是仓库代码问题。**
-
-**绕过**（Agent 自行使用，不改仓库脚本）：显式指定用户配置，跳过 system 级 `Include`：
-
-```bash
-ssh -F ~/.ssh/config liou@nuc.local '...'
-rsync -e "ssh -F $HOME/.ssh/config" ... liou@nuc.local:/path
-```
-
-**`just sync-todos` 的沙盒替代**：共享工具调用 ssh/rsync 时，用临时 PATH 包装器给 ssh 加 `-F ~/.ssh/config`，仍运行同一个发布器，先 --dry-run 后正式同步。不手动恢复旧 specs/docs 镜像命令，不使用 --delete；目标只取中央登记表。不要改用户 SSH 配置或跳过主机密钥校验。
-
-**并发陷阱（2026-09-16 实测）**：连续快速建立多个 SSH/rsync 连接时，失败率显著上升，
-表现为上述 code 3 / code 11；单条命令重复执行 3 次均成功。因此**必须串行并加间隔**，
-失败时按 1.5×(尝试次数) 秒退避重试，不要并行跑多个 rsync。
-
-同样的 `-F` 绕过对 `just deploy` 等一切走 SSH 的流程适用；恢复正常 shell 后无需该参数。
-
-### 本机配置变更的验证义务（避免把错误留到用户 switch）
-
-Agent 在用户 switch 前必须**只读**验证到用户实际会走的那一步，不能只验证"单个包能构建"。
-2026-09-16/17 数位笔滚动功能连续踩中下面几个此类错误，全部由用户 switch 才发现：
-
-1. **`home.packages` 只接受目录，不接受单文件派生物。**
-   `pkgs.writers.writePython3` 产出**单个可执行文件**，装进 `home.packages` 会在构建
-   home-manager path 时失败：
-   ```
-   pkgs.buildEnv error: The store path ...-xxx is a file and can't be merged
-   into an environment using pkgs.buildEnv!
-   ```
-   必须用 `writePython3Bin`（产出带 `$out/bin/` 的目录）。
-   **教训**：验证必须覆盖 `home-manager-path` / `home-manager-generation` / 完整
-   `toplevel`，即 `nix build .#nixosConfigurations.<host>.config.system.build.toplevel`；
-   只 `nix build` 那个包本身发现不了这类错误。
-
-2. **非 Home Manager 管理的同名文件会让 HM 激活整体中止。**
-   手写遗留文件（如 `~/.dsh/hooks/*` 由更早的临时方案创建）与声明冲突时，HM 报
-   `Existing file '...' would be clobbered` 并 exit 1。**一次冲突会阻断整个 HM 激活**，
-   连带本次新增的用户服务（如 `pen-scroll.service`）也装不上，容易被误判成新功能的问题。
-   本仓库已在 `flake.nix` 设置 `home-manager.backupFileExtension = "hm-backup"`
-   （非破坏性改名备份）；求值确认方式：
-   ```bash
-   nix eval --json .#nixosConfigurations.<host>.config.systemd.services.home-manager-<user>.environment
-   # 应含 HOME_MANAGER_BACKUP_EXT=hm-backup
-   ```
-   该变量注入在 **systemd 单元环境**里，不在 generation 产物中，别在 store 里 grep。
-
-3. **给服务加设备权限：优先用 systemd 系统服务 + `SupplementaryGroups`，
-   不要指望用户服务的组。**（2026-09-17 依次实测，最终方案）
-   - `users.users.<name>.extraGroups` 只写 `/etc/group`；**附加组在登录时被捕获进
-     会话**，对已登录会话无效。
-   - 更隐蔽的是 **linger**：本机声明式创建 `/var/lib/systemd/linger/<user>`，
-     于是 `user@<uid>.service` **不随注销停止**、长期持有首次启动的组快照，
-     **"重新登录"也不会刷新它** —— 用户服务永远拿不到新组。排查时先看
-     `loginctl show-user <u> -p Linger`。
-   - 用户服务里也无法用 `SupplementaryGroups` 自救：**systemd --user 没有
-     `CAP_SETGID`**，服务以 **216/GROUP** 退出（[systemd#15659](https://github.com/systemd/systemd/issues/15659)）。
-   - udev `uaccess` 有优先级陷阱：执行点是 `73-seat-late.rules`，规则必须**早于**它；
-     `services.udev.extraRules` 固定落在 **99-local.rules** 太晚（[nixpkgs#308681](https://github.com/NixOS/nixpkgs/issues/308681)）。
-   **推荐做法**：需要设备权限的守护进程写成 `systemd.services.<name>`（系统服务），
-   用 `serviceConfig.SupplementaryGroups = [ ... ]` + `User = "<user>"`。PID 1 启动时
-   由 systemd 自己 `setgroups`，一次 switch 生效，不依赖会话/linger。
-   仅在交互式终端手工调试时才需要 `extraGroups`。
-
-4. **`evdev.uinput.UInputError` 派生自 `Exception`，不是 `OSError`。**
-   用 `except OSError` 保护时会漏掉它，服务表现为"启动即退出 + 无限重启"
-   （实测 restart counter 到 70），日志里只有裸 traceback。
-   凡是用 evdev uinput 的脚本，重试逻辑必须显式覆盖该类型；并且应当在
-   **抓取真实设备之前**先构造虚拟设备，避免失败时把用户设备 grab 住。
-
-5. **软链接分类、核心劫持防护与外部改动反哺规范（MIME 关联/输入法等）。**
-   - **两类软链接划分**：
-     - *静态开发配置*（Shell/Helix/Alacritty/Niri/Waybar/Git 等）：由 Nix 声明单向控制，外部应用绝不修改，直接软链接即可。
-     - *运行时动态配置*（`~/.config/mimeapps.list`、`~/.config/fcitx5/profile`）：外部应用（桌面、浏览器、输入法设置等）在运行时可能切断软链接写成普通文件。必须设 `force = true` 避免 switch 中断。
-   - **核心协议强制劫持（Anchor Protection）**：
-     - 当前 PC `liu-bigpc` 的 `http/https/html/xhtml` 固定为用户选择的 `tag-browser.desktop`（其他未安装 Tag Browser 的主机保持原默认浏览器）；`magnet/bittorrent` 强制固定为 `org.qbittorrent.qBittorrent.desktop`；`codex://` 锁定为 `chatgpt.desktop`；`baiduyunguanjia://` 锁定为 `baidunetdisk.desktop`。绝对禁止任何外部桌面程序随意篡改这套基线。
-   - **外部合法增量反哺机制**：
-     - 用户在 GUI 里新添加的合法关联（如将新文件类型默认用特定工具打开），严禁在 switch 时静默抹杀。
-     - 仓库提供 `python3 scripts/sync-mimeapps.py` 脚本，可在 switch 前检测脱离软链接的外部变动，拦截非法劫持，并支持 `--apply` 将增量合法项反哺写入 `home-manager/home.nix`。
-
-**验证清单（改动本机系统配置时逐项做）**：求值选项 → 构建 `toplevel` → 构建
-`home-manager-generation` → 确认新用户服务单元 `ExecStart` 指向预期 store 路径 →
-确认 system 侧组/内核模块/udev 规则求值正确。任何一步没做，都不得告诉用户"可以 switch 了"。
-
----
-
-## 三、构建与部署边界
-
-1. **组件职责**：
-   - `frontend`：调用 PC dufs-plus 的 `just build private/public`，备份、上传并校验前端。
-   - `tag-server`：调用 PC tag-all 的 `just build private/public <image>`，备份、传镜像、激活和验收。
-   - `infra`：备份并同步非密钥部署文件，PC 拉取并传输基础镜像，校验、应用容器配置并检查入口。包括 Caddy、DUFS；NUC 另有只读网关、Authelia、DDNS。不是从源码编译 Caddy。
-   - `all`：两个产品与基础设施一起发布；`runtime-images` 仅传输基础镜像，不切换容器。
-
-2. **单向调度防递归**：
-   - NUC 用 private + Podman，阿里云用 public + Docker。所有产品构建在 PC 执行；服务器只备份、加载和运行。
-   - 产品 `just deploy` 反向调用这里，因此这里**只能调用产品 `just build` 或经 023 验收的 `just build-nix private`，绝不能调用产品 `deploy`**，避免递归调用。
-   - 复杂 Python 配置/备份/激活/回滚代码保留，不要恢复旧 release-nuc/release-aliyun 等 Shell 包装或产品 .nu/.sh 构建包装。
-
-3. **源码与运行环境**：
-   - 默认源码目录为 `/data/project/dufs-plus` 和 `/data/project/tag-all`，可用 `--frontend-source` / `--tag-source` 显式指定。
-   - `TAG_PODMAN_URL` 可指定 PC 自己的 Podman 服务；桌面容器受限时使用 PC 宿主执行环境。
-
----
-
-## 四、安全与三种访问场景
-
-1. **访问场景隔离**：
-   - NUC `dufs-lan` 为认证读写，NUC `dufs` 为密码只读，阿里云为匿名只读。
-   - 认证、运行能力、写请求拦截和只读挂载由部署配置控制，不把 public 构建或前端 UI 隐藏当作安全边界。
-2. **绝对安全红线**：
-   - 绝对禁止向阿里云公网服务器传输私有数据、密钥或 Whisper 语音转写模型。
-   - 保护 Bevy 三个独立目录（`bevy-sketch`、`bevy-game`、`project-planner`），发布时严禁覆盖。
-   - 严禁在 NUC 上擅自执行 NixOS switch。
-
----
-
-## 五、镜像真实性与容灾边界
-
-1. **镜像校验**：
-   - DUFS 官方镜像标签为 `v0.46.0`（带 v）。
-   - Docker 29 可能以 manifest ID 表示镜像，与 Podman ID 不同时必须验证远端导出的实际配置字节摘要（Config Digest），严禁跳过校验或仅比较版本字符串。
-   - 真实生产验收和备份位置见 `deploy/docs/production-verification.md`。
-2. **非原子容灾**：
-   - 后端激活失败尝试镜像回滚，但不自动恢复数据库、前端或整个站点；发布不是多组件原子事务。
-   - 现有 NUC Compose 可能联动重建代理，部署后必须验收恢复。严禁跳过 SSH 主机密钥校验。
-
----
-
-## 六、文档发布与多端隔离约束
-
-1. **文档闭环**：
-   - 详细规格与手册保留仓库权威源；每次状态变动按共享 work-progress 技能更新本地总纲并由 `just sync-todos` 发布摘要。
-   - 本地 `README.md` 为入口，手册放 `docs/`。本文对应 `deploy/docs/build-agent-guide.md`；维护其本地副本，不将全文复制到 NUC。
-2. **目录保护隔离**：
-   - 不得覆盖 NUC `todos/` 根部的个人资料（待办、购物清单等）或其他工程资料。
-     原 `a-next.md` / `a-observe.md` / `a-done.md` 已于 2026-09-16 迁入各工程 specs 后删除，
-     未立项内容并入 `todos/a-杂鱼整理.md`；详见工作区 `AGENTS.md`，不要再写回这三个文件。
-   - 不得向 xiaoqiang 专用的 `/home/liou/dufs/` 重建本工程文档。容器发布流程不变。
-
-## 七、PC 磁盘清理（统一入口）
-
-**PC 磁盘清理一律记录在本节**，新增发现的可清理项、保护清单与操作记录都追加到这里，
-不再另建清理文档。背景：2026-09-16 根分区 `/dev/sdc4` 曾达 100%（399G/423G），
-执行 `nu clean.nu all` 后回到 50%。
-
-### 必须先查清再删
-
-清理前按此顺序定位，不要凭目录名猜：
-
-```bash
-df -h /                                  # 根分区占用
-du -xsh /home/liou/* /home/liou/.[!.]*   # 家目录大头
-du -xsh <大头>/* | sort -rh | head       # 逐层下钻
-lsof +D <目录>                           # 是否被进程占用
-```
-
-`du -x` 会跳过挂载点（`/data`、`/data-ssd`、`/boot` 是独立盘，不算根分区），
-排查根分区时**不要**对整个 `/` 用 `du -xsh /*`，否则会漏掉根分区本体。
-
-### 已知泄漏与可清理项
-
-| 位置 | 大小 | 性质 | 处理 |
-|---|---|---|---|
-| `~/.codex/.tmp/bundled-marketplaces/*.staging-*` | 36G | **泄漏**：1316 个 48M 临时安装目录，正式目录仅 260K | 删 `*.staging-*`，保留 `openai-bundled` |
-| Podman 悬空镜像（`<none>`） | ~38.8G 可回收 | 258 个镜像中 98% 可回收 | `podman system prune`，见下方保护清单 |
-| `~/.local/state/xiaoqiang-repo-audit/` | 20G | 历史清理备份快照（`*-cleanup-*`/`-recovery-*`） | 确认不再需要后按目录删 |
-| `~/nix-tools/clipboard-sync/mobile/` | 7.5G | Android 构建产物（`mobile/src-tauri/target`） | 可重编，按需删 |
-| `~/nix-tools/clipboard-sync/target/` | 2.2G | Rust 构建产物 | `cargo clean`，可重编 |
-| `~/.cache/codex-runtimes` | 1.8G | codex 运行期缓存 | 可删，会重新下载 |
-
-### 保护清单（严禁删除）
-
-- **SSD201 / RK3506 编译环境镜像**——保留用于交叉编译环境，删了要重建：
-  - `localhost/my-ssd201-rust:v1` (`b6c6c60eb5e3`, 6.12G)
-  - `localhost/sip-ssd201-validation:recovery`（同上 ID，同一镜像的别名）
-  - `localhost/sip-ssd201-validation:gitcrypt` (`ab55e6a2aed6`, 6.09G)
-  - `localhost/rk3506-rust:v1` (`1d76a74d215c`, 3.85G)
-  - `localhost/sip-rk3506-validation:gitcrypt`（同上 ID，别名）
-- `docker.io/authelia/authelia`、`caddy`、`haproxy`、`dufs`、`ddns-go`、`alpine`
-  —— NUC/阿里云部署用的基础镜像，由 `just deploy ... runtime-images` 管理。
-- `localhost/tag-server:public` / `:private`——当前发布指向的镜像。
-
-因此**不要**直接跑 `podman system prune -a`（会删掉上述基础镜像）。
-安全的做法是只清理悬空镜像并显式保留需要的：
-
-```bash
-podman image prune -f          # 仅删 <none> 悬空镜像，不动有 tag 的
-```
-
-`podman system df` 可查当前可回收量；258 个镜像里绝大多数是
-`tag-server:release-*` 历史构建与 `<none>` 中间层。
-
-**关于悬空镜像的实测结论（2026-09-16）**：`<none>` 大层（1.5–2.4G 那些）
-初看像垃圾，实际是 **SSD201/RK3506 构建过程的中间层**。但它们**并非活跃编译
-环境的一部分**——真正持有它们的是 buildah 中断残留的工作容器
-（`*-working-container`）。因此正确处理不是直接 `podman image prune`（会因
-"image is in use by a container" 失败），而是：
-
-1. `podman ps -a --external` 列出 buildah 残留容器（默认 `podman ps -a` 看不到）；
-2. 确认**没有 buildah/podman build 进程在跑**（`pgrep -af buildah`），
-   有活跃构建时**不要动**；
-3. `podman rm -f <容器>` 清掉残留，其持有的层随之下落，再 `podman image prune -f`。
-
-**注意**：删这些中间层会损失构建缓存，下次 SSD201/RK3506 构建要重新
-`cargo build`。若正在密集迭代该环境，可只删容器不删层。
-
-### 操作记录
-
-- 2026-09-16：根分区 100%，`nu clean.nu all` 清理 Nix 历史 generation，
-  释放约 199G（399G→200G），`/nix/store` 降至 56G。
-  原因未最终定位到单一来源，但 `nix-store --optimise` 与历史 generation 累积是主因。
-- 2026-09-16（第二轮）：根分区 45%，继续清理两个真实泄漏，共释放约 **64G**
-  （根分区 200G→151G，45%→38%）：
-  1. `~/.codex/.tmp/bundled-marketplaces/*.staging-*`：1316 个目录 36G→564K。
-     每个 staging 里的 `plugins/sites` 等子目录是 `dr-xr-xr-x`（codex 故意设的
-     只读防篡改），**直接 `rm -rf` 会报"权限不够"**；必须先
-     `chmod -R u+w <dir>` 再删。保留 `openai-bundled` 正式目录。
-  2. Podman：39.8G→12.9G。含 18 个 `tag-server:release-*` 历史 tag，
-     以及 buildah 残留容器（`*-working-container`，中断构建产物）——
-     正是它们持有那些删不掉的 `<none>` 大层。`podman ps -a` 默认看不到，
-     必须用 `podman ps -a --external` 列出后 `podman rm -f`。
-  清理前先给保护镜像打临时 tag（`podman tag <id> keep-protect:N`）可防误删；
-  注意 podman 会规范化为 `localhost/keep-protect:N`，grep 时别锚定 `^keep-protect:`。
-- 2026-09-16（第三轮）：继续清理构建产物与备份，释放约 **31G**
-  （根分区 151G→123G，38%→31%）：
-  1. `clipboard-sync/target`（2.2G，`cargo clean` 可重建）。
-  2. `clipboard-sync/mobile/src-tauri/target`（7.1G，Android 构建产物，可重建）
-     ——**只删 target，不要删整个 `mobile/`**，源码与 `node_modules` 保留。
-  3. `~/.cache/codex-runtimes`（1.8G，会重新下载）。
-  4. `~/.local/state/xiaoqiang-repo-audit/`（20G，9-12/9-13 的清理前快照，
-     含 `*.bundle`/`*.gitcrypt`/`*.tar`）。
-     删除前逐一核对 `/data/project/xiaoqiang/{sip_old,sip-rk3506,xiaozhi,sip}`
-     四个活跃仓库均存在且 9-13 后仍在提交，确认备份非唯一副本。
-     **教训**：这类「清理前备份」目录删除前必须先核对对应活跃仓库是否存在，
-     不能只看目录名——含 git bundle 的备份可能是某仓库的唯一历史。
-- 2026-10-01：根分区 69%（274G/423G），执行第一梯队清理，释放约 **143G**
-  （根分区 274G→131G，使用率降至 33%，可用空间升至 271G）：
-  1. `~/.codex/.tmp/bundled-marketplaces/*.staging-*`：3137 个临时安装目录
-     35G→98M（先 `chmod -R u+w` 再删，保留 `openai-bundled`）。
-  2. Podman：清理 273 个 buildah 残留容器（`*-working-container`）并执行
-     `podman image prune -f`，镜像存储由 124G 降至 14.7G，释放约 109G 悬空
-     中间层。严格保留 SSD201/RK3506 交叉编译镜像、生产基础镜像与活跃服务。
-- 2026-10-01（第二轮）：数据盘 `/data` 80%（347G/458G），清理第二梯队构建缓存，
-  释放约 **203G**（`/data` 347G→144G，使用率降至 34%，可用空间升至 291G）：
-  1. ESP-IDF 硬件固件多配置中间编译目录（`.build/`）：清理 13 个工程的 `.build`
-     目录，释放约 **56G**（大头包括 `xiaoqiang/esp32-p4-400m20s` 24G、`esp32-p4-cmt2300a` 14G、`esp32-p4-sip` 8.1G 等）。
-  2. Rust / Tauri 工程构建缓存（`target/`）：严格核对带有 `Cargo.toml` 与 `CACHEDIR.TAG`
-     的 19 个工程 `target/` 目录并予以清理，释放约 **140G**（大头包括 `bevy-game` 75G、
-     `device-bean-mobile` 13G、`tag-all` 8.6G、`xiaoqiang/tauri_config_page` 8.5G、`bevy-sketch` 8.2G、`dufs-plus` 7.9G 等）。
-     排查中特别注意并避开了 C 库硬件平台源码目录（如 `esp32-camera/target`）。
-
-
-- 2026-10-07：系统盘实测由 94%（377G/423G）降至 40%（160G/423G），
-  可用空间由 25G 升至 241G；本轮清理项目约 **172G**：
-  1. Codex `bundled-marketplaces`：确认无打开文件后，清理 1101 个超过一小时的
-     `openai-bundled.staging-*` 临时安装目录（先 `chmod -R u+w`），37G→136M；
-     保留正式 `openai-bundled` 和最近一小时目录。
-  2. Podman：确认没有活跃 buildah/cargo/podman build，删除 144 个 Storage 状态、
-     PID 为 0 的 `*-working-container`，再仅执行 `image prune -f`；镜像大小由
-     154.4GB 降至 19.48GB（约释放 135GB）。清理前后核对**全部原有镜像标签及
-     ID**，SSD201/RK3506、基础镜像、tag-server public/private 均保留，4 个运行
-     容器 ID 与运行状态保持不变，卷未清理。
-  3. 本会话直接调用 Podman 出现 user namespace/re-exec 错误，使用现有宿主服务
-     `podman --remote --url unix:///run/user/1000/podman/podman.sock` 完成查询与清理，
-     未执行 migrate/reset。未动源码、个人文件、数据盘或 Nix 历史 generations；
-     检查期间 Nix store 文件也发生外部删除，因此整体磁盘降幅不全归因于本轮操作。
-
-
-- 2026-10-07（菜谱流程精简）：按用户明确指令，逐文件核对并删除本次 B 站账号
-  209 个已下载原视频及 4 份试验输入副本，文件合计 21,139,164,975 字节。
-  删除审计留 Downloads；字幕、清单、旧菜谱和派生片段保留，其他课程视频未动。
-  后台下载/OCR 已停止，新样稿只取平台 AI 字幕和原封面，不再下载原视频。
-
-
-- 2026-10-11（只读盘点，未清理）：系统盘 `/dev/sdc4` 423G，已用372G（93%），
-  剩余29G；数据盘 `/data` 49%，不属于系统盘清理范围。
-  1. Codex 插件临时目录合计约21G，663个 staging 中650个超过一小时，旧目录
-     实测21,805,518,848字节（20.3GiB）；lsof未发现打开文件。候选清理仅限旧
-     staging，保留正式openai-bundled、最近一小时目录以及6.5G聊天sessions。
-  2. Podman 镜像总占用180GB，184个独立镜像中70个无标签；176个buildah
-     working-container均为Storage且PID=0，未发现活跃构建。先清理核对后的
-     残留工作容器，再仅image prune；177.9GB“可回收”包含需要保留的镜像，
-     不能视为实际释放量。保留SSD201/RK3506、生产镜像与全部原有标签；
-     另外5个退出容器属于dufs-plus-pc服务，不能用container/system prune删掉。
-  3. 次级缓存：codex-runtimes1.8G（未发现打开文件）、uv1.7G、Gradle caches1.8G；
-     只作为可重下载候选，浏览器缓存约2.6G需等浏览器退出。Downloads18G、
-     微信文件2G、聊天记录等个人数据不列为自动清理对象。此轮仅查询和记录。
-  4. 系统journal约3.9G，可按保留期/上限收缩而非全删；/tmp共6.5G，其中
-     sip-media-timeout-target2.3G有CACHEDIR.TAG及debug构建目录，未发现打开文件；
-     sunlogin解包目录257M及已安装包的DEB80M可重取，解包目录未发现打开文件。
-     其余临时目录未逐项确认，不整批删除/tmp。Nix store深层扫描耗时已停止，
-     本轮未估算Nix历史代可释放量，也未运行GC。
-
-
-- 2026-10-11（用户授权清理）：系统盘实测由93%降至48%，
-  已用约371.7GiB→188.6GiB，可用空间约29G→213G，系统占用下降
-  约183.1GiB。
-  1. 删除650个超过一小时、无打开文件的Codex插件staging临时目录，
-     先恢复候选内部写权限；正式openai-bundled与近期目录保留，聊天记录未动。
-  2. 确认无活跃构建，删除176个Storage/PID0的buildah工作容器，
-     然后仅执行podman image prune -f。镜像总占用180GB→21.48GB；
-     清理后逐项核对全部124个原有镜像标签及ID、
-     5个原有服务容器ID/状态/镜像/退出码不变，
-     SSD201/RK3506、生产镜像保留。未执行system/container prune、-a或卷清理。
-  3. 仅处理上述两类已建议且获授权的残留，未清其他缓存、日志、/tmp、
-     Nix历史代、源码或个人资料。候选/前后镜像容器快照与审计保存在/tmp的
-     disk-clean-*-20261011文件，最终报告disk-clean-report-20261011.json。
-
-
-- 2026-10-18（用户授权清理）：系统盘 `/dev/sdd4`（本次设备名）由93%降至61%，
-  已用约369.2GiB→242.7GiB，可用32G→159G，实测释放约126.6GiB。
-  1. 确认无打开文件后，删除1494个超过一小时的插件staging临时目录，先恢复
-     候选内部写权限；`bundled-marketplaces` 约48G→128M，正式安装目录、
-     最近一小时目录与聊天记录保留。
-  2. 确认无活跃buildah/cargo/podman build，删除208个Storage/PID0且名称为
-     working-container的构建残留，再仅执行`podman image prune -f`。
-     镜像占用90.78GB→22.48GB；全部138个原有镜像标签及ID保持不变，
-     SSD201/RK3506与生产镜像保留。5个原有服务容器本次清理前均为退出状态，
-     逐项核对ID、名称、状态、镜像ID、退出码不变，未删除或重启它们。
-  3. 通过现有宿主Podman socket执行，未执行migrate/reset、system/container prune、
-     `-a`或卷清理；未清理Nix历史代、源码、个人文件、数据盘及其他缓存。
-     前后镜像/容器快照、候选和报告保存在`/tmp/disk-clean-*-20261018*`，
-     最终报告为`/tmp/disk-clean-report-20261018.json`。
-
-
-- 2026-10-20（用户授权清理）：排查09:24起严重卡顿，确认EDA/微信崩溃后的
-  转储引发系统盘I/O拥塞。EDA转储09:29:13达5分钟运行上限自动结束（systemd
-  计费写入30.7G），未人为终止应用或转储。系统盘最紧张时97%、约15G可用；
-  清理前基线为89%（约354.4GiB已用），结束为66%（约262.0GiB已用、139GiB可用）。
-  本轮期间实测占用下降约92.4GiB；转储结束后的临时空间回收和外部活动同期发生，
-  不能将全部降幅归因于删除操作。
-  1. 确认无打开文件，删除337个超过一小时的openai-bundled.staging临时目录，
-     先恢复候选内部写权限；保留正式目录、最近一小时目录及聊天记录。
-  2. 确认无活跃构建，删除415个Storage/PID0的working-container，再仅执行
-     podman image prune -f；镜像占用79.82GB→23.67GB。全部141个原有镜像标签
-     及ID、5个原有服务容器的ID/名称/状态/镜像/退出码均核对不变，SSD201/RK3506
-     与生产镜像保留。现存服务容器均退出，未删除或重启。
-  3. 通过现有宿主Podman socket执行，未运行migrate/reset、system/container prune、
-     -a或卷清理；未动Nix历史代、源码、数据盘和个人文件，也未删除atop历史或
-     崩溃证据。审计与前后快照保存在/tmp/disk-clean-*-20261020*，最终报告
-     /tmp/disk-clean-report-20261020.json；实际卡顿进程报告仅留本机。
-
-
-- 2026-10-26（用户授权清理）：系统盘 `/dev/sdb4` 由95%降至61%，
-  已用约379.1GiB→241.0GiB，可用约22G→160G，实测释放约138.1GiB。
-  1. 宿主检查未发现插件目录打开文件，删除1513个超过一小时的
-     `openai-bundled.staging-*` 临时目录，先恢复候选内部写权限；保留正式安装、
-     最近一小时目录和聊天记录，插件临时目录总占用约47G→516M。
-  2. 确认无活跃构建，删除327个Storage/PID0的working-container，再仅执行
-     `podman image prune -f`；镜像占用92.85GB→23.94GB。逐项核对149个不同的
-     原有镜像标签及ID全部保留，5个服务容器ID、名称、状态、镜像ID、退出码不变；
-     SSD201/RK3506和生产镜像保留，未删除或重启服务容器，未清理卷。
-  3. 通过现有宿主Podman socket操作，未执行migrate/reset、system/container prune
-     或`-a`；未动Nix历史代、源码、个人文件及数据盘。前后快照、候选与审计保存在
-     `/tmp/disk-clean-*-20261026*`，最终报告为`/tmp/disk-clean-report-20261026.json`。
-
-
-- 2026-10-26（第二轮，用户明确授权清空回收站）：系统盘由61%降至54%，
-  已用约240.9GiB→214.9GiB，可用约160G→186G，实测再释放约26.0GiB。
-  1. 逐目录检查无打开文件后，永久清空回收站636项文件及对应636项元数据；
-     清理npm下载缓存、pip缓存和Codex可重下载运行时缓存，原目录保留。
-  2. uv缓存约4.9G中有CAD工具正在使用，保留；浏览器缓存、聊天记录、剪贴板
-     历史、Gradle/Rust缓存及数据盘未动。Nix store只读盘点约90G，无引用路径
-     中1896个已登记路径的NAR合计约9.67GiB（非实际可释放磁盘量），另有未登记
-     staging/lock路径；未执行GC、删除历史代或清理journal/崩溃记录。
-  3. 本轮报告为`/tmp/disk-clean-second-report-20261026.json`，只读盘点与缓存
-     打开文件检查保存在`/tmp/disk-clean-second-*20261026*`。
-
-
-- 2026-11-01（用户授权清理）：系统盘 `/dev/sdc4` 由94%降至86%，
-  已用约374.8GiB→344.2GiB，可用约26G→57G，本轮期间实测占用净下降约30.6GiB。
-  后台构建及其他任务同期运行，净变化不等同于本轮删除文件的空间总和。
-  1. 复核无打开文件后，删除990个超过一小时的 `openai-bundled.staging-*`
-     临时目录，先恢复候选内部写权限；插件临时目录总占用约31G→245M，
-     正式安装、9个未列入旧候选的临时目录与全部聊天记录保留。
-  2. 再次检查无占用后，清理约1.7G的Codex可重下载运行时缓存，缓存根目录保留。
-     未清浏览器/uv/编译缓存、回收站、Nix历史代、日志、源码、个人文件或数据盘。
-  3. 当前镜像约109.7GB，盘点166个Storage/PID0构建工作容器，但Rust/Android
-     构建仍活跃，未删除容器、prune镜像或清理卷。宿主Podman socket只用于查询；
-     清理后162个原有镜像标签及ID全部保留，5个服务容器ID/名称/状态/镜像/退出码不变。
-     前后快照、候选、占用检查与审计保存在 `/tmp/disk-clean-*-20261101*`，
-     最终报告为 `/tmp/disk-clean-report-20261101.json`。
-
-
-- 2026-11-04（用户授权清理系统与/data）：宿主系统盘 `/dev/sda4` 由96%降至65%，
-  可用约19G→142G；数据盘 `/dev/sdd1` 由97%降至77%，可用约16G→103G。
-  系统实际删除窗口占用净下降约107.4GiB；盘点期间已有外部Nix回收活动，
-  因而96%起点到最终的总降幅不能全部归因于本次清理。
-  1. 通过临时用户systemd单元取得真实宿主进程和文件占用信息，确认无活跃构建；
-     删除350个超过一小时且无打开文件的插件staging，保留正式安装与聊天记录。
-  2. 通过已有宿主Podman socket，删除302个Storage/PID0构建working-container
-     （含数字后缀），再仅image prune；镜像115GB→30.52GB。逐项核对163组
-     原有镜像标签及ID全部保留，5个服务容器ID/名称/状态/镜像/退出码不变；
-     Storage残留归零，交叉编译、生产镜像及卷保留。
-  3. /data精确清理12个带Cargo/CACHEDIR.TAG的Rust target及3个带CMakeCache
-     的.build，共释放93,273,690,112字节（约86.9GiB）；每项复查Git未跟踪文件、
-     活跃构建和打开文件。源码、SDK、三个Bevy保护目录、xiaoqiang和个人资料未动；
-     后续构建需重建对应缓存。本次未运行Nix GC、system/container prune、-a或switch。
-  4. 本机审计、清理白名单及前后快照在 `/tmp/disk-clean-*-20261104*`，
-     汇总报告为 `/tmp/disk-clean-report-20261104.json`；未将本机明细上传服务器。
-
-
-- 2026-11-04（第二轮，用户要求继续清理）：系统盘65%→63%，可用约144G→149G；
-  /data为77%→67%，可用约103G→146G。本轮实测再释放约48.5GiB，
-  其中系统盘约5.6GiB、/data约42.9GiB。
-  1. 精确删除Tag Browser/Firefox两个带config.status/Makefile且Git未跟踪的
-     obj目录（约34.9GiB）及临时DUFS工作树的Rust target（约3.0GiB）；
-     仅清ESP公共ccache的16个十六进制分片（约5.0GiB），SDK和工具链保留。
-  2. 清理无打开文件的Gradle、npm、Codex运行时、pip与Cargo下载归档缓存，
-     缓存根目录保留；每项复查宿主活跃构建和lsof。相关构建将重新编译/下载。
-  3. 163组原镜像标签及ID、5个服务容器状态核对保持不变，未执行Podman删除。
-     源码、已安装浏览器、SDK、学习资料、uv环境、回收站及Bevy保护目录保留；
-     未运行Nix GC或系统switch。无法核对Git归属的旧工作副本缓存未清理。
-  4. 明细、精确白名单与本机报告在 `/tmp/disk-clean-more-*-20261104*`，
-     汇总报告为 `/tmp/disk-clean-more-report-20261104.json`，未上传本机审计。
-
-
-- 2026-11-04（第三轮，用户指定68G低延迟麦克风.build）：仅处理
-  `/data/project/xiaoqiang/esp32-p4-cmt2300a-lowlatency-mic/.build`，
-  实测67.25GiB→15.41GiB，释放55,658,340,352字节（约51.84GiB）；
-  /data由67%降至55%，可用约146G→198G。
-  1. 核对234套顶层CMake配置及嵌套构建标记，确认Git未跟踪、宿主无活跃构建，
-     lsof未发现候选文件占用；删除精确白名单397,937个.o/.a/.obj/.pch编译文件。
-     仅限有CMakeCache及Ninja/Make标记的esp-idf/CMakeFiles生成目录，不整删.build。
-  2. 删除前按inode、大小、mtime逐项核对；对其余89,329个文件保存并回查
-     元数据，全部保留且无变化，候选残留为0。固件、ELF、map、配置、日志、
-     发布/测试证据与备份均保留，源码与共用Git工作树未动。后续编译将重建对象。
-  3. 未操作串口、板卡、射频、固件发布、服务、镜像或Nix。白名单、保留清单、
-     占用检查与审计在 `/tmp/cmt-build-*-20261104*`，汇总报告为
-     `/tmp/cmt-build-clean-report-20261104.json`；详细本机审计不上传服务器。
-
-
-- 2026-11-16（用户授权安全清理）：系统盘 `/dev/sdc4` 由99%降至89%，
-  已用约393.2GiB→355.6GiB，可用约45.1GiB；本轮期间
-  占用净下降约37.6GiB，包含同期活动，不将净变化全部归因于删除。
-  1. 确认无活跃构建及相关打开文件后，经现有宿主Podman socket删除51个
-     Storage/PID0的working-container，再仅执行image prune -f；镜像42.79GB→
-     33.98GB，164组原有镜像标签及ID、5个服务容器ID/名称/状态/镜像ID/退出码
-     均核对不变；保留交叉编译与生产镜像、卷，未重启容器或应用。
-  2. 无占用检查通过后，清理Codex可重下载运行时缓存及npm下载缓存（约2GiB），
-     两处带Cargo CACHEDIR.TAG的临时编译缓存（约2GiB）：
-     `/tmp/knowledge-cards-M-web-target`、`/tmp/batch122-reactive-upstream-target`；
-     保留缓存根目录和标记，不删除源码、工程或审计产物。
-  3. 普通`nix-store --gc`删除367条无引用路径，报告回收7.3GiB；本次设置15GiB
-     回收上限，未删除任何历史generation，核对19个系统/用户profile链接不变。
-     盘点362个已登记无引用路径NAR合计7.37GiB，另5条未登记路径/锁，不手工删store。
-  4. Gradle缓存检测到打开文件，保留；回收站约29GiB、Documents约36GiB及
-     浏览器/uv缓存、聊天记录、日志/崩溃证据、个人资料与数据盘均未清理。
-     插件staging总量仅28MiB，本次未删除。/data为88%，仍有约53GiB可用。
-     审计和前后快照仅留本机`/tmp/disk-clean-*-20261116*`，汇总为
-     `/tmp/disk-clean-report-20261116.json`；只发布项目总纲摘要。
-
-
-- 2026-11-16（第二轮，用户授权继续清理）：系统盘实测由89%降至74%，
-  已用约355.7GiB→293.9GiB，可用约45.0GiB→106.8GiB，本轮占用净下降约61.7GiB。
-  1. 确认无打开文件，清空回收站43项及对应元数据，保留回收站根目录。
-  2. 核对两份原始PDF SHA256，清理Documents/Codex旧验收目录中228969张
-     未被保留文本资产引用、且超过48小时的PNG；保留43377张被引用或近期图片，
-     全部93745份非PNG文件数量与字节数不变，原始PDF校验前后一致。
-     5个只读父目录临时增加用户写权限后已全部恢复，未改文件权限。
-  3. 逐项复核无进程/打开文件/挂载/GC根/嵌套Git及近期改动后，删除370个
-     超过48小时的`/tmp/tag-browser-test-validation-*`测试目录，保留60个近期目录。
-     未删除其他release/candidate、审计、回滚目录，不整批清空/tmp。
-  4. 本轮未动Nix历史代与GC根、Podman镜像/容器/卷、源码、聊天记录、Gradle、
-     浏览器/uv缓存及数据盘。实际净变化包含同期外部活动；候选与核对报告仅留本机
-     `/tmp/disk-clean-second-*-20261116*`，汇总`/tmp/disk-clean-second-report-20261116.json`。
-
-
-- 2026-11-18（用户授权清理系统盘和 `/data`）：系统盘85%→81%，可用约77.4GiB，
-  占用净下降约16.6GiB；数据盘92%→78%，可用约97.7GiB，占用净下降约61.4GiB。
-  1. 确认宿主无活跃构建后执行普通 Nix GC，回收目标上限20GiB。Nix报告
-     `5336 store paths deleted, 12.1 GiB freed`。逐项对比当前系统与系统/用户profile链接，历史代保留。
-  2. 清理无打开文件的 Codex 运行时缓存约1.7GiB，保留缓存根目录和聊天资料。
-  3. `/data` 清理10个带 Cargo 缓存标记、Git忽略且未跟踪的 `target`，主要来自
-     DUFS Plus、知识卡和 Tag All。逐项复核无近期写入、安装包、签名、打开文件、挂载或Nix GC根。
-     保留 Bevy、xiaoqiang、源码、个人资料、固件/签名发布目录及审计产物；相关缓存可重建。
-  4. Podman 保持5.8.7，无悬空镜像和残留构建容器，未进行清理或迁移。
-     239条镜像标签/ID记录、5个服务容器状态逐项核对不变。本机报告为
-     `/tmp/disk-report-20261118.json`；总纲只同步摘要。
-
-
-- 2026-11-18（第二轮，用户授权继续清理）：系统盘79%→78%、可用89.3GiB，
-  本轮窗口净释放4.9GiB；`/data` 78%→70%、可用132.6GiB，净释放34.9GiB。
-  1. 清理无打开文件的 Gradle 四个版本/依赖缓存及 Nix tarball/eval 缓存，合计约5GiB。
-     同期外部 Nix optimise 已于本轮删除窗口前结束，未将此前空间变化计入本轮净释放。
-  2. 清理 ESP 公共 ccache 16个分片约0.6GiB，保留 SDK、工具链和缓存控制文件。
-  3. 仅逐文件删除 Git 未跟踪且忽略的编译中间文件：esp32-p4-sip 128,954个（17.1GiB）、sip-rk3506 22,552个（16.4GiB）、esp32-p4-sanotts 4,782个（0.8GiB）。
-     CMake 限带缓存及构建脚本标记的 esp-idf/CMakeFiles 对象和静态库；Rust 限带 Cargo
-     缓存标记和 fingerprint 的 deps/增量中间文件，保留最近48小时文件。
-     核对无活跃构建、打开文件及候选与挂载/Nix根无交集，逐文件复核身份后删除。
-  4. 固件、发布包、配置、日志、源码、SDK、已登记的生成结果、历史系统代、Podman
-     与个人资料保留。uv 有文件占用，保留。详细本机报告为 `/tmp/disk-precise-report-second-20261118.json`。
-
-
-- 2026-11-18（深度盘点后按用户授权清理优先项）：系统盘79%→71%，可用约116.5GiB，
-  占用净下降28.8GiB；`/data` 70%→67%，可用约145.4GiB，净下降12.8GiB。
-  1. 只清 `/var/tmp` 中两个 Buildah `sha256:` 层归档及 `buildah-cache-1000`，
-     共约21.6GiB。复核无进程、挂载、打开文件及GC根。Podman全部镜像和服务容器清单不变。
-  2. 核对 atop 日志服务未运行、旧日志无打开文件，只清10-18至10-26的9份，约7.2GiB。
-  3. 清理 signature-server 与 sip_old 的5个 Cargo target，并清理 p4-license-tool 中
-     15个可重建子缓存，完整保留其中发布类产物。复查 Cargo 标记、Git 忽略、
-     路径身份和宿主占用；固件、源码、SDK、Docker存储和其他历史资料保留。
-  4. 审计仅留本机 `/tmp/disk-priority-summary-20261118.json`，总纲同步摘要。
-
-
-- 2026-11-18（用户明确授权清理 60 份 Tag Browser 旧验收档案）：复查目录与所有
-  内容超过48小时，且无活跃进程、打开文件、嵌套Git、挂载和Nix GC根。仅删除 `/tmp`
-  中这60个 `tag-browser-test-validation-*`，释放约3.45GiB，系统盘可用约119.9GiB。
-  保留日常浏览档案、验收报告和其他临时目录。本机审计为
-  `/tmp/disk-tag-browser-old-profiles-report-20261118.json`。
-
-
-## Clip 规格归属
-
-按用户绑定维护决定，clipboard-sync 子模块的功能规格统一位于本仓库 specs/005-clipboard-core、006-clipboard-reliability、007-clipboard-release。子模块只留手册与指向本仓库的入口，代码/Git/构建保持独立。其他产品仍在各自仓库管理规格。本规则明确恢复既有父仓库规格归属，不恢复已经取消的 dsh Web 或 Clip 2 分钟过期需求。
-
-`just sync-todos` 仅发布中央登记的总纲和共享索引；先 `--dry-run`，后 checksum 回查，禁止全量镜像 specs/docs、恢复旧 todos 工程目录或使用 --delete。
-
-## 完整 Nix 私有镜像发布（tag-all 023）
-
-`devenv shell -- just -- deploy nuc tag-server --tag-packaging nix --dry-run` 先预演；
-移除 `--dry-run` 后由同一发布器调用 PC `just build-nix private <release-suffix>`。
-默认仍为 Alpine；Nix 仅用于 NUC 的 tag-server/all，Aliyun 和其他组件拒绝该选择。
-原 Containerfile 全 tester/private 验收保留，020–022 检查镜像不得发布。
-
-归档必须绑定本次 release 标签、SHA256、配置摘要和完整 private 探针报告；传输前再次核对，
-直接发送固定 Nix store 归档，不导入、迁移/reset/prune PC 默认 Podman。
-备份成功后才加载、激活；主后端、只读后端、启用的发现服务全部核对镜像。
-发现服务检查进程和 CLI，后端检查 HTTP，最后验代理；旧服务镜像不同则在变更前拒绝。
-失败尝试恢复全部目标，单项重建失败不能阻断其余恢复；报告未恢复项，保留数据库备份。
-不自动恢复数据库、认证、模型或前端，不更改原运行用户和挂载属主。
-
-## 组合候选保护网（016）
-
-普通新原生组合候选使用 `just native-bundle-create <config> <bundle>`，再用
-`just check-native-bundle <bundle> <result>` 运行真实后端、前端、DUFS 的隔离验收。
-显式提供已有 `NODE_PATH`（Playwright）与 `CHROMIUM_PATH`，不下载浏览器、不读取日常 profile。
-配置必须列出固定组件及各产品证明，契约见 specs/016-application-release-bundle/contracts/bundle.md。
-`just native-bundle <pc|nuc> <bundle> <result>` 只核验并预演原管理器；追加 `--prepare`
-才委托原管理器准备，仍不激活。输入或验收器变化必须重建组合并重验。
-原 `native-release` 保留用于既有流程/恢复；旧结果不能冒充本组合证明。
-016 当前仅开发及隔离验收，未授权执行生产 prepare/apply 或系统 switch。
+- 部署必须明确目标 `nuc/aliyun`；组件为 `infra/frontend/tag-server/all/runtime-images`，默认 `infra`。旧 `config` 发布组件不接受，`manage config` 仅指渲染配置。
+- 全流程预演使用 `just -- deploy ... --dry-run`；`just --dry-run` 只展开 recipe。先预演，再执行已获授权的发布。
+- NUC 使用 private + Podman，Aliyun 使用 public + Docker。这里只调用产品 `just build`，禁止反向调用产品 `deploy`。源码可用 `--frontend-source`、`--tag-source` 指定；`TAG_PODMAN_URL` 仅指向 PC 的 Podman。
+- 保留现有 Python 备份、配置、激活和回滚实现，不恢复旧 Shell/Nushell 发布包装。
+
+## 本机系统配置
+
+- `rerun.nu` 默认由用户在普通终端手动运行：`nu rerun.nu liou --host <当前主机名>`。Agent 不代为 switch；只有用户明确要求 Agent 执行时才例外，且必须显式传当前主机名。NUC 的 switch 禁令仍适用。
+- 交给用户应用前，完成选项求值、完整 `system.build.toplevel` 和 `home.activationPackage` 构建；涉及服务时核对产物中的 `ExecStart`、用户/组、内核模块及 udev 规则。只构建单个包不足以证明可应用。
+- `home.packages` 必须使用目录产物，如 `writePython3Bin`；保留 HM 的 `hm-backup` 备份设置，并从系统服务环境确认 `HOME_MANAGER_BACKUP_EXT`。
+- 设备守护进程优先使用系统服务，显式设置 `User`、`SupplementaryGroups`；不能依赖已登录会话或 linger 用户管理器刷新组。`uaccess` 规则必须早于 `73-seat-late.rules`。
+- evdev 脚本显式处理 `UInputError`，先成功创建虚拟设备，再 grab 真实设备。
+- 静态开发配置由 Nix 单向管理；MIME、输入法等运行时动态配置使用 `force = true`。合法 GUI 增量通过 `scripts/sync-mimeapps.py --apply` 反哺，不在 switch 时静默抹除。
+- MIME 基线：`liu-bigpc` 的 HTTP/HTTPS/HTML/XHTML 使用 `tag-browser.desktop`，其他主机保留既定浏览器；magnet/bittorrent 使用 qBittorrent，codex 使用 `chatgpt.desktop`，baiduyunguanjia 使用 `baidunetdisk.desktop`。禁止外部应用劫持。
+
+## 部署与验收
+
+- NUC `dufs-lan` 为认证读写，NUC `dufs` 为密码只读，Aliyun 为匿名只读。认证、写拦截和只读挂载由部署配置保障，不能依赖 public 构建或隐藏 UI。
+- `frontend` 构建并发布静态前端；`tag-server` 构建、传输和激活后端镜像；`infra` 发布基础设施和非密钥配置；`runtime-images` 只传基础镜像，不切换容器。
+- DUFS 官方镜像标签是 `v0.46.0`。Docker/Podman 镜像 ID 不一致时，校验实际导出配置字节的 Config Digest，不跳过校验、不只比较版本字符串。
+- 备份、生产验收按 [production-verification.md](deploy/docs/production-verification.md)；部署后检查 Compose 联动代理是否恢复。发布不是多组件原子事务，镜像回滚不代表数据库、前端或站点整体恢复。
+- 保护 `bevy-sketch`、`bevy-game`、`project-planner` 独立目录，不覆盖个人资料、其他工程或 xiaoqiang 专用目录。
+- tag-all 023 完整 Nix 私有镜像仅用于 NUC 的 tag-server/all：先以 `--tag-packaging nix --dry-run` 预演，再由发布器调用 PC `just build-nix private`。保留完整 tester/private 验收，禁止发布 020–022 检查镜像。固定归档、标签、SHA256、配置摘要和探针报告；不导入或清理 PC 默认 Podman。备份后激活并验收全部目标，失败逐项尝试恢复，不自动恢复数据库等数据。
+- 原生组合候选遵循 [016 契约](specs/016-application-release-bundle/contracts/bundle.md)：`just native-bundle-create` → `just check-native-bundle` → `just native-bundle <pc|nuc> ...` 预演。隔离检查显式使用已有 `NODE_PATH`、`CHROMIUM_PATH`，不下载浏览器或读取日常 profile。`--prepare` 不代表激活授权；组件或验收器变化需重建重验。旧 `native-release` 仅用于既有流程/恢复。
+
+## SSH 与沙箱
+
+- 禁止跳过 SSH 主机密钥校验。
+- DSH 中若报 store 下 `ssh_config.d` 属主错误，使用 `ssh -F ~/.ssh/config`；rsync 使用 `-e "ssh -F $HOME/.ssh/config"`。不要修改用户 SSH 配置。
+- `sync-todos`、部署等可用临时 PATH 包装器为 ssh 添加 `-F`，仍调用原发布器。SSH/rsync 串行并留间隔；失败按 `1.5 × 尝试次数` 秒退避重试，不并行传输。
+
+## 规格与进度
+
+- 本仓代码与 `specs/` 是权威源；产品规格留在所属产品。clipboard-sync 的规格例外集中于本仓 `005/006/007`，子模块代码、Git 和构建仍独立。
+- 状态变化后按共享 work-progress 更新相关任务和 `specs/README.md`，只提交当前任务文件，保留无关工作树改动。
+- `just sync-todos` 先预演再发布，并核验 checksum；只写中央登记的 `/home/liou/dufs-lan/projects/nix-tools.md` 和共享索引 `README.md`。
+- 不全量上传 specs/docs/规则，不使用 `--delete`，不恢复旧 `todos/a-next.md`、`a-observe.md`、`a-done.md` 或平行计划，不向 xiaoqiang 专用 `/home/liou/dufs/` 重建本工程文档。
+- 阶段交还时按对应 `tasks.md` 报告阶段名称、剩余步骤数量、名称及下一步；完成则明确剩余 0 项。
+
+## 磁盘清理边界
+
+- 清理前确认所属文件系统、实际用途、打开文件、活跃构建及是否存在其他副本；不按目录名猜用途。先用 `df`、`du -x` 逐层定位，再检查 `lsof` 和进程。
+- 只处理获授权且已确认可重建的候选。保护源码、个人文件、聊天记录、签名/固件/发布包、唯一备份；不默认清空回收站、日志、系统历史代或整批 `/tmp`。
+- 插件 staging 仅清理超过保留期且无占用的候选，保留正式安装与近期目录；只对已确认候选恢复写权限。
+- Podman 先检查 `ps -a --external` 及活跃构建；仅清确认闲置的 Storage/PID0 working-container，再按需 `podman image prune -f`。禁止直接 `system prune -a`、container prune、卷清理或 migrate/reset。
+- 保留 SSD201/RK3506 交叉编译镜像（含 sip validation 别名）、生产基础镜像、tag-server public/private 和全部现有服务容器；清理前后核对标签/ID及容器状态。受限时使用已有宿主 Podman socket。
+- 过程审计留本机，总纲只记录必要结果；不向 AGENTS.md 或本指南追加清理日志，也不另建重复的清理流水文档。
