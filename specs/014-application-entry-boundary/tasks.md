@@ -677,3 +677,7 @@ NUC 已激活独立 Workspace AI 服务与私有工作区网关，真实公式�
 ### 共享 Helix 正式发布（2026-11-19）
 
 PC 与 NUC 的 DUFS 已激活共享 Helix，旧静态资源和现用后端继续服务。知识卡 0.1.10 已发布并固定 PC 包，完整系统与 Home Manager 候选通过，菜单与 Ctrl+Alt+K 指向新版。由用户自行运行 rerun。Android 正式渠道已发布。
+
+## Tag Browser nix.134 与侧栏筛选区
+
+仅更新 `tag-browser-src`，已核对完整 liu-bigpc 系统候选和五个原生服务模板、菜单与 MIME。PC／NUC 已激活相应 Web 资源，实际入口和授权边界回查通过。系统切换与浏览器完整重开由用户执行。[消费者回执](tag-browser-nix134-install-results.json)

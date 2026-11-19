@@ -1,0 +1,24 @@
+{
+  "system_candidate": "/nix/store/izn8gsx2866aagphgrq5vjf7zjwyh5sf-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "home_candidate": "/nix/store/1c7n31x08d9fr5qm7nxy85laxb3j1fks-home-manager-generation",
+  "baseline_system_same_worktree": "/nix/store/jg71d1dglzksjjbckm4qpqc0z5jnn1c5-nixos-system-liu-bigpc-26.11.20260922.b6c98e9",
+  "temporary_browser_input_only": false,
+  "browser_source_revision": "25164b53f0f3eefda24e8758f043709180e3ae19",
+  "browser_binary": "/nix/store/l8f8n63dbqm6g9i9lnkdz59r1479rd9k-tag-browser-0.1.0",
+  "five_native_templates_equal_to_baseline": true,
+  "default_target_link_unchanged": true,
+  "restore_after_reload_verified": true,
+  "system_browser_verified_home_has_no_competing_install": true,
+  "visible_release_and_menu_verified": true,
+  "four_mime_defaults_and_desktop_declarations_verified": true,
+  "external_source_changes_preserved": {
+    "head": "d9fb99843e8dddc07d2716ebadc85c7e0499c777",
+    "tracked_external_changes": {},
+    "head_at_check": "d9fb99843e8dddc07d2716ebadc85c7e0499c777",
+    "concurrent_commit_files": []
+  },
+  "real_lock_changed": true,
+  "system_switch_executed": false,
+  "activation_executed": false,
+  "signed_cache_pending_approval": false
+}
