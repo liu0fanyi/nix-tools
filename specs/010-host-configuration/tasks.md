@@ -1221,6 +1221,14 @@ Nix 属性名为 zlib-cli，运行命令为 zlib；不替换压缩库 pkgs.zlib�
 
 验证：上游测试355通过、0失败、1忽略；版本检查为0.3.2。临时配置连接现用mihomo的真实TUI已显示`Holy-JP-A [Vless] FAIL`、`Holy-JP-CF-A [Vmess] 3024ms`等节点明细，未切换节点；临时进程已退出。客户端产物`/nix/store/5lzc6vxf75qjlnn7sc26nrdh79rc4r77-clashtui-0.3.2`；完整系统`/nix/store/bnmrpvg1x83yd3az730dj97av81nasgh-nixos-system-liu-bigpc-26.11.20260922.b6c98e9`；HM generation`/nix/store/7crxf77vci4ff1jnksc14gpn26h0z92m-home-manager-generation`。系统候选中的clashtui指向新包，HM备份变量、数位笔ExecStart与input/uinput组、uinput模块及udev选项均已检查。日志与界面捕获位于`/tmp/clashtui-*20261118*`。CT剩余1项CT3，用户运行`nu rerun.nu liou --host liu-bigpc`后重开客户端验收；未代为switch。
 
+## Holytech 订阅 REALITY 参数恢复（HU，2026-11-19）
+
+- [x] HU1：对照 Clash 与 V2RayN 格式，逐项核对12条VLESS原始链接，隔离实例绑定物理网卡验证各自参数；确认Clash导出漏REALITY公钥且ALPN错误，原始链接完整。
+- [x] HU2：备份运行配置、提供方缓存和加密恢复源，将vpn1改用subscriptions.php并设置User-Agent为v2rayN/7.0；配置校验通过后热重载，实际刷新订阅成功，保留86400秒更新间隔与当前DMIT选择。
+- [x] HU3：正式mihomo加载36节点，缓存保留12条VLESS及公钥；台湾A/B实测371/467ms，日本A、美国A及VMess对照也通过。仅更改获取订阅的格式，mihomo/clashtui内核与管理方式不变，无NixOS switch。
+
+阶段HU剩余0项。完整12节点隔离测试9个至少成功一次，香港B/美国B/韩国SK两次超时，部分线路不稳定独立于订阅恢复；未自动选择Holytech节点。备份、配置校验和正式验收在`/tmp/holytech-apply-_3pc1vl3/`，完整隔离结果在`/tmp/holytech-full-vless-f700f4bx/results.json`。凭据只保留运行目录和git-crypt保护的`secrets/mihomo-config.yaml`，不写总纲。
+
 ## Tag Browser 旧验收档案清理（2026-11-18）
 
 - [x] 复核并清理60份闲置超过48小时的隔离测试档案，详情见 AGENTS.md 第七节。
