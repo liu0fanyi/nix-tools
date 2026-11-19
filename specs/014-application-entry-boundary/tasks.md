@@ -681,3 +681,7 @@ PC 与 NUC 的 DUFS 已激活共享 Helix，旧静态资源和现用后端继续
 ## Tag Browser nix.134 与侧栏筛选区
 
 仅更新 `tag-browser-src`，已核对完整 liu-bigpc 系统候选和五个原生服务模板、菜单与 MIME。PC／NUC 已激活相应 Web 资源，实际入口和授权边界回查通过。系统切换与浏览器完整重开由用户执行。[消费者回执](tag-browser-nix134-install-results.json)
+
+## Tag Browser nix.135
+
+新签名包和仅更新浏览器依赖锁后的 PC 系统候选均已验收。工作区服务模板和 MIME 关联通过对照，用户执行系统更新与浏览器完整重开。[消费者回执](tag-browser-nix135-install-results.json)
