@@ -1,7 +1,7 @@
 # Nix 配置与发布工具
 
 ## 当前情况
-- [知识卡 0.1.11 已发行，PC 安装配置已更新，完整候选通过。](014-application-entry-boundary/tasks.md#知识卡-0111)
+- [知识卡 0.1.12 已发行，修复公式插入焦点，PC 安装候选已验证。](014-application-entry-boundary/tasks.md#知识卡-0112)
 - [Tag Browser nix.137 已签名发行，待本机更新重开。](014-application-entry-boundary/tag-browser-nix137-install-results.json)
 - [共享 Helix 已上线 PC/NUC 前端，知识卡 0.1.10 固定到 PC 安装配置，完整系统候选已验证。](014-application-entry-boundary/tasks.md#共享-helix-正式发布2026-11-19)
 - [NUC 私有 Workspace AI 已上线，知识卡 0.1.9 和 Tag Browser nix.133 的 PC 安装配置与完整候选通过验收。](014-application-entry-boundary/tasks.md#nuc-workspace-ai-与桌面应用发行2026-11-19)
@@ -36,6 +36,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-19 · Update PC browser release overview · `7744885`
 - 2026-11-19 · Pin signed Tag Browser nix.137 for the PC · `bd419cd`
 - 2026-11-19 · Pin verified Knowledge Cards 0.1.11 for the PC · `414cf17`
 - 2026-11-19 · Update PC browser release overview · `32731de`
@@ -43,5 +44,4 @@
 - 2026-11-19 · Update desktop release overview · `80bc22b`
 - 2026-11-19 · Pin signed Tag Browser nix.135 for the PC · `a45341d`
 - 2026-11-19 · Update Tag Browser release overview · `f1773ea`
-- 2026-11-19 · Pin verified Tag Browser nix.134 for the PC · `edc24db`
 <!-- recent-commits:end -->
