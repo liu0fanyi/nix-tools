@@ -51,6 +51,17 @@ def learning_map_binding(content, root):
     return result
 
 
+def workspace_ai_binding(content, token_path):
+    """Add the fixed AI credential path in the TOML root, before existing tables."""
+    original = tomllib.loads(content)
+    if 'ai_gateway_token_file' in original:
+        raise ValueError('Workspace AI already registered')
+    updated = 'ai_gateway_token_file = ' + json.dumps(str(token_path)) + '\n' + content
+    if tomllib.loads(updated) != {**original, 'ai_gateway_token_file': str(token_path)}:
+        raise ValueError('AI registration would change unrelated configuration')
+    return updated
+
+
 def learning_startup_binding(content, target, before_sha, after_sha):
     """Rebind exactly the existing entry digest; retain every other startup input."""
     control = json.loads(content)
@@ -286,7 +297,7 @@ class Manager:
             if executable.name!='tag-all-core' or executable.parent.name!='bin':raise ValueError('Unexpected native command')
             namespace_package(state,executable.parent.parent)
 
-    def plan(self, package, frontend, register_learning_map=False):
+    def plan(self, package, frontend, register_learning_map=False, register_workspace_ai=False):
         package, frontend = Path(package), Path(frontend)
         for path in (package, frontend):
             if not re.fullmatch(r'/nix/store/[a-z0-9]{32}-[^/]+', str(path)) or not path.is_dir():
@@ -308,8 +319,9 @@ class Manager:
                 'frontend_sha256': fingerprint(frontend), 'previous_outputs': sorted(set(previous)),
                 'pointer_before': digest(private(pointer)) if pointer.exists() else None,
                 'state_policy': 'reuse-current-state-never-restore-backup'}
-        if register_learning_map:
-            if self.scope.name != 'nuc': raise ValueError('Learning registration is scoped to NUC')
+        if register_learning_map and register_workspace_ai: raise ValueError("Only one registration per release")
+        if register_learning_map or register_workspace_ai:
+            if self.scope.name != 'nuc': raise ValueError('Application registration is scoped to NUC')
             private_root = self.scope.states[0].parent
             config = private_root / 'config/application-entry.toml'
             root = private_root / 'apps/learning-map'
@@ -317,10 +329,17 @@ class Manager:
             flag = '--workspace-entry-config'
             if arguments.count(flag) != 1 or arguments[arguments.index(flag)+1] != str(config):
                 raise ValueError('Unexpected private application config')
-            if root.is_symlink() or root.resolve() != root or not root.is_dir() or not (root/'index.html').is_file():
-                raise ValueError('Stage verified learning assets in the owned native root first')
-            content = learning_map_binding(private(config).read_text(), root)
-            plan['application_registration'] = {'target': str(config), 'root': str(root),
+            config_text = private(config).read_text()
+            if register_learning_map:
+                if root.is_symlink() or root.resolve() != root or not root.is_dir() or not (root/'index.html').is_file():
+                    raise ValueError('Stage verified learning assets in the owned native root first')
+                content = learning_map_binding(config_text, root)
+                extra = {'root': str(root)}
+            else:
+                token = private(private_root / 'config/workspace-ai-gateway-token')
+                content = workspace_ai_binding(config_text, token)
+                extra = {'kind': 'workspace-ai', 'token': str(token), 'token_sha256': digest(token)}
+            plan['application_registration'] = {'target': str(config), **extra,
                 'before_sha256': digest(config), 'content': content,
                 'sha256': hashlib.sha256(content.encode()).hexdigest()}
             if self.scope.startup_control:
@@ -339,8 +358,8 @@ class Manager:
                     'sha256': hashlib.sha256(updated.encode()).hexdigest()}
         return plan
 
-    def prepare(self, package, frontend, register_learning_map=False):
-        plan = self.plan(package, frontend, register_learning_map)
+    def prepare(self, package, frontend, register_learning_map=False, register_workspace_ai=False):
+        plan = self.plan(package, frontend, register_learning_map, register_workspace_ai)
         root = self.scope.release_root
         if not root.exists():
             root.mkdir(mode=0o700)
@@ -409,6 +428,13 @@ class Manager:
                 raise ValueError('Prepared application registration drifted')
             allowed = (registration['before_sha256'], registration['sha256']) if rollback else (registration['before_sha256'],)
             if digest(private(expected)) not in allowed: raise ValueError('Private application configuration drifted')
+            if registration.get('kind') == 'workspace-ai':
+                token = private(expected.parent / 'workspace-ai-gateway-token')
+                if registration['token'] != str(token) or digest(token) != registration['token_sha256']:
+                    raise ValueError('AI gateway credential drifted')
+                if not rollback and workspace_ai_binding(private(expected).read_text(), token) != source.read_text():
+                    raise ValueError('Unrelated Workspace AI registration change')
+
         startup = plan.get('startup_registration')
         if bool(startup) != bool(registration and self.scope.startup_control):
             raise ValueError('Prepared startup control binding required')
@@ -539,6 +565,7 @@ def main():
     action = parser.add_mutually_exclusive_group()
     action.add_argument('--prepare', action='store_true'); action.add_argument('--apply'); action.add_argument('--rollback')
     parser.add_argument('--register-learning-map', action='store_true', help='Bind the staged independent learning root in the same transaction')
+    parser.add_argument('--register-workspace-ai', action='store_true', help='Register the staged private inference gateway in the existing transaction')
     parser.add_argument('--package'); parser.add_argument('--frontend'); parser.add_argument('--editors-saved', action='store_true')
     args = parser.parse_args(); manager = Manager(fixed_scope(args.scope))
     if args.apply or args.rollback:
@@ -546,9 +573,9 @@ def main():
     else:
         if not args.package or not args.frontend: parser.error('--package and --frontend required')
         if args.prepare:
-            result = {'prepared': str(manager.prepare(args.package, args.frontend, args.register_learning_map)), 'activated': False}
+            result = {'prepared': str(manager.prepare(args.package, args.frontend, args.register_learning_map, args.register_workspace_ai)), 'activated': False}
         else:
-            plan = manager.plan(args.package, args.frontend, args.register_learning_map)
+            plan = manager.plan(args.package, args.frontend, args.register_learning_map, args.register_workspace_ai)
             result = {'scope': args.scope, 'package': plan['package'], 'frontend': plan['frontend'], 'core_units': list(manager.scope.units), 'processing_idle': True, 'activated': False}
     print(json.dumps(result, indent=2))
 
