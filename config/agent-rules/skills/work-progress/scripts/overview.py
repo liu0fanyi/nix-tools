@@ -131,20 +131,54 @@ def project_entry(root, text):
     return re.sub(r"\[([^\]]+)\]\(([^)\s]+)\)", link, text)
 
 
-def index_entry():
+def local_overview(project):
+    source = Path(project["root"]) / "specs/README.md"
+    try:
+        if source.is_symlink() or source.parent.is_symlink():
+            return None
+        return source.read_text()
+    except (FileNotFoundError, NotADirectoryError, IsADirectoryError):
+        return None
+
+
+def published_overviews(names):
+    # Only the safe names from the registry reach this read-only SSH command.
+    directory = shlex.quote(PROJECTS_ROOT)
+    keys = " ".join(shlex.quote(name) for name in names)
+    command = (
+        f"if test -d {directory}; then cd {directory} || exit 1; "
+        f"for name in {keys}; do "
+        'if test -f "$name.md" && ! test -L "$name.md"; then printf "%s\\n" "$name"; fi; '
+        "done; fi"
+    )
+    result = subprocess.run(["ssh", "liou@nuc.local", command], check=True, capture_output=True, text=True)
+    return set(names).intersection(result.stdout.splitlines())
+
+
+def index_entry(find_mirrors=None):
     lines = ["# 工程总纲", "", "每个项目一份 Markdown；项目名称可打开当前情况、后续计划、待处理问题与最近变化。", ""]
     projects = registrations()
+    sources = {p["name"]: local_overview(p) for p in projects}
+    unavailable = [name for name, text in sources.items() if text is None]
+    mirrored = find_mirrors(unavailable) if unavailable and find_mirrors else set()
     for category in dict.fromkeys(p["category"] for p in projects):
         lines += ["## " + category, "", "| 项目 | 当前情况 |", "| --- | --- |"]
         for project in projects:
             if project["category"] != category:
                 continue
-            root = Path(project["root"])
-            text = (root / "specs/README.md").read_text()
+            name = project["name"]
+            text = sources[name]
+            label = f"[{name}]({name}.md)"
+            if text is None:
+                if name in mirrored:
+                    lines.append(f"| {label} | 本机总纲暂不可用，显示上次同步版本 |")
+                else:
+                    lines.append(f"| {name} | 本机总纲暂不可用 |")
+                continue
             section = text.partition("## 当前情况")[2].split("\n## ")[0]
             first = next((l[2:].strip() for l in section.splitlines() if l.startswith("- ")), "暂无已确认状态")
             first = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", first).replace("|", "\\|")
-            lines.append("| [" + project["name"] + "](" + project["name"] + ".md) | " + first + " |")
+            lines.append(f"| {label} | {first} |")
         lines.append("")
     return "\n".join(lines)
 
@@ -153,7 +187,10 @@ def publish(root, text, destination=None, dry_run=False):
     project = registered(root)
     if destination is not None and destination.rstrip("/") != PROJECTS_ROOT:
         raise ValueError("Project summaries publish only to " + PROJECTS_ROOT)
-    entries = {project["name"] + ".md": project_entry(root, text), "README.md": index_entry()}
+    entries = {
+        project["name"] + ".md": project_entry(root, text),
+        "README.md": index_entry(None if dry_run else published_overviews),
+    }
     with tempfile.TemporaryDirectory(prefix="project-overview-") as temp:
         stage = Path(temp)
         for name, body in entries.items():

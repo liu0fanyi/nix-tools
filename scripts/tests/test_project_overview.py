@@ -89,6 +89,43 @@ class OverviewTests(unittest.TestCase):
         self.assertIn("--dry-run", calls[2])
         self.assertTrue(all("--delete" not in call for call in calls))
 
+    def test_unavailable_other_source_preserves_only_verified_old_mirror_link(self):
+        registry = json.loads(overview.REGISTRY.read_text())
+        registry["projects"].extend([
+            {"name": "old-only", "root": str(self.root / "missing"), "category": "Test"},
+            {"name": "never-published", "root": str(self.root / "unknown"), "category": "Test"},
+        ])
+        overview.REGISTRY.write_text(json.dumps(registry))
+        actual_run = subprocess.run
+        commands = []
+
+        def run(command, **kwargs):
+            if command[0] == "git":
+                return actual_run(command, **kwargs)
+            commands.append(command)
+            if command[0] == "ssh" and "for name in" in command[-1]:
+                self.assertIn("old-only never-published", command[-1])
+                return subprocess.CompletedProcess(command, 0, stdout="old-only\n", stderr="")
+            if command[0] == "rsync":
+                paths = [Path(path) for path in command[-3:-1]]
+                self.assertEqual([path.name for path in paths], ["demo.md", "README.md"])
+                index = paths[-1].read_text()
+                self.assertIn("[old-only](old-only.md) | 本机总纲暂不可用，显示上次同步版本", index)
+                self.assertIn("| never-published | 本机总纲暂不可用", index)
+                self.assertNotIn("(never-published.md)", index)
+            return subprocess.CompletedProcess(command, 0, stdout="", stderr="")
+
+        with patch.object(overview.subprocess, "run", side_effect=run):
+            overview.publish(self.root, self.text, dry_run=True)
+            self.assertEqual(commands, [])
+            overview.publish(self.root, self.text)
+        self.assertEqual([command[0] for command in commands], ["ssh", "ssh", "rsync", "rsync"])
+
+    def test_own_missing_overview_is_still_rejected(self):
+        (self.root / "specs/README.md").unlink()
+        with self.assertRaisesRegex(ValueError, "regular specs/README"):
+            overview.repository(self.root)
+
     def test_source_links_use_fixed_git_revision_and_uncommitted_links_are_text(self):
         self.git("remote", "add", "origin", "git@github.com:example/demo.git")
         sha = self.git("rev-parse", "HEAD").strip()

@@ -45,3 +45,8 @@
 ## 旧 Planner 退役登记（2026-11-01）
 
 - [x] RP1 按用户退役选择从 config/agent-rules/project/projects.json 移除活动登记，更新根AGENTS活动清单和构建入口规则；本机归档/删除与缓存验证归bevy-env/specs/004-retire-planner，不重复计数。不删除NUC旧摘要/产物、用户文档或GitHub仓库。
+
+### 缺失来源的同步隔离
+
+- [x] 缺少其他项目总纲时仍能生成索引，同时保留登记和已有镜像链接。
+- [x] 10 项工具测试通过。Tag All、Tag Browser、DUFS Plus 已补同步并回查；索引保留 Trime 旧链接，Trime 镜像 SHA-256 未变，目录 755、摘要及索引 644。
