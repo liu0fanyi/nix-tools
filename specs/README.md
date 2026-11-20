@@ -39,12 +39,12 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-20 · Keep a bounded local CPU history for Tag Browser · `d855284`
+- 2026-11-20 · Update project overview sync status · `14ee26f`
 - 2026-11-20 · Keep project overview publishing available when a source is missing · `da64aa0`
 - 2026-11-20 · Update the Tag Browser nix.138 install overview · `5f6a414`
 - 2026-11-20 · Pin signed Tag Browser nix.138 for the PC · `eb3f90c`
 - 2026-11-19 · Link the Knowledge Cards 0.1.16 verification · `d8f4146`
 - 2026-11-19 · Pin verified Knowledge Cards 0.1.16 for the PC · `37c9641`
 - 2026-11-19 · Pin verified Knowledge Cards 0.1.15 for the PC · `1837bbd`
-- 2026-11-19 · Pin verified Knowledge Cards 0.1.14 for the PC · `b875e49`
-- 2026-11-19 · Pin verified Knowledge Cards 0.1.13 for the PC · `7c1603e`
 <!-- recent-commits:end -->
