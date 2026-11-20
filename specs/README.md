@@ -1,6 +1,7 @@
 # Nix 配置与发布工具
 
 ## 当前情况
+- [缺少单个登记来源时其余工程仍可同步，Trime 旧摘要保留，已补同步三份工程总纲。](001-spec-driven-workflow/tasks.md#缺失来源的同步隔离)
 - [Screen Mark 0.2.0 已签名发行，完整 PC/HM 构建通过，待用户应用桌面更新。](010-host-configuration/tasks.md#screen-mark-020-发行)
 - [知识卡 0.1.16 带 Helix 诊断及截图漏转自动重试，PC 安装候选已验证。](014-application-entry-boundary/tasks.md#知识卡-0116)
 - [Tag Browser nix.138 已签名发行，PC 版本锁定及完整配置构建通过，常规更新并重开后可使用。](014-application-entry-boundary/tasks.md#tag-browser-nix138)
@@ -37,12 +38,12 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-20 · Keep project overview publishing available when a source is missing · `da64aa0`
+- 2026-11-20 · Update the Tag Browser nix.138 install overview · `5f6a414`
 - 2026-11-20 · Pin signed Tag Browser nix.138 for the PC · `eb3f90c`
 - 2026-11-19 · Link the Knowledge Cards 0.1.16 verification · `d8f4146`
 - 2026-11-19 · Pin verified Knowledge Cards 0.1.16 for the PC · `37c9641`
 - 2026-11-19 · Pin verified Knowledge Cards 0.1.15 for the PC · `1837bbd`
 - 2026-11-19 · Pin verified Knowledge Cards 0.1.14 for the PC · `b875e49`
 - 2026-11-19 · Pin verified Knowledge Cards 0.1.13 for the PC · `7c1603e`
-- 2026-11-19 · Pin verified Screen Mark 0.2.0 for liu-bigpc · `640c6b0`
-- 2026-11-19 · Pin verified Knowledge Cards 0.1.12 for the PC · `c2f5f42`
 <!-- recent-commits:end -->
