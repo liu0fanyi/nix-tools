@@ -21,6 +21,25 @@
   # do not register recorder/accounting/rotation units or copy logs at boot.
   programs.atop.enable = false;
 
+  systemd.services.tagbrowser-cpu-sampler = {
+    description = "Local rolling CPU samples for Tag Browser";
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.python3}/bin/python3 ${../../../scripts/tagbrowser-cpu-sampler.py} /var/lib/tagbrowser-cpu-sampler";
+      User = "liou";
+      Group = "users";
+      StateDirectory = "tagbrowser-cpu-sampler";
+      StateDirectoryMode = "0700";
+      UMask = "0077";
+      NoNewPrivileges = true;
+      PrivateTmp = true;
+      ProtectHome = true;
+      ProtectSystem = "strict";
+      Restart = "on-failure";
+      RestartSec = "5s";
+    };
+  };
+
   # Rootless Podman compose containers stop with the user manager. Restore only
   # this host's existing private PC node after login; do not recreate volumes,
   # touch NUC containers, or start unrelated rootless projects.

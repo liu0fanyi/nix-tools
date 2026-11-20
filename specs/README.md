@@ -1,6 +1,7 @@
 # Nix 配置与发布工具
 
 ## 当前情况
+- [Tag Browser CPU 滚动采样的完整系统与 Home Manager 构建通过，待用户应用并确认本机日志。](010-host-configuration/tasks.md#tag-browser-cpu-滚动采样tc2026-11-20)
 - [缺少单个登记来源时其余工程仍可同步，Trime 旧摘要保留，已补同步三份工程总纲。](001-spec-driven-workflow/tasks.md#缺失来源的同步隔离)
 - [Screen Mark 0.2.0 已签名发行，完整 PC/HM 构建通过，待用户应用桌面更新。](010-host-configuration/tasks.md#screen-mark-020-发行)
 - [知识卡 0.1.16 带 Helix 诊断及截图漏转自动重试，PC 安装候选已验证。](014-application-entry-boundary/tasks.md#知识卡-0116)
