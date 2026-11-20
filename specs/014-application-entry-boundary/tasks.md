@@ -721,3 +721,8 @@ PC 正式签名包包含 Helix 输入与渲染滚动诊断及截图漏转自动�
 ### Tag Browser nix.138
 
 固定签名包并更新 PC 配置的 `tag-browser-src`，完整 `liu-bigpc` 配置构建通过。跨节点目录移动配套服务已在 PC／NUC 激活。由用户按日常流程更新系统并重开浏览器。[发行回执](../../../tag-browser/specs/049-shared-leptos-ui/pc-nix138-release-results.json)
+
+
+### Tag Browser nix.139
+
+PC 配置锁定已签名的 nix.139，完整系统候选已验证，按常规更新并重开后生效。配套 Web 已在 PC 与 NUC 激活。[发行回执](../../../tag-browser/specs/049-shared-leptos-ui/pc-nix139-release-results.json)
