@@ -1,7 +1,7 @@
 # Nix 配置与发布工具
 
 ## 当前情况
-- [本机可用 `just system-monitor` 打开系统盘与进程监控浮窗，实时查看读写速度、请求延迟和 I/O 压力。](010-host-configuration/tasks.md#系统盘与进程监控浮窗2026-11-21)
+- [本机可在 Fuzzel 搜索「系统监控」，也可通过 `just system-monitor` 打开浮窗。首行显示整机 CPU、内存与系统盘 I/O。](010-host-configuration/tasks.md#系统盘与进程监控浮窗2026-11-21)
 - [Tag Browser CPU 滚动采样的完整系统与 Home Manager 构建通过，待用户应用并确认本机日志。](010-host-configuration/tasks.md#tag-browser-cpu-滚动采样tc2026-11-20)
 - [缺少单个登记来源时其余工程仍可同步，Trime 旧摘要保留，已补同步三份工程总纲。](001-spec-driven-workflow/tasks.md#缺失来源的同步隔离)
 - [Screen Mark 0.2.0 已签名发行，完整 PC/HM 构建通过，待用户应用桌面更新。](010-host-configuration/tasks.md#screen-mark-020-发行)
@@ -40,6 +40,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-21 · Launch System Monitor from Fuzzel and show machine totals · `916b008`
 - 2026-11-21 · Make the monitor text larger and the window translucent · `e828d2d`
 - 2026-11-21 · Open a floating system disk and process monitor · `540551a`
 - 2026-11-20 · Pin signed Tag Browser nix.139 for the PC · `df1b79e`
@@ -47,5 +48,4 @@
 - 2026-11-20 · Keep a bounded local CPU history for Tag Browser · `d855284`
 - 2026-11-20 · Update project overview sync status · `14ee26f`
 - 2026-11-20 · Keep project overview publishing available when a source is missing · `da64aa0`
-- 2026-11-20 · Update the Tag Browser nix.138 install overview · `5f6a414`
 <!-- recent-commits:end -->
