@@ -659,6 +659,21 @@ in
       categories = [ "Development" "WebDevelopment" ];
     };
 
+    xdg.dataFile."applications/nix-tools-system-monitor.desktop" = lib.mkIf isLiuBigpc {
+      text = ''
+        [Desktop Entry]
+        Type=Application
+        Name=系统监控
+        GenericName=System Monitor
+        Comment=查看系统盘 I/O 和进程占用
+        Exec=${pkgs.python3}/bin/python3 "${config.home.homeDirectory}/nix-tools/scripts/system-monitor.py"
+        Icon=utilities-system-monitor
+        Terminal=false
+        Categories=System;Monitor;
+        Keywords=monitor;cpu;ram;disk;io;系统盘;进程;
+      '';
+    };
+
     # 覆盖 Nautilus 自带的中文本地化名称，让 fuzzel 显示名与命令一致。
     # desktop 文件 ID 保持不变，因此不会出现中英文两个重复入口。
     xdg.desktopEntries."org.gnome.Nautilus" = {

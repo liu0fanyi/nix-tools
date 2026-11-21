@@ -1259,3 +1259,5 @@ Nix 属性名为 zlib-cli，运行命令为 zlib；不替换压缩库 pkgs.zlib�
 
 - [x] 通过 `just system-monitor` 打开半透明 Niri 浮窗，首行显示系统盘吞吐、平均读写请求延迟和整机 I/O PSI，进程表支持按读写、CPU 和内存排序。
 - [x] 验证伪终端渲染、排序切换和退出。实机确认浮窗启动成功，重复执行入口会聚焦原窗口，无需应用系统配置。
+- [x] 增加 Fuzzel 的「系统监控」启动项。完整系统与 Home Manager 构建通过，核对 `HOME_MANAGER_BACKUP_EXT=hm-backup`。已登记构建产物并通过实机 Fuzzel 搜索打开浮窗。
+- [x] 首行增加整机 CPU 与 RAM，进程 CPU 改按整机总算力计。核对归一化结果、磁盘延迟和 69 列显示。

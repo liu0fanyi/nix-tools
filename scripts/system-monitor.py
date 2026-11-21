@@ -8,12 +8,20 @@ from pathlib import Path
 import subprocess
 import sys
 import time
+from typing import NamedTuple
 
 
 APP_ID = "nix-tools-system-monitor"
 MIB = 1024**2
 PAGE_SIZE = os.sysconf("SC_PAGE_SIZE")
-CLOCK_TICKS = os.sysconf("SC_CLK_TCK")
+
+
+class Snapshot(NamedTuple):
+    timestamp: float
+    disk: list[int]
+    processes: dict
+    cpu_total: int
+    cpu_idle: int
 
 
 def system_disk():
@@ -44,30 +52,48 @@ def snapshot(disk):
         except (OSError, KeyError, ValueError):
             io = None
         processes[(int(entry.parent.name), start)] = (name, state, cpu, rss, io)
-    return time.monotonic(), list(map(int, (disk / "stat").read_text().split())), processes
+    # The first eight fields already include time spent running guests.
+    with Path("/proc/stat").open() as stat:
+        cpu = list(map(int, stat.readline().split()[1:9]))
+    disk_counters = list(map(int, (disk / "stat").read_text().split()))
+    return Snapshot(time.monotonic(), disk_counters, processes, sum(cpu), cpu[3] + cpu[4])
 
 
 def disk_summary(disk, before, after, elapsed):
-    delta = [new - old for old, new in zip(before, after)]
-    read, write = (delta[index] / 2048 / elapsed for index in (2, 6))
-    read_ms = f"{delta[3] / delta[0]:.1f}" if delta[0] else "--"
-    write_ms = f"{delta[7] / delta[4]:.1f}" if delta[4] else "--"
+    delta = [max(0, new - old) for old, new in zip(before, after)]
+    read, write = (delta[index] * 512 / MIB / elapsed for index in (2, 6))
+    read_ms, write_ms = (f"{delta[index + 3] / delta[index]:.0f}" if delta[index] else "--" for index in (0, 4))
     try:
         pressure = Path("/proc/pressure/io").read_text().splitlines()[0].split()[1].split("=")[1]
     except (OSError, IndexError):
         pressure = "--"
-    return (f"{disk.name}  R {read:.1f} W {write:.1f} MiB/s  "
-            f"R/W {read_ms}/{write_ms} ms  PSI {pressure}%")
+    if pressure != "--":
+        pressure = f"{float(pressure):.0f}%"
+    return f"{disk.name} {read:.0f}/{write:.0f}MiB/s R/W {read_ms}/{write_ms}ms PSI {pressure}"
 
 
-def process_rows(before, after, elapsed):
+def system_summary(cpu_ticks, idle_ticks):
+    cpu = 100 * max(0, cpu_ticks - idle_ticks) / cpu_ticks
+    memory = {}
+    with Path("/proc/meminfo").open() as meminfo:
+        for line in meminfo:
+            key, value = line.split(":", 1)
+            if key in ("MemTotal", "MemAvailable"):
+                memory[key] = int(value.split()[0])
+    total = memory["MemTotal"] / MIB
+    used = (memory["MemTotal"] - memory["MemAvailable"]) / MIB
+    return f"CPU {cpu:.0f}% RAM {used:.1f}/{total:.0f}GiB"
+
+
+def process_rows(before, after, elapsed, cpu_ticks):
     for key, (name, state, cpu, rss, io) in after.items():
         _, _, old_cpu, _, old_io = before.get(key, (name, state, cpu, rss, None))
         read, write = (
             tuple(max(0, new - old) / MIB / elapsed for old, new in zip(old_io, io))
             if old_io is not None and io is not None else (-1, -1)
         )
-        yield key[0], name, state, max(0, cpu - old_cpu) * 100 / CLOCK_TICKS / elapsed, rss / MIB, read, write
+        cpu_percent = max(0, cpu - old_cpu) * 100 / cpu_ticks
+        yield key[0], name, state, cpu_percent, rss / MIB, read, write
 
 
 def display(screen, disk):
@@ -81,10 +107,12 @@ def display(screen, disk):
     summary = f"{disk.name}  Sampling system disk…"
     rows = []
     while True:
-        elapsed = after[0] - before[0]
-        if elapsed > 0:
-            summary = disk_summary(disk, before[1], after[1], elapsed)
-            rows = list(process_rows(before[2], after[2], elapsed))
+        elapsed = after.timestamp - before.timestamp
+        cpu_ticks = after.cpu_total - before.cpu_total
+        if elapsed > 0 and cpu_ticks > 0:
+            idle_ticks = after.cpu_idle - before.cpu_idle
+            summary = f"{system_summary(cpu_ticks, idle_ticks)}  {disk_summary(disk, before.disk, after.disk, elapsed)}"
+            rows = list(process_rows(before.processes, after.processes, elapsed, cpu_ticks))
         screen.erase()
         height, width = screen.getmaxyx()
         lines = [summary, f"{'PID':>7}  {'PROCESS':<18} {'CPU%':>6} {'RAM MiB':>8} {'R MiB/s':>8} {'W MiB/s':>8} {'ST':>2}"]
@@ -101,7 +129,7 @@ def display(screen, disk):
             return
         if key in sort_keys:
             sort_index, sort_name = sort_keys[key]
-        if time.monotonic() - after[0] >= 0.95:
+        if time.monotonic() - after.timestamp >= 0.95:
             before, after = after, snapshot(disk)
 
 
