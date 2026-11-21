@@ -47,6 +47,10 @@ test:
     python3 -m unittest discover -s deploy/tests
     python3 -m unittest discover -s scripts/tests
 
+# 在当前 Niri 会话打开系统盘和进程监控浮窗。
+system-monitor:
+    python3 scripts/system-monitor.py
+
 # 按共享 work-progress 发布登记总纲与索引；先 --dry-run
 sync-todos *args:
     python3 scripts/sync-todos.py {{args}}
