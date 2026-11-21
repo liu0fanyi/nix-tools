@@ -57,7 +57,7 @@ def disk_summary(disk, before, after, elapsed):
     except (OSError, IndexError):
         pressure = "--"
     return (f"{disk.name}  R {read:.1f} W {write:.1f} MiB/s  "
-            f"wait R/W {read_ms}/{write_ms} ms  I/O PSI(10s) {pressure}%")
+            f"R/W {read_ms}/{write_ms} ms  PSI {pressure}%")
 
 
 def process_rows(before, after, elapsed):
@@ -71,6 +71,7 @@ def process_rows(before, after, elapsed):
 
 
 def display(screen, disk):
+    curses.use_default_colors()
     curses.curs_set(0)
     screen.timeout(1000)
     sort_keys = {ord("c"): (3, "CPU"), ord("m"): (4, "RAM"),
@@ -119,8 +120,10 @@ def launch():
         niri("action", "focus-window", "--id", str(existing["id"]))
         return
     niri("action", "spawn", "--", "foot", "-c", "/dev/null", "-a", APP_ID,
-         "-T", "System disk / Processes", "-w", "790x310",
-         "-o", "colors-dark.alpha=0.68", "-o", "colors-light.alpha=0.68",
+         "-T", "System disk / Processes", "-W", "70x14", "-f", "monospace:pixelsize=17",
+         "-o", "main.pad=7x5", "-o", "csd.color=80171a1f",
+         "-o", "colors-dark.alpha=0.50", "-o", "colors-dark.alpha-mode=all",
+         "-o", "colors-light.alpha=0.50", "-o", "colors-light.alpha-mode=all",
          sys.executable, str(Path(__file__).resolve()), "--display")
     for _ in range(25):
         time.sleep(0.1)
@@ -128,8 +131,8 @@ def launch():
         if window:
             window_id = str(window["id"])
             niri("action", "move-window-to-floating", "--id", window_id)
-            niri("action", "set-window-width", "--id", window_id, "790")
-            niri("action", "set-window-height", "--id", window_id, "310")
+            niri("action", "set-window-width", "--id", window_id, "720")
+            niri("action", "set-window-height", "--id", window_id, "335")
             return
     raise SystemExit("The system monitor window did not open.")
 
