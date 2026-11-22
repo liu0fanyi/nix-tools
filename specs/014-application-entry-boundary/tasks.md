@@ -729,4 +729,4 @@ PC 配置锁定已签名的 nix.139，完整系统候选已验证，按常规更
 
 ### Tag Browser nix.140
 
-PC 配置只更新 Tag Browser 的签名输入，完整系统与桌面入口回归通过。Web 前端在 PC 与 NUC 激活并回查，两边保留现用后端。PC 继续由用户按日常流程应用配置。 [发行回执](../../../tag-browser/specs/049-shared-leptos-ui/pc-nix140-release-results.json)
+PC 配置只更新 Tag Browser 的签名输入，完整系统与桌面入口回归通过。Web 前端在 PC 与 NUC 激活并回查，两边保留现用后端。PC 继续由用户按日常流程应用配置。 [发行回执](https://github.com/liu0fanyi/tag-browser/blob/f754a5cc610377a9d65e7500431df2fd1f9d95bc/specs/049-shared-leptos-ui/pc-nix140-release-results.json)
