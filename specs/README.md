@@ -6,7 +6,7 @@
 - [缺少单个登记来源时其余工程仍可同步，Trime 旧摘要保留，已补同步三份工程总纲。](001-spec-driven-workflow/tasks.md#缺失来源的同步隔离)
 - [Screen Mark 0.2.0 已签名发行，完整 PC/HM 构建通过，待用户应用桌面更新。](010-host-configuration/tasks.md#screen-mark-020-发行)
 - [知识卡 0.1.16 带 Helix 诊断及截图漏转自动重试，PC 安装候选已验证。](014-application-entry-boundary/tasks.md#知识卡-0116)
-- [Tag Browser nix.139 已签名，PC 锁定及完整配置构建通过，常规更新并重开后可使用。](014-application-entry-boundary/tasks.md#tag-browser-nix139)
+- [Tag Browser nix.140 的签名、PC 配置锁及完整系统构建均通过。](014-application-entry-boundary/tasks.md#tag-browser-nix140)
 - [共享 Helix 已上线 PC/NUC 前端，知识卡 0.1.10 固定到 PC 安装配置，完整系统候选已验证。](014-application-entry-boundary/tasks.md#共享-helix-正式发布2026-11-19)
 - [NUC 私有 Workspace AI 已上线，知识卡 0.1.9 和 Tag Browser nix.133 的 PC 安装配置与完整候选通过验收。](014-application-entry-boundary/tasks.md#nuc-workspace-ai-与桌面应用发行2026-11-19)
 - [Helix软换行双宽字符补丁的完整PC/HM构建通过；Agent入口已移除历史流水并精简为操作规则，构建指南改为导航。](010-host-configuration/tasks.md#helix-补丁与-agent-入口精简hp2026-11-19)
@@ -40,6 +40,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-22 · Pin signed Tag Browser nix.140 for the PC · `ee8588d`
 - 2026-11-21 · Launch System Monitor from Fuzzel and show machine totals · `916b008`
 - 2026-11-21 · Make the monitor text larger and the window translucent · `e828d2d`
 - 2026-11-21 · Open a floating system disk and process monitor · `540551a`
@@ -47,5 +48,4 @@
 - 2026-11-20 · Update project overview for Tag Browser CPU sampling · `111365b`
 - 2026-11-20 · Keep a bounded local CPU history for Tag Browser · `d855284`
 - 2026-11-20 · Update project overview sync status · `14ee26f`
-- 2026-11-20 · Keep project overview publishing available when a source is missing · `da64aa0`
 <!-- recent-commits:end -->
