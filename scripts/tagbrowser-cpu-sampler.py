@@ -1,4 +1,4 @@
-"""Keep local, bounded CPU history for the Tag Browser process tree."""
+"""Keep local, bounded CPU and memory history for the Tag Browser process tree."""
 
 import json
 import logging
@@ -21,8 +21,22 @@ CPU_TRIGGER = 65
 MEMORY_STALL_TRIGGER = 10
 BASELINE_INTERVAL = 30
 CONTEXT_SAMPLES = 5
+RSS_STEP_KIB = 128 * 1024
+RSS_WINDOW_KIB = 256 * 1024
+ROLLUP_INTERVAL = 10
 MAX_BYTES = 4 * 1024 * 1024
 BACKUPS = 3
+
+STATUS_FIELDS = {
+    "RssAnon": "rss_anon_kib", "RssFile": "rss_file_kib",
+    "RssShmem": "rss_shmem_kib", "VmSwap": "swap_kib",
+}
+ROLLUP_FIELDS = {
+    "Rss": "rss_kib", "Pss": "pss_kib", "Pss_Anon": "pss_anon_kib",
+    "Pss_File": "pss_file_kib", "Pss_Shmem": "pss_shmem_kib",
+    "Private_Clean": "private_clean_kib", "Private_Dirty": "private_dirty_kib",
+    "Swap": "swap_kib", "SwapPss": "swap_pss_kib",
+}
 
 
 class Stat(NamedTuple):
@@ -127,6 +141,68 @@ def task_rows(changes, limit, id_key):
     return rows
 
 
+def memory_fields(path, names):
+    try:
+        with path.open(errors="replace") as source:
+            values = {}
+            for line in source:
+                name, _, value = line.partition(":")
+                if name in names:
+                    values[names[name]] = int(value.split()[0])
+        return values
+    except (OSError, ValueError, IndexError):
+        return {}
+
+
+def memory_report(current, previous, older, rollups, now):
+    changes = {}
+    events = {}
+    for pid, stat in current.items():
+        # Prefer a sharp reversal to a larger change spanning the older window.
+        for baseline, threshold in ((previous, RSS_STEP_KIB), (older, RSS_WINDOW_KIB)):
+            old = baseline.get(pid)
+            if old is None or old.started != stat.started:
+                continue
+            change = stat.rss_kib - old.rss_kib
+            if baseline is previous:
+                changes[pid] = change
+            if abs(change) >= threshold:
+                events[pid] = change
+                break
+
+    ranked = sorted(current, key=lambda pid: (
+        pid in events, abs(events.get(pid, 0)), current[pid].name == "tagbrowser", current[pid].rss_kib,
+    ), reverse=True)[:6]
+    rows = []
+    rollup_count = 0
+    for pid in ranked:
+        stat = current[pid]
+        path = PROC / str(pid)
+        row = {"pid": pid, "name": stat.name, "start_ticks": stat.started, "rss_kib": stat.rss_kib}
+        if pid in changes:
+            row["rss_step_kib"] = changes[pid]
+        row.update(memory_fields(path / "status", STATUS_FIELDS))
+        if pid in events:
+            change = events[pid]
+            row["rss_trigger_change_kib"] = change
+            key = (pid, stat.started, change > 0)
+            if rollup_count < 2 and now - rollups.get(key, float("-inf")) >= ROLLUP_INTERVAL:
+                row["rollup"] = memory_fields(path / "smaps_rollup", ROLLUP_FIELDS) or None
+                rollups[key] = now
+                rollup_count += 1
+        # Avoid associating status or rollup data with a recycled PID.
+        latest = read_stat(path / "stat")
+        if latest is not None and latest.started == stat.started:
+            rows.append(row)
+
+    reasons = []
+    if any(change > 0 for change in events.values()):
+        reasons.append("rss_growth")
+    if any(change < 0 for change in events.values()):
+        reasons.append("rss_drop")
+    return rows, reasons
+
+
 def report(current, previous, seconds, pressure):
     processes, threads = current
     changes = list(deltas(processes, previous[0], seconds))
@@ -155,6 +231,8 @@ def run(state_dir):
         state_dir / "samples.jsonl", maxBytes=MAX_BYTES, backupCount=BACKUPS, encoding="ascii"
     )
     history = deque(maxlen=CONTEXT_SAMPLES)
+    memory_history = deque(maxlen=CONTEXT_SAMPLES)
+    rollups = {}
     last_saved = float("-inf")
     capture_until = float("-inf")
     refresh_at = 0
@@ -181,6 +259,10 @@ def run(state_dir):
                 if value is not None and previous_pressure.get(key) is not None
             }
             sample = report(current, previous, elapsed, pressure)
+            older = memory_history[0] if len(memory_history) == CONTEXT_SAMPLES else {}
+            sample["memory"], memory_reasons = memory_report(current[0], previous[0], older, rollups, now)
+            sample["triggers"].extend(memory_reasons)
+            rollups = {key: stamp for key, stamp in rollups.items() if now - stamp < ROLLUP_INTERVAL}
             history.append((now, sample))
             if sample["triggers"]:
                 capture_until = now + INTERVAL * CONTEXT_SAMPLES
@@ -197,7 +279,10 @@ def run(state_dir):
                     last_saved = sampled_at
         else:
             history.clear()
+            memory_history.clear()
+            rollups.clear()
             capture_until = float("-inf")
+        memory_history.append(current[0])
         previous, previous_at, previous_pressure = current, now, counters
         time.sleep(max(0, now + INTERVAL - time.monotonic()))
 

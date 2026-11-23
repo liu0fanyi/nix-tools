@@ -22,7 +22,7 @@
   programs.atop.enable = false;
 
   systemd.services.tagbrowser-cpu-sampler = {
-    description = "Local rolling CPU samples for Tag Browser";
+    description = "Local rolling CPU and memory samples for Tag Browser";
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       ExecStart = "${pkgs.python3}/bin/python3 ${../../../scripts/tagbrowser-cpu-sampler.py} /var/lib/tagbrowser-cpu-sampler";
