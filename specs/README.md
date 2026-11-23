@@ -40,6 +40,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-23 · Pin verified Knowledge Cards 0.1.23 for the PC · `3e614ae`
 - 2026-11-23 · Capture Tag Browser memory spikes in rolling logs · `334c6b6`
 - 2026-11-23 · Pin verified Knowledge Cards 0.1.22 for the PC · `5e77e8e`
 - 2026-11-23 · Refresh the desktop release overview · `11f9c47`
@@ -47,5 +48,4 @@
 - 2026-11-23 · Refresh the desktop release overview · `70ceedd`
 - 2026-11-23 · Pin verified Knowledge Cards 0.1.19 for the PC · `eef1755`
 - 2026-11-22 · Pin verified Knowledge Cards 0.1.18 for the PC · `d1d0b92`
-- 2026-11-22 · Pin signed Tag Browser nix.144 on PC · `3120258`
 <!-- recent-commits:end -->
