@@ -2,7 +2,7 @@
 
 ## 当前情况
 - [本机可在 Fuzzel 搜索「系统监控」，也可通过 `just system-monitor` 打开浮窗。首行显示整机 CPU、内存与系统盘 I/O。](010-host-configuration/tasks.md#系统盘与进程监控浮窗2026-11-21)
-- [Tag Browser CPU 滚动采样的完整系统与 Home Manager 构建通过，待用户应用并确认本机日志。](010-host-configuration/tasks.md#tag-browser-cpu-滚动采样tc2026-11-20)
+- [Tag Browser 的滚动日志已捕获主进程内存峰值；新增按类别记录与 RSS 突变触发，实机隔离采样和完整系统构建通过，待用户应用。](010-host-configuration/tasks.md#tag-browser-cpu-滚动采样tc2026-11-20)
 - [缺少单个登记来源时其余工程仍可同步，Trime 旧摘要保留，已补同步三份工程总纲。](001-spec-driven-workflow/tasks.md#缺失来源的同步隔离)
 - [Screen Mark 0.2.0 已签名发行，完整 PC/HM 构建通过，待用户应用桌面更新。](010-host-configuration/tasks.md#screen-mark-020-发行)
 - [知识卡 0.1.22 已签名发布，包含 Helix 终端缓冲区诊断，PC 安装候选通过验收。](014-application-entry-boundary/tasks.md#知识卡-0122)
@@ -40,6 +40,7 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-23 · Capture Tag Browser memory spikes in rolling logs · `334c6b6`
 - 2026-11-23 · Pin verified Knowledge Cards 0.1.22 for the PC · `5e77e8e`
 - 2026-11-23 · Refresh the desktop release overview · `11f9c47`
 - 2026-11-23 · Pin verified Knowledge Cards 0.1.21 for the PC · `aa11ded`
@@ -47,5 +48,4 @@
 - 2026-11-23 · Pin verified Knowledge Cards 0.1.19 for the PC · `eef1755`
 - 2026-11-22 · Pin verified Knowledge Cards 0.1.18 for the PC · `d1d0b92`
 - 2026-11-22 · Pin signed Tag Browser nix.144 on PC · `3120258`
-- 2026-11-22 · Pin verified Knowledge Cards 0.1.17 for the PC · `b4f68b6`
 <!-- recent-commits:end -->
