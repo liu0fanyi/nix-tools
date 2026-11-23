@@ -40,12 +40,12 @@
 
 ## 最近变化
 <!-- recent-commits:start -->
+- 2026-11-23 · Pin verified Knowledge Cards 0.1.21 for the PC · `aa11ded`
+- 2026-11-23 · Refresh the desktop release overview · `70ceedd`
 - 2026-11-23 · Pin verified Knowledge Cards 0.1.19 for the PC · `eef1755`
 - 2026-11-22 · Pin verified Knowledge Cards 0.1.18 for the PC · `d1d0b92`
 - 2026-11-22 · Pin signed Tag Browser nix.144 on PC · `3120258`
 - 2026-11-22 · Pin verified Knowledge Cards 0.1.17 for the PC · `b4f68b6`
 - 2026-11-22 · Pin signed Tag Browser nix.143 on PC · `0b56de1`
 - 2026-11-22 · Pin signed Tag Browser nix.142 for the PC · `cf2c21d`
-- 2026-11-22 · Pin signed Tag Browser nix.141 for the PC · `d0ede9e`
-- 2026-11-22 · Pin signed Tag Browser nix.140 for the PC · `ee8588d`
 <!-- recent-commits:end -->
