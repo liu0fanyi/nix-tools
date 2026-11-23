@@ -738,3 +738,7 @@ PC 配置只更新 Tag Browser 的签名输入，完整系统与桌面入口回�
 ## 知识卡 0.1.18
 
 正式签名包包含纯编辑截图校对、右侧原图及正文默认分屏。已核对 Cachix latest、完整 PC 系统和 Home Manager 候选，应用菜单和 Ctrl+Alt+K 指向新版。同配置保留 Tag Browser nix.144。用户自行 rerun。
+
+## 知识卡 0.1.19
+
+PC 正式签名包包含识图、Helix 焦点快捷键及窗口标题版本号。Cachix latest、完整 PC 系统和 Home Manager 候选已核对，应用菜单与 Ctrl+Alt+K 指向 0.1.19。用户自行 rerun。
