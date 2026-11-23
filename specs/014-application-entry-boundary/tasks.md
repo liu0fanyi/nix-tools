@@ -746,3 +746,7 @@ PC 正式签名包包含识图、Helix 焦点快捷键及窗口标题版本号�
 ## 知识卡 0.1.21
 
 PC 正式签名包带共享的就地预览更新并通过原生离线图片回归。Cachix latest、完整系统候选、Home Manager、应用菜单与 Ctrl+Alt+K 已核验。用户自行 rerun。
+
+## 知识卡 0.1.22
+
+PC 正式签名包增加 Helix 缓冲区和尺寸诊断，已用隔离原生日志验收。Cachix latest、完整系统、Home Manager 及菜单和 Ctrl+Alt+K 已核验。用户自行 rerun。
