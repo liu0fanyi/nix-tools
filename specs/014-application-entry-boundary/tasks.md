@@ -750,3 +750,7 @@ PC 正式签名包带共享的就地预览更新并通过原生离线图片回�
 ## 知识卡 0.1.22
 
 PC 正式签名包增加 Helix 缓冲区和尺寸诊断，已用隔离原生日志验收。Cachix latest、完整系统、Home Manager 及菜单和 Ctrl+Alt+K 已核验。用户自行 rerun。
+
+## 知识卡 0.1.23
+
+PC 正式签名包通过 Alt+V 粘贴识图和 Alt+J 切换上下 Helix 的原生按键测试。Cachix latest、完整系统、Home Manager 及桌面入口已核验。用户自行 rerun。
