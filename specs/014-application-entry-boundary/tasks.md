@@ -742,3 +742,7 @@ PC 配置只更新 Tag Browser 的签名输入，完整系统与桌面入口回�
 ## 知识卡 0.1.19
 
 PC 正式签名包包含识图、Helix 焦点快捷键及窗口标题版本号。Cachix latest、完整 PC 系统和 Home Manager 候选已核对，应用菜单与 Ctrl+Alt+K 指向 0.1.19。用户自行 rerun。
+
+## 知识卡 0.1.21
+
+PC 正式签名包带共享的就地预览更新并通过原生离线图片回归。Cachix latest、完整系统候选、Home Manager、应用菜单与 Ctrl+Alt+K 已核验。用户自行 rerun。
