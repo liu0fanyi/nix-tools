@@ -2,11 +2,11 @@
 let
   cached = builtins.fetchClosure {
     fromStore = "https://liu0fanyi-nix.cachix.org";
-    fromPath = "/nix/store/s59hr2y7xk5r8qzcxhvhsdd1dwmlqlry-knowledge-cards-0.1.23";
+    fromPath = "/nix/store/r0l7410dydan48p1fh50142y9g6pzh6d-knowledge-cards-0.1.24";
     inputAddressed = true;
   };
 in pkgs.symlinkJoin {
-  name = "knowledge-cards-0.1.23";
+  name = "knowledge-cards-0.1.24";
   paths = [ cached ];
   passthru.binaryPath = cached;
   meta = { description = "Local-first knowledge cards"; mainProgram = "knowledge-cards"; platforms = [ "x86_64-linux" ]; };

@@ -754,3 +754,7 @@ PC 正式签名包增加 Helix 缓冲区和尺寸诊断，已用隔离原生日�
 ## 知识卡 0.1.23
 
 PC 正式签名包通过 Alt+V 粘贴识图和 Alt+J 切换上下 Helix 的原生按键测试。Cachix latest、完整系统、Home Manager 及桌面入口已核验。用户自行 rerun。
+
+## 知识卡 0.1.24
+
+签名发行修复粘贴识图后正文 Helix 随终端重排缺行导致的异常。核对了 Cachix latest、完整系统、Home Manager，以及知识卡菜单与 Ctrl+Alt+K 的实际目标。用户自行 rerun。
