@@ -764,3 +764,7 @@ PC 正式签名包通过 Alt+V 粘贴识图和 Alt+J 切换上下 Helix 的原�
 PC 正式包在原生 WebKit 验证上下 Helix 均可用 Alt+P 粘贴识图，Alt+J 聚焦上方校对，Alt+K 聚焦下方正文。完整系统与 Home Manager 候选通过，菜单和 Ctrl+Alt+K 指向 0.1.25。
 
 修复 rerun 知识卡预取。先读取独立的固定包路径并核对 Cachix，再从 Cachix 和 NixOS 官方缓存补齐运行闭包。隔离 Nix store 验证上次缺失的 glibc 可从官方缓存获取。用户自行 rerun。
+
+## 知识卡 0.1.26
+
+PC 原生 WebKit 验证 Alt+J 和 Alt+K 在两个 Helix 之间连续循环。Cachix 签名、专用 latest Pin、完整系统和 Home Manager 候选均已核对，菜单与 Ctrl+Alt+K 指向 0.1.26。运行依赖与已通过双缓存预取验证的 0.1.25 相同。用户自行 rerun。

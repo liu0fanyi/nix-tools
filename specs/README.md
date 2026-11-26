@@ -5,7 +5,7 @@
 - [Tag Browser 的滚动日志已捕获主进程内存峰值；新增按类别记录与 RSS 突变触发，实机隔离采样和完整系统构建通过，待用户应用。](010-host-configuration/tasks.md#tag-browser-cpu-滚动采样tc2026-11-20)
 - [缺少单个登记来源时其余工程仍可同步，Trime 旧摘要保留，已补同步三份工程总纲。](001-spec-driven-workflow/tasks.md#缺失来源的同步隔离)
 - [Screen Mark 0.2.0 已签名发行，完整 PC/HM 构建通过，待用户应用桌面更新。](010-host-configuration/tasks.md#screen-mark-020-发行)
-- [知识卡 0.1.25 更新 Helix 截图快捷键，PC 完整候选及双缓存预取已验证。](014-application-entry-boundary/tasks.md#知识卡-0125)
+- [知识卡 0.1.26 已发布，Helix 焦点快捷键支持循环，PC 完整候选已核对。](014-application-entry-boundary/tasks.md#知识卡-0126)
 - [Tag Browser nix.140 的签名、PC 配置锁及完整系统构建均通过。](014-application-entry-boundary/tasks.md#tag-browser-nix140)
 - [共享 Helix 已上线 PC/NUC 前端，知识卡 0.1.10 固定到 PC 安装配置，完整系统候选已验证。](014-application-entry-boundary/tasks.md#共享-helix-正式发布2026-11-19)
 - [NUC 私有 Workspace AI 已上线，知识卡 0.1.9 和 Tag Browser nix.133 的 PC 安装配置与完整候选通过验收。](014-application-entry-boundary/tasks.md#nuc-workspace-ai-与桌面应用发行2026-11-19)
