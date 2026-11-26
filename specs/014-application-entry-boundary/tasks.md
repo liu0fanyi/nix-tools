@@ -768,3 +768,7 @@ PC 正式包在原生 WebKit 验证上下 Helix 均可用 Alt+P 粘贴识图，A
 ## 知识卡 0.1.26
 
 PC 原生 WebKit 验证 Alt+J 和 Alt+K 在两个 Helix 之间连续循环。Cachix 签名、专用 latest Pin、完整系统和 Home Manager 候选均已核对，菜单与 Ctrl+Alt+K 指向 0.1.26。运行依赖与已通过双缓存预取验证的 0.1.25 相同。用户自行 rerun。
+
+## 知识卡 0.1.27
+
+原生 WebKit 在 960×403 视口验证右侧原图限高、滚轮到达正文、快捷键滚动到焦点及保存栏保持可见。Cachix 签名、专用 latest Pin、完整系统和 Home Manager 候选均核对通过，菜单和 Ctrl+Alt+K 指向 0.1.27。运行依赖与已验证的 0.1.26 一致，用户自行 rerun。
